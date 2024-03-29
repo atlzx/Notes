@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_DOM小练习2</title>
+    <script>
+        onload=function(){
+            let allCheckButton=document.getElementById("allCheck");
+            let outCheckButton=document.getElementById("outCheck");
+            let contraryCheckButton=document.getElementById("contraryCheck");
+            let submitCheckButton=document.getElementById("submitCheck");
+            let hobbies=document.getElementsByName("hobby");  // 获取多选框集合
+            let allCheck_checkBox=document.querySelectorAll("div:first-child>input")[0];
+            // console.log(allCheckButton);
+            // console.log(outCheckButton);
+            // console.log(contraryCheckButton);
+            // console.log(submitCheckButton);
+            // console.log(hobbies);
+            // console.log(allCheck_checkBox);
+
+
+            // 处理全选按钮的点击事件
+
+            allCheckButton.addEventListener(
+                "click",
+                function(){
+                    for(let i of hobbies){
+                        i.checked=true;
+                    }
+                    allCheck_checkBox.checked=true;
+                }
+            );
+
+            // 处理取消按钮的点击事件
+
+            outCheckButton.addEventListener(
+                "click",
+                function(){
+                    for(let i of hobbies){
+                        i.checked=false;
+                    }
+                    allCheck_checkBox.checked=false;
+                }
+            );
+
+            // 处理反选按钮的点击事件
+
+            contraryCheckButton.addEventListener(
+                "click",
+                function(){
+                    for(let i of hobbies){
+                        i.checked=!i.checked;  // 直接使用取反运算符取反
+                    }
+                    // 判断取反后是否全选，若全选则修改最上面的全选复选框
+                    if(hobbies.length===document.querySelectorAll("[name=hobby]:checked").length){
+                        allCheck_checkBox.checked=true;
+                    }else{
+                        console.log(document.querySelectorAll("[name=hobby]:checked").length);
+                        allCheck_checkBox.checked=false;
+                    }
+                }
+            );
+
+            // 处理提交按钮的点击事件，因为没有后端，因此使用alert输出
+
+            submitCheckButton.addEventListener(
+                "click",
+                function(){
+                    for(let i of hobbies){
+                        if(i.checked){
+                            alert(i.value);
+                        }
+                    }
+                }
+            );
+
+            allCheck_checkBox.addEventListener(
+                "change",
+                function(){
+                    for(let i of hobbies){
+                         // 在事件的function响应函数中，this会指向被响应函数绑定的对象
+                        i.checked=this.checked; 
+                    }
+                }
+            );
+
+            // 监听每个复选框的改变事件，如果改变了就进行判断
+            // 使用JS代码修改复选框状态貌似不会触发事件判定
+            for(let i of hobbies){
+                i.addEventListener(
+                    "change",
+                    function(){
+                        // 通过伪类选择器来筛选出被选中的复选框
+                        if(hobbies.length===document.querySelectorAll("[name=hobby]:checked").length){
+                            allCheck_checkBox.checked=true;
+                        }else{
+                            console.log(document.querySelectorAll("[name=hobby]:checked").length);
+                            allCheck_checkBox.checked=false;
+                        }
+                    }
+                );
+            }
+        }
+    </script>
+</head>
+<body>
+    <form action="#">
+        <div>
+            <input type="checkbox">全选
+        </div>
+        <div>
+            <input type="checkbox" value="乒乓球" name="hobby">乒乓球
+            <input type="checkbox" value="足球" name="hobby">足球
+            <input type="checkbox" value="篮球" name="hobby">篮球
+            <input type="checkbox" value="羽毛球" name="hobby">羽毛球
+        </div>
+        <div>
+            <button type="button" id="allCheck">全选</button>
+            <button type="button" id="outCheck">取消</button>
+            <button type="button" id="contraryCheck">反选</button>
+            <button type="button" id="submitCheck">提交</button>
+        </div>
+    </form>
+</body>
+</html>

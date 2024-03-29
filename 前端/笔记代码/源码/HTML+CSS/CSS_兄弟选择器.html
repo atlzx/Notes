@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_兄弟选择器</title>
+    <style>
+        /*使用相邻兄弟选择器，只会选择和div相邻的下方的p元素*/
+        div+p{
+            color: blue;
+        }
+        /*使用通用兄弟选择器，会选择与div同时兄弟的且在div下方的全部p元素*/
+        div~p{
+            color: red;
+        }
+        /*使用这种方式可以为除列表的第一项外其它项都设置一个统一的样式*/
+        li+li{
+            color: green;
+        }
+        /*这种写法与上方的效果一致，只是使用的兄弟选择器不同*/
+        li~li{
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div>一天的生活</div>
+    <p>早上睡觉</p>
+    <p>中午吃个饭</p>
+    <p>下午玩会</p>
+    <p>晚上emo</p>
+    <ul>
+        <li>省份</li>
+        <li>河北</li>
+        <li>山东</li>
+        <li>河南</li>
+        <li>山西</li>
+    </ul>
+</body>
+</html>

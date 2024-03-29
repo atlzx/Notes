@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JSX样例</title>
+    <script src="../../文件/React18/babel.min.js"></script>
+    <script src="../../文件/React18/react.development.js"></script>
+    <script src="../../文件/React18/react-dom.development.js"></script>
+    <script type="text/babel">
+        const div=
+        /* 
+            使用驼峰命名法来定义事件监听 
+            一般的属性可以直接在标签上设置
+            class需要改为className
+            style设置的样式需要对应一个对象，即style={{ backgroundColor:"blue" }}  外面的大括号代表插值表达式，里面的大括号是对象，对象的键是驼峰命名法，即要求css样式改为驼峰命名法
+            JSX的标签必须有结束标签，input等自结束标签必须含有/
+            JSX最外层仅能有一个跟标签
+            html标签必须小写，React组件必须大写
+            JSX不要加引号
+        */
+            <div>
+                <button onClick={()=>{alert('按钮被点击了');}} type="button" style={{backgroundColor:'blue',border:'1px solid brown'}} className="thisClass">点我一下</button>
+                <ul>
+                    <li>a</li>
+                    <li>b</li>
+                    <li>c</li>
+                    <li>d</li>
+                    <li>e</li>
+                </ul>
+            </div>;
+        const root=ReactDOM.createRoot(document.getElementById("root"));
+        root.render(div);
+    </script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>

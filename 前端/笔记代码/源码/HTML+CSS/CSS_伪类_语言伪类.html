@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_伪类_语言伪类</title>
+    <style>
+        div{
+            height: 100px;
+        }
+        /*选择lang属性值为“en”的div标签。该选择器选择时，会查看div上的lang属性值是多少，而不会查看div里面的内容是什么语言*/
+        div:lang(en){
+            background-color: green;
+        }
+        /*由于html标签中含有lang属性，因此除第二个div外其它不写lang属性的div都默认为html设置的lang属性值*/
+        div:lang(zh-CN){
+            background-color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div>测试1</div>
+    <div lang="en">测试2</div>
+    <div>测试3</div>
+    <div>测试4</div>
+</body>
+</html>

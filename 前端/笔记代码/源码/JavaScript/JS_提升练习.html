@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_提升练习</title>
+    <script>
+        /*第一个控制台输出，由于①、③、④、⑤属于var声明，因此会提到最前面，并声明
+        而②由于是函数会被完整的创建，因此会创建一个a函数
+        因此此处输出函数②的代码
+
+        如果同时有var和function声明的同名变量，那么function的优先级更高
+        如果有多个function声明的变量，那么后面的会覆盖前面的
+        */
+        console.log(a);
+        var a=1;  /*①*/
+
+        /*
+        第二个控制台输出受上面的var a = 1影响，虽然这个代码在执行前被声明了，但还没赋值
+        执行到上一行时才被赋值，因此此处输出1
+        */
+
+        console.log(a);
+        function a(){
+            alert(2);
+        }  /*②*/
+
+        /*
+            第三个控制台不会受上面的函数声明影响，因为该函数声明被提升至代码执行前了，所以也输出1
+        */
+
+        console.log(a);
+        var a=3;  /*③*/
+
+        /*
+            第四个控制台输出3，与第二个控制台输出理由一致    
+        */
+
+        console.log(a);
+        var a=function(){
+            alert(4);
+        }  /*④*/
+
+        /*
+            第五个控制台输出受上面的被函数对象赋值的变量a影响，输出函数④的原代码
+        */
+
+        console.log(a);
+        var a;  /*⑤*/
+
+        /*
+            第六个控制台输出不受上面的var影响，因为var仅作了声明操作
+            依旧输出函数④的原代码
+        */
+        console.log(a);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

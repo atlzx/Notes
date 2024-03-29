@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_3D变换_3D位移</title>
+    <style>
+        .outer{
+            height: 400px;
+            width: 400px;
+            border: 2px solid black;
+            margin: 0px auto;
+            margin-top: 100px;
+            transform-style: preserve-3d; /*给父元素设置3D空间，令其子元素位于3D空间内*/
+            perspective: 1000px; /*设置景深，若景深值与3D变换的盒子高度的一半越接近，则近大远小的效果越强，反之越弱*/
+            perspective-origin: left; /*设置观察者的水平与垂直位置*/
+        }
+        .inner{
+            height: 200px;
+            width: 200px;
+            background-color: skyblue;
+            font-size: 30px;
+            transform: scale3d(2,2,1.5); /*z轴缩放实际上与景深为1000/1.5px效果一样*/
+        }
+    </style>
+</head>
+<body>
+    <div class="outer">
+        <div class="inner">测试文本</div>
+    </div>
+</body>
+</html>

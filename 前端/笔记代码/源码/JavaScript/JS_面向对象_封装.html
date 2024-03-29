@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_面向对象_封装</title>
+    <script>
+        class Test{
+            #name;  //在属性前加上#来使属性成为私有属性
+            #age;  //私有属性必须先声明才能调用，且仅能在类的内部被访问
+            #gender;
+            constructor(name,age,gender){
+                this.#name=name;
+                this.#age=age;
+                this.#gender=gender;
+            }
+
+            //这是JS中比较老的定义getter和setter方法的语法，在调用时需要遵循 对象.getxxx() 或 对象.setxxx(参数) 的形式调用
+            getName(){
+                return this.#name;
+            }
+            setName(name){
+                this.#name=name;
+            }
+
+            //该语法是JS中的新语法，在前面加上 get 或 set 关键字，后面写变量名称(){ ... }
+            //它与老方法的区别是调用时直接写 对象.属性名 就可以查看值， 写 对象.属性名 = 值 便可以直接调用setter方法直接执行赋值操作
+            get age(){
+                return this.#age;
+            }
+            set age(age){
+                if(!isNaN(age)&&parseInt(age)>0&&parseInt(age)<=150){
+                    this.#age=age;
+                }else{
+                    console.log('输入的年龄有误');
+                }
+            }
+        }
+        let t1=new Test("张三",18,"男");
+        console.log(t1);
+        t1.age=-1;  //根据判断，输入的年龄有误
+        console.log(t1.age);  //输出对应年龄
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

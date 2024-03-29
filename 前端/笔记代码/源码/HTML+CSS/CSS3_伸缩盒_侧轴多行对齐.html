@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_伸缩盒_侧轴多行对齐</title>
+    <style>
+        .outer{
+            height: 600px;
+            width: 1000px;
+            border: 1px solid black;
+            margin: 0px auto;
+            display: flex;
+            /*设置主轴方向从下到上*/
+            flex-direction: row;
+            /*设置主轴反向换行*/
+            flex-wrap: wrap;
+            background-color: #888;
+
+            /*中心对齐*/
+            align-content: center;
+
+            /*按侧轴开始对齐*/
+            align-content: flex-start;
+
+            /*按侧轴结束对齐*/
+            align-content: flex-end;
+
+            /*项目与项目之间的距离相等，且为项目与两端距离的二倍*/
+            align-content: space-around;
+
+            /*项目与两端无距离，项目与项目之间距离相等*/
+            align-content: space-between;
+
+            /*项目均匀分布*/
+            align-content: space-evenly;
+
+            /*默认值，若项目不设置高度，则占满整个侧轴
+            若设置高度，则让换行后的项目与其前后或左右的项目间隔一定的距离，且这些距离都是相同的*/
+            align-content: stretch;
+        }
+        .inner{
+            height: 200px;
+            width: 200px;
+            border: 1px solid black;
+            box-sizing: border-box;
+            background-color: skyblue;
+        }
+        .inner2{
+            height: 300px;
+            font-size: 80px;
+        }
+        .inner3{
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 项目之间出现空白的原因是浏览器认为该弹性盒子的宽度或高度在其项目换行完之后还有空余，
+        因此让换行后的项目与其前后或左右的项目间隔一定的距离，这些距离都是相同的 -->
+    <div class="outer">
+        <div class="inner">1x</div>
+        <div class="inner inner2">2x</div>
+        <div class="inner inner3">3x</div>
+    </div>
+</body>
+</html>

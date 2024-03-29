@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_伪类选择器_动态伪类</title>
+    <style>
+        a{
+            font-size: 40px;
+        }
+        /*以下四个伪类必须按顺序写，不写可能会导致效果出现偏差，因为同等级的选择器下如果有冲突的属性样式设置，那么浏览器会选择<style>代码中这些冲突样式里面最靠后一个的CSS属性样式显示*/
+        /*:link表示处在未点击状态下的a标签*/
+        a:link{
+            color: aquamarine;
+        }
+        /*:visited表示处在点击后状态下的a标签*/
+        a:visited{
+            color: orange;
+        }
+        /*:hover表示鼠标悬浮在该标签上的状态*/
+        a:hover{
+            color: green;
+        }
+        /*:active表示鼠标按下时元素的状态*/
+        a:active{
+            color: brown;
+        }
+        /*:focus可以为处在焦点状态的元素设置样式*/
+        input:focus,select:focus{
+            background-color: skyblue;
+            color: blueviolet;
+        }
+    </style>
+</head>
+<body>
+    <a href="https://www.baidu.com">百度</a>
+    <a href="https://www.jd.com">京东</a>
+    <form action="https://www.baidu.com/s">
+        <input type="text" name="wd">
+        <select name="other">
+            <option value="京">北京</option>
+            <option value="冀">河北</option>
+            <option value="津">天津</option>
+        </select>
+        <button>开始搜索</button>
+    </form>
+</body>
+</html>

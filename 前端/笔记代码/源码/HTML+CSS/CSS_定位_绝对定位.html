@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_定位_绝对定位</title>
+    <style>
+        .container{
+            width: 400px;
+            background-color: gray;
+            padding: 10px;
+            position: relative; /*给父元素设置相对定位，这样其第二个div就会参照该元素进行位置调整*/
+        }
+        .box{
+            height: 100px;
+            width: 100px;
+        }
+        .box2{
+            background-color: brown;
+            position: absolute; /*设置相对定位*/
+            top: 0px; 
+            left: 0px;
+        }
+        .box1{
+            background-color: red;
+        }
+        .box3{
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box box1">测试1</div>
+        <div class="box box2">测试2</div>
+        <div class="box box3">测试3</div>
+    </div>
+</body>
+</html>

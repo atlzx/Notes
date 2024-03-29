@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_浮动_文字环绕</title>
+    <style>
+        .d1 {
+            height: 400px;
+            width: 400px;
+            background-color: gray;
+        }
+
+        img {
+            /*不写浮动时，由于文本和图片以基线对齐，导致图片正右侧有一大片空白空间没有使用，但在使用浮动后，文本就可以无视基线对齐
+            环绕图片了*/
+            float: left;
+            width: 120px;
+            /*设置图片的宽后，其高度也会根据比例自动调整*/
+        }
+
+        .d2::first-letter {
+            font-size: 80px;
+            float: left; /*文字环绕也可以用来文字环绕文字*/
+        }
+    </style>
+</head>
+
+<body>
+    <div class="d1">
+        <img src="../../文件/图片/壁纸2.jpg" alt="壁纸">
+        <span>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt voluptas quis at itaque distinctio,
+            possimus maxime quas nobis sapiente tempora provident, inventore, sunt officiis. Asperiores magni eius, eos
+            officiis laborum saepe mollitia voluptatum ex ea officia eligendi expedita blanditiis ab repudiandae
+            doloribus optio debitis rerum exercitationem id fugiat? Dicta, molestias?
+        </span>
+    </div>
+
+    <div class="d2">
+        <span class="sp2">
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Molestiae, ab? Culpa doloremque sapiente officiis
+            reprehenderit atque. Pariatur eos recusandae vel atque dolor mollitia doloribus vitae ea similique! Officia
+            eaque, maiores reprehenderit quas amet optio! Officiis numquam, ipsam doloremque quasi voluptas fugiat
+            quibusdam voluptates molestiae nulla iste, sequi exercitationem eligendi saepe commodi recusandae asperiores
+            iusto obcaecati deleniti, tempora tempore enim. Sunt suscipit, quia consequatur animi inventore excepturi,
+            cumque veritatis ullam alias commodi iste quasi velit possimus pariatur deserunt cum optio iusto, reiciendis
+            quos ducimus quas obcaecati sapiente tempore aliquam? Necessitatibus sed dolores delectus optio quae
+            consectetur doloremque blanditiis ea error dolorum!
+        </span>
+    </div>
+</body>
+
+</html>

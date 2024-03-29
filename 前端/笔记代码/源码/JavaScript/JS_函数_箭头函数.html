@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_函数_箭头函数</title>
+    <script>
+        //箭头函数的定义
+        const a=()=>{
+            alert('aaa');
+        }
+        function fn1(a){
+            console.log(a);  //打印函数代码
+            console.log(a());  //打印函数执行结果
+        }
+        fn1(()=>console.log('箭头函数作为参数传入函数'));  //箭头函数可以直接作为实参传入函数中
+        const result=(a,b)=>a+b;  //箭头函数中执行代码仅有一句时，执行完后会自动返回
+        console.log(result(10,100));  //输出110
+
+
+        //箭头函数的this
+        //无论是否为严格模式，在全局执行环境中（在任何函数体外部）this 都指向全局对象window
+
+        const obj={
+            name:"张三",
+            fn1:()=>{
+                console.log(`箭头函数的this:`,this);  //继承其外部作用域obj的this,obj在全局作用域中，因此其this为window
+            },
+            //  对象中，可以直接写 函数名(){语句...} 的方式来在对象内插入函数
+            fn2(){
+                console.log(`function定义的匿名函数的this:`,this);  //调用fn2的方式为方法调用，是obj对象调用的，因此输出obj对象
+                const fn3=()=>{
+                    console.log(`在匿名函数内声明的箭头函数的this:`,this);  //取决于fn2函数的this,fn2是obj对象的属性，因此其this为obj
+                };
+                fn3();
+            },
+            this:this,
+        }
+        obj.fn1();  //箭头函数继承其外部作用域obj的this,obj在全局作用域中，因此其this为window
+        obj.fn2();  //调用fn2的方式为方法调用，是obj对象调用的，因此输出obj对象
+        console.log(obj.this);  //在全局作用域声明的对象的this为window
+
+        const obj1={
+            obj2:{
+                fn4:()=>{
+                    console.log('在对象的对象内的匿名函数的this:',this);  //fn4继承其外部作用域obj2的this,obj2在全局执行环境中（在任何函数体外部）被声明，因此其this为window
+                },
+                this:this
+            }
+        }
+        console.log(obj1.obj2.this);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

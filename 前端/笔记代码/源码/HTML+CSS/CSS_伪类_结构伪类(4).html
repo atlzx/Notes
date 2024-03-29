@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_伪类_结构伪类(4)</title>
+    <style>
+        div>p:nth-last-child(1){
+            color: red;
+        }
+        div>p:nth-last-of-type(n+2){
+            color: green;
+        }
+        span:only-child{
+            color: blue;
+        }
+        span:only-of-type{
+            font-size: 40px;
+        }
+        :root{
+            background-color: skyblue;
+        }
+        div:empty{
+            height: 100px;
+            width: 100px;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <span>测试1</span>
+    </div>
+    <div>
+        <SPAN>测试2</SPAN>
+        <p>小明</p>
+        <p>小刚</p>
+        <p>小美</p>
+        <p>小兰</p>
+    </div>
+    <div></div>
+</body>
+</html>

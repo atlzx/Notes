@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_边框属性</title>
+    <style>
+        table{
+            border-width: 5px;
+            border-color: brown;
+            border-style: dashed;
+        }
+        div{
+            border: skyblue 10px dotted;
+        }
+    </style>
+</head>
+<body>
+    <!-- HTML标签内的属性优先级貌似比CSS选择器的通配选择器优先级还低 -->
+    <table border="1">
+        <caption>表格</caption>
+        <thead>
+            <tr>
+                <th>姓名</th>
+                <th>年龄</th>
+                <th>民族</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>张三</td>
+                <td>20</td>
+                <td>汉族</td>
+            </tr>
+            <tr>
+                <td>李四</td>
+                <td>18</td>
+                <td>彝族</td>
+            </tr>
+            <tr>
+                <td>王五</td>
+                <td>12</td>
+                <td>满族</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div>测试</div>
+</body>
+</html>

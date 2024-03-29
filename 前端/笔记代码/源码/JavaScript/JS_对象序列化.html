@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_对象序列化</title>
+    <script>
+        let a='{"name":"张三","age":18}';  //JSON对象内的属性必须用双引号围起来，且最后的属性不能加逗号
+        let obj=JSON.parse(a);  //parse方法将JSON字符串转换为JS对象
+        console.log(obj);
+        let result=JSON.stringify(obj);  //stringify方法将JS对象转换为JSON字符串
+        console.log(result);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

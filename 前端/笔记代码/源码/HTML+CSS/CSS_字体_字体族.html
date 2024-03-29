@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_字体_字体族</title>
+    <style>
+        body{
+            font-size: 30px;
+        }
+        .test1{
+            font-family: "楷体";
+        }
+        .test2{
+            font-family: "宋体";
+        }
+        .test3{
+            font-family: "宋体1","楷体"; /*由于没有“宋体1”字体，因此选择楷体*/
+        }
+        .test4{
+            font-family: "楷体1","宋体1",serif; /*在字体族最后告知浏览器若前两者都无效则寻找可用的衬线字体*/
+        }
+    </style>
+</head>
+<body>
+    <div class="test1">测试1</div>
+    <div class="test2">测试2</div>
+    <div class="test3">测试3</div>
+    <div class="test4">测试4</div>
+</body>
+</html>

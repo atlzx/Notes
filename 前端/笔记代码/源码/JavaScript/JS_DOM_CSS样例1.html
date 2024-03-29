@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_CSS样例1</title>
+    <style>
+        .secondDiv{
+            height: 200px;
+            width: 250px;
+            background-color: orange;
+        }
+        .secondDiv::before{
+            content: 'bbb';
+        }
+    </style>
+    <script>
+        onload=function(){
+            let btn=document.querySelectorAll(".btnDiv>button")[0];
+            btn.addEventListener(
+                "click",
+                function(){
+                    let secondDiv=document.querySelectorAll(".secondDiv")[0];
+                    secondDiv.style.height="400px";  // 修改高度
+                    secondDiv.style.width="400px";  // 修改宽度
+                    secondDiv.style.backgroundColor="red";  // 修改背景色
+                    const style=getComputedStyle(secondDiv);
+                    console.log(style);
+                    console.log(style.width); // 获取当前元素状态的width属性
+                }
+            );
+        };
+        
+    </script>
+</head>
+<body>
+    <div class="btnDiv"><button type="button">点击按钮</button></div>
+    <div class="secondDiv">
+        aaa
+    </div> 
+    <script>
+        let secondDiv=document.querySelectorAll(".secondDiv")[0];
+        const style=getComputedStyle(secondDiv);
+        console.log(style);
+        console.log(style.width); // 获取当前元素状态的width属性
+    </script>
+</body>
+</html>

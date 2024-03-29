@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>超链接_跳转锚点</title>
+</head>
+<body>
+
+    <!-- 在href属性中使用'#'符号加上锚点的id或name值来进行跳转 -->
+    <!-- 此处为name形式的跳转 -->
+    <!-- 具有href属性的a标签是超链接，具有name属性的a标签是锚点 -->
+    <a href="#wallpaper1">转到壁纸1</a> <a href="#wallpaper2">转到壁纸2</a> <a href="#wallpaper3">转到壁纸3</a>
+    <p></p>
+
+    <!-- 此处为id形式的跳转 -->
+    <a href="#paper1">转到壁纸1</a> <a href="#paper2">转到壁纸2</a> <a href="#paper3">转到壁纸3</a>
+
+    <!-- 此处为跳转到其它页面的指定锚点处 -->
+    <a href="超链接_跳转文件.html#file">跳转到其它页面的指定锚点处</a>
+    <a name="wallpaper1"></a>  <!-- 在a标签内使用name属性来创建一个锚点 -->
+    <p id="paper1">壁纸1</p>  <!-- 在标签内使用id属性来创建一个锚点，p标签中没有name属性 -->
+    <img src="../文件/图片/壁纸1.jpg" width="800px"></img>
+
+    <a name="wallpaper2"></a>
+    <p id="paper2">壁纸2</p>
+    <img src="../文件/图片/壁纸2.jpg"></img>
+
+    <a name="wallpaper3"></a>
+    <p id="paper3">壁纸3</p>
+    <img src="../文件/图片/壁纸3.jpg"></img>
+
+    <br>
+    <a href="#">回到页面最上层</a>  <!-- 不刷新页面，回到页面最上层 -->
+    <br>
+    <a href="">刷新页面</a>  <!-- 刷新页面，刷新页面后，会自动回到页面最上层 -->
+    <br>
+    <a href="javascript:alert('点击了该超链接')">点我</a>  <!-- href属性支持直接输入javascript脚本 -->
+</body>
+</html>

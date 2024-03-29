@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_类选择器</title>
+    <style>
+        /*使用‘.’进行标识*/
+        .red-color {
+            color: red;
+        }
+        .big-font-size {
+            font-size: 60px;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <!-- 使用class属性进行调用，使用多个样式时用空格隔开 -->
+    <!-- 若调用的样式有部分属性冲突，那么会根据CSS代码的先后顺序按照后面覆盖前面的原则显示，而不是根据class属性值的先后顺序调整，因此该文本显示为蓝色 -->
+    <h1 class="big-font-size red-color">类选择器示例</h1>
+</body>
+</html>

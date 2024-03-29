@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_对象_对象属性样例</title>
+    <script>
+        let a=Object();  //生成object对象时，可以不使用new关键字
+        a.name="李子轩";
+        a.if="呃呃"  //由于属性名通常为字符串，因此写JS的关键字作为属性名也没有问题，但建议不要这样做
+        //a.sdrhga&Y#$^&*()="aa";  //如果属性名过于奇怪会报错，需要使用[]来定义
+        a["age"]=18;
+        let gender=Symbol();
+        a[gender]="男";
+        a.object=Object();  //对象支持嵌套
+        a.object.name="张三";
+
+        let b="if";
+
+        let symbol=Symbol();
+        //直接使用字面量{}定义对象
+        let c={
+            name:"李四",
+            ["age"]:15,
+            [symbol]:"特殊属性",
+            d:{
+                name:"王五",
+                age:12
+            }
+        }
+        console.log(a,a.name,a.age,a[gender],a[b]);
+        console.log(c);
+
+
+        function fn1(){
+            console.log('这是全局作用域的一个函数');
+        }
+        let d={
+            fn1,  //如果要添加属性的属性名与函数名一样，可以略过属性名:属性值的方式添加属性，而是直接在字面量内写该函数名即可完成添加
+            fn2(){
+                console.log('这是对象里的一个函数');  
+            },  //可以直接以函数名(){语句}的方式向字面量形式的对象增加属性
+        }
+        console.log(d,d.fn1(),d.fn2());
+
+        console.log("name" in a);  //检查对象中是否有此属性名
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

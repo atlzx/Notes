@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_2D变换_2D位移</title>
+    <style>
+        .outer{
+            height: 400px;
+            width: 400px;
+            border: 2px solid black;
+            margin: 0px auto;
+            margin-top: 100px;
+            position: relative;
+        }
+        .inner{
+            height: 400px;
+            width: 400px;
+            background-color: skyblue;
+            font-size: 30px;
+            transform: translate(50px,50px); /*有两个值时，之间用逗号隔开*/
+            transform: translateX(50px) translateY(50px);
+        }
+        /*设置垂直水平居中*/
+        .box {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="outer">
+        <div class="inner">测试文本</div>
+    </div>
+    <div class="outer">
+        <div class="box">测试文本</div>
+    </div>
+</body>
+</html>

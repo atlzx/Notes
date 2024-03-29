@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_函数_创建函数</title>
+    <script>
+        function fn1(){
+            console.log("函数创建方式1");
+        };
+        const fn2=function(){
+            console.log("函数创建方式2");
+        };
+        const fn3=()=>console.log("函数创建方式3");  //函数体仅有一句代码时，可以不写花括号
+        const fn4=()=>{
+            console.log("函数创建方式4");
+        };
+        fn1();fn2();fn3();fn4();
+        console.log(typeof fn1,typeof fn2,typeof fn3,typeof fn4);  //输出function
+        console.log(fn1,fn2,fn3,fn4);  //输出函数源代码
+        console.log(fn1(),fn2(),fn3(),fn4());  //输出undefined
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

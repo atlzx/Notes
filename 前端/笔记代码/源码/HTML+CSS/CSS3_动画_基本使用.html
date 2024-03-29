@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        .outer{
+            height: 100px;
+            width: 1200px;
+            border: 2px solid black;
+        }
+        @keyframes toright{
+            0%{
+
+            }
+            100%{
+                transform: translate(1100px) rotate(360deg);
+                border-radius: 50%;
+                background-color: orange;
+            }
+        }
+        .inner{
+            width: 100px;
+            height: 100px;
+            background-color: skyblue;
+            animation-name: toright;
+            animation-duration: 2s;
+            animation-delay: 0.5s;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+            animation-direction: normal;
+            animation-fill-mode: backwards;
+        }
+        .outer:hover .inner{
+            animation-play-state: paused;
+        }
+    </style>
+</head>
+<body>
+    <div class="outer">
+        <div class="inner"></div>
+    </div>
+</body>
+</html>

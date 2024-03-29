@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_Map样例1</title>
+    <script>
+        let map1=new Map([['name','张三'],[NaN,18]]);  // 可以以 [[key1,value1],[key2,value2],....] 的形式向Map构造函数传入参数
+        let arr1=[...map1];  //转换数组方法1
+        let arr2=Array.from(map1);  //转换数组方法二 ,这两种转换数组的方式全是浅拷贝
+        console.log('原map对象:',map1);
+        map1.set('name','李四');  //如果原map中已经有该键了，那么传入的value参数将覆盖对应键的value
+        map1.set(Infinity,10);  //如果原map中没有该键，则将该键值对添加到map中
+        console.log('使用set后的map:',map1,'map的长度是:',map1.size);
+        map1.delete('name');
+        console.log('使用delete后的map:',map1,'检查map中是否有叫name的键',map1.has('name'));
+        console.log('得到map中键为Infinity的值:',map1.get(Infinity));
+        map1.clear();
+        console.log('使用clear方法后的map:',map1);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

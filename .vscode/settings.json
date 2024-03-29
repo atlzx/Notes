@@ -1,0 +1,45 @@
+{
+    "files.autoSave": "afterDelay", //设置在不编辑文本指定时间后自动保存
+    "files.autoSaveDelay": 500,  //设置不编辑文本的对应等待时间(单位:ms)
+    "editor.cursorBlinking": "smooth",  //光标移动时更平滑
+    "editor.cursorSmoothCaretAnimation": "on",  //设置平滑插入动画
+    "editor.minimap.showSlider": "always",  //总是显示迷你地图滑块
+    "editor.minimap.scale": 2,  //编辑小地图比例设置为2
+    "emmet.variables": {"lang": "zh-CN","charset": "UTF-8"}, //设置HTML5自动生成时lang属性为简体中文，解码字符集默认为UTF-8
+    "outline.collapseItems": "alwaysCollapse",  //控制大纲是折叠还是打开
+
+    /* Path Intellisense插件配置 */
+    "typescript.suggest.paths": true,  //启用插件Path Intellisense
+    "javascript.suggest.paths": true,  //启用插件Path Intellisense
+
+    "path-intellisense.absolutePathToWorkspace": true,  //设置绝对路径开始为磁盘根目录
+    "path-intellisense.autoTriggerNextSuggestion": true,  //设置选择建议后自动弹出下一条建议
+    "editor.stickyScroll.enabled": false,  // 在滚动时于编辑器上方显示目前的代码在哪个作用域内
+    "editor.mouseWheelZoom": true,  // 设置按住ctrl再滚动鼠标滑轮缩放屏幕
+    "workbench.tree.indent": 12, // 设置主侧边栏显示的文件夹不同层级相隔宽度为12单位
+    "explorer.compactFolders": false,  // 不使仅有单个子文件夹的文件夹在主侧边栏的目录下单行显示
+
+    // 配置VSCode终端输出改用UTF-8
+    "terminal.integrated.profiles.windows": {
+        "Command Prompt": {
+            "path": "C:\\Windows\\System32\\cmd.exe",  // 作用对象路径
+            "args": ["-NoExit", "/K", "chcp 65001"]  // 可选参数
+        },
+        "PowerShell": {
+            "source": "PowerShell",  // 作用对象
+            "args": ["-NoExit", "/C", "chcp 65001"],  // 可选参数
+        },
+    },
+    "terminal.integrated.defaultProfile.windows": "PowerShell",  // 设置默认终端为PowerShell
+
+
+    /* npm 插件配置 */
+    "npm-intellisense.importES6": true,
+    "npm-intellisense.importQuotes": "'",
+    "npm-intellisense.importLinebreak": ";\r\n",
+    "npm-intellisense.scanDevDependencies": true,
+    "npm-intellisense.importDeclarationType": "const",
+    "npm-intellisense.showBuildInLibs": true,
+    "npm-intellisense.recursivePackageJsonLookup": true,
+
+}

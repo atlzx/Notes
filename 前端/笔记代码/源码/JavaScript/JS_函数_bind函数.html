@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_函数_bind函数</title>
+    <script>
+        function fn(...args){
+            console.log(this,...args);
+        }
+        let fn1=fn.bind('哦哦哦哦哦哦',1,2);
+        let fn2=fn1.bind('啊啊啊啊啊啊',3,4);  //使用bind函数后，返回的新函数的this会被永久绑定，再次修改this会无效
+        // 调用fn2时，函数会首先调用fn1,将原来bind函数的参数3和4插入到fn1函数的参数前面，即fn1变为fn1(3,4,5,6)
+        // 然后fn1调用fn,将原来bind函数的参数1和2插入到原函数前面，使得fn变为fn(1,2,3,4,5,6)
+        // 这样的话，如果不使用可变参数而使用固定参数，看起来就像是参数被强制赋值且无法修改一样
+        fn2(5,6);  //输出this为'哦哦哦哦哦哦'  1,2,3,4,5,6
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

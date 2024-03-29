@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_文本节点样例</title>
+    <script>
+        window.onload = () => {
+            let spanElement=document.getElementsByTagName("span")[0];
+            console.log(spanElement.textContent);  // 会输出空白字符(空字符的文本节点)且按原文输出
+            console.log(spanElement.innerText);  //不输出空白字符且按CSS样式输出
+            console.log(spanElement.innerHTML);  // 输出span包含的HTML代码，不会考虑CSS样式输出
+            spanElement.innerText="<li>The day is a good day</li>"; // 修改时，会将字符串中的标签转义为字符实体
+            spanElement.textContent="<li>The day is a good day</li>"; // 修改时，会将字符串中的标签转义为字符实体
+            // 使用innerHTML有xss注入的风险
+            spanElement.innerHTML="<li>The day is a good day</li>";  // 修改时，直接修改HTML代码
+        };
+    </script>
+</head>
+<body>
+    <div>
+        <span style="text-transform: capitalize;">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae,
+            sint quam atque autem odit dolor nesciunt enim nisi ab amet asperiores nihil, beatae harum temporibus ullam
+            adipisci aspernatur minus assumenda dignissimos iusto illo similique minima! Vel, aperiam, sapiente deleniti
+            voluptatibus neque laboriosam, dolorum nobis alias unde nam vero! Totam, cupiditate possimus! Ab odio
+            aliquam nemo nulla et velit voluptate porro incidunt consequatur magnam ratione, enim accusamus placeat hic
+            inventore amet natus quis, necessitatibus repudiandae voluptatibus. Repellat eveniet ipsam, quam reiciendis
+            deleniti iure illum distinctio esse architecto, eligendi iste vero molestiae totam sapiente nostrum
+            inventore necessitatibus sit nisi quas impedit accusamus!
+        </span>
+    </div>
+</body>
+</html>

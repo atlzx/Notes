@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_渐变_径向渐变</title>
+    <style>
+        .box{
+            float: left;
+            height: 200px;
+            width: 250px;
+            border: 1px solid black;
+            margin-left: 10px;
+            text-align: center;
+            line-height: 200px;
+        }
+        .box1{
+            background-image: radial-gradient(red,yellow,green);
+        }
+        .box2{
+            background-image: radial-gradient(at left top,red,yellow,green);
+        }
+        .box3{
+            background-image: radial-gradient(at 100px 50px,red,yellow,green);
+        }
+        .box4{
+            background-image: radial-gradient(circle,red,yellow,green);
+        }
+        .box5{
+            background-image: radial-gradient(100px 50px,red,yellow,green);
+        }
+        .box6{
+            /*这个像素值看起来设置的是水平方向的开始渐变的距离，垂直方向的渐变距离貌似会按照对应比例一起渐变*/
+            /*这个意义是,50px以内的颜色为纯红色，50px到100px由红色渐变到黄色，100px时为正黄色，100px到150px由黄色渐变到绿色，150px及之外范围时为正绿色*/
+            /*也可以用百分比表示*/
+            background-image: radial-gradient(red 50px,yellow 100px,green 150px); 
+        }
+        .box7{
+            /*将各个设置杂揉起来*/
+            background-image: radial-gradient(100px 50px at right top,red 50px,yellow 100px,green 150px);
+        }
+    </style>
+</head>
+<body>
+    <div class="box box1">默认</div>
+    <div class="box box2">使用关键词调整中心位置</div>
+    <div class="box box3">使用像素值调整中心位置</div>
+    <div class="box box4">使用关键词设置渐变图形的形状</div>
+    <div class="box box5">调整形状的水平半径和垂直半径</div>
+    <div class="box box6">调整开始渐变的位置</div>
+    <div class="box box7">各设置一起分配的效果</div>
+</body>
+</html>

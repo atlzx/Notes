@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_流程控制_if练习</title>
+    <script>
+        //prompt函数可以在网页弹出一个输入框并将用户输入的值以字符串形式返回
+        let num=+prompt("请输入一个整数");  //使用取正运算符将字符串转换为数字
+        //如果转换结果为NaN或者对1取余不为0,提示非整数
+        if (isNaN(num)||num%1!=0){
+            alert("输入的不是一个整数，请重新输入");
+        }else{
+            if (num%2==0){
+                alert(`${num}是偶数`);
+            }else{
+                alert(`${num}是奇数`);
+            }
+        }
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

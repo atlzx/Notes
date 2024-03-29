@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_BOM_history样例</title>
+    <script>
+        onload=function(){
+            let buttons=document.getElementsByTagName("button");
+            buttons[0].addEventListener(
+                "click",
+                ()=>{
+                    history.back();
+                    console.log(history.length);
+                }
+            );
+            buttons[1].addEventListener(
+                "click",
+                ()=>{
+                    history.forward();
+                    console.log(history.length);
+                }
+            );
+        }
+    </script>
+</head>
+<body>
+    <button>向前跳转网页</button>
+    <button>向后跳转网页</button>
+</body>
+</html>

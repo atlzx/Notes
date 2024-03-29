@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_伪类_结构伪类(3)</title>
+    <style>
+        /*条件: 1.div的子元素 2.第一个p类型子元素*/
+        div>p:first-of-type{
+            color: blue;
+        }
+        /*条件: 1.div的子元素 2.最后一个p类型子元素*/
+        div>p:last-of-type{
+            color: brown;
+        }
+        /*条件:序号为n+3(n>=0)的标签为p的任意元素的子元素*/
+        p:nth-of-type(n+3){
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <p>省份</p>
+    <div>
+        <p class="normal">河北</p>
+        <marquee>
+            <p>北京</p>
+        </marquee>
+        <p>山东</p>
+        <p>山西</p>
+        <p>陕西</p>
+    </div>
+</body>
+</html>

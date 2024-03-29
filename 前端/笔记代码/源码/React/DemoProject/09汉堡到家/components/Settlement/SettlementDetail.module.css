@@ -1,0 +1,34 @@
+.settlementDetailContainer{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom: 0rem;
+    max-height: 1000rem;  /* 限制最大高度，使其无法完全遮挡屏幕 */
+    background-color: white;
+    border-top-right-radius: 40rem;
+    border-top-left-radius: 40rem;
+    padding-bottom: 150rem;
+    z-index: 10;
+    overflow: auto;
+}
+.operationContainer{
+    display: flex;
+    justify-content: space-between;
+    padding: 30rem;
+    position: relative;
+    align-items: center;
+}
+.detailTitle{
+    font-weight: bold;
+    font-size: 26rem;
+}
+.clearDesc{
+    color: #aaa;
+    font-size: 22rem;
+}
+.trashIcon{
+    position: absolute;
+    height: 30rem;
+    width: 30rem;
+    right: 150rem;
+}

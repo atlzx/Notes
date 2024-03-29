@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>尚品汇</title>
+    <!-- 引入页签图标 -->
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+    <!-- 引入reset.css，此文件应在自定义CSS文件前引入，方便之后不满意可以修改 -->
+    <link rel="stylesheet" href="./CSS/reset.css">
+    <!-- 引入自定义css -->
+    <link rel="stylesheet" href="./CSS/index.css">
+</head>
+<body>
+    <!-- 顶部导航条 -->
+    <div class="top-bar">
+        <!-- 左边的欢迎区 -->
+        <div class="container float-fix">
+            <div class="float-left welcome">
+                <span>尚品汇欢迎您</span>
+                <span>请</span>
+                <a href="#" class="login">登录</a>
+                <a href="#" class="register">免费注册</a>
+            </div>
+            <!-- 右边的导航栏 -->
+            <div class="float-right topbar-nav">
+                <ul class="float-fix list">
+                    <li><a href="#">我的订单</a></li>
+                    <li><a href="#">我的购物车</a></li>
+                    <li><a href="#">我的尚品汇</a></li>
+                    <li><a href="#">尚品汇会员</a></li>
+                    <li><a href="#">企业采购</a></li>
+                    <li><a href="#">关注尚品汇</a></li>
+                    <li><a href="#">合作招商</a></li>
+                    <li><a href="#">商家后台</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- 头部 -->
+    <div class="header">
+        <div class="container float-fix">
+            <div class="logo float-left">
+                <img src="../代码/images/logo.png" alt="尚品汇logo">
+            </div>
+            <div class="search float-right">
+                <form action="#">
+                    x
+                    <input type="text">
+                    <button></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- 主导航区 -->
+    <div class="main-nav">
+        <div class="container float-fix">
+            <div class="sort">全部商品分类</div>
+            <ul class="float-fix">
+                <li><a href="#">尚品超市</a></li>
+                <li><a href="#">优惠券</a></li>
+                <li><a href="#">买啥</a></li>
+                <li><a href="#">尚品家电</a></li>
+                <li><a href="#">尚品生鲜</a></li>
+                <li><a href="#">PLUS会员</a></li>
+                <li><a href="#">进口好物</a></li>
+                <li><a href="#">品牌闪购</a></li>
+                <li><a href="#">拍卖</a></li>
+                <li><a href="#">五金商店</a></li>
+            </ul>
+        </div>
+        <hr>
+    </div>
+    <!-- 主内容区 -->
+    <div class="content">
+        <div class="container float-fix">
+            <!-- 左侧导航栏 -->
+            <!-- 注:ul为块元素 -->
+            <ul class="float-left left-nav">
+                <li>
+                    <a href="">手机/运营商/数码</a>
+                            <!-- 二级菜单 -->
+            <!-- 该元素是溢出的，而即使它溢出但下面的li依旧排列
+                整齐的原因是其父元素设置了28px的高度 -->
+                    <div class="second-menu">
+                        <dl class="float-fix">
+                            <dt><a href="#">电子书刊</a></dt>
+                            <dd><a href="#">电子书</a></dd>
+                            <dd><a href="#">网络原创</a></dd>
+                            <dd><a href="#">数字杂志</a></dd>
+                            <dd><a href="#">多媒体图书</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">音像</a></dt>
+                            <dd><a href="#">音乐</a></dd>
+                            <dd><a href="#">影视</a></dd>
+                            <dd><a href="#">教育音像</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">英文原版</a></dt>
+                            <dd><a href="#">少儿</a></dd>
+                            <dd><a href="#">商务投资</a></dd>
+                            <dd><a href="#">英语学习考试</a></dd>
+                            <dd><a href="#">文学</a></dd>
+                            <dd><a href="#">传记</a></dd>
+                            <dd><a href="#">励志</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">文艺</a></dt>
+                            <dd><a href="#">小说</a></dd>
+                            <dd><a href="#">文学</a></dd>
+                            <dd><a href="#">青春文学</a></dd>
+                            <dd><a href="#">传记</a></dd>
+                            <dd><a href="#">艺术</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">少儿</a></dt>
+                            <dd><a href="#">胎教</a></dd>
+                            <dd><a href="#">0-2岁</a></dd>
+                            <dd><a href="#">3-6岁</a></dd>
+                            <dd><a href="#">7-10岁</a></dd>
+                            <dd><a href="#">11-14岁</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">人文社科</a></dt>
+                            <dd><a href="#">历史</a></dd>
+                            <dd><a href="#">哲学</a></dd>
+                            <dd><a href="#">国学</a></dd>
+                            <dd><a href="#">政治/军事</a></dd>
+                            <dd><a href="#">法律</a></dd>
+                            <dd><a href="#">人文社科</a></dd>
+                            <dd><a href="#">心理学</a></dd>
+                            <dd><a href="#">文化</a></dd>
+                            <dd><a href="#">社会科学</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">经管励志</a></dt>
+                            <dd><a href="#">金融与投资</a></dd>
+                            <dd><a href="#">管理</a></dd>
+                            <dd><a href="#">励志与成功</a></dd>
+                            <dd><a href="#">经济</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">生活</a></dt>
+                            <dd><a href="#">健康与保健</a></dd>
+                            <dd><a href="#">家庭与育儿</a></dd>
+                            <dd><a href="#">旅游</a></dd>
+                            <dd><a href="#">烹饪美食</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">科技</a></dt>
+                            <dd><a href="#">工业技术</a></dd>
+                            <dd><a href="#">科普读物</a></dd>
+                            <dd><a href="#">建筑</a></dd>
+                            <dd><a href="#">医学</a></dd>
+                            <dd><a href="#">科学与自然</a></dd>
+                            <dd><a href="#">计算机与互联网</a></dd>
+                            <dd><a href="#">电子通信</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">教育</a></dt>
+                            <dd><a href="#">中小学教辅</a></dd>
+                            <dd><a href="#">教育与考试</a></dd>
+                            <dd><a href="#">外语学习</a></dd>
+                            <dd><a href="#">大中专教材</a></dd>
+                            <dd><a href="#">科学与自然</a></dd>
+                            <dd><a href="#">字典词典</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">艺术与收藏</a></dt>
+                            <dd><a href="#">文化与艺术</a></dd>
+                            <dd><a href="#">经济管理</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">其它</a></dt>
+                            <dd><a href="#">工具书</a></dd>
+                            <dd><a href="#">杂志期刊</a></dd>
+                            <dd><a href="#">套装书</a></dd>
+                            <dd><a href="#">打折图书</a></dd>
+                        </dl>
+                    </div>
+                </li>
+                <li>
+                    <a href="">电脑/办公</a>
+                    <div class="second-menu">
+                        <dl class="float-fix">
+                            <dt><a href="#">电子书刊</a></dt>
+                            <dd><a href="#">电子书</a></dd>
+                            <dd><a href="#">网络原创</a></dd>
+                            <dd><a href="#">数字杂志</a></dd>
+                            <dd><a href="#">多媒体图书</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">音像</a></dt>
+                            <dd><a href="#">音乐</a></dd>
+                            <dd><a href="#">影视</a></dd>
+                            <dd><a href="#">教育音像</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">英文原版</a></dt>
+                            <dd><a href="#">少儿</a></dd>
+                            <dd><a href="#">商务投资</a></dd>
+                            <dd><a href="#">英语学习考试</a></dd>
+                            <dd><a href="#">文学</a></dd>
+                            <dd><a href="#">传记</a></dd>
+                            <dd><a href="#">励志</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">文艺</a></dt>
+                            <dd><a href="#">小说</a></dd>
+                            <dd><a href="#">文学</a></dd>
+                            <dd><a href="#">青春文学</a></dd>
+                            <dd><a href="#">传记</a></dd>
+                            <dd><a href="#">艺术</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">少儿</a></dt>
+                            <dd><a href="#">胎教</a></dd>
+                            <dd><a href="#">0-2岁</a></dd>
+                            <dd><a href="#">3-6岁</a></dd>
+                            <dd><a href="#">7-10岁</a></dd>
+                            <dd><a href="#">11-14岁</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">人文社科</a></dt>
+                            <dd><a href="#">历史</a></dd>
+                            <dd><a href="#">哲学</a></dd>
+                            <dd><a href="#">国学</a></dd>
+                            <dd><a href="#">政治/军事</a></dd>
+                            <dd><a href="#">法律</a></dd>
+                            <dd><a href="#">人文社科</a></dd>
+                            <dd><a href="#">心理学</a></dd>
+                            <dd><a href="#">文化</a></dd>
+                            <dd><a href="#">社会科学</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">经管励志</a></dt>
+                            <dd><a href="#">金融与投资</a></dd>
+                            <dd><a href="#">管理</a></dd>
+                            <dd><a href="#">励志与成功</a></dd>
+                            <dd><a href="#">经济</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">生活</a></dt>
+                            <dd><a href="#">健康与保健</a></dd>
+                            <dd><a href="#">家庭与育儿</a></dd>
+                            <dd><a href="#">旅游</a></dd>
+                            <dd><a href="#">烹饪美食</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">科技</a></dt>
+                            <dd><a href="#">工业技术</a></dd>
+                            <dd><a href="#">科普读物</a></dd>
+                            <dd><a href="#">建筑</a></dd>
+                            <dd><a href="#">医学</a></dd>
+                            <dd><a href="#">科学与自然</a></dd>
+                            <dd><a href="#">计算机与互联网</a></dd>
+                            <dd><a href="#">电子通信</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">教育</a></dt>
+                            <dd><a href="#">中小学教辅</a></dd>
+                            <dd><a href="#">教育与考试</a></dd>
+                            <dd><a href="#">外语学习</a></dd>
+                            <dd><a href="#">大中专教材</a></dd>
+                            <dd><a href="#">科学与自然</a></dd>
+                            <dd><a href="#">字典词典</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">艺术与收藏</a></dt>
+                            <dd><a href="#">文化与艺术</a></dd>
+                            <dd><a href="#">经济管理</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">其它</a></dt>
+                            <dd><a href="#">工具书</a></dd>
+                            <dd><a href="#">杂志期刊</a></dd>
+                            <dd><a href="#">套装书</a></dd>
+                            <dd><a href="#">打折图书</a></dd>
+                        </dl>
+                    </div>
+                </li>
+                <li>
+                    <a href="">家具/家居/家装/厨具</a>
+                    <div class="second-menu">
+                        <dl class="float-fix">
+                            <dt><a href="#">电子书刊</a></dt>
+                            <dd><a href="#">电子书</a></dd>
+                            <dd><a href="#">网络原创</a></dd>
+                            <dd><a href="#">数字杂志</a></dd>
+                            <dd><a href="#">多媒体图书</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">音像</a></dt>
+                            <dd><a href="#">音乐</a></dd>
+                            <dd><a href="#">影视</a></dd>
+                            <dd><a href="#">教育音像</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">英文原版</a></dt>
+                            <dd><a href="#">少儿</a></dd>
+                            <dd><a href="#">商务投资</a></dd>
+                            <dd><a href="#">英语学习考试</a></dd>
+                            <dd><a href="#">文学</a></dd>
+                            <dd><a href="#">传记</a></dd>
+                            <dd><a href="#">励志</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">文艺</a></dt>
+                            <dd><a href="#">小说</a></dd>
+                            <dd><a href="#">文学</a></dd>
+                            <dd><a href="#">青春文学</a></dd>
+                            <dd><a href="#">传记</a></dd>
+                            <dd><a href="#">艺术</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">少儿</a></dt>
+                            <dd><a href="#">胎教</a></dd>
+                            <dd><a href="#">0-2岁</a></dd>
+                            <dd><a href="#">3-6岁</a></dd>
+                            <dd><a href="#">7-10岁</a></dd>
+                            <dd><a href="#">11-14岁</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">人文社科</a></dt>
+                            <dd><a href="#">历史</a></dd>
+                            <dd><a href="#">哲学</a></dd>
+                            <dd><a href="#">国学</a></dd>
+                            <dd><a href="#">政治/军事</a></dd>
+                            <dd><a href="#">法律</a></dd>
+                            <dd><a href="#">人文社科</a></dd>
+                            <dd><a href="#">心理学</a></dd>
+                            <dd><a href="#">文化</a></dd>
+                            <dd><a href="#">社会科学</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">经管励志</a></dt>
+                            <dd><a href="#">金融与投资</a></dd>
+                            <dd><a href="#">管理</a></dd>
+                            <dd><a href="#">励志与成功</a></dd>
+                            <dd><a href="#">经济</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">生活</a></dt>
+                            <dd><a href="#">健康与保健</a></dd>
+                            <dd><a href="#">家庭与育儿</a></dd>
+                            <dd><a href="#">旅游</a></dd>
+                            <dd><a href="#">烹饪美食</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">科技</a></dt>
+                            <dd><a href="#">工业技术</a></dd>
+                            <dd><a href="#">科普读物</a></dd>
+                            <dd><a href="#">建筑</a></dd>
+                            <dd><a href="#">医学</a></dd>
+                            <dd><a href="#">科学与自然</a></dd>
+                            <dd><a href="#">计算机与互联网</a></dd>
+                            <dd><a href="#">电子通信</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">教育</a></dt>
+                            <dd><a href="#">中小学教辅</a></dd>
+                            <dd><a href="#">教育与考试</a></dd>
+                            <dd><a href="#">外语学习</a></dd>
+                            <dd><a href="#">大中专教材</a></dd>
+                            <dd><a href="#">科学与自然</a></dd>
+                            <dd><a href="#">字典词典</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">艺术与收藏</a></dt>
+                            <dd><a href="#">文化与艺术</a></dd>
+                            <dd><a href="#">经济管理</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">其它</a></dt>
+                            <dd><a href="#">工具书</a></dd>
+                            <dd><a href="#">杂志期刊</a></dd>
+                            <dd><a href="#">套装书</a></dd>
+                            <dd><a href="#">打折图书</a></dd>
+                        </dl>
+                    </div>
+                </li>
+                <li>
+                    <a href="">男装/女装/童装/内衣</a>
+                    <div class="second-menu">
+                        <dl class="float-fix">
+                            <dt><a href="#">电子书刊</a></dt>
+                            <dd><a href="#">电子书</a></dd>
+                            <dd><a href="#">网络原创</a></dd>
+                            <dd><a href="#">数字杂志</a></dd>
+                            <dd><a href="#">多媒体图书</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">音像</a></dt>
+                            <dd><a href="#">音乐</a></dd>
+                            <dd><a href="#">影视</a></dd>
+                            <dd><a href="#">教育音像</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">英文原版</a></dt>
+                            <dd><a href="#">少儿</a></dd>
+                            <dd><a href="#">商务投资</a></dd>
+                            <dd><a href="#">英语学习考试</a></dd>
+                            <dd><a href="#">文学</a></dd>
+                            <dd><a href="#">传记</a></dd>
+                            <dd><a href="#">励志</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">文艺</a></dt>
+                            <dd><a href="#">小说</a></dd>
+                            <dd><a href="#">文学</a></dd>
+                            <dd><a href="#">青春文学</a></dd>
+                            <dd><a href="#">传记</a></dd>
+                            <dd><a href="#">艺术</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">少儿</a></dt>
+                            <dd><a href="#">胎教</a></dd>
+                            <dd><a href="#">0-2岁</a></dd>
+                            <dd><a href="#">3-6岁</a></dd>
+                            <dd><a href="#">7-10岁</a></dd>
+                            <dd><a href="#">11-14岁</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">人文社科</a></dt>
+                            <dd><a href="#">历史</a></dd>
+                            <dd><a href="#">哲学</a></dd>
+                            <dd><a href="#">国学</a></dd>
+                            <dd><a href="#">政治/军事</a></dd>
+                            <dd><a href="#">法律</a></dd>
+                            <dd><a href="#">人文社科</a></dd>
+                            <dd><a href="#">心理学</a></dd>
+                            <dd><a href="#">文化</a></dd>
+                            <dd><a href="#">社会科学</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">经管励志</a></dt>
+                            <dd><a href="#">金融与投资</a></dd>
+                            <dd><a href="#">管理</a></dd>
+                            <dd><a href="#">励志与成功</a></dd>
+                            <dd><a href="#">经济</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">生活</a></dt>
+                            <dd><a href="#">健康与保健</a></dd>
+                            <dd><a href="#">家庭与育儿</a></dd>
+                            <dd><a href="#">旅游</a></dd>
+                            <dd><a href="#">烹饪美食</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">科技</a></dt>
+                            <dd><a href="#">工业技术</a></dd>
+                            <dd><a href="#">科普读物</a></dd>
+                            <dd><a href="#">建筑</a></dd>
+                            <dd><a href="#">医学</a></dd>
+                            <dd><a href="#">科学与自然</a></dd>
+                            <dd><a href="#">计算机与互联网</a></dd>
+                            <dd><a href="#">电子通信</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">教育</a></dt>
+                            <dd><a href="#">中小学教辅</a></dd>
+                            <dd><a href="#">教育与考试</a></dd>
+                            <dd><a href="#">外语学习</a></dd>
+                            <dd><a href="#">大中专教材</a></dd>
+                            <dd><a href="#">科学与自然</a></dd>
+                            <dd><a href="#">字典词典</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">艺术与收藏</a></dt>
+                            <dd><a href="#">文化与艺术</a></dd>
+                            <dd><a href="#">经济管理</a></dd>
+                        </dl>
+                        <dl class="float-fix">
+                            <dt><a href="#">其它</a></dt>
+                            <dd><a href="#">工具书</a></dd>
+                            <dd><a href="#">杂志期刊</a></dd>
+                            <dd><a href="#">套装书</a></dd>
+                            <dd><a href="#">打折图书</a></dd>
+                        </dl>
+                    </div>
+                </li>
+                <li>
+                    <a href="">美妆/个护清洁/宠物</a>
+                <div class="second-menu">
+                    <dl class="float-fix">
+                        <dt><a href="#">电子书刊</a></dt>
+                        <dd><a href="#">电子书</a></dd>
+                        <dd><a href="#">网络原创</a></dd>
+                        <dd><a href="#">数字杂志</a></dd>
+                        <dd><a href="#">多媒体图书</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">音像</a></dt>
+                        <dd><a href="#">音乐</a></dd>
+                        <dd><a href="#">影视</a></dd>
+                        <dd><a href="#">教育音像</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">英文原版</a></dt>
+                        <dd><a href="#">少儿</a></dd>
+                        <dd><a href="#">商务投资</a></dd>
+                        <dd><a href="#">英语学习考试</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">励志</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">文艺</a></dt>
+                        <dd><a href="#">小说</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">青春文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">艺术</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">少儿</a></dt>
+                        <dd><a href="#">胎教</a></dd>
+                        <dd><a href="#">0-2岁</a></dd>
+                        <dd><a href="#">3-6岁</a></dd>
+                        <dd><a href="#">7-10岁</a></dd>
+                        <dd><a href="#">11-14岁</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">人文社科</a></dt>
+                        <dd><a href="#">历史</a></dd>
+                        <dd><a href="#">哲学</a></dd>
+                        <dd><a href="#">国学</a></dd>
+                        <dd><a href="#">政治/军事</a></dd>
+                        <dd><a href="#">法律</a></dd>
+                        <dd><a href="#">人文社科</a></dd>
+                        <dd><a href="#">心理学</a></dd>
+                        <dd><a href="#">文化</a></dd>
+                        <dd><a href="#">社会科学</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">经管励志</a></dt>
+                        <dd><a href="#">金融与投资</a></dd>
+                        <dd><a href="#">管理</a></dd>
+                        <dd><a href="#">励志与成功</a></dd>
+                        <dd><a href="#">经济</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">生活</a></dt>
+                        <dd><a href="#">健康与保健</a></dd>
+                        <dd><a href="#">家庭与育儿</a></dd>
+                        <dd><a href="#">旅游</a></dd>
+                        <dd><a href="#">烹饪美食</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">科技</a></dt>
+                        <dd><a href="#">工业技术</a></dd>
+                        <dd><a href="#">科普读物</a></dd>
+                        <dd><a href="#">建筑</a></dd>
+                        <dd><a href="#">医学</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">计算机与互联网</a></dd>
+                        <dd><a href="#">电子通信</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">教育</a></dt>
+                        <dd><a href="#">中小学教辅</a></dd>
+                        <dd><a href="#">教育与考试</a></dd>
+                        <dd><a href="#">外语学习</a></dd>
+                        <dd><a href="#">大中专教材</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">字典词典</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">艺术与收藏</a></dt>
+                        <dd><a href="#">文化与艺术</a></dd>
+                        <dd><a href="#">经济管理</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">其它</a></dt>
+                        <dd><a href="#">工具书</a></dd>
+                        <dd><a href="#">杂志期刊</a></dd>
+                        <dd><a href="#">套装书</a></dd>
+                        <dd><a href="#">打折图书</a></dd>
+                    </dl>
+                </div>
+                </li>
+                <li>
+                    <a href="">女鞋/箱包/钟表/珠宝</a>
+                <div class="second-menu">
+                    <dl class="float-fix">
+                        <dt><a href="#">电子书刊</a></dt>
+                        <dd><a href="#">电子书</a></dd>
+                        <dd><a href="#">网络原创</a></dd>
+                        <dd><a href="#">数字杂志</a></dd>
+                        <dd><a href="#">多媒体图书</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">音像</a></dt>
+                        <dd><a href="#">音乐</a></dd>
+                        <dd><a href="#">影视</a></dd>
+                        <dd><a href="#">教育音像</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">英文原版</a></dt>
+                        <dd><a href="#">少儿</a></dd>
+                        <dd><a href="#">商务投资</a></dd>
+                        <dd><a href="#">英语学习考试</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">励志</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">文艺</a></dt>
+                        <dd><a href="#">小说</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">青春文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">艺术</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">少儿</a></dt>
+                        <dd><a href="#">胎教</a></dd>
+                        <dd><a href="#">0-2岁</a></dd>
+                        <dd><a href="#">3-6岁</a></dd>
+                        <dd><a href="#">7-10岁</a></dd>
+                        <dd><a href="#">11-14岁</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">人文社科</a></dt>
+                        <dd><a href="#">历史</a></dd>
+                        <dd><a href="#">哲学</a></dd>
+                        <dd><a href="#">国学</a></dd>
+                        <dd><a href="#">政治/军事</a></dd>
+                        <dd><a href="#">法律</a></dd>
+                        <dd><a href="#">人文社科</a></dd>
+                        <dd><a href="#">心理学</a></dd>
+                        <dd><a href="#">文化</a></dd>
+                        <dd><a href="#">社会科学</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">经管励志</a></dt>
+                        <dd><a href="#">金融与投资</a></dd>
+                        <dd><a href="#">管理</a></dd>
+                        <dd><a href="#">励志与成功</a></dd>
+                        <dd><a href="#">经济</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">生活</a></dt>
+                        <dd><a href="#">健康与保健</a></dd>
+                        <dd><a href="#">家庭与育儿</a></dd>
+                        <dd><a href="#">旅游</a></dd>
+                        <dd><a href="#">烹饪美食</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">科技</a></dt>
+                        <dd><a href="#">工业技术</a></dd>
+                        <dd><a href="#">科普读物</a></dd>
+                        <dd><a href="#">建筑</a></dd>
+                        <dd><a href="#">医学</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">计算机与互联网</a></dd>
+                        <dd><a href="#">电子通信</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">教育</a></dt>
+                        <dd><a href="#">中小学教辅</a></dd>
+                        <dd><a href="#">教育与考试</a></dd>
+                        <dd><a href="#">外语学习</a></dd>
+                        <dd><a href="#">大中专教材</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">字典词典</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">艺术与收藏</a></dt>
+                        <dd><a href="#">文化与艺术</a></dd>
+                        <dd><a href="#">经济管理</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">其它</a></dt>
+                        <dd><a href="#">工具书</a></dd>
+                        <dd><a href="#">杂志期刊</a></dd>
+                        <dd><a href="#">套装书</a></dd>
+                        <dd><a href="#">打折图书</a></dd>
+                    </dl>
+                </div>
+                </li>
+                <li>
+                    <a href="">男鞋/运动/户外</a>
+                <div class="second-menu">
+                    <dl class="float-fix">
+                        <dt><a href="#">电子书刊</a></dt>
+                        <dd><a href="#">电子书</a></dd>
+                        <dd><a href="#">网络原创</a></dd>
+                        <dd><a href="#">数字杂志</a></dd>
+                        <dd><a href="#">多媒体图书</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">音像</a></dt>
+                        <dd><a href="#">音乐</a></dd>
+                        <dd><a href="#">影视</a></dd>
+                        <dd><a href="#">教育音像</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">英文原版</a></dt>
+                        <dd><a href="#">少儿</a></dd>
+                        <dd><a href="#">商务投资</a></dd>
+                        <dd><a href="#">英语学习考试</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">励志</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">文艺</a></dt>
+                        <dd><a href="#">小说</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">青春文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">艺术</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">少儿</a></dt>
+                        <dd><a href="#">胎教</a></dd>
+                        <dd><a href="#">0-2岁</a></dd>
+                        <dd><a href="#">3-6岁</a></dd>
+                        <dd><a href="#">7-10岁</a></dd>
+                        <dd><a href="#">11-14岁</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">人文社科</a></dt>
+                        <dd><a href="#">历史</a></dd>
+                        <dd><a href="#">哲学</a></dd>
+                        <dd><a href="#">国学</a></dd>
+                        <dd><a href="#">政治/军事</a></dd>
+                        <dd><a href="#">法律</a></dd>
+                        <dd><a href="#">人文社科</a></dd>
+                        <dd><a href="#">心理学</a></dd>
+                        <dd><a href="#">文化</a></dd>
+                        <dd><a href="#">社会科学</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">经管励志</a></dt>
+                        <dd><a href="#">金融与投资</a></dd>
+                        <dd><a href="#">管理</a></dd>
+                        <dd><a href="#">励志与成功</a></dd>
+                        <dd><a href="#">经济</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">生活</a></dt>
+                        <dd><a href="#">健康与保健</a></dd>
+                        <dd><a href="#">家庭与育儿</a></dd>
+                        <dd><a href="#">旅游</a></dd>
+                        <dd><a href="#">烹饪美食</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">科技</a></dt>
+                        <dd><a href="#">工业技术</a></dd>
+                        <dd><a href="#">科普读物</a></dd>
+                        <dd><a href="#">建筑</a></dd>
+                        <dd><a href="#">医学</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">计算机与互联网</a></dd>
+                        <dd><a href="#">电子通信</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">教育</a></dt>
+                        <dd><a href="#">中小学教辅</a></dd>
+                        <dd><a href="#">教育与考试</a></dd>
+                        <dd><a href="#">外语学习</a></dd>
+                        <dd><a href="#">大中专教材</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">字典词典</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">艺术与收藏</a></dt>
+                        <dd><a href="#">文化与艺术</a></dd>
+                        <dd><a href="#">经济管理</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">其它</a></dt>
+                        <dd><a href="#">工具书</a></dd>
+                        <dd><a href="#">杂志期刊</a></dd>
+                        <dd><a href="#">套装书</a></dd>
+                        <dd><a href="#">打折图书</a></dd>
+                    </dl>
+                </div>
+                </li>
+                <li>
+                    <a href="">房产/汽车/汽车用品</a>
+                <div class="second-menu">
+                    <dl class="float-fix">
+                        <dt><a href="#">电子书刊</a></dt>
+                        <dd><a href="#">电子书</a></dd>
+                        <dd><a href="#">网络原创</a></dd>
+                        <dd><a href="#">数字杂志</a></dd>
+                        <dd><a href="#">多媒体图书</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">音像</a></dt>
+                        <dd><a href="#">音乐</a></dd>
+                        <dd><a href="#">影视</a></dd>
+                        <dd><a href="#">教育音像</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">英文原版</a></dt>
+                        <dd><a href="#">少儿</a></dd>
+                        <dd><a href="#">商务投资</a></dd>
+                        <dd><a href="#">英语学习考试</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">励志</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">文艺</a></dt>
+                        <dd><a href="#">小说</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">青春文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">艺术</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">少儿</a></dt>
+                        <dd><a href="#">胎教</a></dd>
+                        <dd><a href="#">0-2岁</a></dd>
+                        <dd><a href="#">3-6岁</a></dd>
+                        <dd><a href="#">7-10岁</a></dd>
+                        <dd><a href="#">11-14岁</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">人文社科</a></dt>
+                        <dd><a href="#">历史</a></dd>
+                        <dd><a href="#">哲学</a></dd>
+                        <dd><a href="#">国学</a></dd>
+                        <dd><a href="#">政治/军事</a></dd>
+                        <dd><a href="#">法律</a></dd>
+                        <dd><a href="#">人文社科</a></dd>
+                        <dd><a href="#">心理学</a></dd>
+                        <dd><a href="#">文化</a></dd>
+                        <dd><a href="#">社会科学</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">经管励志</a></dt>
+                        <dd><a href="#">金融与投资</a></dd>
+                        <dd><a href="#">管理</a></dd>
+                        <dd><a href="#">励志与成功</a></dd>
+                        <dd><a href="#">经济</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">生活</a></dt>
+                        <dd><a href="#">健康与保健</a></dd>
+                        <dd><a href="#">家庭与育儿</a></dd>
+                        <dd><a href="#">旅游</a></dd>
+                        <dd><a href="#">烹饪美食</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">科技</a></dt>
+                        <dd><a href="#">工业技术</a></dd>
+                        <dd><a href="#">科普读物</a></dd>
+                        <dd><a href="#">建筑</a></dd>
+                        <dd><a href="#">医学</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">计算机与互联网</a></dd>
+                        <dd><a href="#">电子通信</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">教育</a></dt>
+                        <dd><a href="#">中小学教辅</a></dd>
+                        <dd><a href="#">教育与考试</a></dd>
+                        <dd><a href="#">外语学习</a></dd>
+                        <dd><a href="#">大中专教材</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">字典词典</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">艺术与收藏</a></dt>
+                        <dd><a href="#">文化与艺术</a></dd>
+                        <dd><a href="#">经济管理</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">其它</a></dt>
+                        <dd><a href="#">工具书</a></dd>
+                        <dd><a href="#">杂志期刊</a></dd>
+                        <dd><a href="#">套装书</a></dd>
+                        <dd><a href="#">打折图书</a></dd>
+                    </dl>
+                </div>
+                </li>
+                <li>
+                    <a href="">母婴/玩具乐器</a>
+                <div class="second-menu">
+                    <dl class="float-fix">
+                        <dt><a href="#">电子书刊</a></dt>
+                        <dd><a href="#">电子书</a></dd>
+                        <dd><a href="#">网络原创</a></dd>
+                        <dd><a href="#">数字杂志</a></dd>
+                        <dd><a href="#">多媒体图书</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">音像</a></dt>
+                        <dd><a href="#">音乐</a></dd>
+                        <dd><a href="#">影视</a></dd>
+                        <dd><a href="#">教育音像</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">英文原版</a></dt>
+                        <dd><a href="#">少儿</a></dd>
+                        <dd><a href="#">商务投资</a></dd>
+                        <dd><a href="#">英语学习考试</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">励志</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">文艺</a></dt>
+                        <dd><a href="#">小说</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">青春文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">艺术</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">少儿</a></dt>
+                        <dd><a href="#">胎教</a></dd>
+                        <dd><a href="#">0-2岁</a></dd>
+                        <dd><a href="#">3-6岁</a></dd>
+                        <dd><a href="#">7-10岁</a></dd>
+                        <dd><a href="#">11-14岁</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">人文社科</a></dt>
+                        <dd><a href="#">历史</a></dd>
+                        <dd><a href="#">哲学</a></dd>
+                        <dd><a href="#">国学</a></dd>
+                        <dd><a href="#">政治/军事</a></dd>
+                        <dd><a href="#">法律</a></dd>
+                        <dd><a href="#">人文社科</a></dd>
+                        <dd><a href="#">心理学</a></dd>
+                        <dd><a href="#">文化</a></dd>
+                        <dd><a href="#">社会科学</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">经管励志</a></dt>
+                        <dd><a href="#">金融与投资</a></dd>
+                        <dd><a href="#">管理</a></dd>
+                        <dd><a href="#">励志与成功</a></dd>
+                        <dd><a href="#">经济</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">生活</a></dt>
+                        <dd><a href="#">健康与保健</a></dd>
+                        <dd><a href="#">家庭与育儿</a></dd>
+                        <dd><a href="#">旅游</a></dd>
+                        <dd><a href="#">烹饪美食</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">科技</a></dt>
+                        <dd><a href="#">工业技术</a></dd>
+                        <dd><a href="#">科普读物</a></dd>
+                        <dd><a href="#">建筑</a></dd>
+                        <dd><a href="#">医学</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">计算机与互联网</a></dd>
+                        <dd><a href="#">电子通信</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">教育</a></dt>
+                        <dd><a href="#">中小学教辅</a></dd>
+                        <dd><a href="#">教育与考试</a></dd>
+                        <dd><a href="#">外语学习</a></dd>
+                        <dd><a href="#">大中专教材</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">字典词典</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">艺术与收藏</a></dt>
+                        <dd><a href="#">文化与艺术</a></dd>
+                        <dd><a href="#">经济管理</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">其它</a></dt>
+                        <dd><a href="#">工具书</a></dd>
+                        <dd><a href="#">杂志期刊</a></dd>
+                        <dd><a href="#">套装书</a></dd>
+                        <dd><a href="#">打折图书</a></dd>
+                    </dl>
+                </div>
+                </li>
+                <li>
+                    <a href="">食品/酒类/生鲜/特产</a>
+                <div class="second-menu">
+                    <dl class="float-fix">
+                        <dt><a href="#">电子书刊</a></dt>
+                        <dd><a href="#">电子书</a></dd>
+                        <dd><a href="#">网络原创</a></dd>
+                        <dd><a href="#">数字杂志</a></dd>
+                        <dd><a href="#">多媒体图书</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">音像</a></dt>
+                        <dd><a href="#">音乐</a></dd>
+                        <dd><a href="#">影视</a></dd>
+                        <dd><a href="#">教育音像</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">英文原版</a></dt>
+                        <dd><a href="#">少儿</a></dd>
+                        <dd><a href="#">商务投资</a></dd>
+                        <dd><a href="#">英语学习考试</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">励志</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">文艺</a></dt>
+                        <dd><a href="#">小说</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">青春文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">艺术</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">少儿</a></dt>
+                        <dd><a href="#">胎教</a></dd>
+                        <dd><a href="#">0-2岁</a></dd>
+                        <dd><a href="#">3-6岁</a></dd>
+                        <dd><a href="#">7-10岁</a></dd>
+                        <dd><a href="#">11-14岁</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">人文社科</a></dt>
+                        <dd><a href="#">历史</a></dd>
+                        <dd><a href="#">哲学</a></dd>
+                        <dd><a href="#">国学</a></dd>
+                        <dd><a href="#">政治/军事</a></dd>
+                        <dd><a href="#">法律</a></dd>
+                        <dd><a href="#">人文社科</a></dd>
+                        <dd><a href="#">心理学</a></dd>
+                        <dd><a href="#">文化</a></dd>
+                        <dd><a href="#">社会科学</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">经管励志</a></dt>
+                        <dd><a href="#">金融与投资</a></dd>
+                        <dd><a href="#">管理</a></dd>
+                        <dd><a href="#">励志与成功</a></dd>
+                        <dd><a href="#">经济</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">生活</a></dt>
+                        <dd><a href="#">健康与保健</a></dd>
+                        <dd><a href="#">家庭与育儿</a></dd>
+                        <dd><a href="#">旅游</a></dd>
+                        <dd><a href="#">烹饪美食</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">科技</a></dt>
+                        <dd><a href="#">工业技术</a></dd>
+                        <dd><a href="#">科普读物</a></dd>
+                        <dd><a href="#">建筑</a></dd>
+                        <dd><a href="#">医学</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">计算机与互联网</a></dd>
+                        <dd><a href="#">电子通信</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">教育</a></dt>
+                        <dd><a href="#">中小学教辅</a></dd>
+                        <dd><a href="#">教育与考试</a></dd>
+                        <dd><a href="#">外语学习</a></dd>
+                        <dd><a href="#">大中专教材</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">字典词典</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">艺术与收藏</a></dt>
+                        <dd><a href="#">文化与艺术</a></dd>
+                        <dd><a href="#">经济管理</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">其它</a></dt>
+                        <dd><a href="#">工具书</a></dd>
+                        <dd><a href="#">杂志期刊</a></dd>
+                        <dd><a href="#">套装书</a></dd>
+                        <dd><a href="#">打折图书</a></dd>
+                    </dl>
+                </div>
+                </li>
+                <li>
+                    <a href="">艺术/礼品鲜花/农资绿植</a>
+                <div class="second-menu">
+                    <dl class="float-fix">
+                        <dt><a href="#">电子书刊</a></dt>
+                        <dd><a href="#">电子书</a></dd>
+                        <dd><a href="#">网络原创</a></dd>
+                        <dd><a href="#">数字杂志</a></dd>
+                        <dd><a href="#">多媒体图书</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">音像</a></dt>
+                        <dd><a href="#">音乐</a></dd>
+                        <dd><a href="#">影视</a></dd>
+                        <dd><a href="#">教育音像</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">英文原版</a></dt>
+                        <dd><a href="#">少儿</a></dd>
+                        <dd><a href="#">商务投资</a></dd>
+                        <dd><a href="#">英语学习考试</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">励志</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">文艺</a></dt>
+                        <dd><a href="#">小说</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">青春文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">艺术</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">少儿</a></dt>
+                        <dd><a href="#">胎教</a></dd>
+                        <dd><a href="#">0-2岁</a></dd>
+                        <dd><a href="#">3-6岁</a></dd>
+                        <dd><a href="#">7-10岁</a></dd>
+                        <dd><a href="#">11-14岁</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">人文社科</a></dt>
+                        <dd><a href="#">历史</a></dd>
+                        <dd><a href="#">哲学</a></dd>
+                        <dd><a href="#">国学</a></dd>
+                        <dd><a href="#">政治/军事</a></dd>
+                        <dd><a href="#">法律</a></dd>
+                        <dd><a href="#">人文社科</a></dd>
+                        <dd><a href="#">心理学</a></dd>
+                        <dd><a href="#">文化</a></dd>
+                        <dd><a href="#">社会科学</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">经管励志</a></dt>
+                        <dd><a href="#">金融与投资</a></dd>
+                        <dd><a href="#">管理</a></dd>
+                        <dd><a href="#">励志与成功</a></dd>
+                        <dd><a href="#">经济</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">生活</a></dt>
+                        <dd><a href="#">健康与保健</a></dd>
+                        <dd><a href="#">家庭与育儿</a></dd>
+                        <dd><a href="#">旅游</a></dd>
+                        <dd><a href="#">烹饪美食</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">科技</a></dt>
+                        <dd><a href="#">工业技术</a></dd>
+                        <dd><a href="#">科普读物</a></dd>
+                        <dd><a href="#">建筑</a></dd>
+                        <dd><a href="#">医学</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">计算机与互联网</a></dd>
+                        <dd><a href="#">电子通信</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">教育</a></dt>
+                        <dd><a href="#">中小学教辅</a></dd>
+                        <dd><a href="#">教育与考试</a></dd>
+                        <dd><a href="#">外语学习</a></dd>
+                        <dd><a href="#">大中专教材</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">字典词典</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">艺术与收藏</a></dt>
+                        <dd><a href="#">文化与艺术</a></dd>
+                        <dd><a href="#">经济管理</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">其它</a></dt>
+                        <dd><a href="#">工具书</a></dd>
+                        <dd><a href="#">杂志期刊</a></dd>
+                        <dd><a href="#">套装书</a></dd>
+                        <dd><a href="#">打折图书</a></dd>
+                    </dl>
+                </div>
+                </li>
+                <li>
+                    <a href="">医药保健/计生情趣</a>
+                <div class="second-menu">
+                    <dl class="float-fix">
+                        <dt><a href="#">电子书刊</a></dt>
+                        <dd><a href="#">电子书</a></dd>
+                        <dd><a href="#">网络原创</a></dd>
+                        <dd><a href="#">数字杂志</a></dd>
+                        <dd><a href="#">多媒体图书</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">音像</a></dt>
+                        <dd><a href="#">音乐</a></dd>
+                        <dd><a href="#">影视</a></dd>
+                        <dd><a href="#">教育音像</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">英文原版</a></dt>
+                        <dd><a href="#">少儿</a></dd>
+                        <dd><a href="#">商务投资</a></dd>
+                        <dd><a href="#">英语学习考试</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">励志</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">文艺</a></dt>
+                        <dd><a href="#">小说</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">青春文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">艺术</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">少儿</a></dt>
+                        <dd><a href="#">胎教</a></dd>
+                        <dd><a href="#">0-2岁</a></dd>
+                        <dd><a href="#">3-6岁</a></dd>
+                        <dd><a href="#">7-10岁</a></dd>
+                        <dd><a href="#">11-14岁</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">人文社科</a></dt>
+                        <dd><a href="#">历史</a></dd>
+                        <dd><a href="#">哲学</a></dd>
+                        <dd><a href="#">国学</a></dd>
+                        <dd><a href="#">政治/军事</a></dd>
+                        <dd><a href="#">法律</a></dd>
+                        <dd><a href="#">人文社科</a></dd>
+                        <dd><a href="#">心理学</a></dd>
+                        <dd><a href="#">文化</a></dd>
+                        <dd><a href="#">社会科学</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">经管励志</a></dt>
+                        <dd><a href="#">金融与投资</a></dd>
+                        <dd><a href="#">管理</a></dd>
+                        <dd><a href="#">励志与成功</a></dd>
+                        <dd><a href="#">经济</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">生活</a></dt>
+                        <dd><a href="#">健康与保健</a></dd>
+                        <dd><a href="#">家庭与育儿</a></dd>
+                        <dd><a href="#">旅游</a></dd>
+                        <dd><a href="#">烹饪美食</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">科技</a></dt>
+                        <dd><a href="#">工业技术</a></dd>
+                        <dd><a href="#">科普读物</a></dd>
+                        <dd><a href="#">建筑</a></dd>
+                        <dd><a href="#">医学</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">计算机与互联网</a></dd>
+                        <dd><a href="#">电子通信</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">教育</a></dt>
+                        <dd><a href="#">中小学教辅</a></dd>
+                        <dd><a href="#">教育与考试</a></dd>
+                        <dd><a href="#">外语学习</a></dd>
+                        <dd><a href="#">大中专教材</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">字典词典</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">艺术与收藏</a></dt>
+                        <dd><a href="#">文化与艺术</a></dd>
+                        <dd><a href="#">经济管理</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">其它</a></dt>
+                        <dd><a href="#">工具书</a></dd>
+                        <dd><a href="#">杂志期刊</a></dd>
+                        <dd><a href="#">套装书</a></dd>
+                        <dd><a href="#">打折图书</a></dd>
+                    </dl>
+                </div>
+                </li>
+                <li>
+                    <a href="">图书/文娱/教育/电子书</a>
+                <div class="second-menu">
+                    <dl class="float-fix">
+                        <dt><a href="#">电子书刊</a></dt>
+                        <dd><a href="#">电子书</a></dd>
+                        <dd><a href="#">网络原创</a></dd>
+                        <dd><a href="#">数字杂志</a></dd>
+                        <dd><a href="#">多媒体图书</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">音像</a></dt>
+                        <dd><a href="#">音乐</a></dd>
+                        <dd><a href="#">影视</a></dd>
+                        <dd><a href="#">教育音像</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">英文原版</a></dt>
+                        <dd><a href="#">少儿</a></dd>
+                        <dd><a href="#">商务投资</a></dd>
+                        <dd><a href="#">英语学习考试</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">励志</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">文艺</a></dt>
+                        <dd><a href="#">小说</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">青春文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">艺术</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">少儿</a></dt>
+                        <dd><a href="#">胎教</a></dd>
+                        <dd><a href="#">0-2岁</a></dd>
+                        <dd><a href="#">3-6岁</a></dd>
+                        <dd><a href="#">7-10岁</a></dd>
+                        <dd><a href="#">11-14岁</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">人文社科</a></dt>
+                        <dd><a href="#">历史</a></dd>
+                        <dd><a href="#">哲学</a></dd>
+                        <dd><a href="#">国学</a></dd>
+                        <dd><a href="#">政治/军事</a></dd>
+                        <dd><a href="#">法律</a></dd>
+                        <dd><a href="#">人文社科</a></dd>
+                        <dd><a href="#">心理学</a></dd>
+                        <dd><a href="#">文化</a></dd>
+                        <dd><a href="#">社会科学</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">经管励志</a></dt>
+                        <dd><a href="#">金融与投资</a></dd>
+                        <dd><a href="#">管理</a></dd>
+                        <dd><a href="#">励志与成功</a></dd>
+                        <dd><a href="#">经济</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">生活</a></dt>
+                        <dd><a href="#">健康与保健</a></dd>
+                        <dd><a href="#">家庭与育儿</a></dd>
+                        <dd><a href="#">旅游</a></dd>
+                        <dd><a href="#">烹饪美食</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">科技</a></dt>
+                        <dd><a href="#">工业技术</a></dd>
+                        <dd><a href="#">科普读物</a></dd>
+                        <dd><a href="#">建筑</a></dd>
+                        <dd><a href="#">医学</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">计算机与互联网</a></dd>
+                        <dd><a href="#">电子通信</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">教育</a></dt>
+                        <dd><a href="#">中小学教辅</a></dd>
+                        <dd><a href="#">教育与考试</a></dd>
+                        <dd><a href="#">外语学习</a></dd>
+                        <dd><a href="#">大中专教材</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">字典词典</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">艺术与收藏</a></dt>
+                        <dd><a href="#">文化与艺术</a></dd>
+                        <dd><a href="#">经济管理</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">其它</a></dt>
+                        <dd><a href="#">工具书</a></dd>
+                        <dd><a href="#">杂志期刊</a></dd>
+                        <dd><a href="#">套装书</a></dd>
+                        <dd><a href="#">打折图书</a></dd>
+                    </dl>
+                </div>
+                </li>
+                <li>
+                    <a href="">机票/酒店/旅游/生活</a>
+                <div class="second-menu">
+                    <dl class="float-fix">
+                        <dt><a href="#">电子书刊</a></dt>
+                        <dd><a href="#">电子书</a></dd>
+                        <dd><a href="#">网络原创</a></dd>
+                        <dd><a href="#">数字杂志</a></dd>
+                        <dd><a href="#">多媒体图书</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">音像</a></dt>
+                        <dd><a href="#">音乐</a></dd>
+                        <dd><a href="#">影视</a></dd>
+                        <dd><a href="#">教育音像</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">英文原版</a></dt>
+                        <dd><a href="#">少儿</a></dd>
+                        <dd><a href="#">商务投资</a></dd>
+                        <dd><a href="#">英语学习考试</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">励志</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">文艺</a></dt>
+                        <dd><a href="#">小说</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">青春文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">艺术</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">少儿</a></dt>
+                        <dd><a href="#">胎教</a></dd>
+                        <dd><a href="#">0-2岁</a></dd>
+                        <dd><a href="#">3-6岁</a></dd>
+                        <dd><a href="#">7-10岁</a></dd>
+                        <dd><a href="#">11-14岁</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">人文社科</a></dt>
+                        <dd><a href="#">历史</a></dd>
+                        <dd><a href="#">哲学</a></dd>
+                        <dd><a href="#">国学</a></dd>
+                        <dd><a href="#">政治/军事</a></dd>
+                        <dd><a href="#">法律</a></dd>
+                        <dd><a href="#">人文社科</a></dd>
+                        <dd><a href="#">心理学</a></dd>
+                        <dd><a href="#">文化</a></dd>
+                        <dd><a href="#">社会科学</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">经管励志</a></dt>
+                        <dd><a href="#">金融与投资</a></dd>
+                        <dd><a href="#">管理</a></dd>
+                        <dd><a href="#">励志与成功</a></dd>
+                        <dd><a href="#">经济</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">生活</a></dt>
+                        <dd><a href="#">健康与保健</a></dd>
+                        <dd><a href="#">家庭与育儿</a></dd>
+                        <dd><a href="#">旅游</a></dd>
+                        <dd><a href="#">烹饪美食</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">科技</a></dt>
+                        <dd><a href="#">工业技术</a></dd>
+                        <dd><a href="#">科普读物</a></dd>
+                        <dd><a href="#">建筑</a></dd>
+                        <dd><a href="#">医学</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">计算机与互联网</a></dd>
+                        <dd><a href="#">电子通信</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">教育</a></dt>
+                        <dd><a href="#">中小学教辅</a></dd>
+                        <dd><a href="#">教育与考试</a></dd>
+                        <dd><a href="#">外语学习</a></dd>
+                        <dd><a href="#">大中专教材</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">字典词典</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">艺术与收藏</a></dt>
+                        <dd><a href="#">文化与艺术</a></dd>
+                        <dd><a href="#">经济管理</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">其它</a></dt>
+                        <dd><a href="#">工具书</a></dd>
+                        <dd><a href="#">杂志期刊</a></dd>
+                        <dd><a href="#">套装书</a></dd>
+                        <dd><a href="#">打折图书</a></dd>
+                    </dl>
+                </div>
+                </li>
+                <li>
+                    <a href="">众筹/白条/保险/企业金融</a>
+                <div class="second-menu">
+                    <dl class="float-fix">
+                        <dt><a href="#">电子书刊</a></dt>
+                        <dd><a href="#">电子书</a></dd>
+                        <dd><a href="#">网络原创</a></dd>
+                        <dd><a href="#">数字杂志</a></dd>
+                        <dd><a href="#">多媒体图书</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">音像</a></dt>
+                        <dd><a href="#">音乐</a></dd>
+                        <dd><a href="#">影视</a></dd>
+                        <dd><a href="#">教育音像</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">英文原版</a></dt>
+                        <dd><a href="#">少儿</a></dd>
+                        <dd><a href="#">商务投资</a></dd>
+                        <dd><a href="#">英语学习考试</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">励志</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">文艺</a></dt>
+                        <dd><a href="#">小说</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">青春文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">艺术</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">少儿</a></dt>
+                        <dd><a href="#">胎教</a></dd>
+                        <dd><a href="#">0-2岁</a></dd>
+                        <dd><a href="#">3-6岁</a></dd>
+                        <dd><a href="#">7-10岁</a></dd>
+                        <dd><a href="#">11-14岁</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">人文社科</a></dt>
+                        <dd><a href="#">历史</a></dd>
+                        <dd><a href="#">哲学</a></dd>
+                        <dd><a href="#">国学</a></dd>
+                        <dd><a href="#">政治/军事</a></dd>
+                        <dd><a href="#">法律</a></dd>
+                        <dd><a href="#">人文社科</a></dd>
+                        <dd><a href="#">心理学</a></dd>
+                        <dd><a href="#">文化</a></dd>
+                        <dd><a href="#">社会科学</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">经管励志</a></dt>
+                        <dd><a href="#">金融与投资</a></dd>
+                        <dd><a href="#">管理</a></dd>
+                        <dd><a href="#">励志与成功</a></dd>
+                        <dd><a href="#">经济</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">生活</a></dt>
+                        <dd><a href="#">健康与保健</a></dd>
+                        <dd><a href="#">家庭与育儿</a></dd>
+                        <dd><a href="#">旅游</a></dd>
+                        <dd><a href="#">烹饪美食</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">科技</a></dt>
+                        <dd><a href="#">工业技术</a></dd>
+                        <dd><a href="#">科普读物</a></dd>
+                        <dd><a href="#">建筑</a></dd>
+                        <dd><a href="#">医学</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">计算机与互联网</a></dd>
+                        <dd><a href="#">电子通信</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">教育</a></dt>
+                        <dd><a href="#">中小学教辅</a></dd>
+                        <dd><a href="#">教育与考试</a></dd>
+                        <dd><a href="#">外语学习</a></dd>
+                        <dd><a href="#">大中专教材</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">字典词典</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">艺术与收藏</a></dt>
+                        <dd><a href="#">文化与艺术</a></dd>
+                        <dd><a href="#">经济管理</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">其它</a></dt>
+                        <dd><a href="#">工具书</a></dd>
+                        <dd><a href="#">杂志期刊</a></dd>
+                        <dd><a href="#">套装书</a></dd>
+                        <dd><a href="#">打折图书</a></dd>
+                    </dl>
+                </div>
+                </li>
+                <li>
+                    <a href="">安装/维修/清洗/二手</a>
+                <div class="second-menu">
+                    <dl class="float-fix">
+                        <dt><a href="#">电子书刊</a></dt>
+                        <dd><a href="#">电子书</a></dd>
+                        <dd><a href="#">网络原创</a></dd>
+                        <dd><a href="#">数字杂志</a></dd>
+                        <dd><a href="#">多媒体图书</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">音像</a></dt>
+                        <dd><a href="#">音乐</a></dd>
+                        <dd><a href="#">影视</a></dd>
+                        <dd><a href="#">教育音像</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">英文原版</a></dt>
+                        <dd><a href="#">少儿</a></dd>
+                        <dd><a href="#">商务投资</a></dd>
+                        <dd><a href="#">英语学习考试</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">励志</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">文艺</a></dt>
+                        <dd><a href="#">小说</a></dd>
+                        <dd><a href="#">文学</a></dd>
+                        <dd><a href="#">青春文学</a></dd>
+                        <dd><a href="#">传记</a></dd>
+                        <dd><a href="#">艺术</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">少儿</a></dt>
+                        <dd><a href="#">胎教</a></dd>
+                        <dd><a href="#">0-2岁</a></dd>
+                        <dd><a href="#">3-6岁</a></dd>
+                        <dd><a href="#">7-10岁</a></dd>
+                        <dd><a href="#">11-14岁</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">人文社科</a></dt>
+                        <dd><a href="#">历史</a></dd>
+                        <dd><a href="#">哲学</a></dd>
+                        <dd><a href="#">国学</a></dd>
+                        <dd><a href="#">政治/军事</a></dd>
+                        <dd><a href="#">法律</a></dd>
+                        <dd><a href="#">人文社科</a></dd>
+                        <dd><a href="#">心理学</a></dd>
+                        <dd><a href="#">文化</a></dd>
+                        <dd><a href="#">社会科学</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">经管励志</a></dt>
+                        <dd><a href="#">金融与投资</a></dd>
+                        <dd><a href="#">管理</a></dd>
+                        <dd><a href="#">励志与成功</a></dd>
+                        <dd><a href="#">经济</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">生活</a></dt>
+                        <dd><a href="#">健康与保健</a></dd>
+                        <dd><a href="#">家庭与育儿</a></dd>
+                        <dd><a href="#">旅游</a></dd>
+                        <dd><a href="#">烹饪美食</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">科技</a></dt>
+                        <dd><a href="#">工业技术</a></dd>
+                        <dd><a href="#">科普读物</a></dd>
+                        <dd><a href="#">建筑</a></dd>
+                        <dd><a href="#">医学</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">计算机与互联网</a></dd>
+                        <dd><a href="#">电子通信</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">教育</a></dt>
+                        <dd><a href="#">中小学教辅</a></dd>
+                        <dd><a href="#">教育与考试</a></dd>
+                        <dd><a href="#">外语学习</a></dd>
+                        <dd><a href="#">大中专教材</a></dd>
+                        <dd><a href="#">科学与自然</a></dd>
+                        <dd><a href="#">字典词典</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">艺术与收藏</a></dt>
+                        <dd><a href="#">文化与艺术</a></dd>
+                        <dd><a href="#">经济管理</a></dd>
+                    </dl>
+                    <dl class="float-fix">
+                        <dt><a href="#">其它</a></dt>
+                        <dd><a href="#">工具书</a></dd>
+                        <dd><a href="#">杂志期刊</a></dd>
+                        <dd><a href="#">套装书</a></dd>
+                        <dd><a href="#">打折图书</a></dd>
+                    </dl>
+                </div>
+                </li>
+
+            </ul>
+
+
+            <!-- 中央的图片 -->
+            <div class=" center-content float-left">
+                <img src="./images/banner主图.png" alt="banner主图">
+            </div>
+
+
+            <!-- 右侧内容区 -->
+            <div class=" right-content float-left">
+                <div class="message">
+                    <div class="float-fix">
+                        <span class="float-left">尚品快报</span>
+                        <a href="#" class="float-right">更多&nbsp;></a>
+                    </div>
+                    <ul class="cheap">
+                        <li><a href="#">[特惠]毛衣+直筒裤，才是YYDS</a></li>
+                        <li><a href="#">[特惠]超大容量的满足感来啥子干</a></li>
+                        <li><a href="#">[特惠]每日一件，衣柜满到塞不下</a></li>
+                        <li><a href="#">[特惠]媳妇再买，我就疯给她看</a></li>
+                    </ul>
+                </div>
+                <div class="icon">
+                    <ul class="float-fix">
+                        <li class="float-left">
+                            <div class="picture"></div>
+                            <span>话费</span>
+                        </li>
+                        <li class="float-left">
+                            <div class="picture"></div>
+                            <span>火车票</span>
+                        </li>
+                        <li class="float-left">
+                            <div class="picture"></div>
+                            <span>加油卡</span>
+                        </li>
+                        <li class="float-left">
+                            <div class="picture"></div>
+                            <span>白条</span>
+                        </li>
+                    </ul>
+                    <ul class="float-fix">
+                        <li class="float-left">
+                            <div class="picture"></div>
+                            <span>电影票</span>
+                        </li>
+                        <li class="float-left">
+                            <div class="picture"></div>
+                            <span>酒店</span>
+                        </li>
+                        <li class="float-left">
+                            <div class="picture"></div>
+                            <span>理财</span>
+                        </li>
+                        <li class="float-left">
+                            <div class="picture"></div>
+                            <span>机票</span>
+                        </li>
+                    </ul>
+                    <ul class="float-fix">
+                        <li class="float-left">
+                            <div class="picture"></div>
+                            <span>礼品卡</span>
+                        </li>
+                        <li class="float-left">
+                            <div class="picture"></div>
+                            <span>彩票</span>
+                        </li>
+                        <li class="float-left">
+                            <div class="picture"></div>
+                            <span>游戏</span>
+                        </li>
+                        <li class="float-left">
+                            <div class="picture"></div>
+                            <span>众筹</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 秒杀区 -->
+    <div class="seckill">
+        <div class="container float-fix">
+            <img src="./images/seckill.png" alt="秒杀1">
+            <img src="./images/banner1.png" alt="秒杀2">
+            <img src="./images/banner2.png" alt="秒杀3">
+            <img src="./images/banner3.png" alt="秒杀4">
+            <img src="./images/baner4.png" alt="秒杀5">
+        </div>
+    </div>
+    <!-- 楼层区1 -->
+    <div class="floor">
+        <div class="container">
+            <div class="floor-top float-fix">
+                <span class="float-left">家用电器</span>
+                <ul class="float-right float-fix">
+                    <li><a href="#">热门</a></li>
+                    <li><a href="#">大家电</a></li>
+                    <li><a href="#">生活电器</a></li>
+                    <li><a href="#">厨房电器</a></li>
+                    <li><a href="#">应季电器</a></li>
+                    <li><a href="#">空气/净水</a></li>
+                    <li><a href="#">高端电器</a></li>
+                </ul>
+            </div>
+            <div class="floor-bottom float-fix">
+                <div class="float-left floor-bottom-first">
+                    <div class="float-fix">
+                        <ul class="float-left">
+                            <li>节能补贴</li>
+                            <li>空气净化器</li>
+                            <li>滚筒洗衣机</li>
+                        </ul>
+                        <ul class="float-right">
+                            <li>4K电视</li>
+                            <li>IH电饭煲</li>
+                            <li>电热水器</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <img src="./images/编组.png" alt="广告">
+                    </div>
+                </div>
+                <div class="float-left floor-bottom-second">
+                    <img src="./images/appliance_banner07.png" alt="广告">
+                </div>
+                <div class="float-left floor-bottom-third">
+                    <div>
+                        <img src="./images/微波炉.png" alt="微波炉">
+                    </div>
+                    <div>
+                        <img src="./images/空气炸锅.png" alt="空气炸锅">
+                    </div>
+                </div>
+                <div class="float-left floor-bottom-fourth">
+                    <img src="./images/冰箱.png" alt="冰箱">
+                </div>
+                <div class="float-left floor-bottom-fifth">
+                    <div>
+                        <img src="./images/电饭煲.png" alt="电饭煲">
+                    </div>
+                    <div>
+                        <img src="./images/电饭煲2.png" alt="电饭煲2">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 楼层区2 -->
+    <div class="floor">
+        <div class="container">
+            <div class="floor-top float-fix">
+                <span class="float-left">家用电器</span>
+                <ul class="float-right float-fix">
+                    <li><a href="#">热门</a></li>
+                    <li><a href="#">大家电</a></li>
+                    <li><a href="#">生活电器</a></li>
+                    <li><a href="#">厨房电器</a></li>
+                    <li><a href="#">应季电器</a></li>
+                    <li><a href="#">空气/净水</a></li>
+                    <li><a href="#">高端电器</a></li>
+                </ul>
+            </div>
+            <div class="floor-bottom float-fix">
+                <div class="float-left floor-bottom-first">
+                    <div class="float-fix">
+                        <ul class="float-left">
+                            <li>节能补贴</li>
+                            <li>空气净化器</li>
+                            <li>滚筒洗衣机</li>
+                        </ul>
+                        <ul class="float-right">
+                            <li>4K电视</li>
+                            <li>IH电饭煲</li>
+                            <li>电热水器</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <img src="./images/编组.png" alt="广告">
+                    </div>
+                </div>
+                <div class="float-left floor-bottom-second">
+                    <img src="./images/appliance_banner07.png" alt="广告">
+                </div>
+                <div class="float-left floor-bottom-third">
+                    <div>
+                        <img src="./images/微波炉.png" alt="微波炉">
+                    </div>
+                    <div>
+                        <img src="./images/空气炸锅.png" alt="空气炸锅">
+                    </div>
+                </div>
+                <div class="float-left floor-bottom-fourth">
+                    <img src="./images/冰箱.png" alt="冰箱">
+                </div>
+                <div class="float-left floor-bottom-fifth">
+                    <div>
+                        <img src="./images/电饭煲.png" alt="电饭煲">
+                    </div>
+                    <div>
+                        <img src="./images/电饭煲2.png" alt="电饭煲2">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 页脚 -->
+    <div class="footer">
+        <div class="container">
+            <!-- 顶部链接 -->
+            <div class="links float-fix">
+                <ul class="links-list">
+                    <li><a href="#">购物指南</a></li>
+                    <li><a href="#">购物流程</a></li>
+                    <li><a href="#">会员介绍</a></li>
+                    <li><a href="#">生活旅行</a></li>
+                    <li><a href="#">常见问题</a></li>
+                    <li><a href="#">大家电</a></li>
+                    <li><a href="#">联系客服</a></li>
+                </ul>
+                <ul class="links-list">
+                    <li><a href="#">配送方式</a></li>
+                    <li><a href="#">上门自提</a></li>
+                    <li><a href="#">211限时达</a></li>
+                    <li><a href="#">配送服务查询</a></li>
+                    <li><a href="#">配送费收取标准</a></li>
+                </ul>
+                <ul class="links-list">
+                    <li><a href="#">支付方式</a></li>
+                    <li><a href="#">货到付款</a></li>
+                    <li><a href="#">在线支付</a></li>
+                    <li><a href="#">分期付款</a></li>
+                    <li><a href="#">公司转账</a></li>
+                </ul>
+                <ul class="links-list">
+                    <li><a href="#">售后服务</a></li>
+                    <li><a href="#">售后政策</a></li>
+                    <li><a href="#">价格保护</a></li>
+                    <li><a href="#">退款说明</a></li>
+                    <li><a href="#">返修/退换货</a></li>
+                    <li><a href="#">取消订单</a></li>
+                </ul>
+                <ul class="links-list">
+                    <li><a href="#">特色服务</a></li>
+                    <li><a href="#">夺宝岛</a></li>
+                    <li><a href="#">DIY装机</a></li>
+                    <li><a href="#">延保服务</a></li>
+                    <li><a href="#">京东E卡</a></li>
+                    <li><a href="#">京东通信</a></li>
+                    <li><a href="#">京鱼座智能</a></li>
+                </ul>
+                <ul class="links-list">
+                    <li><a href="#">自营覆盖区县</a></li>
+                    <li><a href="#">京尚品汇已向全国2661个区县提供自营配送服务，支持货到付款、POS机刷卡和售后上门服务</a></li>
+                    <li><a href="#">查看详情</a></li>
+                </ul>
+            </div>
+            <!-- 分割线 -->
+            <hr class="line">
+            <!-- 关于我们 -->
+            <div class="end">
+                <ul class="float-fix">
+                    <li><a href="#">关于我们</a></li>
+                    <li><a href="#">联系我们</a></li>
+                    <li><a href="#">联系客服</a></li>
+                    <li><a href="#">合作招商</a></li>
+                    <li><a href="#">商家帮助</a></li>
+                    <li><a href="#">营销中心</a></li>
+                    <li><a href="#">手机京东</a></li>
+                    <li><a href="#">友情链接</a></li>
+                    <li><a href="#">销售联盟</a></li>
+                    <li><a href="#">隐私政策</a></li>
+                </ul>
+                <div>京ICP备12345678901</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

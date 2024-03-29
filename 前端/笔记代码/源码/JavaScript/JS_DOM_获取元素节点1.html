@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_获取元素节点1</title>
+    <script>
+        let b=document.getElementsByClassName("rows");
+        let c=document.getElementsByTagName("input");
+        let d=document.getElementsByName("gender");
+        console.log('使用id、className、TagName、Name、selectorAll和selector等获得的元素节点为:');
+        console.log('className:',b);
+        console.log('TagName:',c);
+        console.log('Name:',d);
+        
+    </script>
+</head>
+<body>
+    <div class="rows">
+        <span>aaa</span>
+    </div>
+    <div class="rows">
+        <span id="span">eeee</span>
+    </div>
+    <form action="#" class="form">
+        <input type="text" name="shuru">
+        <input type="radio" name="gender" value="男">
+        <input type="radio" name="gender" value="女">
+    </form>
+    <script>
+        // 以下方法必须写在待匹配HTML元素后才行,否则无法匹配到
+        let a=document.getElementById("span");
+        let e=document.querySelectorAll(".rows");
+        let f=document.querySelector(".form>input");
+        console.log('id:',a);  
+        console.log('SelectorAll:',e);
+        console.log('Selector:',f);
+    </script>
+</body>
+</html>

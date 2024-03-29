@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_jQuery_操作属性样例</title>
+    <script src="../../文件/jQuery/jquery-3.7.1.js"></script>
+    <script>
+        $(
+            function(){
+                var $btn1=$("#btn1");
+                var $btn2=$("#btn2");
+                var $firstUl=$(".ul1");
+                var $secondUl=$(".ul2");
+                var $input=$("#input")
+                var $otherInput=$("#input+input");
+                $btn1.click(
+                    function(){
+                        console.log('读取class属性、使用attr方法读取checked属性、使用prop方法读取checked属性',$firstUl.attr("class"),$input.attr("checked"),$input.prop("checked"));
+                        $firstUl.attr("id","111");
+                        $otherInput.prop("checked",true);  // 可以用prop方法设置布尔类型的属性值为布尔值
+                        $otherInput.removeProp("checked");  // removeProp方法无法移除布尔类型的属性
+                        $otherInput.removeAttr("checked");  // removeAttr方法貌似也不行
+                    }
+                );
+                $btn2.click(
+                    function(){
+                        $firstUl.removeAttr("id");
+                        $otherInput.val("aaa");  // 设置value值
+                        console.log('当前第二个input标签的value值为:',$otherInput.val());
+                    }
+                );
+            }
+        );
+    </script>
+</head>
+<body>
+    <div>
+        <button id="btn1" type="button">点我一下</button>
+        <button id="btn2" type="button">点我一下</button>
+    </div>
+    <ul class="ul1">
+        <li>张三</li>
+        <li>李四</li>
+    </ul>
+    <ul class="ul2">
+        <li>王五</li>
+        <li>赵六</li>
+    </ul>
+    <input type="radio" id="input" name="gender" value="male" checked>男
+    <input type="radio" name="gender" value="female">女
+</body>
+</html>

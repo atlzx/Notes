@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_正则表达式</title>
+    <script>
+        let regex1=new RegExp('aaaa','ig');  //执行不区分大小写的全局匹配，并查找有无含四个连续字符a的字串
+        // 匹配手机号,用括号引起来是因为有一部分方法可以识别括号进行分组,使用g或f以激活exec方法记住上一次的结果，并使其下次检索时从上一次检索的结束位置开始查找
+        // 后面的匹配模式可以加多个，且没有特定顺序
+        let regex2=/1[3-9](\d{9})/gi;  
+        let str1='sdrhgasg17331271382szdgas13522113344asergsg19655889977zdbfhs';
+        console.log('第一次执行exec(第一个元素为检索到的整体元素，第二个元素及其以后为分组元素):',regex2.exec(str1));
+        console.log('第二次执行exec(第一个元素为检索到的整体元素，第二个元素及其以后为分组元素):',regex2.exec(str1));
+        console.log('第三次执行exec(第一个元素为检索到的整体元素，第二个元素及其以后为分组元素):',regex2.exec(str1));
+        console.log('正则表达式配合split方法使用:',str1.split(regex2));
+        console.log('正则表达式配合replace方法使用:',str1.replace(regex2,''));  //正则表达式中使用g作匹配模式会使replace方法替换全部指定内容
+        console.log('正则表达式中调用test方法:',regex2.test("17331271382"));  //使用test方法检验字符串是否符合正则表达式规范
+        console.log('正则表达式中调用match方法:',str1.match(regex2));
+        console.log('正则表达式中调用matchAll方法:',str1.matchAll(regex2));  //matchAll返回的数组中支持分组项,但返回的是迭代器
+        for(let i of str1.matchAll(regex2)){
+            console.log('使用for-of语法遍历matchAll方法返回的迭代器:',i);
+        }
+        console.log('使用search方法查询符合正则表达式的内容第一次出现的起始下标:',str1.search(regex2));
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

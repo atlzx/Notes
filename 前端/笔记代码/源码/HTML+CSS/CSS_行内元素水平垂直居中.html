@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_行内元素水平垂直居中</title>
+    <style>
+        .container{
+            height: 400px;
+            width: 400px;
+            background-color: gray;
+            text-align: center; /*使用text-align调整水平居中可以直接作用于行内元素和行内块元素*/
+            line-height: 400px; /*设置行高等于元素高度使文本垂直居中(没有问题，就是居中)，如果是多个元素
+            (父元素的文本与子元素的文本是不算在一起的,这也算一个以上)的话，会根据小写字母x的基线对齐(此时便不会居中)*/
+        }
+        span{
+            text-align: center;
+            background-color: skyblue;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span>x测试文本</span>
+    </div>
+</body>
+</html>

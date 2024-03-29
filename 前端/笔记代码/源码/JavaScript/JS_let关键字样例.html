@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_let关键字样例</title>
+    <script>
+        {
+            let a=10;  //let声明的变量具有块作用域
+        }
+    //    console.log(a);  //无法在块作用域外访问a变量
+        let b=20;
+        console.log(window.b,b);  //输出undefined 20，这说明let声明的变量不作为window对象内的属性存在
+        window.b=30;  //给window对象设置一个同名属性，随后观察console.log优先输出哪个变量
+        console.log(b);  //输出20,即表名调用变量时优先调用使用let声明的变量
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

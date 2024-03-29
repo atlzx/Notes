@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_DOM小练习3</title>
+    <style>
+        table{
+            border-collapse: collapse;
+            border-width: 2px;
+            margin: 0px auto;
+            margin-bottom: 10px;
+        }
+        tr,th,td{
+            border-width: 2px;
+        }
+        td,th{
+            padding: 0px 20px;
+        }
+        .insertDiv{
+            margin: 0px auto;
+            width: 300px;
+            text-align: center;
+            overflow: hidden;
+        }
+        .insertDiv div{
+            margin-bottom: 10px;
+        }
+    </style>
+    <script>
+        onload=function(){
+
+            /* 
+                function delElement(){
+                    if(confirm(`确定要删除员工${this.parentElement.parentElement.firstElementChild.textContent}吗?`)){
+                        this.parentElement.parentElement.remove();  // 使用this来锁定触发事件的是哪个a标签
+                    }
+                    // 通过return false来阻止a标签进行默认的网页跳转，该方法仅适用于 element.事件=function() 中
+                    // 也可以通过给a的href属性设置javascript属性阻止a标签进行网页跳转
+                    return false;
+                } 
+            */
+
+
+            // 删除员工信息
+            let aElement=document.querySelectorAll(".staffTable a");
+            console.log(aElement);
+
+            /*  
+                // 通过遍历的方式给每个对象都添加事件绑定，这种方法有明显的弊端，因为每添加一个新行就要重新绑定一次
+                for(let i of aElement){
+                    i.onclick=delElement;
+                } 
+            */
+
+
+            // 使用事件委派的方式进行事件绑定更具有灵活性
+            document.addEventListener(
+                "click",
+                (event)=>{
+                    // console.log([...document.getElementsByTagName("tr")]);
+                    // 如果要使用querySelectorAll方法的话，应该将其写在方法内部，即每次事件触发时都要重新执行一次该方法
+                    // 因为querySelectorAll方法不像getElementsByTagName、getElementsByClassName等方法一样,querySelectorAll方法获取的是不会动态更新的结果集
+                    if([...document.querySelectorAll("tr a")].includes(event.target)){
+                        if(confirm(`确定要删除员工${event.target.parentElement.parentElement.firstElementChild.textContent}吗?`)){
+                            event.target.parentElement.parentElement.remove();
+                        }
+                    }
+                }
+            );
+
+            let insertButton=document.querySelectorAll(".insertDiv button")[0];
+            insertButton.addEventListener(
+                "click",
+                function(){
+                    let tbodyElement=document.getElementsByTagName("tbody")[0];
+                    let inputElements=document.querySelectorAll(".insertDiv input");
+                    let newTr=document.createElement("tr");
+                    let nameTd=document.createElement("td");
+                    let salaryTd=document.createElement("td");
+                    let emailTd=document.createElement("td");
+                    // 使用HTML注入可能会有xss注入隐患，因此可以使用textContent或innerText等可以将标签转义为字符实体的方法来将用户输入的值插入而避免xss注入风险
+                    nameTd.textContent=inputElements[0].value;
+                    salaryTd.textContent=inputElements[1].value;
+                    emailTd.textContent=inputElements[2].value;
+                    newTr.insertAdjacentElement("beforeend",nameTd);
+                    newTr.insertAdjacentElement("beforeend",salaryTd);
+                    newTr.insertAdjacentElement("beforeend",emailTd);
+                    newTr.insertAdjacentHTML(
+                        "beforeend",
+                        `<td><a href="javascript:;">删除</a></td>`
+                    ); // 对于写了的，且没有用户输入项的标签，可以直接使用insertAdjacentHTML插入
+                    tbodyElement.insertAdjacentElement("beforeend",newTr);
+                    /* let lastAElement=document.querySelectorAll("tbody>tr:last-child a")[0];
+                    lastAElement.onclick=delElement;  // 给每一个新插入的行都加入监听事件 */
+                }
+            );
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <form action="">
+            <table border="1px" class="staffTable">
+                <caption>员工表</caption>
+                <thead>
+                    <tr>
+                        <th>名字</th>
+                        <th>薪资</th>
+                        <th>邮件</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>张三</td>
+                        <td>3000</td>
+                        <td>11@qq.com</td>
+                        <td><a href="javascript:;">删除</a></td>
+                    </tr>
+                    <tr>
+                        <td>李四</td>
+                        <td>6000</td>
+                        <td>22@qq.com</td>
+                        <td><a href="javascript:;">删除</a></td>
+                    </tr>
+                    <tr>
+                        <td>王五</td>
+                        <td>4000</td>
+                        <td>33@qq.com</td>
+                        <td><a href="javascript:;">删除</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        <div class="insertDiv">
+            <form action="">
+                <div><span>姓名</span><input type="text"></div>
+                <div><span>薪资</span><input type="number"></div>
+                <div><span>邮件</span><input type="email"></div>
+                <button type="button">添加</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

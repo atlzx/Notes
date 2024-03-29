@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_对象_原型运算</title>
+    <script>
+
+        class Test{
+            constructor(){
+                this.name='噢噢噢噢';
+            }
+        }
+
+        onload=function(){
+            const test1=new Test();
+            const test2=Object.create(null);
+            test2.name='张三';
+            console.log('instanceof运算符判断输出:',test1 instanceof Test);
+            console.log('in运算符判断输出:',"name" in test1);
+            console.log('hasOwnProperty方法判断test1输出:',test1.hasOwnProperty("name"));
+            console.log('Object.hasOwn方法判断test1输出:',Object.hasOwn(test1,"name"));
+            console.log('Object.hasOwn方法判断test2输出:',Object.hasOwn(test2,"name"));
+            console.log('Object.getProtoTypeOf获取指定对象原型:',Object.getProtoTypeOf(test1));
+              // test2是使用特殊方式创建的，它没有原型对象,因此它根本没有该方法，故报错
+            console.log('hasOwnProperty方法判断test2输出:',test2.hasOwnProperty("name"));
+        }
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

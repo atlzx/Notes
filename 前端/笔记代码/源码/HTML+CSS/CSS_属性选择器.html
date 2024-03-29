@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_属性选择器</title>
+    <style>
+        [title]{
+            color: red;
+        }
+        [title="测试1"]{
+            color: green;
+        }
+        [title^="测试2"]{
+            color: blanchedalmond;
+        }
+        [title$="t1"]{
+            color: blue;
+        }
+        [title*="t2"]{
+            color: aqua;
+        }
+    </style>
+</head>
+<body>
+    <div title="测试1">测试1</div>
+    <div title="测试2">测试2</div>
+    <div title="test1">测试3</div>
+    <div title="test2">测试4</div>
+    <div title="测5">测试5</div>
+</body>
+</html>

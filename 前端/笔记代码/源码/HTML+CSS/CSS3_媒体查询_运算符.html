@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_媒体查询_运算符</title>
+    <style>
+        div{
+            height: 200px;
+            width: 100%;
+            margin: 0px auto;
+            background-color: gray;
+            text-align: center;
+            color: white;
+            font-size: 40px;
+            line-height: 200px;
+        }
+
+        /*若显示模式为屏幕且宽度<=800px时执行下列样式*/
+        @media screen and (max-width: 800px){
+            div>div{
+                background-color: brown;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div>
+        <div>测试文本</div>
+    </div>
+</body>
+</html>

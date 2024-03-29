@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>async与await关键字样例</title>
+    <script>
+        onload=function(){
+            // 使用async关键字修饰函数，使其执行后返回一个promise对象 
+            async function fn1(){
+                // 这里返回一个立即执行函数的结果，立即执行了一个使用async运算符修饰的函数，即返回了一个promise对象
+                // 如果该对象为resolved状态，那么调用fn1函数得到的promise对象也为resolved
+                // 如果该对象为rejected状态，那么调用fn1函数得到的promise对象也为rejected
+                return (
+                    async function(){
+                        let x=1n*2;  
+                    }
+                )();  
+                let a=1n*2;  // 如果出现异常(此处使用bigInt与其它类型进行运算)，那么得到的promise对象是rejected状态的
+                return 10;  // 返回值正常，得到的promise对象是resolved状态的
+            }
+            let promise1=fn1();  // 调用fn1函数得到该promise对象
+            promise1.then(
+                function(){
+                    console.log('正常执行');  // promise对象是resolved状态时，输出 正常执行 
+                },
+            ).catch(
+                function(){
+                    console.log('出现异常');  // promise对象是rejected状态时，输出 出现异常
+                }
+            );
+
+
+            async function fn2(){
+                throw new Error('主动抛出错误');
+                return 1;
+            }
+            async function fn3(){
+                try{
+                    /* 
+                        如果fn2的返回结果正常，那么得到该函数的返回结果，如果函数执行异常，直接抛出异常
+                        await关键字下面的代码会等待await代码执行完毕后再执行，而await会等待其修饰的函数执行完毕
+                        以上规则仅作用于与await在同一作用域下的代码，比如现在，该规则对于fn3函数体以外的代码就是无效的
+                    */
+                    let result=await fn2();  
+                    console.log('await的结果:'+result);
+                }catch(e){
+                    console.log('await抛出了异常');
+                }
+                console.log('await执行完后才能输出');
+            }
+            fn3();
+            console.log('哦哦哦哦哦哦哦哦哦');
+        }
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

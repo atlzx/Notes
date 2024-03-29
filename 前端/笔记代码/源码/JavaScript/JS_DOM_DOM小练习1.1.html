@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_DOM小练习1.1</title>
+    <style>
+        .outer{
+            margin: 0px auto;
+            width: 640px;
+            text-align: center;
+        }
+        .outer>div:first-child{
+            text-align: center;
+        }
+    </style>
+    <script>
+        // 要求点击按钮时，图像会对应变化
+        window.onload = function () {
+            let arrayImg = 
+            ['../../文件/图片/JS图片/DOM小练习1/1.png',
+             '../../文件/图片/JS图片/DOM小练习1/2.png', 
+             '../../文件/图片/JS图片/DOM小练习1/3.png', 
+             '../../文件/图片/JS图片/DOM小练习1/4.png', 
+             '../../文件/图片/JS图片/DOM小练习1/5.png'
+            ];  // 以数组形式定义要替换的所有的图像的路径
+            let beforeButton=document.getElementById("before");
+            let nextButton=document.getElementById("next");
+            let autoButton=document.getElementById("auto");
+            let time;  // 定义变量来存储定时器ID
+            let count=0;  // 设置对应变量存储目前显示哪张图像
+            let imgElement=document.getElementsByTagName("img")[0];  // 找到img标签，为后面替换src做准备
+            let divElement=document.querySelectorAll(".outer>div:first-child")[0];
+            divElement.textContent=`共有${arrayImg.length}张图片，目前浏览的是第1张`;  // 使用模板字符串显示目前为第几张图片
+
+
+                        
+            // 监听按钮的点击事件
+            beforeButton.addEventListener(
+                "click",
+                ()=>{
+                    count--;
+                    if(count<0){
+                        count=arrayImg.length-1;  // 处理非法count变量，如果在第一张图片点上一张会跑到最后一张
+                    }
+                    imgElement.src=arrayImg[count];  // 将对应图片的src修改
+                    divElement.textContent=`共有${arrayImg.length}张图片，目前浏览的是第${count+1}张`;  // 更新提示
+                    clearTimeout(time);  // 确保点击上一张或下一张的按钮后，不会自动替换图片
+                }  // 处理点击事件
+            );
+
+
+            // 监听按钮的点击事件
+            nextButton.addEventListener(
+                "click",
+                ()=>{
+                    count++;
+                    if(count>arrayImg.length-1){
+                        count=0; // 处理非法count变量，如果在最后一张点下一张会跑到第一张
+                    }
+                    imgElement.src=arrayImg[count];
+                    divElement.textContent=`共有${arrayImg.length}张图片，目前浏览的是第${count+1}张`;
+                    clearTimeout(time);  // 确保点击上一张或下一张的按钮后，不会自动替换图片
+                }
+            );
+
+            // 这会导致一些问题:如果用户多次点击按钮，那么会创建多个定时器同时执行
+            // 解决方案是在点击时清除上一次创建的定时器
+            auto.addEventListener(
+                "click",
+                ()=>{
+                    clearTimeout(time); // 清除上一次创建的定时器
+                    time=setTimeout(
+                        function autoChange(){
+                            count++;
+                            if(count>arrayImg.length-1){
+                                count=0; // 处理非法count变量，如果在最后一张点下一张会跑到第一张
+                            }
+                            imgElement.src=arrayImg[count];
+                            divElement.textContent=`共有${arrayImg.length}张图片，目前浏览的是第${count+1}张`;
+                            time=setTimeout(autoChange,1000);  // 递归创建定时器，实现自动替换图片
+                        },
+                        1000
+                    );
+                }
+            );
+
+        }
+    </script>
+</head>
+<body>
+    <div class="outer">
+        <div></div>
+        <div class="imgContainer">
+            <img src="../../文件/图片/JS图片/DOM小练习1/1.png" alt="图片">
+        </div>
+        <div class="buttonContainer">
+            <button id="before">上一张</button>
+            <button id="auto">自动</button>
+            <button id="next">下一张</button>
+        </div>
+    </div>
+</body>
+</html>

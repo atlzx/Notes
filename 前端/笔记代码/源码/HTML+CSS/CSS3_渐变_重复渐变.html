@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_渐变_重复渐变</title>
+    <style>
+        .box{
+            float: left;
+            height: 200px;
+            width: 250px;
+            border: 1px solid black;
+            margin-left: 10px;
+            text-align: center;
+            line-height: 200px;
+        }
+        .box1{
+            background-image: repeating-linear-gradient(30deg,red 50px,green 100px,blue 150px); 
+        }
+        .box2{
+            background-image: repeating-radial-gradient(red 50px,yellow 100px,green 150px); 
+        }
+    </style>
+</head>
+<body>
+    <div class="box box1">线性渐变的重复渐变</div>
+    <div class="box box2">径向渐变的重复渐变</div>
+</body>
+</html>

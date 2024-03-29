@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_新增边框属性_border-radius</title>
+    <style>
+        div{
+            height: 400px;
+            width: 400px;
+            background-color: skyblue;
+            text-align: center;
+            margin: 0px auto;
+            border-radius: 200px; /*边框圆角设置为宽高的一半时，会变成一个完全的圆*/
+            border-radius: 100px 50px 20px 10px / 50px 20px 10px 5px; /*必须按照左上、右上、左下、右下的顺序来，且水平半径在垂直半径前面*/
+            border-top-left-radius: 100px;
+            border-top-right-radius: 50px;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 10px;
+            border-top-left-radius: 100px 50px;
+            border-top-right-radius: 50px 20px;
+            border-bottom-left-radius: 20px 10px;
+            border-bottom-right-radius: 10px 5px;
+        }
+    </style>
+</head>
+<body>
+    <div>测试文本</div>
+</body>
+</html>

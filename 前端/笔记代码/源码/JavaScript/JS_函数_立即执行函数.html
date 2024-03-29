@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_函数_立即执行函数</title>
+    <script>
+        {
+            let a=1;
+            console.log(a);  //let声明的变量具有块作用域
+        };
+        /*
+            立即执行函数的语法:
+            ①用括号将匿名函数括起来
+            ②在声明的匿名函数后直接加括号。这样会直接调用该函数
+        */
+        (
+            function(){
+            var a=2;
+            console.log(a);
+            }()
+        );
+
+        //也可以用箭头函数调用，但调用该函数的括号只能写在包裹箭头函数的括号外,不能写在里面
+        (
+            ()=>{
+                var a=3;
+                console.log(a);
+            }
+        )();
+
+        (
+            function(){
+                var a=4;
+                console.log(a);
+            }()
+        );
+
+        //如果连续执行两次立即执行函数，JS解释器会报错:Uncaught TypeError: (intermediate value)(intermediate value)(...) is not a function
+        //报错的原因是因为不加分号的话，JS解释器会把第一个立即执行函数识别成函数名
+        //原因是第二个立即执行函数被括号所包裹，JS解释器误认为它是向函数传入参数的括号，即将这两个立即执行函数识别成了 函数() 形式的语法
+        //此时需要在括号后面手动添加分号来避免这种情况的发生
+
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

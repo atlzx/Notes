@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_面向对象_类</title>
+    <script>
+        class Person{
+
+        }
+
+        class Dog{
+
+        }
+
+        const Cat = class{
+
+        };
+        //使用new关键字创建对象
+        p1=new Person();
+        p2=new Person();
+        d1=new Dog();
+        c1=new Cat();
+        //使用instanceof关键字识别对象是否是指定类的实例
+        //输出true true false true true
+        console.log(p1 instanceof Person,p2 instanceof Person,d1 instanceof Person,d1 instanceof Dog,c1 instanceof Cat);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

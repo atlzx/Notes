@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_2D变换_2D缩放</title>
+    <style>
+        .outer{
+            height: 400px;
+            width: 400px;
+            border: 2px solid black;
+            margin: 0px auto;
+            margin-top: 100px;
+        }
+        .inner{
+            height: 400px;
+            width: 400px;
+            background-color: skyblue;
+            font-size: 30px;
+            transform: scale(1.5,1.5);
+        }
+        /*将字体缩放至比浏览器默认字体大小更小的大小*/
+        span{
+            display: inline-block;/*因为缩放无法作用于行内元素，因此需要更改显示类型*/
+            transform: scale(0.5,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="outer">
+        <div class="inner">测试文本</div>
+    </div>
+    <div class="outer">
+        <span>测试文本2</span>
+    </div>
+</body>
+</html>

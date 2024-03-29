@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_jQuery_addClass方法样例</title>
+    <style>
+        .box1,.box2,.box3{
+            height: 200px;
+            width: 200px;
+        }
+        .box1{
+            border: 10px solid orange;
+        }
+        .box2{
+            border: 10px solid brown;
+        }
+        .box3{
+            border: 10px solid blue;
+        }
+        .float-left{
+            float: left;
+        }
+        .greenColor{
+            background-color: green;
+        }
+        .configPadding{
+            padding: 10px;
+        }
+        .setwidth{
+            width: 600px;
+        }
+        .setHeight{
+            height: 400px;
+        }
+    </style>
+    <script src="../../文件/jQuery/jquery-3.7.1.js"></script>
+    <script>
+        $(
+            function(){
+                var $divElements=$("div");
+                $divElements.addClass("box2");  // 向该对象内的全部元素添加box2样式，第三个div未被覆盖的原因是在style标签后.box3写在后面，.box2优先级和其相同，无法覆盖其样式
+                $divElements.addClass(["float-left","greenColor"]);  // 可以传入数组，使对象的每个元素都添加数组内的类名
+                $divElements.addClass(
+                    // 回调函数支持传入两个参数，index表示当前正在被处理的元素在jQuery对象中的索引，className为要添加的类名
+                    function(index,className){
+                        if(index%2===0){
+                            return ["configPadding","setwidth"];  // 回调函数的返回值将作为jQuery对象下索引值为index的元素类名添加，支持返回数组
+                        }
+                        /*this.classList.add("setHeight");*/ // 函数的this表示当前正在被处理的元素对象，这是一个DOM对象，不能使用jQuery的方法
+                        $(this).addClass("setHeight");  // 可以使用核心函数将DOM对象转换为jQuery对象
+                        // 由于符合index%2===0的元素已经return了，因此只有第二个div元素被添加了setHeight类名
+                    }
+                );
+            }
+        );
+    </script>
+</head>
+<body>
+    <div class="box1"></div>
+    <div class="box2"></div>
+    <div class="box3"></div>
+</body>
+</html>

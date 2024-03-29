@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>列表渲染导致的性能问题</title>
+    <script src="../../文件/React18/babel.min.js"></script>
+    <script src="../../文件/React18/react.development.js"></script>
+    <script src="../../文件/React18/react-dom.development.js"></script>
+    <script type="text/babel">
+        function change(){
+            // 要替换的数据，从整体来讲只有第一组数据是需要添加进去的，其它数据都不需要变
+            // 但是react会根据顺序判断，第一个数据并不与旧数据的第一个数据相同，以此类推，这样就会导致所有li都会被整体渲染
+            // 解决方案是给渲染的每个li元素都添加一个独有的key属性，设置了key之后，react便会根据key进行比较，而不会进行顺序比较了。这个属性会被react访问到，但不会在前端被展示
+            // 使用索引作为key的属性并不是一个行之有效的方案，因为数组如果长度发生变化，同一索引也不会对应同一数据，也就是说，索引作为key除了不让控制台显示报错信息之外一点用都没有
+            // 一般来说，应该根据数据对应的唯一id值作为key的参考进行赋值
+            let data2=[{name:'x'},{name:'lzx'},{name:'lz'},{name:'l'}];
+            let array2=data2.map(item=>item.name);
+            // 调用map方法进行遍历
+            const liArr2=array2.map(
+                (item)=>{
+                    // 给li设置key，出于方便，直接将item值作为key
+                    return <li key={item}>{item}</li>;
+                }
+            );
+            const ul=<ul><button type="button" onClick={change}>点我一下</button>{liArr2}</ul>
+            root.render(ul);
+        }
+        const root=ReactDOM.createRoot(document.getElementById("root"));
+        let data1=[{name:'lzx'},{name:'lz'},{name:'l'}];
+        let array1=data1.map(item=>item.name);
+        console.log(array1);
+        const liArr1=array1.map(
+            (item)=>{
+                // 给li设置key，出于方便，直接将item值作为key
+                return <li key={item}>{item}</li>;
+            }
+        );
+        const ul=
+                <ul>
+                    {/* 加入一个按钮，点击按钮后重新渲染列表 */}
+                    <button type="button" onClick={change}>点我一下</button>
+                    {liArr1}
+                </ul>;
+        root.render(ul);
+    </script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>

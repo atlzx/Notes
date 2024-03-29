@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_属性节点样例</title>
+    <script>
+        window.onload=()=>{
+            let inputElement=document.getElementsByTagName("input")[0];
+            let spanElement=document.getElementsByTagName("span")[0];
+            console.log(spanElement.attributes);
+            console.log(`检查是否包含至少一个属性`,spanElement.hasAttributes()); // 检查是否包含至少一个属性
+            console.log(`检查是否包含指定属性`,spanElement.hasAttribute("class"));  // 检查是否包含指定属性 
+            console.log(`读取指定属性值`,inputElement.getAttribute("type"));  // 读取属性值
+            console.log(`读取class属性值`,spanElement.getAttribute("class"));  // 读取class属性
+            inputElement.setAttribute("class","bbb");  // 修改属性值
+            inputElement.removeAttribute("disabled");  // 移除属性
+        };
+    </script>
+</head>
+<body>
+    <div>
+        <span class="abc" ></span>
+        <input type="text" disabled="disabled">
+    </div>
+</body>
+</html>

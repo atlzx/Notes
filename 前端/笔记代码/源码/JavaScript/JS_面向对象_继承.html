@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_面向对象_继承</title>
+    <script>
+        class Animal{
+            name;
+            constructor(name){
+                this.name=name;
+            }
+            sayHello(){
+                console.log('大家好');
+            }
+            saying(){
+
+            }
+        }
+        //使用extends关键字来实现继承
+        class Dog extends Animal{
+            age;
+            //重写构造函数时，需要调用super()方法
+            constructor(name,age){
+                super(name);
+                this.age=age;
+            }
+            //子类可以重写父类定义的方法
+            saying(){
+                console.log('汪汪');
+            }
+        }
+        class Cat extends Animal{
+            age;
+            constructor(name,age){
+                super(name);
+                this.age=age;
+            }
+            saying(){
+                super.sayHello();  //调用父类方法
+                console.log('喵喵');
+            }
+        }
+
+        let animal1=new Dog("旺财",18);
+        let animal2=new Cat('Tom',12);
+        animal1.saying();
+        animal2.saying();
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

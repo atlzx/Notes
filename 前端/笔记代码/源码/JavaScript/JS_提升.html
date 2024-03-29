@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_提升</title>
+    <script>
+        console.log(c);  //报错: Uncaught ReferenceError: Cannot access 'b' before initialization，无法在变量b初始化前访问，说明c已经被声明了，但禁止访问
+        console.log(a);  //undefined，说明已被声明但未被赋值，赋值语句还是留在原代码位置才会执行
+        fn1();  //可以调用说明函数已被创建
+    //    console.log(b);  //报错: Uncaught ReferenceError: Cannot access 'b' before initialization，无法在变量b初始化前访问，说明b已经被声明了，但禁止访问
+        x();  //报错:Uncaught TypeError: x is not a function
+        var a=10;
+        let b=10;
+        const c=0;
+        function fn1(){
+            alert('Hello World');
+        }
+        //以这种方式被声明的函数不能在原代码之前被调用
+        //因为var仅声明了变量x，而没有给x赋值
+        //这样调用会报错: Uncaught TypeError: x is not a function
+        var x=function(){
+            alert('World Hello');
+        }
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

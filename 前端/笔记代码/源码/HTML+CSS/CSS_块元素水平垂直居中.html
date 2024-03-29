@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_块元素水平垂直居中</title>
+    <style>
+        .container{
+            width: 400px;
+            height: 400px;
+            background-color: gray;
+            overflow: hidden; /*使用overflow解决子元素得margin塌陷问题*/
+        }
+        .inner{
+            width: 100px;
+            height: 100px;
+            background-color: skyblue;
+            margin: 0 auto; /*让元素相对于父元素水平居中*/
+            margin-top: 150px; /*计算得子元素需要与父元素上边缘保持150px便可垂直居中，因此使用margin-top调整，但会出现margin塌陷问题*/
+            text-align: center; /*使元素内文本水平居中*/
+            line-height: 100px; /*利用行高使元素内文本垂直居中*/
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="inner">测试文本</div>
+    </div>
+</body>
+</html>

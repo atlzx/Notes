@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_函数_可变参数</title>
+    <script>
+        function fn(){
+            console.log(arguments);  //arguments会将用户传入的所有实参全部存储到内部
+            for(let i of arguments){
+                console.log(i);  //可以通过for-of语句或for循环遍历arguments
+            }
+        /*    arguments.forEach(
+                (i)=>{
+                    console.log(i);
+                }
+            );  //会报错  */
+
+        }
+        //可变参数在声明时必须写在函数最后
+        function fn1(a,b,...abc){
+            console.log(a,b,abc);  //可变参数不会存储其前面的参数的值
+            return a+b+abc.reduce(
+                (a,b)=>{
+                    return a+b;
+                }
+            );
+        }
+        fn(1,2,3,4);
+        console.log(fn1(1,2,3,4,5,6));
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

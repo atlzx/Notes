@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_渐变_渐变案例</title>
+    <style>
+        /*渐变实现横格纸效果*/
+        .box1{
+            width: 600px;
+            height: 800px;
+            padding:20px;
+            margin: 0px auto;
+            background-image: repeating-linear-gradient(transparent 0px,transparent 29px,gray 30px); /*不知道为什么这个重复的色比原来的色要深*/
+            border: 1px solid black;
+            background-clip: content-box;
+        }
+        /*立体球*/
+        .box2{
+            height: 200px;
+            width: 200px;
+            border-radius: 100px;
+            background-image: radial-gradient(at 80px 80px,white,#333);
+        }
+    </style>
+</head>
+<body>
+    <div class="box1"></div>
+    <div class="box2"></div>
+</body>
+</html>

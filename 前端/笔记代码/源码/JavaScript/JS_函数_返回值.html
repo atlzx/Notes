@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_函数_返回值</title>
+    <script>
+        function fn(){
+            return;
+        }
+        function fn2(){
+            ;
+        }
+        function fn3(){
+            alert("hello");
+            return 'a';
+            alert("world");  //该语句永远不会执行
+        }
+        function fn4(){
+            return ()=>alert('haha');
+        }
+        console.log(fn());  //只写return不写返回值会返回undefined
+        console.log(fn2());  //不写return也会返回undefined
+        console.log(fn3());  //return语句执行完毕后，函数便直接终止执行，不会再向下运行
+        console.log(fn4()());  //调用fn4()函数返回箭头函数，然后调用箭头函数，箭头函数无返回值，最终输出undefined
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_jQuery_append方法样例</title>
+    <script src="../../文件/jQuery/jquery-3.7.1.js"></script>
+    <script>
+        $(
+            function(){
+                var $buttonElement=$("#btn");
+                var $firstUlElement=$(".ul1");
+                var $secondUlElement=$(".ul2");
+                var $firstLiElement=$(".ul1 li:first-child");
+                var $secondLiElement=$(".ul1 li:nth-child(2)");
+                var $secondUlLiElements=$(".ul2 li");
+                $buttonElement.click(
+                    function(event){
+                        $firstUlElement.append("<div>aaa</div>");
+                        $firstUlElement.prepend("<div>bbb</div>")
+                    }
+                );
+                $secondUlElement.click(
+                    function(){
+                        $($secondUlLiElements[0]).clone().appendTo($secondUlElement);  // 将第二个ul标签内的第一个li元素的深拷贝对象插入到第二个ul后面
+                        $($secondUlLiElements[1]).clone().prependTo($secondUlElement); // 将第二个ul标签内的第二个li元素的深拷贝对象插入到第二个ul前面
+                    }
+                );
+            }
+        );
+    </script>
+</head>
+<body>
+    <div><button id="btn" type="button">点我一下</button></div>
+    <ul class="ul1">
+        <li>张三</li>
+        <li>李四</li>
+    </ul>
+    <ul class="ul2">
+        <li>王五</li>
+        <li>赵六</li>
+    </ul>
+</body>
+</html>

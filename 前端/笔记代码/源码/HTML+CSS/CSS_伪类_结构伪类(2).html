@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_伪类_结构伪类(2)</title>
+    <style>
+        /*条件:1.是div的子元素 2.序号为3的子元素 3.是p标签*/
+        div>p:nth-child(3){
+            color: red;
+        }
+        /*条件:1.是div的子元素 2.序号为-n+2(n>=0)的子元素 3.是p标签*/
+        div>p:nth-child(-n+2){
+            color: green;
+        }
+        /*条件:1.是div的子元素 2.序号为0的子元素 3.是p标签*/
+        /*由于没有任何元素是第0个，因此没有任何一个元素被该样式修饰*/
+        div>p:nth-child(0){
+            color: purple;
+        }
+        /*条件:1.是div的子元素 2.序号为n+4(n>=0)的子元素 3.是p标签*/
+        div>p:nth-child(n+4){
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <p>小明</p>
+        <p>小红</p>
+        <p>小刚</p>
+        <p>小美</p>
+        <p>小李</p>
+    </div>
+</body>
+</html>

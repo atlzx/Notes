@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>axios_get与_post方法</title>
+    <script src="./node_modules/axios/dist/axios.js"></script>
+    <script>
+        onload=function(){
+            axios.get(
+                'https://api.uomg.com/api/rand.qinghua?format=json',  // 要请求的URL
+                {
+                    method:'post',  // 请求方式
+                    params:{
+                        name:'zzzzz'  // 放在URL后面的后缀
+                    }
+                }
+            ).then(
+                function(message){
+                    console.log(message.data.content);
+                    document.getElementById('show').textContent=message.data.content;
+                }
+            ).catch(
+                function(error){
+                    console.log(error);
+                }
+            ).finally(
+                function(){
+                    
+                }
+            );
+        }
+    </script>
+</head>
+<body>
+    <div id="show">
+
+    </div>
+</body>
+</html>

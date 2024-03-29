@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_子代选择器</title>
+    <style>
+        div>a{
+            color: red;
+        }
+        div>p>a{
+            color: green;
+        }
+        /*以下三种写法都可以让最后的a标签内的文本变色*/
+        /*该写法直接通过类选择器先选出嵌套对应a的div元素再进行子代选择*/
+        .end>a{
+            color: brown;
+        }
+        /*该写法中的div指嵌套对应的a的div*/
+        div.end>a{
+            color: brown;
+        }
+        /*该写法中的div指的是最外层的div*/
+        div .end>a{
+            color: brown;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <a href="#">张三</a>
+        <a href="#">李四</a>
+        <a href="#">王五</a>
+        <p>
+            <a href="#">赵六</a> <!-- 对于这个a，由于它不是任何div元素的子元素，因此'div>a'的css选择器无法作用于它 -->
+        </p>
+        <div class="end">
+            <a href="#">孙七</a>
+        </div>
+    </div>
+</body>
+</html>

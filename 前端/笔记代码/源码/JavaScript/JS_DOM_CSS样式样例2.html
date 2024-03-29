@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_CSS样式样例2</title>
+    <style>
+        body{
+            overflow: hidden;
+        }
+        .outer{
+            height: 200px;
+            width: 200px;
+            padding: 50px;
+            /* margin: 10px; */
+            overflow: scroll;
+        }
+        .container{
+            height: 600px;
+            width: 600px;
+            background-color: orange;
+        }
+    </style>
+    <script>
+        onload=function(){
+            let outer=document.getElementById("outer");
+            let container=document.getElementById("container");
+            let btn=document.getElementById("btn");
+            btn.addEventListener(
+                "click",
+                function(){
+                    console.log('content+padding的高度与宽度:',outer.clientHeight,outer.clientWidth);  // 宽和高之所以不是200px是因为滚动条的出现挤占了content的宽高
+                    console.log('content+padding+margin的高度与宽度',outer.offsetHeight,outer.offsetWidth);
+                    console.log('outer对象的定位对象:',outer.offsetParent);  // 如果没有定位元素，返回body
+                    console.log('outer对象相对于其offsetParent的水平和垂直偏移量',outer.offsetLeft,outer.offsetTop);  // 偏移量为8是因为body默认设置了8px的margin
+                    console.log('滚动条区域的高和宽',outer.scrollHeight,outer.scrollWidth);  // 该属性值受父元素的padding和子元素的宽高影响
+                    console.log('滚动条的水平和垂直偏移量:',outer.scrollLeft,outer.scrollTop);  // 
+                }
+            );
+        }
+    </script>
+</head>
+<body>
+    <div class="outer" id="outer">
+        <div><button type="button" id="btn">点我</button></div>
+        <div class="container" id="container">
+            aaa
+        </div>
+    </div>
+</body>
+</html>

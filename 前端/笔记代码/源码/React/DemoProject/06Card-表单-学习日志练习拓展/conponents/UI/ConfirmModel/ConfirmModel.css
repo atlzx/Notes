@@ -1,0 +1,40 @@
+.confirm-model{
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    height: 200px;
+    background-color: #def;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    margin: auto;
+    z-index: 10;
+    padding: 10px;
+}
+.confirm-text{
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+.confirm-button{
+    flex: auto;
+    display: flex;
+    justify-content: space-evenly;
+}
+.confirm-button button{
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid gray;
+}
+.confirm-button button:first-child{
+    background-color: aqua;
+}
+.confirm-button button:last-child{
+    background-color: brown;
+}

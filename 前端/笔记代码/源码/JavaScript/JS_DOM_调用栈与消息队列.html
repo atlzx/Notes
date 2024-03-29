@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_调用栈与消息队列</title>
+    <script>
+        onload=function(){
+            function fn1(){
+                function fn2(){
+                    console.log('第二个函数被执行了');  // 在此设置断点,调用栈中包括全局作用域、onload、fn1、fn2，且fn2在栈顶
+                }
+                fn2();  // 在此设置断点,调用栈中包括全局作用域、onload和fn1，且fn1在栈顶
+                console.log('第一个函数被执行了');
+            }
+            fn1();
+            let btn=document.getElementById("btn");
+            btn.addEventListener(
+                "click",
+                function(){
+                    alert(1111);  // 在此设置断点，事件触发时调用栈中仅包含该回调函数
+                }
+            ); 
+        }
+    </script>
+</head>
+<body>
+    <button type="button" id="btn">按钮</button>
+</body>
+</html>

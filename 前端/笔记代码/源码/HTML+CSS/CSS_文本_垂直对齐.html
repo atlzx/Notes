@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_文本_垂直对齐</title>
+    <style>
+        img{
+            height: 120px;
+            /*若vertical-align的作用对象负责支撑父元素的盒子，
+            则使用vertical-align会使其它文本或图像等以作用对象为中心移动，而不会移动作用对象，因为该对象起支撑作用*/
+            vertical-align: middle;  
+        }
+        div{
+            font-size: 40px;
+        }
+        #text{
+            height: 200px;
+            background-color: blue;
+            vertical-align: bottom; /*vertical-align不能作用于块元素*/
+        }
+        .test{
+            font-size: 50px;
+            background-color: skyblue;
+        }
+        span{
+            font-size: 20px;
+            /*middle关键字使元素的中部与父元素的基线加上父元素字母x高度的一半对齐(即元素的中部与父元素字母x(小写)的中部对其)。
+            它不意味着让文本显示在垂直正中位置*/
+            vertical-align: middle; 
+        }
+    </style>
+</head>
+<body>
+    <div>
+        图片<img src="../../文件/图片/壁纸1.jpg" alt="壁纸">
+    </div>
+    <div id="text">啊啊啊啊啊啊啊</div>
+    <div class="test">测试x<span>文本</span></div>
+</body>
+</html>

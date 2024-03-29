@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_对象_对象拷贝</title>
+    <script>
+        let a={
+            name:'张三',
+            age:18,
+            gender:'女',
+            home:{name:'李四'}
+        }
+            ;
+        let b=[1,2,3,4,[5,6,7,8]];
+        let obj1={...a};  //使用展开运算符浅拷贝对象a
+        let obj2={address:'保定',...a};  //可以向里面添加数据
+        let obj3={...a,age:12};  //如果出现属性冲突，则根据后来者居上原则进行覆盖
+        console.log('浅拷贝指定对象:',obj1);
+        console.log('浅拷贝的同时添加新数据',obj2);
+        console.log('浅拷贝的属性冲突:',obj3);
+        let obj4=Object.assign({name:'李四'},a);  //使用assign方法进行浅拷贝，会将a的每个属性复制到{}中并返回复制后的对象.出现属性冲突会根据后来者居上原则进行覆盖
+        console.log('使用assign方法进行浅拷贝',obj4);
+        let arr1=[...b];  //使用展开运算符浅拷贝数组b
+        console.log('使用展开运算符浅拷贝数组:',arr1);
+        let arr2=b.slice();
+        console.log('使用数组的slice方法进行浅拷贝:',arr2);
+        let obj5=structuredClone(a);
+        console.log('深拷贝对象:',obj5,'检验对象深拷贝:',obj5['home']===a['home']);
+        let arr3=structuredClone(b);
+        console.log('深拷贝数组',arr3,'检验数组深拷贝:',arr3[4]===b[4]);
+        let obj={name:'张三',friend:{name:'李四'}};
+        let result=JSON.parse(JSON.stringify(obj));
+        console.log('比较使用JSON方法生成的深拷贝对象的嵌套对象是否与元对象绝对相等:',result.friend===obj.friend);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

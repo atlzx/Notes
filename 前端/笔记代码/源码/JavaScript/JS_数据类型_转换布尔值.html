@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_数据类型_转换布尔值</title>
+    <script>
+        let a='false',b='  ',c='',d=0,e=100,f=-1,g=null,h=undefined,i=Infinity,j=NaN;
+        a=Boolean(a);  //字符串false不为空，因此转换为true
+        b=Boolean(b);//带空格的字符串不是空的，因此为true
+        c=Boolean(c);//空字符串会转换为false
+        d=Boolean(d);//0表示没有，转换为false
+        e=Boolean(e);//转换为true
+        f=Boolean(f);//转换为true
+        g=Boolean(g);//转换为false
+        h=Boolean(h);//转换为false
+        i=Boolean(i);//Infinity无穷，表示有，转换为true
+        j=Boolean(j);//NaN表示无，转换为false
+        console.log(a,b,c,d,e,f,g,h,i,j);
+
+        //使用逻辑非运算符转换布尔值
+
+        a='123';
+        console.log(typeof a,a);
+        a=!!a;
+        console.log(typeof a,a);
+
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

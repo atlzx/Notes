@@ -1,0 +1,130 @@
+.toPayContainer{
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    z-index: 999;
+    overflow: auto;
+    background-color: #eee;
+    padding: 100rem 20rem 0rem;
+}
+.closeButton{
+    position: absolute;
+    top: 20rem;
+    left: 20rem;
+    height: 50rem;
+    width: 50rem;
+    z-index: 10;
+    border-radius: 50%;
+}
+
+.mealInfoContainer{
+    width: 100%;
+    padding: 0rem 20rem;
+    background-color: white;
+    border-radius: 40rem;
+    position: relative;
+}
+.title{
+    padding-top: 20rem;
+    padding-left: 20rem;
+    height: 80rem;
+    font-size: 30rem;
+}
+.mealInfo{
+    border-top: 1px dashed gray ;
+    border-bottom: 1px dashed gray;
+}
+.totalContainer{
+    padding-top: 20rem; 
+    height: 150rem;
+    padding-bottom: 70rem;
+}
+.totalContainer:after{
+    content: '';
+    display: block;
+    clear: both;
+}
+.totalPrice,.totalPriceNum{
+    float: right;
+    font-size: 28rem;
+}
+.totalPriceNum{
+    margin-left: 10rem;
+}
+.totalPriceNum::before{
+    content: '￥';
+}
+.leftCircle,.rightCircle{
+    width: 40rem;
+    height: 40rem;
+    border-radius: 50%;
+    background-color: red;
+    position: absolute;
+    bottom: 130rem;
+    left: -18rem;
+    background-color: #eee;
+}
+.rightCircle{
+    left: auto;
+    right: -18rem;
+}
+.goPayContainer{
+    position: fixed;
+    bottom: 20rem;
+    height: 60rem;
+    background-color: brown;
+    left: 0px;
+    right: 0px;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 40rem;
+    padding-left: 20rem;
+    background-color: #333;
+}
+.allTotal{
+    height: 100%;
+    font-size: 30rem;
+    line-height: 60rem;
+    color: white;
+}
+.toPayButton{
+    height: 100%;
+    border-radius: 40rem;
+    width: 150rem;
+    background-color: #FCBF49;
+    border: 1px solid gray;
+}
+
+
+
+
+
+
+
+.mealContainer{
+    display: flex;
+    justify-content: space-between;
+    
+}
+.titleContainer{
+    width: 500rem;
+    padding: 20rem;
+}
+.title{
+    font-size: 28rem;
+}
+.operate{
+    display: flex;
+    justify-content: space-between;
+    padding-top: 30rem;
+    height: 60rem;
+}
+.price{
+    font-size: 24rem;
+    font-weight: bold;
+}
+.price::before{
+    content: '￥';
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_定位_定位层级</title>
+    <style>
+        .container{
+            width: 500px;
+            background-color: skyblue;
+            position: relative;
+            z-index: 4;
+        }
+        .box{
+            height: 100px;
+            width: 100px;
+        }
+        .box1{
+            background-color: brown; /*没有设置定位，层级比z-index值为0还低*/
+        }
+        .box2{
+            background-color: green;
+            position: relative;
+            top: -80px;
+            left: 20px;
+            z-index: 8; /*在包含块内，其层级第一高*/
+        }
+        .box3{
+            background-color: blue;
+            position: absolute;
+            top: 40px;
+            left: 50px;
+            z-index: 6; /*在包含块内，其层级第三高*/
+        }
+        .box4{
+            background-color: purple;
+            position: fixed;
+            top: 70px;
+            left: 90px;
+            z-index: 7; /*在包含块内，其层级第二高*/
+        }
+        .box5{
+            background-color: red;
+            position: absolute;
+            top: 90px;
+            left: 120px;
+            z-index: 5; /*上面各box虽然z-index值比5大，但其包含块的z-index值比5小，因此该元素会覆盖其他元素*/
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box box1">测试文本1</div>
+        <div class="box box2">测试文本2</div>
+        <div class="box box3">测试文本3</div>
+        <div class="box box4">测试文本4</div>
+    </div>
+    <div class="box box5">测试文本5</div>
+</body>
+</html>

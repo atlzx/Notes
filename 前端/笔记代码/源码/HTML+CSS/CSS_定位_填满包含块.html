@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_定位_填满包含块</title>
+    <style>
+        .container{
+            height: 400px;
+            width: 400px;
+            background-color: gray;
+            border: 10px solid red;
+            position: relative;
+        }
+        .box{
+            /*使用width: 100%;或height: 100%;是不正确的，因为属性width和height仅能设置内容区的
+            宽高，如果将值设为了100%，那么如果盒子设置了padding或border，那么它将从包含块中溢出*/
+            /* width: 100%;
+            height: 100%;  */
+            border: 10px solid black;
+            padding: 20px;
+            background-color: orange;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            right: 0px;
+            bottom: 0px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box">测试文本</div>
+    </div>
+</body>
+</html>

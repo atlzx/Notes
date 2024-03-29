@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_新增背景属性_background-origin</title>
+    <style>
+        .box1{
+            height: 400px;
+            width: 400px;
+            margin: 0px auto;
+            background-color: skyblue;
+            padding: 50px;
+            border: 50px dashed brown;
+            background-image: url('../../文件/图片/bg01.jpg');
+            background-repeat: no-repeat;  /*设置重复会使图片重复，并将溢出的部分填充到盒子的另一部分。这里设置不重复便于观察*/
+            background-origin: border-box; 
+            /*设置原点只是设置图片的起始，设置padding-box只是让背景图片从padding的左上角开始显示，
+            但不会在padding的右下角中止显示，如果图片够大，背景图是能够铺满自原点向下和向右的全部空间的*/
+        }
+    </style>
+</head>
+<body>
+    <div class="box1"></div>
+</body>
+</html>

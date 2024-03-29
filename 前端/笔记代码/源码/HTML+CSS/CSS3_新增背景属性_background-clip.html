@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_新增背景属性_background-clip</title>
+    <style>
+        .box1{
+            height: 400px;
+            width: 400px;
+            margin: 0px auto;
+            background-color: skyblue;
+            padding: 50px;
+            font-size: 120px;
+            font-weight: bold;
+            border: 50px dashed brown;
+            background-image: url('../../文件/图片/bg02.jpg');
+            background-repeat: no-repeat;  
+            background-origin: border-box;
+            color: transparent;
+            -webkit-background-clip: text; /*若使用text属性值，则需要写上私有前缀*/
+        }
+    </style>
+</head>
+<body>
+    <div class="box1">测试</div>
+</body>
+</html>

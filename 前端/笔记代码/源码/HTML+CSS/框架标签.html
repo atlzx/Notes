@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 使用框架查看其他网页 -->
+    <iframe src="https://www.cctv.com/" width="900px" height="300px" frameborder="1"></iframe>
+
+    <!-- 使用框架查看本地文件 -->
+    <iframe src="表单_输入框.html" frameborder="0" width="500px" height="300px"></iframe> <!-- frameborder属性的值只能为1或0，1为有边框，0为无边框 -->
+    <br>
+
+    <!-- 使用超链接跳转至框架 -->
+    <a href="https://www.cctv.com/" target="container">查看央视网</a>  <!-- 使用target属性，输入对应iframe的name值可以使结果在iframe框架内显示 -->
+
+    <!-- 使用表单跳转至框架 -->
+    <form action="https://search.cctv.com/search.php" target="container"> <!-- 使用target属性，输入对应iframe的name值可以使结果在iframe框架内显示 -->
+        <input type="text" name="qtext">
+        <button>查询</button>
+    </form>
+    <iframe name="container" frameborder="1" width="1500px" height="400px"></iframe>
+</body>
+</html>

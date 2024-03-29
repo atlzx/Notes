@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_jQuery_筛选jQuery对象2</title>
+    <style>
+        .box{
+            height: 100px;
+            width: 100px;
+            margin: 0px 10px;
+            float: left;
+            background-color: skyblue;
+            border: 5px solid orange;
+        }
+        .border{
+            border: 5px solid red;
+        }
+        .box2{
+            height: 200px;
+            width: 200px;
+            margin: 0px 10px;
+            float: left;
+            background-color: brown;
+            border: 5px solid purple;
+        }
+    </style>
+    <script src="../../文件/jQuery/jquery-3.7.1.js"></script>
+    <script>
+        $(
+            function(){
+                var $divElements=$(".box");
+                $divElements=$divElements.add($(".box2"));  // 添加类名为box2的元素,该方法不属于破坏性方法，是有返回值的
+                console.log('添加后的jQuery对象:',$divElements);
+                console.log('addBack方法样例:',$divElements.children().addBack());
+                console.log('children方法样例(该方法会获取文本节点、注释和元素):',$divElements.contents());
+                console.log('使用children方法得到的结果:',$divElements.children(".aaa"));  // 什么也得不到，因为唯一的子元素里面没有该类名
+                console.log('使用siblings方法得到的结果:',$divElements.siblings(".ccc"));  // 什么也得不到，因为兄弟元素都没有该类名
+                // next、parent、parents、nextAll、prev、prevAll等方法与上面的方法类似，因为其功能和参数都大体一致
+            }
+        );
+    </script>
+</head>
+<body>
+    <div class="box border" id="first"></div>
+    <div class="box"></div>
+    <div class="box border">
+        <div></div>
+    </div>
+    <div class="box border"></div>
+    <div class="box border"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box border" id="last"></div>
+    <div class="box2"></div>
+</body>
+</html>

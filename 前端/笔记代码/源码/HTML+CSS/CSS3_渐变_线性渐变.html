@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_渐变_线性渐变</title>
+    <style>
+        .box{
+            float: left;
+            height: 200px;
+            width: 200px;
+            border: 1px solid black;
+            margin-left: 50px;
+            text-align: center;
+            line-height: 200px;
+        }
+        .box1{
+            background-image: linear-gradient(red,green,blue); /*注意：需要写逗号分隔*/
+        }
+        .box2{
+            background-image: linear-gradient(to right top,red,green,blue); /*向右上角渐变*/
+        }
+        .box3{
+            background-image: linear-gradient(30deg,red,green,blue); /*使用角度渐变，该角度为倾斜方向的垂线与水平线的夹角*/
+        }
+        .box4{
+            /*该设置的意思是，从方向开始的起始位置开始算，从0px到50px为纯红色，50px开始到100px由红色渐变到绿色，到100px为纯绿色，从100px开始到150px由绿色渐变到蓝色，到
+            150px为纯蓝色，150px到结束一直为纯蓝色*/
+            /*也可以用百分比来设置渐变起始位置*/
+            background-image: linear-gradient(30deg,red 50px,green 100px,blue 150px); 
+        }
+        .box5{
+            /*由于本质为背景色，可以使用渐变与文字背景配合*/
+            background-image: linear-gradient(30deg,red 50px,green 100px,blue 150px);
+            color: transparent;
+            -webkit-background-clip: text;
+            text-align: left;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="box box1">默认方向、位置</div>
+    <div class="box box2">使用关键词调整方向</div>
+    <div class="box box3">使用角度调整方向</div>
+    <div class="box box4">设置开始渐变的位置</div>
+    <div class="box box5">渐变配合文字背景</div>
+</body>
+</html>

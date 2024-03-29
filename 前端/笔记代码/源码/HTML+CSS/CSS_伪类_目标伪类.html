@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_伪类_目标伪类</title>
+    <style>
+        div{
+            height: 200px;
+        }
+        /*该选择器可以在指定元素被跳转时修饰该元素*/
+        div:target{
+            background-color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <a href="#test1">去第1个div</a>
+        <a href="#test2">去第2个div</a>
+        <a href="#test3">去第3个div</a>
+        <a href="#test4">去第4个div</a>
+        <a href="#test5">去第5个div</a>
+        <div id="test1">测试1</div>
+        <br>
+        <div id="test2">测试2</div>
+        <br>
+        <div id="test3">测试3</div>
+        <br>
+        <div id="test4">测试4</div>
+        <br>
+        <div id="test5">测试5</div>
+    </div>
+</body>
+</html>

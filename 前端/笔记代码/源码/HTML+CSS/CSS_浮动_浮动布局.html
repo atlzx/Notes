@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_浮动_浮动布局</title>
+    <style>
+        *{
+            margin: 0px;
+            padding: 0px;
+        }
+        body{
+            text-align: center;
+        }
+        .float-left{
+            float: left;
+        }
+        .float-left-fix::after{
+            content: '';
+            display: block;
+            clear: both;
+        }
+        .top{
+            width: 960px;
+            margin: 0px auto;
+        }
+        .logo,.banner1,.banner2{
+            height: 80px;
+            background-color: #ccc;
+            line-height: 80px;
+        }
+        .logo,.banner2{
+            width: 200px;
+        }
+        .banner1{
+            margin-left: 10px;
+            margin-right: 10px;
+            width: 540px;
+        }
+        .menu{
+            height: 30px;
+            width: 960px;
+            margin: 0px auto;
+            background-color: #ccc;
+            line-height: 30px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .content{
+            width: 960px;
+            margin: 0px auto;
+        }
+        .left-content{
+            width: 750px;
+            margin-right: 10px;
+        }
+        .item1,.item2,.item3,.item4,.item5,.item6{
+            border: 1px black solid; /*border的值会随页面缩放的比例变化而变化,页面缩小时border值会变大导致页面不规整*/
+        }
+        .item1,.item2{
+            height: 198px;
+            width: 368px;
+            line-height: 198px;
+        }
+        .item1{
+            margin-right: 10px;
+        }
+        .item3,.item4,.item5,.item6{
+            margin-top: 10px;
+            height: 198px;
+            width: 178px;
+            line-height: 198px;
+        }
+        .right-content{
+            width: 200px;
+        }
+        .item3,.item4,.item5{
+            margin-right: 10px;
+        }
+        .item7,.item8,.item9{
+            border: 1px black solid; /*border的值会随页面缩放的比例变化而变化，页面缩小时border值会变大导致页面不规整*/
+            height: 128px;
+            width: 198px;
+            line-height: 128px;
+        }
+        .item8,.item9{
+            margin-top: 10px;
+        }
+        .footer{
+            width: 960px;
+            height: 60px;
+            margin: 0px auto;
+            margin-top: 10px;
+            background-color: #ccc;
+            line-height: 60px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部 -->
+    <div class="top float-left-fix">
+        <div class="logo float-left">logo</div>
+        <div class="banner1 float-left">banner1</div>
+        <div class="banner2 float-left">banner2</div>
+    </div>
+    <!-- 菜单 -->
+    <div class="menu">菜单</div>
+    <!-- 内容区 -->
+    <div class="content float-left-fix">
+        <!-- 左侧内容 -->
+        <div class="left-content float-left-fix float-left">
+            <div class="item1 float-left">栏目一</div>
+            <div class="item2 float-left">栏目二</div>
+            <div class="item3 float-left">栏目三</div>
+            <div class="item4 float-left">栏目四</div>
+            <div class="item5 float-left">栏目五</div>
+            <div class="item6 float-left">栏目六</div>
+        </div>
+        <!-- 右侧内容 -->
+        <div class="right-content float-left float-left-fix">
+            <div class="item7">栏目七</div>
+            <div class="item8">栏目八</div>
+            <div class="item9">栏目九</div>
+        </div>
+    </div>
+    <!-- 页脚 -->
+    <div class="footer">页脚</div>
+</body>
+</html>

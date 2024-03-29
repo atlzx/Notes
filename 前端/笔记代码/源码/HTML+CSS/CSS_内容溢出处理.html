@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_内容溢出处理</title>
+    <style>
+        .d1{
+            height: 200px;  
+            width: 400px;  /* 宽度很明显不是400px,因为滚动条挤占了content空间 */
+            background-color: skyblue;
+            overflow: auto;
+            overflow-x: hidden;
+            overflow-y: visible; /*即使设置了visible，依然会显示滚动条*/
+        }
+        .d2{
+            width: 1000px;
+            background-color: gray;
+        }
+    </style>
+</head>
+<body>
+    <div class="d1">
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Natus perspiciatis, animi rem culpa magni
+        exercitationem pariatur inventore dicta eius accusamus autem architecto at aperiam voluptatibus temporibus sit
+        obcaecati nisi libero consequatur!
+        <div class="d2">
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Laboriosam dignissimos, dolores, saepe non sunt,
+            ab eos incidunt assumenda laborum laudantium ullam magni. Fugiat blanditiis explicabo nostrum saepe iste
+            asperiores! Perspiciatis pariatur, odit, unde, aliquid provident similique consequuntur totam in atque
+            blanditiis aut voluptate suscipit dicta soluta aliquam ipsa iste? Dignissimos?
+        </div>
+        Mollitia maiores animi blanditiis cum doloribus, dolore eos recusandae magnam
+        molestiae quas rerum nostrum quod. Modi ipsam voluptate nulla hic praesentium, fuga rem. Ullam voluptatem
+        libero, architecto, et voluptate fuga quaerat eos non animi sint soluta aliquam harum odit praesentium? Eum sit
+        aspernatur officia, vitae adipisci soluta ullam corrupti quisquam asperiores nostrum assumenda velit amet
+        voluptatem repellendus architecto vero non totam dicta? Corporis, ab temporibus! Ea exercitationem dolorem
+        nihil.
+    </div>
+</body>
+
+</html>

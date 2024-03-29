@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_数组常用方法1</title>
+    <script>
+        let arr=[1,2,3,4,5];
+        console.log('使用at方法读取数组的最后一个元素元素:',arr.at(-1));  // at方法可以读取指定索引的元素并返回，支持负数
+        let arr2=arr.concat([6,7],[8],[9,10]);  // concat方法可以将指定数组与传入的数组参数拼接起来返回一个新数组
+        console.log('使用concat方法拼接的新数组:',arr2);
+        arr=arr.concat([5,6,2,4,3,6]);
+        // indexOf和lastIndexOf方法都可以查询对应元素的索引，找不到返回-1
+        //区别是indexOf是返回第一个元素索引，而lastIndexOf方法是返回最后一个元素索引
+        console.log('使用indexOf方法寻找数组中不存在的元素:',arr.indexOf(7),'正常使用indexOf方法:',arr.indexOf(6),'正常使用lastIndexOf方法:',arr.lastIndexOf(6),'使用lastIndexOf方法寻找数组中不存在的元素:',arr.lastIndexOf(7));
+        let str1=arr.join('-');  // join方法可以将数组对象拼接成一个字符串，参数用于指定拼接时使用的字符
+        console.log('使用join方法将数组元素拼接为字符串:',str1);
+        let arr3=arr.slice(2,-1);  // slice数组切片，支持输入负数,范围左闭右开
+        let arr4=arr.slice(1);  //不写第二个参数默认从起始位置切到数组结束
+        let arr5=arr.slice();  //参数全不写相当于进行对应数组的浅拷贝/复制
+        console.log('使用slice方法进行切片:',arr3,'使用slice方法进行不传入第二参数的切片:',arr4,'使用slice方法进行浅拷贝:',arr5);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

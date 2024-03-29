@@ -1,0 +1,38 @@
+.adjust{
+    z-index: 100;
+}
+.confirmContainer{
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    margin: auto;
+    height: 250rem;
+    width: 400rem;
+    background-color: #fff;
+    display: flex;
+    flex-flow: column;
+    flex: auto;
+    justify-content: space-evenly;
+    border-radius: 40rem;
+}
+.tip{
+    height: 50rem;
+    font-size: 35rem;
+    text-align: center;
+}
+.buttonContainer{
+    display: flex;
+    justify-content: center;
+}
+.buttonContainer button{
+    width: 120rem;
+    height: 60rem;
+    border-radius: 40rem;
+    border: 1px solid gray;
+}
+.confirmButton{
+    margin-left: 30rem;
+    background-color: orange;
+}

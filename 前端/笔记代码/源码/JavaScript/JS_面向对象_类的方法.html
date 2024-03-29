@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_面向对象_类的方法</title>
+	<script>
+		class Test{
+			sayhello = ()=>{
+				console.log(this);  //对于实例方法来说，this就是当前实例
+			}
+
+			//使用该语法定义的方法，会被存储到原型对象中去，而不会被存储在对象自身内，因此打印该类实例时不会看到该方法
+			//但可以被类的静态方法的this关键字打印到,因为this指向当前类
+            fn(){
+                console.log("这是一个实例方法");
+            }
+			static fn1=()=>{
+				console.log('静态方法',this)  //静态方法中，this指向的是当前类
+			}
+		}
+		let a=new Test();
+		a.sayhello();
+        a.fn();
+		Test.fn1();
+	</script>
+</head>
+<body>
+    
+</body>
+</html>

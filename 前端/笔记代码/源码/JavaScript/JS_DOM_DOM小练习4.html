@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_DOM小练习4</title>
+    <script>
+        onload=function(){
+            let btn=document.getElementById("btn");
+            btn.addEventListener(
+                "click",
+                (event)=>{
+                    document.getElementsByTagName("ul")[0].insertAdjacentHTML("beforeend","<li><a href='javascript:;'>新的链接</a></li>");
+                }
+            );
+            // 利用事件的冒泡，将多个元素的相同事件让其冒泡到其共同的祖先元素(一般为document)进行统一的事件处理，称为事件的委派
+            // addEventListener方法具有能处理多个相同节点对象的相同事件的特性，配合事件委派可以极大简化JS代码的编写
+            document.addEventListener(
+                "click",
+                (event)=>{
+                    // 在触发事件后，检查触发事件的对象是否为我们期待的对象，如果是再进行下一步的代码执行
+                    // 可以获取我们期待的触发事件的对象集合，然后判断当前触发事件的对象是否在集合内
+                    // getElementsByTagName方法返回的是类数组对象，可以使用展开运算符、Array.from等方法将其转换为数组
+                    // 转换为数组后，使用数组的includes方法来判断event.target对象是否在数组中
+                    // 如果要使用querySelectorAll方法，应该注意其返回的是不会动态更新的结果集
+                    if([...document.getElementsByTagName("a")].includes(event.target)){
+                        alert(event.target.textContent);
+                    }
+                }
+            );
+        }
+    </script>
+</head>
+<body>
+    <ul>
+        <button type="button" id="btn">点我一下</button>
+        <li><a href="javascript:;">链接1</a></li>
+        <li><a href="javascript:;">链接2</a></li>
+        <li><a href="javascript:;">链接3</a></li>
+        <li><a href="javascript:;">链接4</a></li>
+    </ul>
+</body>
+</html>

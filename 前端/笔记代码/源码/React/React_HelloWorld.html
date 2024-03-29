@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>React_HelloWorld</title>
+    <!-- 引入react核心库 -->
+    <script src="../../文件/React18/react.development.js"></script>
+    <!-- 引入react专门操作DOM的库 -->
+    <script src="../../文件/React18/react-dom.development.js"></script>
+    <script>
+        onload=function(){
+            // createElement用来生成一个react元素
+            // 它支持传入三个参数：字符串形式的标签名(必须小写)，对象形式的属性，任意数量的内容(子元素)
+            let div=React.createElement("div",{id:'thisDiv'},"我是React创建的div");
+            // createRoot方法用来创建React根元素，它接收一个DOM对象作为参数
+            let root=ReactDOM.createRoot(document.getElementById("root"));
+            // 将生成的div元素挂载到根元素上
+            root.render(div);
+        }
+    </script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>

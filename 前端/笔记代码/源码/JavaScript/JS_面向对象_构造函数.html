@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_面向对象_构造函数</title>
+    <script>
+        class Test{
+            name;
+            age;
+            gender;
+            //使用constructor构造函数给类的实例对象赋值
+            constructor(name,age,gender){
+                this.name=name;  //构造函数中，this指向当前创建的对象实例
+                this.age=age;
+                this.gender=gender;
+            }
+        }
+        t1=new Test("张三",18,"男");
+        t2=new Test('李四',28,'女');
+        console.log(t1,t2);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

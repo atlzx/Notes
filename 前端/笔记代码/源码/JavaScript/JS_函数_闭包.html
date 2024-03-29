@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_函数_闭包</title>
+    <script>
+        function fn(){
+            let num=0;
+            return ()=>{
+                num++;
+                console.log(num);
+            };  //返回箭头函数
+        }
+        let fn1=fn();  //使用一个变量接受箭头函数，闭包会在外部函数被调用时产生
+        let fn2=fn();  //外部函数每调用一次都会产生新的闭包,因此大量使用占用的内存空间较多，且闭包无法使用原型，因此大量使用时内存耗费较大
+        // 循环十次
+        for(let i=1;i<=10;i++){
+            fn1();  //调用该箭头函数来访问num变量，且这样可以保证num变量无法轻易被外界修改
+        }
+        fn1=null;  //当内部函数丢失时，闭包被销毁
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

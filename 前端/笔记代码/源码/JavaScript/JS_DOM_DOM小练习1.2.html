@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_DOM小练习1.2</title>
+    <style>
+        .outer{
+            padding: 0px;
+            margin: 100px auto;
+            height: 390px;
+            width: 640px;
+            position: relative;
+        }
+        img{
+            vertical-align: top;
+        }
+        ul{
+            list-style-type: none;
+        }
+        ul::after{
+            height: 100%;
+        }
+        .imgContainer li{
+            position: absolute;
+            opacity: 0;
+            transition: all 1s linear;
+            top: 0px;
+            left: 0px;
+        }
+        .imgContainer .current{
+            z-index: 1;
+            opacity: 1;
+        }
+        #nextAndPreContainer a{
+            height: 390px;
+            font-size: 60px;
+            color: white;
+            position: absolute;
+            top: 0px;
+            line-height: 390px;
+            z-index: 2;
+            text-decoration: none;
+            background-color: rgb(200,200,200);
+            transition: all 0.5s linear;
+            opacity: 0.3;
+        }
+        #nextAndPreContainer a:last-child{
+            right: 0px;
+        }
+        #nextAndPreContainer a:hover{
+            background-color: rgb(150,150,150);
+            color: white;
+            opacity: 0.8;
+        }
+        #pointContainer{
+            display: flex;
+            position: absolute;
+            justify-content: center;
+            z-index: 3;
+            bottom: calc(0px + 5px);
+            width: 100%;
+        }
+        #pointContainer a{
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #aaa;
+            margin: 0px 5px;
+        }
+        #pointContainer a:hover{
+            background-color: white;
+        }
+        #pointContainer .active{
+            background-color: white;
+        }
+    </style>
+    <script>
+        onload=function(){
+
+            
+            let next=document.getElementById("next");  // 下一个图片的标签对象，监听其click事件
+            let previous=document.getElementById("previous");  // 上一个图片的标签对象，监听其click事件
+            let outer=document.getElementsByClassName("outer")[0];  // 最外层的div对象，监听其mousemove和mouseleave事件
+            let pointSet=document.querySelectorAll("#pointContainer a"); // 包含轮播图五个小点的集合对象
+
+
+            // 通过在立即执行函数里写一个闭包，并使用变量进行接收，以保证仅有changeImg函数能访问到time变量，避免其被意外修改
+            const changeImg=(
+                function(){
+                    let time=null;
+                    // 函数接收一个state参数以判断其应该清除当前的定时器还是应该新创建一个定时器
+                    // 0表示应该清除当前定时器，1表示应该创建定时器
+                    return (state)=>{
+                        if(state){
+                            time=setTimeout(
+                                function autoChange(){
+                                    ToggleImg("next");  // 调用函数ToggleImg来替换图片
+                                    time=setTimeout(autoChange,2000);  // 使用setTimeout函数的递归来固定每次图片交替的时间
+                                },
+                                2000
+                            );
+                        }else{
+                            clearTimeout(time);  // 清除定时器
+                            time=null;
+                        }
+                    }
+                }
+            )();
+
+            changeImg(1);  // 在网页元素加载完成后调用该函数，传入参数1以创建一个定时器来进行自动的图片替换
+
+            // 该函数用来替换当前的图片并同步修改轮播图的五个点的状态
+            // 函数接收两个参数:
+            //      direction表示要替换的模式，"next"表示向后替换图片,"previous"表示向前替换图片,以上两个值由用户点击左右侧的超链接，其事件处理函数传入。"point"表示替换点的状态，该值由用户点击五个点之一后，其事件监听函数传入
+            //      index仅为替换点的状态时才被传入，其用来表示要将active类名赋给哪个点对象，同时也可以表示要将current类名添加到哪个li上
+                
+            function ToggleImg(direction,index){
+                let current=document.querySelectorAll(".current")[0];  // 接收当前的类名有current的对象，current类的样式可以使图片层级上升以显示在页面上
+                current.classList.remove("current");  // 移除当前类名有current的对象的current类
+                // 移除后根据direction参数判断哪个图片对象应该添加current类名
+                if(direction==="next"){
+                    // 判断current对象的下一个兄弟元素是否为空，如果为空则替换到第一张图片,如果不为空则替换到下一张图片
+                    if(current.nextElementSibling){
+                        current.nextElementSibling.classList.add("current");  // 给current的下一个兄弟元素添加类名current，以让其图片层级上升显示在屏幕上
+                    }else{
+                        document.getElementsByTagName("li")[0].classList.add("current");  // 给第一个li元素添加类名current，以让其图片层级上升显示在屏幕上
+                    }
+                    // 调用函数changePoint，让点的状态与图片同步,同时传入要进行同步的点的索引
+                    changePoint([...document.querySelectorAll(".imgContainer li")].indexOf(document.querySelectorAll(".current")[0]));
+                }else if(direction==="previous"){
+                    // 判断current对象的上一个兄弟元素是否为空，如果为空则替换到最后一张图片,如果不为空则替换到上一张图片
+                    if(current.previousElementSibling){
+                        current.previousElementSibling.classList.add("current"); // 给current的上一个兄弟元素添加类名current，以让其图片层级上升显示在屏幕上
+                    }else{
+                        document.querySelectorAll(".imgContainer li:last-child")[0].classList.add("current"); // 给最后一个li元素添加类名current，以让其图片层级上升显示在屏幕上
+                    }
+                    // 调用函数changePoint，让点的状态与图片同步,同时传入要进行同步的点的索引
+                    changePoint([...document.querySelectorAll(".imgContainer li")].indexOf(document.querySelectorAll(".current")[0]));
+                }else if(direction==="point"){
+                    // 给指定index的li元素添加current类名
+                    document.querySelectorAll(".imgContainer li")[index].classList.add("current");
+                    changePoint(index);  // 同步点的状态
+                }
+            }
+
+            // changePoint函数可以对点的状态进行修改，使图片与点的状态同步，用户可以通过点判断显示的是第几张图片
+            // index参数用来表示哪个点对象应该获得active类名
+            function changePoint(index){
+                const activeElement=document.querySelectorAll("#pointContainer .active")[0];  // 找到原来的具有active类名的点对象
+                activeElement.classList.remove("active"); // 将active从其类名中移除
+                pointSet[index].classList.add("active"); // 给索引为index的点添加active类名
+            }
+
+
+            // 给各元素添加事件监听
+            next.addEventListener(
+                "click",
+                (event)=>{
+                    ToggleImg("next");  // 调用ToggleImg函数来替换图片并同步状态
+                }
+            );
+            previous.addEventListener(
+                "click",
+                (event)=>{
+                    ToggleImg("previous");
+                }
+            );
+            // 给outer对象添加事件监听函数，鼠标在其内部移动时清除定时器，鼠标移出时再重新打开定时器，以避免用户主动替换图片时图片也会自动替换
+            outer.addEventListener(
+                "mousemove",
+                ()=>{
+                    changeImg(0);  // 调用changeImg函数清除定时器
+                }
+            );
+            outer.addEventListener(
+                "mouseleave",
+                ()=>{
+                    changeImg(1);
+                }
+            );
+            // 利用事件的冒泡，使用document监听click事件统一处理五个点的点击事件
+            document.addEventListener(
+                "click",
+                (event)=>{
+                    const index=[...pointSet].indexOf(event.target);  // 获得触发事件的点对象的索引
+                    // 判断触发事件的对象是否为我们所期待的对象
+                    if(index>=0){
+                        ToggleImg("point",index);  // 如果是则调用ToggleImg函数进行处理
+                    }
+                }
+            );
+        };
+    </script>
+</head>
+<body>
+    <div class="outer">
+        <ul class="imgContainer">
+            <li class="current">
+                <a href="#"><img src="../../文件/图片/JS图片/DOM小练习1/1.png" alt="图片"></a>
+            </li>
+            <li>
+                <a href="#"><img src="../../文件/图片/JS图片/DOM小练习1/2.png" alt="图片"></a>
+            </li>
+            <li>
+                <a href="#"><img src="../../文件/图片/JS图片/DOM小练习1/3.png" alt="图片"></a>
+            </li>
+            <li>
+                <a href="#"><img src="../../文件/图片/JS图片/DOM小练习1/4.png" alt="图片"></a>
+            </li>
+            <li>
+                <a href="#"><img src="../../文件/图片/JS图片/DOM小练习1/5.png" alt="图片"></a>
+            </li>
+        </ul>
+        <div id="nextAndPreContainer">
+            <a href="javascript:;" id="previous"><</a>
+            <a href="javascript:;" id="next">></a>
+        </div>
+        <div id="pointContainer">
+            <a href="javascript:;" class="active"></a>
+            <a href="javascript:;"></a>
+            <a href="javascript:;"></a>
+            <a href="javascript:;"></a>
+            <a href="javascript:;"></a>
+        </div>
+    </div>
+</body>
+</html>

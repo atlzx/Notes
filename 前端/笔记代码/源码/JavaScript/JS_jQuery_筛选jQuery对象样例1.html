@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_jQuery_筛选jQuery对象样例1</title>
+    <script src="../../文件/jQuery/jquery-3.7.1.js"></script>
+    <style>
+        .box{
+            height: 100px;
+            width: 100px;
+            margin: 0px 10px;
+            float: left;
+            background-color: skyblue;
+            border: 5px solid orange;
+        }
+        .border{
+            border: 5px solid red;
+        }
+    </style>
+    <script>
+        $(
+            function(){
+                var $divElements=$("div");
+                var firstDiv=document.getElementById("first");
+                var lastDiv=document.getElementById("last");
+                var $firstDiv=$("#first");
+                var $lastDiv=$("#last");
+                console.log('使用eq方法取得第一个元素:',$divElements.eq(0));
+                console.log('取出索引为奇数的元素:',$divElements.odd());
+                console.log('取出索引为偶数的元素:',$divElements.even());
+                console.log('使用first方法获取第一个元素:',$divElements.first());
+                console.log('使用first方法获取最后的元素:',$divElements.last());
+                // 使用filter方法给类名包含border的元素添加类名aaaa,同时使用end方法回到筛选前的状态，给全部的元素添加样式bbb
+                $divElements.filter(".border").addClass("aaaa").end().addClass("bbb");
+                console.log('使用filter方法，并传入多个DOM对象参数',$divElements.filter([firstDiv,lastDiv]));  // 传入多个时，要用数组传入，不支持传入多个jQuery对象
+                console.log('使用not方法筛选元素:',$divElements.not(".border"));
+                console.log('使用has方法筛选元素:',$divElements.has("div"));  // 只有第三个div包含子元素div，因此只有该元素满足条件被筛选
+                console.log('使用is函数检验元素是否包含类名border:',$divElements.is(".border"));  // 只要对象内有一个元素满足条件，就返回true
+                console.log('使用silce方法进行切片:',$divElements.slice(1,5)); // 区间左闭右开
+                console.log('使用map方法对对象的每个元素进行处理:',$divElements.map(
+                    function(index,element){
+                        // 为每个元素添加事件
+                        element.addEventListener(
+                            "click",
+                            (event)=>{
+                                alert(`${event.target}被点击了`);
+                            }
+                        );
+                        return element;  // 回调函数的返回值将被添加进新创建的jQuery对象内
+                    }
+                ));
+            }
+        );
+    </script>
+</head>
+<body>
+    <div class="box border" id="first"></div>
+    <div class="box"></div>
+    <div class="box border">
+        <div></div>
+    </div>
+    <div class="box border"></div>
+    <div class="box border"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box border" id="last"></div>
+</body>
+</html>

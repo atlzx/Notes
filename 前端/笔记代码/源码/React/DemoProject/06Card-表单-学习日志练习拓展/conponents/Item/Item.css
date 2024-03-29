@@ -1,0 +1,21 @@
+/*设置item的样式*/
+.item{
+    /*开启弹性盒*/
+    display: flex;
+    margin: 16px 0;
+    padding: 6px;
+    background-color: #FCBF49;
+}
+.delete-icon{
+    transition: all 0.4s linear;
+    color: white;
+    cursor: pointer;
+    height: 20px;
+    width: 20px;
+    text-align: center;
+    line-height: 20px;
+}
+.delete-icon:hover{
+    transform: rotate(1turn);
+    color: #D62828;
+}

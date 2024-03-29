@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_列表</title>
+    <style>
+        ul{
+            /*定义列表符号格式*/
+            list-style-type: none;
+            /*设置列表符号位置*/
+            list-style-position: outside;
+            /*自定义列表符号*/
+            list-style-image: url("../../文件/图片/壁纸1.jpg");
+        }
+        /*属性值无特定顺序，且自定义列表符号要比关键词设定列表符号优先级要高*/
+        #list{
+            list-style: url("../../文件/图片/壁纸1.jpg") decimal inside;
+        }
+    </style>
+</head>
+<body>
+    <ul id="list">
+        <li>测试1</li>
+        <li>测试2</li>
+        <li>测试3</li>
+    </ul>
+</body>
+</html>

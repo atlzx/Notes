@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_函数_函数作为参数传递</title>
+    <script>
+        function fn(a){
+            a();
+        }
+        function fn2(){
+            console.log("普通函数定义");
+        }
+        fn(fn2);  //可以将函数作为参数传入函数中
+        fn(()=>console.log('箭头函数定义'));  //箭头函数可以直接作为实参传入函数中
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

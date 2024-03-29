@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_DOM小练习1.0</title>
+    <style>
+        .outer{
+            margin: 0px auto;
+            width: 640px;
+            text-align: center;
+        }
+        .outer>div:first-child{
+            text-align: center;
+        }
+    </style>
+    <script>
+        // 要求点击按钮时，图像会对应变化
+        window.onload = function () {
+            let arrayImg = 
+            ['../../文件/图片/JS图片/DOM小练习1/1.png',
+             '../../文件/图片/JS图片/DOM小练习1/2.png', 
+             '../../文件/图片/JS图片/DOM小练习1/3.png', 
+             '../../文件/图片/JS图片/DOM小练习1/4.png', 
+             '../../文件/图片/JS图片/DOM小练习1/5.png'
+            ];  // 以数组形式定义要替换的所有的图像的路径
+            let btnElement=document.querySelectorAll(".buttonContainer>button");  // 找到两个button
+            let count=0;  // 设置对应变量存储目前显示哪张图像
+            let imgElement=document.getElementsByTagName("img")[0];  // 找到img标签，为后面替换src做准备
+            let divElement=document.querySelectorAll(".outer>div:first-child")[0];
+            divElement.textContent=`共有${arrayImg.length}张图片，目前浏览的是第1张`;  // 使用模板字符串显示目前为第几张图片
+                        
+            // 监听按钮的点击事件
+            btnElement[0].addEventListener(
+                "click",
+                ()=>{
+                    count--;
+                    if(count<0){
+                        count=arrayImg.length-1;  // 处理非法count变量，如果在第一张图片点上一张会跑到最后一张
+                    }
+                    imgElement.src=arrayImg[count];  // 将对应图片的src修改
+                    divElement.textContent=`共有${arrayImg.length}张图片，目前浏览的是第${count+1}张`;  // 更新提示
+                }  // 处理点击事件
+            );
+
+
+            // 监听按钮的点击事件
+            btnElement[1].addEventListener(
+                "click",
+                ()=>{
+                    count++;
+                    if(count>arrayImg.length-1){
+                        count=0; // 处理非法count变量，如果在最后一张点下一张会跑到第一张
+                    }
+                    imgElement.src=arrayImg[count];
+                    divElement.textContent=`共有${arrayImg.length}张图片，目前浏览的是第${count+1}张`;
+                }
+            );
+
+        }
+    </script>
+</head>
+<body>
+    <div class="outer">
+        <div></div>
+        <div class="imgContainer">
+            <img src="../../文件/图片/JS图片/DOM小练习1/1.png" alt="图片">
+        </div>
+        <div class="buttonContainer">
+            <button>上一张</button>
+            <button>下一张</button>
+        </div>
+    </div>
+</body>
+</html>
