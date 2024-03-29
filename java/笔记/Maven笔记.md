@@ -141,9 +141,76 @@
 + 创建方式3:
   + 创建模块时选择`Maven Archetype`，`archetype`选择`xxx-webapp`(最后一个),然后等着他创建
   + 这样写创建的`web.xml`版本会低
-+ 这样就创建完了，然后可以根据[JavaWeb笔记](javaweb笔记.md)的部署`tomcat`来指定
++ 这样就创建完了，然后可以根据[JavaWeb笔记](javaweb笔记.md)的部署`tomcat`步骤来部署到`tomcat`
 
 ---
 
-#### ③
+#### ③Maven工程项目结构
+
+~~~xml
+|-- pom.xml                               # Maven 项目管理文件 
+|-- src
+    |-- main                              # 项目主要代码
+    |   |-- java                          # Java 源代码目录
+    |   |   `-- com/example/myapp         # 开发者代码主目录
+    |   |       |-- controller            # 存放 Controller 层代码的目录
+    |   |       |-- service               # 存放 Service 层代码的目录
+    |   |       |-- dao                   # 存放 DAO 层代码的目录
+    |   |       `-- model                 # 存放数据模型的目录
+    |   |-- resources                     # 资源目录，存放配置文件、静态资源等
+    |   |   |-- log4j.properties          # 日志配置文件
+    |   |   |-- spring-mybatis.xml        # Spring Mybatis 配置文件
+    |   |   `-- static                    # 存放静态资源的目录
+    |   |       |-- css                   # 存放 CSS 文件的目录
+    |   |       |-- js                    # 存放 JavaScript 文件的目录
+    |   |       `-- images                # 存放图片资源的目录
+    |   `-- webapp                        # 存放 WEB 相关配置和资源
+    |       |-- WEB-INF                   # 存放 WEB 应用配置文件
+    |       |   |-- web.xml               # Web 应用的部署描述文件
+    |       |   `-- classes               # 存放编译后的 class 文件
+    |       `-- index.html                # Web 应用入口页面
+    `-- test                              # 项目测试代码
+        |-- java                          # 单元测试目录
+        `-- resources                     # 测试资源目录
+~~~
+
++  pom.xml：Maven 项目管理文件，用于**描述项目的依赖和构建配置**等信息。
++  src/main/java：**存放项目的Java源代码**。
++  src/main/resources：**存放项目的资源文件**，如配置文件、静态资源等。
++  src/main/webapp/WEB-INF：**存放 Web应用的配置文件**。
++  src/main/webapp/index.jsp：Web应用的**入口页面**。
++  src/test/java：**存放项目的测试代码**。
++  src/test/resources：**存放测试相关的资源文件**，如测试配置文件等。
+
+### （三）构建
+
+#### ①构建过程
+
++ 项目构建是指将源代码、依赖库和资源文件等转换成可执行或可部署的应用程序的过程，在这个过程中包括编译源代码、链接依赖库、打包和部署等多个步骤
++ Maven提供了简便的命令来提高构建的效率，使得开发人员能够**更加专注于应用程序的开发和维护**，而不必关心应用程序的构建细节
++ 构建分为多个步骤
+  + 清理
+  + 编译
+  + 测试
+  + 报告
+  + 打包
+  + 部署
+
+![构建过程](../文件/图片/Maven图片/项目构建.png)
+
+---
+
+#### ②构建命令
+
+|命令|描述|
+|:---:|:---:|
+|mvn compile|编译项目，生成target文件|
+|mvn package|打包项目，生成jar或war文件|
+|mvn clean|清理编译或打包后的项目结构|
+|mvn install|打包后上传到maven本地仓库|
+|mvn deploy|只打包，上传到maven私服仓库|
+|mvn site|生成站点|
+|mvn test|执行测试源码|
+
+---
 
