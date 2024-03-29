@@ -27,7 +27,8 @@
        | Default: ${user.home}/.m2/repository
       <localRepository>/path/to/local/repo</localRepository>
       -->
-    <localRepository>E:\Programming Language\Java\maven-repository</localRepository>
+      <!-- 文件夹可以不存在，如果不存在，第一次创建Maven工程时会自动创建 -->
+    <localRepository>E:\Programming Language\Java\maven-repository</localRepository>  
 ~~~
 
 ~~~xml
@@ -62,7 +63,6 @@
 + 注意:
 > + `Maven`的配置需要本机配置了`Java`并拥有`JAVA_HOME`
 
-
 ---
 
 ## 三、Maven基本使用
@@ -78,4 +78,43 @@
 
 ---
 
-### （二）
+### （二）创建工程
+
+#### ①GAVP
+
++ GAVP是四个英文单词的大写字母拼凑:
+  + `GroupID`:用于设置该项目的组`ID`，相当于它在`Maven`仓库内的唯一标识，一般都使用`com.公司/BU.业务线.\子业务线`来编写，如`com.taobao.tddl`
+  + `ArtifactID`:用于设置模块名，默认与当前模块名一致
+  + `Version`:版本号，`IDEA`会自动设置，格式为`主版本号.次版本号.修订号`
+  + `Packaging`:配置打包方式
+    + `jar`:打成jar包，用于普通的`JavaSE`工程
+    + `war`:打成war包，用于`JavaWeb`工程
+    + `pom`:不打包，用来做继承的父工程
+
+#### ①创建JavaSE工程
+
++ 我们在新创建一个项目后，新创建一个模块，构建系统选择`Maven`
++ 点开高级选项，填写`Group ID`，然后点击创建
++ 创建后，会打开`pom.xml`
+
+~~~xml
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <project xmlns="http://maven.apache.org/POM/4.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+        <modelVersion>4.0.0</modelVersion>  <!-- 该配置代表xml的版本，不用管 -->
+
+        <groupId>com.maven.javase</groupId>  <!-- 刚才设置的GroupID -->
+        <artifactId>Maven_JavaSE</artifactId>  <!-- 刚才默认的artifactedID -->
+        <version>1.0-SNAPSHOT</version>  <!-- 默认的version -->
+        <packaging>jar</packaging>  <!-- 默认的打包方式就是打jar包，这句话写不写都行 -->
+    </project>
+~~~
+
++ 第一次打开时,`idea`可能会报错，因为此时`Maven`缺少自己运行的库，在`IDEA`进度可以看到在下载一些东西，等下载完成后，就不报错了
+
+---
+
+#### ②创建JavaWeb工程
+
