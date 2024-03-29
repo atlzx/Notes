@@ -65,7 +65,7 @@
 
 ---
 
-## 三、Maven基本使用
+## 三、Maven工程
 
 ### （一）Maven文件夹结构
 
@@ -96,6 +96,7 @@
 + 我们在新创建一个项目后，新创建一个模块，构建系统选择`Maven`
 + 点开高级选项，填写`Group ID`，然后点击创建
 + 创建后，会打开`pom.xml`
++ 第一次打开时,`idea`可能会报错，因为此时`Maven`缺少自己运行的库，在`IDEA`进度可以看到在下载一些东西，等下载完成后，就不报错了
 
 ~~~xml
 
@@ -112,9 +113,37 @@
     </project>
 ~~~
 
-+ 第一次打开时,`idea`可能会报错，因为此时`Maven`缺少自己运行的库，在`IDEA`进度可以看到在下载一些东西，等下载完成后，就不报错了
++ 新创建项目后，会发现项目内出现了下面的内容:
+
+~~~java
+    模块名
+        src
+            main  // 这里负责编写代码
+                com
+                    ...
+            test  // 这里负责对代码进行测试
+~~~
 
 ---
 
 #### ②创建JavaWeb工程
+
++ 创建方式1:
+  + 首先创建一个`JavaSE`工程
+  + `JavaWeb`工程与`JavaSE`工程的区别实际上就是模块设置下，`JavaWeb`工程多了一个`web`。
+  + 我们可以通过设置`pom.xml`的`<packaging>war</packaging>`标签，来手动指定我们的项目将要被打包为`war`包，从而可以使`IDEA`自动帮我们创建模块设置下  `web`
+  + 这样就可以使我们的项目变为`JavaWeb`项目了，但是我们还需要创建一个`web.xml`文件
+  + `Open Module Settings->Modules->项目名->Web->Deployment Descriptions`下面的加号，然后指定`web.xml`文件的路径,**默认的路径是错的**，需要改一下
++ 创建方式2:
+  + 安装插件`JBLJavaToWeb`
+  + 创建一个`JavaSE`项目
+  + 右键项目，点击`JBLJavaToWeb`，然后跟着它的提示点
++ 创建方式3:
+  + 创建模块时选择`Maven Archetype`，`archetype`选择`xxx-webapp`(最后一个),然后等着他创建
+  + 这样写创建的`web.xml`版本会低
++ 这样就创建完了，然后可以根据[JavaWeb笔记](javaweb笔记.md)的部署`tomcat`来指定
+
+---
+
+#### ③
 

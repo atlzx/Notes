@@ -6,7 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="Maven_JavaWeb1" />
         <module name="Maven_JavaSE" />
+        <module name="Maven_JavaWeb2" />
       </profile>
     </annotationProcessing>
   </component>
