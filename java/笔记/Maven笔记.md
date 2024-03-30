@@ -83,13 +83,13 @@
 #### ①GAVP
 
 + GAVP是四个英文单词的大写字母拼凑:
-  + `GroupID`:用于设置该项目的组`ID`，相当于它在`Maven`仓库内的唯一标识，一般都使用`com.公司/BU.业务线.\子业务线`来编写，如`com.taobao.tddl`
-  + `ArtifactID`:用于设置模块名，默认与当前模块名一致
-  + `Version`:版本号，`IDEA`会自动设置，格式为`主版本号.次版本号.修订号`
-  + `Packaging`:配置打包方式
-    + `jar`:打成jar包，用于普通的`JavaSE`工程
-    + `war`:打成war包，用于`JavaWeb`工程
-    + `pom`:不打包，用来做继承的父工程
+  + GroupID:用于告知Maven该项目属于哪个组，一般都使用`com.公司/BU.业务线.\子业务线`来编写，如公司是mycom，有一个项目为myapp，那么groupId就应该是`com.mycom.myapp`
+  + ArtifactID:在组内的唯一id，默认与当前模块名一致
+  + Version:版本号，`IDEA`会自动设置，格式为`主版本号.次版本号.修订号`
+  + Packaging:配置打包方式
+    + jar:打成jar包，用于普通的`JavaSE`工程
+    + war:打成war包，用于`JavaWeb`工程
+    + pom:不打包，用来做继承的父工程
 
 #### ①创建JavaSE工程
 
@@ -182,7 +182,27 @@
 +  src/test/java：**存放项目的测试代码**。
 +  src/test/resources：**存放测试相关的资源文件**，如测试配置文件等。
 
-### （三）构建
+---
+
+### （三）pom.xml文件配置
+
++ [该网站](https://mvnrepository.com/)可以寻找我们想要得到的库，并提供给我们其相应的xml标签
+
+|所属父标签|标签名|可选值|含义|相对pom.xml是否必须|相对父标签是否必须|备注|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|**Project**|modelVersion|自定义|指定pom的版本|是|是|无|
+|^|groupId|^|指定项目属于的组|是|是|无|
+|^|artifactId|^|指定项目在组内的唯一id|是|是|无|
+|^|version|^|当前项目的版本|否|否|无|
+|^|packaging|jar:打包成jar包<br>war:打包成war包，项目被识别为JavaWeb项目<br>pom:不打包，用来做继承的父工程|指定打包方式，默认是jar|^|^|无|
+|^|dependencies|各个dependency标签|各依赖的父标签|^|^|无|
+|**dependencies**|dependency|各依赖子标签|指定依赖|^|^|无|
+|**dependency**|groupId|自定义|指定该依赖所属的组|^|是|无|
+|^|artifactId|^|指定该依赖在其组内的唯一标识|^|^|无|
+|^|version|^|指定依赖的版本|^|^|无|
+|^|scope|^|不知道干嘛的|^|否|不知道|
+
+### （四）构建
 
 #### ①构建过程
 

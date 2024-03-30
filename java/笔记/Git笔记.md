@@ -36,6 +36,7 @@
 |配置Git|`git config --global user.name "xxx"`|设置git用户名|无|
 |^|`git config --global user.email "xxx"`|设置git邮箱|无|
 |^|`git config --global http.sslVerify "false"`|设置解除SSL认证|无|
+|^|`git config --global --edit`|查看并修改git配置|无|
 |管理项目|`git init`|初始化项目，使所在目录被`git`管理|无|
 |^|`git status`|查看项目内的文件状态|无|
 |^|`git add 文件路径`|将指定文件由未跟踪或已修改状态转入暂存状态|无|
