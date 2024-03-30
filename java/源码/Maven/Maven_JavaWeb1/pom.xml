@@ -10,4 +10,18 @@
     <packaging>war</packaging>
 
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  <!-- 告知Maven编译时使用UTF-8字符集 -->
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.maven.javase</groupId>
+            <artifactId>Maven_JavaSE</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+    </dependencies>
+
 </project>

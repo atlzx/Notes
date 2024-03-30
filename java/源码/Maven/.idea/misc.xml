@@ -7,7 +7,13 @@
         <option value="$PROJECT_DIR$/Maven_JavaSE/pom.xml" />
         <option value="$PROJECT_DIR$/Maven_JavaWeb1/pom.xml" />
         <option value="$PROJECT_DIR$/Maven_JavaWeb2/pom.xml" />
+        <option value="$PROJECT_DIR$/Test/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/Test/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager">

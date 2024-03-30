@@ -222,15 +222,16 @@
 
 #### ②构建命令
 
-|命令|描述|
-|:---:|:---:|
-|mvn compile|编译项目，生成target文件|
-|mvn package|打包项目，生成jar或war文件|
-|mvn clean|清理编译或打包后的项目结构|
-|mvn install|打包后上传到maven本地仓库|
-|mvn deploy|只打包，上传到maven私服仓库|
-|mvn site|生成站点|
-|mvn test|执行测试源码|
+|命令|描述|备注|
+|:---:|:---:|:---:|
+|mvn compile|编译项目，生成target文件|不会编译test文件夹下的源码|
+|mvn package|打包项目，生成jar或war文件|无|
+|mvn clean|清理编译或打包后的项目结构|无|
+|mvn install|打包后上传到maven本地仓库|无|
+|mvn deploy|只打包，上传到maven私服仓库|无|
+|mvn site|生成站点|无|
+|mvn test|执行测试源码|建议**测试类以`Test`开头或结尾**，且**方法以`test`开头或结尾**|
+|mvn test-compile|编译测试源码|无|
 
 ---
 

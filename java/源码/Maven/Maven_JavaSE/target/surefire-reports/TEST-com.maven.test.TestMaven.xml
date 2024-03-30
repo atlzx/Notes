@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.maven.test.TestMaven" time="0.045" tests="1" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.specification.version" value="17"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="GBK"/>
+    <property name="java.class.path" value="E:\大学文件\笔记类\各学科笔记\java\源码\Maven\Maven_JavaSE\target\test-classes;E:\大学文件\笔记类\各学科笔记\java\源码\Maven\Maven_JavaSE\target\classes;E:\Programming Language\Java\maven-repository\junit\junit\4.12\junit-4.12.jar;E:\Programming Language\Java\maven-repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;E:\Programming Language\Java\maven-repository\org\projectlombok\lombok\1.18.30\lombok-1.18.30.jar;"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="user.timezone" value="Asia/Shanghai"/>
+    <property name="os.name" value="Windows 11"/>
+    <property name="java.vm.specification.version" value="17"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="CN"/>
+    <property name="sun.boot.library.path" value="E:\Programming Language\Java\jdk-17\bin"/>
+    <property name="sun.java.command" value="C:\Users\19285\AppData\Local\Temp\surefire4376148996390189463\surefirebooter-20240330123714590_3.jar C:\Users\19285\AppData\Local\Temp\surefire4376148996390189463 2024-03-30T12-37-14_429-jvmRun1 surefire-20240330123714590_1tmp surefire_0-20240330123714590_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="E:\大学文件\笔记类\各学科笔记\java\源码\Maven\Maven_JavaSE\target\test-classes;E:\大学文件\笔记类\各学科笔记\java\源码\Maven\Maven_JavaSE\target\classes;E:\Programming Language\Java\maven-repository\junit\junit\4.12\junit-4.12.jar;E:\Programming Language\Java\maven-repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;E:\Programming Language\Java\maven-repository\org\projectlombok\lombok\1.18.30\lombok-1.18.30.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\19285"/>
+    <property name="user.language" value="zh"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2023-10-17"/>
+    <property name="java.home" value="E:\Programming Language\Java\jdk-17"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="E:\大学文件\笔记类\各学科笔记\java\源码\Maven\Maven_JavaSE"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="surefire.real.class.path" value="C:\Users\19285\AppData\Local\Temp\surefire4376148996390189463\surefirebooter-20240330123714590_3.jar"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="17.0.9+11-LTS-201"/>
+    <property name="user.name" value="19285"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="file.encoding" value="GBK"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="localRepository" value="E:\Programming Language\Java\maven-repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="C:\Users\19285\AppData\Local\Temp\"/>
+    <property name="java.version" value="17.0.9"/>
+    <property name="user.dir" value="E:\大学文件\笔记类\各学科笔记\java\源码\Maven\Maven_JavaSE"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="native.encoding" value="GBK"/>
+    <property name="java.library.path" value="E:\Programming Language\Java\jdk-17\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;E:\code\VMware Workstation Pro\bin\;E:\Programming Language\Java\jdk-17\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Program Files\MySQL\MySQL Server 8.0\bin;E:\tool\Bandizip\;&quot;E:\tool\program tool\apache-tomcat-10.1.16\lib;E:\tool\program tool\apache-tomcat-10.1.16\bin&quot;;E:\Programming Language\Java\apache-maven-3.9.6\bin;E:\Programming Language\python\python3.11\Scripts;E:\Project\GlobalNodeModule\node_modules\yarn\bin;E:\code\Git\cmd;E:\Programming Language\Java\apache-maven-3.9.6\bin;E:\Programming Language\JS\nvm;E:\Programming Language\JS\NodeJS;E:\Programming Language\Java\jdk-17\bin;E:\python\python3.11\Scripts\;E:\python\python3.11\;E:\Programming Language\python\python3.11;E:\code\Microsoft VS Code\bin;E:\code\IntelliJ IDEA 2023.2.3\bin;;E:\code\IntelliJ IDEA Community Edition 2023.2.2\bin;;E:\code\PyCharm 2023.2.3\bin;;%DataGrip%;E:\Programming Language\JS\nvm;E:\Programming Language\JS\NodeJS;."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="17.0.9+11-LTS-201"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="61.0"/>
+  </properties>
+  <testcase name="test1" classname="com.maven.test.TestMaven" time="0.006">
+    <system-out><![CDATA[这是测试1方法
+]]></system-out>
+  </testcase>
+</testsuite>
