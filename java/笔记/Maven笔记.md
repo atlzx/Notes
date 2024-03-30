@@ -197,25 +197,57 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 
-        <modelVersion>4.0.0</modelVersion>
 
-        <groupId>com.maven.javase</groupId>  <!-- 指定项目所属的组ID，必填 -->
+
+        <modelVersion>4.0.0</modelVersion>
+        <groupId>com.maven.javase</groupId>  <!-- 指定项目所属的组ID，必填。如果是子项目，该标签内的值由父项目决定 -->
         <artifactId>Maven_JavaSE</artifactId>  <!-- 指定项目在组内的唯一标识ID，默认与项目名称一致，必填 -->
-        <version>1.0-SNAPSHOT</version>  <!-- 指定项目版本，IDEA会自动创建，必填 -->
+        <version>1.0-SNAPSHOT</version>  <!-- 指定项目版本，IDEA会自动创建，必填。如果是子项目，该标签内的值由父项目决定-->
         <packaging>jar</packaging>  <!-- 指定打包方式，有三个可选值:jar war pom,分别表示打包成jar包、war包和不打包作为被继承的父工程 -->
 
-        <properties>
 
+
+
+
+        <!-- 这是项目是子项目时才需要指定的标签，它用于表示其父项目的索引 -->
+        <parent>
+          <!-- 父工程的坐标 -->
+          <groupId>com.atguigu.maven</groupId>
+          <artifactId>pro03-maven-parent</artifactId>
+          <version>1.0-SNAPSHOT</version>
+        </parent>
+
+
+
+
+
+
+        <!-- 这是项目是父项目时才需要指定的标签，它用于表示聚合关系 -->
+        <modules>
+            <module>child-project1</module>
+            <module>child-project2</module>
+        </modules>
+
+
+
+
+
+
+
+        <properties>
             <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  <!-- 告知Maven编译时使用UTF-8字符集 -->
             <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>  <!-- 告知Maven打印报告时使用UTF-8进行字符集 -->
-
             <junit.version>4.12</junit.version>  <!-- 自定义版本声明，主要用于便捷修改依赖版本，标签名称可以随便起 -->
         </properties>
 
 
-        <!-- 在该标签内写入要导入的依赖，每个依赖都以一个dependency标签作为单位 -->
-        <dependencies>
 
+
+
+
+        <!-- 在该标签内写入要导入的依赖，每个依赖都以一个dependency标签作为单位 -->
+        <!-- 如果是父项目，这样写会导致子项目继承其全部的依赖项 -->
+        <dependencies>
             <dependency>
                 <groupId>junit</groupId>  <!-- 指定想导入依赖所属的组 -->
                 <artifactId>junit</artifactId>  <!-- 指定想导入依赖的组内ID -->
@@ -223,16 +255,65 @@
                 <scope>test</scope>  <!-- 指定依赖的作用范围 -->
                 <optional>true</optional>  <!-- 设定该依赖无法被子依赖所继承 -->
             </dependency>
-
             <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>1.18.30</version>
                 <scope>provided</scope>
+                <exclusions>  <!-- 使用exclusions用来在出现依赖冲突时，我们手动的去排除我们不想要的依赖项 -->
+                  <!-- 在exclude标签中配置一个具体的排除 -->
+                    <exclusion>
+                        <!-- 指定要排除的依赖的坐标（不需要写version） -->
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
-
         </dependencies>
+
+
+
+
+
+        <!-- 
+            使用dependencyManagement包裹dependencies标签来让子项目自己选择继承父项目的什么依赖项，而不是把全部的依赖项全塞给子项目 
+            如果这样写的话，子项目内的dependencies中的dependency内就不需要写version了，因为都继承的父项目的
+        -->
+        <dependencyManagement>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                    <version>6.0.10</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                    <version>6.0.10</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
+                    <version>6.0.10</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-expression</artifactId>
+                    <version>6.0.10</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-aop</artifactId>
+                    <version>6.0.10</version>
+                </dependency>
+            </dependencies>
+        </dependencyManagement>
+
+
+
+
+
 
 
         <build>
@@ -250,7 +331,10 @@
                 </resource>
             </resources>
 
-
+            <!-- 
+                plugins用来配置一些插件，这些插件常用来解决一些问题
+                如JDK版本与Maven当前使用的打包插件对不上、想更便捷的使用tomcat等
+             -->
             <plugins>
                 <finalName>定义打包名称</finalName>  <!-- 自定义打包的名称，默认的打包名称是artifactid+verson.打包方式 -->
             <!-- java编译插件，配jdk的编译版本 -->
@@ -279,6 +363,40 @@
         </build>
 
 
+
+
+
+
+        <!-- 上传私服要用到的标签配置 -->
+        <distributionManagement>
+            <snapshotRepository>
+                <id>nexus-mine</id>  <!-- 指定上传的私服id，与Maven内的settings.xml中配置的id一致 -->
+                <name>Nexus Snapshot</name>
+                <url>http://localhost:8081/repository/maven-snapshots/</url>  <!-- 上传的路径，由私服内的仓库提供 -->
+            </snapshotRepository>
+        </distributionManagement>
+
+
+
+
+
+
+        <!-- repositories标签内可以指定我们希望Maven从哪里下载我们需要的依赖到我们的本地仓库 -->
+        <repositories>
+            <repository>
+                <id>nexus-mine</id>  <!-- 需要与setting.xml文件保持一致 -->
+                <name>nexus-mine</name>
+                <url>http://localhost:8081/repository/maven-snapshots/</url>
+                <snapshots>
+                    <enabled>true</enabled>  <!-- 是否接收快照版本 -->
+                </snapshots>
+                <releases>
+                    <enabled>true</enabled>  <!-- 是否接收正式版本 -->
+                </releases>
+            </repository>
+        </repositories>
+
+
     </project>
 
 ~~~
@@ -302,28 +420,34 @@
 
 ---
 
-#### ③依赖传递
+#### ③依赖传递与冲突
 
 + 在Maven工程下，我们可以通过`pom.xml`文件来指定我们所依赖的项目
-+ 指定后，**依赖项目的依赖项也会被我们继承**，这样，我们就不用再配置一遍我们项目所依赖的项目的依赖了
++ 指定后，**依赖项目的依赖项也会传递给我们**，这样，我们就不用再配置一遍我们项目所依赖的项目的依赖了
 + 我们称这种特性为**依赖传递**
   + 在IDEA的Maven可视化界面可以通过其项目的`Dependencies`来查看其当前依赖
 ![IDEA查看依赖传递](../文件/图片/Maven图片/IDEA查看依赖传递.png)
   + 依赖项的依赖范围是`test`或`provided`时，无法传递依赖
   + 依赖项存在optional标签设置为true时，无法传递依赖
-
++ 当我们的项目所指定的依赖与我们依赖项目所指定的依赖重复时，我们称这种情况为**依赖冲突**
+  + Maven默认已经考虑到了该情况，因此它默认会根据一些情况处理这些冲突
+  + 当发生冲突的双方的依赖深度不同时，取较近的一方。
+    + 例:A依赖了B，同时也依赖了C，B也依赖C，A依赖C的依赖深度是1，因为是直接依赖的，而A依赖的B的C是间接依赖的，依赖深度是2，因此会依据就近原则，**选择A直接依赖的C**，而不是B依赖的C
+  + 如果双方的依赖深度相同，那么Maven将比较双方谁在`pom.xml`文件内先声明，先声明的，就是被选择的一方
++ 我们也可以进行手动排除，手动排除需要使用`exclusions`标签使用
 
 
 ---
 
-#### ④依赖冲突
+#### ④继承与聚合
 
-+ 当我们的项目所指定的依赖与我们依赖项目所指定的依赖重复时，我们称这种情况为**依赖冲突**
-  + Maven默认已经考虑到了该情况，因此它默认会根据一些情况处理这些冲突
-  + 当发生冲突的双方的依赖深度不同时，取较近的一方。
-    + 例:A继承了B，同时直接指定C为其依赖项，B也指定了C为其依赖项，A继承的C的以来深度是1，因为是直接继承的，而A继承的B的C是间接继承的，依赖深度是2，因此会依据就近原则，**选择A直接依赖的C**，而不是B依赖的C
-  + 如果双方的依赖深度相同，那么Maven将比较双方谁在`pom.xml`文件内先声明，先声明的，就是被选择的一方
-+ 
++ 我们可以通过创建一个项目并指定该项目是项目，而其他项目可以通过**继承**的方式来成为该项目的子项目,**使得子项目得到父项目的一些依赖而不用手动配置**
+  + 父项目的打包方式需要是`pom`
+  + 配置的`dependencies`中的依赖默认会被子项目全部继承过去，但我们也可以为其套上`dependencyManagement`标签来让子项目自己选择想继承的依赖项
+  + 继承的子项目的`pom.xml`文件内不需要指定其groupId和version了，因为会强制与父项目保持一致，因此只需要指定其artifactId
++ 父项目也可以通过`modules`标签来统一管理其子项目的构建过程，这样，当父项目执行构建的一个生命周期操作时，它**聚合**的所有子项目也都会执行该操作
++ 继承保证了整个项目使用规范、准确的 jar 包。同时还能够将以往的经验沉淀下来，节约时间和精力。
++ 聚合方便了项目的管理与维护
 
 ---
 
@@ -359,6 +483,7 @@
 |mvn test|执行测试源码|建议**测试类以`Test`开头或结尾**，且**方法以`test`开头或结尾**|
 |mvn test-compile|编译测试源码|无|
 
++ Maven的命令可以通过空格隔开来执行多个，并根据从左到右的顺序依次执行:`mvn clean conpile`
 + 使用`package`命令打war包时，可能会出现报错，大概率是因为**打war包的插件与当前的JDK版本不匹配**
 
 ~~~xml
@@ -377,3 +502,130 @@
 
 ---
 
+## 四、Maven私服
+
+### （一）私服简介
+
++ Maven 私服是一种特殊的Maven远程仓库，它是架设在局域网内的仓库服务，用来代理位于外部的远程仓库（中央仓库、其他远程公共仓库）
+
+![Maven私服图例](../文件/图片/Maven图片/Maven私服图例.png)
+
++ Maven私服具有如下优势:
+  1. **节省外网带宽**:消除对外部远程仓库的大量重复请求（会消耗很大量的带宽），降低外网带宽压力。
+  2. **下载速度更快**:Maven私服位于局域网内，从私服下载构建更快更稳定。
+  3. **便于部署第三方构件**:有些构件无法从任何一个远程仓库中获得（如：公司或组织内部的私有构件、Oracle的JDBC驱动等），建立私服之后，就可以将这些构件部署到私服中，供内部Maven项目使用。
+  4. **提高项目的稳定性，增强对项目的控制**:如果不建立私服，那么Maven项目的构件就高度依赖外部的远程仓库，若外部网络不稳定，则项目的构建过程也会变得不稳定。建立私服后，即使外部网络状况不佳甚至中断，只要私服中已经缓存了所需的构件，Maven也能够正常运行。私服软件（如：Nexus）提供了很多控制功能（如：权限管理、RELEASE/SNAPSHOT版本控制等），可以对仓库进行一些更加高级的控制。
+  5. **降低中央仓库得负荷压力**:由于私服会缓存中央仓库得构件，避免了很多对中央仓库的重复下载，降低了中央仓库的负荷。
++ 常用的Maven私服有:
+  + Apache的Archiva
+  + JFrog的Artifactory
+  + Sonatype的Nexus（`neksəs`）（当前最流行、使用最广泛）
+
+---
+
+### （二）Nexus
+
+#### ①安装与运行
+
++ [下载链接](https://help.sonatype.com/en/download.html)
++ 下载后，安装到指定的文件夹内
++ **使用管理员权限打开PowerShell**，然后运行其bin目录下的nexus.exe文件，具体命令为`./nexus /run`
++ 等待它配置好（可能会很慢），当输出`Started Sonatype Nexus OSS 3.66.0-02`类似的语句时，说明初始化成功了
++ 打开[默认的8081端口](http://localhost:8081/)来访问私服，如果进不去就按`Ctrl+C`终止nexus.exe文件运行，然后就能进去了
++ 进去说明已经安装和运行好了
+
+---
+
+#### ②仓库详解
+
+| 仓库类型 | 说明                                           |
+| -------- | ---------------------------------------------- |
+| proxy    | 某个远程仓库的代理                             |
+| group    | 存放：通过 Nexus 获取的第三方 jar 包           |
+| hosted   | 存放：本团队其他开发人员部署到 Nexus 的 jar 包 |
+
+| 仓库名称        | 说明                                                         |
+| --------------- | ------------------------------------------------------------ |
+| maven-central   | Nexus 对 Maven 中央仓库的代理                                |
+| maven-public    | Nexus 默认创建，供开发人员下载使用的组仓库                   |
+| maven-releases  | Nexus 默认创建，供开发人员部署自己 jar 包的宿主仓库 要求 releases 版本 |
+| maven-snapshots | Nexus 默认创建，供开发人员部署自己 jar 包的宿主仓库 要求 snapshots 版本 |
+
+---
+
+#### ③配置
+
++ 刚刚进入网页，点击右上角的`Sign in`
+![Nexus配置1](../文件/图片/Maven图片/Nexus配置1.png)
++ 接下来让我们输入账户名和密码
+  + 账户叫`admin`
+  + 初始化时会为我们自动在`nexus\sonatype-work\nexus3\admin.password`生成一个密码，我们可以打开该文件查看密码
+![Nexus配置2](../文件/图片/Maven图片/Nexus配置2.png)
++ 接下来点next，然后会让我们重新配置密码
++ 一路点next,然后会让我们选择是否支持匿名访问
+![Nexus配置3](../文件/图片/Maven图片/Nexus配置3.png)
++ 由于支持匿名登录会很容易，因此我们选择不支持匿名登录
++ 接下来开始配置Maven的`settings.xml`文件，**建议在修改前备份一下当前的`settings.xml`文件**
+
+~~~xml
+
+    <!-- 配置一个新的 Maven 本地仓库 -->
+    <localRepository>D:/maven-repository-new</localRepository>
+
+    <!-- 这里覆盖我们原来配置的那个mirror，也就是把下载路径从阿里云镜像改成我们的私服网址 -->
+    <mirror>
+        <id>nexus-mine</id>  <!-- 随便写一个id值，但是后面要用 -->
+        <mirrorOf>central</mirrorOf>
+        <name>Nexus mine</name>
+        <url>http://localhost:8081/repository/maven-public/</url>  <!-- 该网址来源于私服内的Maven-public那个URL -->
+    </mirror>
+
+    <!-- 这里要放到servers标签内 -->
+    <server>
+    <id>nexus-mine</id>  <!-- 该id与mirror标签内的id值必须保持一致 -->
+    <username>admin</username>  <!-- 由于不支持匿名登陆，因此配置用户名，用户名需要与之前的用户名一致 -->
+    <password>atguigu</password>  <!-- 由于不支持匿名登陆，因此配置密码，改密码需要与之前重新更改的密码一致 -->
+    </server>
+
+~~~
+
++ 接下来打开IDEA,查看其Maven的设置内，本地仓库的路径是否发生变化，如果发生了变化说明配置成功了
++ 新建一个Maven项目，由于我们配置了新的本地仓库，仓库里面什么都没有，Maven就会从中央仓库开始下载依赖到私服，然后我们再从私服下载到本地。下载完后可以看到Nexus网页内的`maven-central`文件夹内有东西了
++ 如果嫌下载的太慢，可以为Nexus配置阿里云镜像:`http://maven.aliyun.com/nexus/content/groups/public/`
+![Nexus配置4](../文件/图片/Maven图片/Nexus配置4.png)
+
+---
+
+#### ④上传与引用
+
++ 如果我们想把jar包部署到nexus,我们可以在对应项目的xml文件内配置信息:
+
+~~~xml
+    <distributionManagement>
+        <snapshotRepository>
+            <id>nexus-mine</id>
+            <name>Nexus Snapshot</name>
+            <url>http://localhost:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+~~~
+
++ 之后运行`mvn deploy`即可上传
++ 如果我们想使用别人上传的jar包,需要在应项目的xml文件内配置信息:
+
+~~~xml
+<repositories>
+    <repository>
+        <id>nexus-mine</id>
+        <name>nexus-mine</name>
+        <url>http://localhost:8081/repository/maven-snapshots/</url>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
+    </repository>
+</repositories>
+
+~~~

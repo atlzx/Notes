@@ -32,4 +32,19 @@
         </dependency>
 
     </dependencies>
+
+
+    <repositories>
+        <repository>
+            <id>nexus-mine</id>
+            <name>nexus-mine</name>
+            <url>http://localhost:8081/repository/maven-snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
 </project>

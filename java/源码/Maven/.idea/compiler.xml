@@ -9,6 +9,7 @@
         <module name="Maven_JavaWeb1" />
         <module name="Maven_JavaSE" />
         <module name="Maven_JavaWeb2" />
+        <module name="NexusSample" />
       </profile>
     </annotationProcessing>
   </component>
