@@ -16,7 +16,11 @@
       </set>
     </option>
   </component>
-  <component name="ProjectRootManager">
+  <component name="ProjectResources">
+    <resource url="http://maven.apache.org/xsd/maven-4.0.0.xsd" location="$PROJECT_DIR$/../../../../../../Programming Language/Java/xml/maven-4.0.0.xsd" />
+    <resource url="http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" location="$PROJECT_DIR$/../../../../../../Programming Language/Java/xml/web-app_4_0.xsd" />
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" project-jdk-name="17" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>

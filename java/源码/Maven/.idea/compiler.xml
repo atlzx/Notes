@@ -11,8 +11,5 @@
         <module name="Maven_JavaWeb2" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="Test" target="17" />
-    </bytecodeTargetLevel>
   </component>
 </project>
