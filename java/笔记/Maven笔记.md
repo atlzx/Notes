@@ -209,12 +209,13 @@
 + 项目构建是指将源代码、依赖库和资源文件等转换成可执行或可部署的应用程序的过程，在这个过程中包括编译源代码、链接依赖库、打包和部署等多个步骤
 + Maven提供了简便的命令来提高构建的效率，使得开发人员能够**更加专注于应用程序的开发和维护**，而不必关心应用程序的构建细节
 + 构建分为多个步骤
-  + 清理
-  + 编译
-  + 测试
-  + 报告
-  + 打包
-  + 部署
+  + 清理:删除之前编译生成的结果
+  + 编译:对源码进行编译，并放入`target`文件夹内
+  + 测试:测试test文件夹的东西
+  + 报告:测试的时候会自动生成报告，存放在`target/surefire-reports`内
+  + 打包:生成项目对应的jar或war包，打包会自动进行编译
+  + 部署:将生成的jar或war包上传到本地或私服仓库，部署会包含了打包过程
++ 本地仓库内各依赖按照`groupId->artifactId->version`来区分每个依赖，我们也可以通过这种方式找到我们想要的包
 
 ![构建过程](../文件/图片/Maven图片/项目构建.png)
 
@@ -232,6 +233,22 @@
 |mvn site|生成站点|无|
 |mvn test|执行测试源码|建议**测试类以`Test`开头或结尾**，且**方法以`test`开头或结尾**|
 |mvn test-compile|编译测试源码|无|
+
++ 使用`package`命令打war包时，可能会出现报错，大概率是因为**打war包的插件与当前的JDK版本不匹配**
+
+~~~xml
+  <!-- 添加如下配置让插件匹配JDK17 -->
+  <build>
+      <!-- jdk17 和 war包版本插件不匹配 -->
+      <plugins>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-war-plugin</artifactId>
+              <version>3.2.2</version>
+          </plugin>
+      </plugins>
+  </build>
+~~~
 
 ---
 
