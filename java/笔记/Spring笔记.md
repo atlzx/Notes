@@ -53,7 +53,7 @@
     package com.spring.sample;
 
     public class User {
-        public void salHello(){
+        public void sayHello(){
             System.out.println("你好");
             System.out.println("HelloWorld");
         }
@@ -95,9 +95,165 @@
             // 该方法返回的是Object类型对象，因此强转成User类型对象
             User user = (User)context.getBean("user");
             System.out.println("输出得到的user:"+user);  // 输出，检验是否为该类对象
-            user.salHello();  // 尝试调用该类对象内声明的方法
+            user.sayHello();  // 尝试调用该类对象内声明的方法
         }
     }
 ~~~
 
++ 我们创建的`ApplicationContext`对象会加载对应的user.xml文件，获取内部对应的标签的属性
++ 接下来根据类的全路径，创建该类的无参对象
++ 创建完的对象会放在Map中，其key是该类的唯一标识，value是类的信息描述信息
+
 ---
+
+### （二）log4j2
+
++ **Apache Log4j2**是一个开源的日志记录组件，使用非常的广泛，它由几个重要的组件构成
+  + 日志信息的优先级:日志信息的优先级从高到低有TRACE < DEBUG < INFO < WARN < ERROR < FATAL，**设置高优先级的输出会默认屏蔽低优先级的输出**
+    + **TRACE**：追踪，是最低的日志级别，相当于追踪程序的执行
+    + **DEBUG**：调试，一般在开发中，都将其设置为最低的日志级别
+    + **INFO**：信息，输出重要的信息，使用较多
+    + **WARN**：警告，输出警告的信息
+    + **ERROR**：错误，输出错误信息
+    + **FATAL**：严重错误
+  + 日志信息的输出地
+  + 日志信息的输出格式
++ 首先引入依赖
+
+~~~xml
+
+    <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>2.20.0</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j2-impl -->
+    <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j2-impl</artifactId>
+        <version>2.20.0</version>
+    </dependency>
+
+~~~
+
++ 接下来在resources目录下创建一个叫`log4j2.xml`的文件，**名字不能修改**，在里面写入如下内容:
+
+~~~xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    configuration有两个可选属性
+        status用于指定日志框架本身输出的日志优先级，可以修改为DEBUG
+        monitorInterval用于指定自动加载配置文件的间隔时间，单位为秒
+
+-->
+<configuration>
+
+    <!-- properties内可以声明一些变量，标签体内的值就是变量的值，标签体的name就是变量名，使用时需要使用${name}嵌入 -->
+    <properties>
+        <property name="LOG_PATH">E:\大学文件\笔记类\各学科笔记\java\源码\Spring</property>
+    </properties>
+
+
+    <loggers>
+        <!--
+            level指定日志级别，从低到高的优先级：
+                TRACE < DEBUG < INFO < WARN < ERROR < FATAL
+                trace：追踪，是最低的日志级别，相当于追踪程序的执行
+                debug：调试，一般在开发中，都将其设置为最低的日志级别
+                info：信息，输出重要的信息，使用较多
+                warn：警告，输出警告的信息
+                error：错误，输出错误信息
+                fatal：严重错误
+        -->
+        <!-- 设置优先级为DEBUG,TRACE将被忽略 -->
+        <root level="DEBUG">
+            <appender-ref ref="spring6log"/>  <!-- 这里的ref属性对应着下面标签的name属性 -->
+            <appender-ref ref="RollingFile"/>
+            <appender-ref ref="log"/>
+        </root>
+    </loggers>
+
+    <appenders>
+        <!--输出日志信息到控制台-->
+        <!--
+            name与上面标签的ref需要一致
+            target值为SYSTEM_OUT时，输出黑色，SYSTEM_ERR输出红色
+        -->
+        <console name="spring6log" target="SYSTEM_OUT">
+            <!--控制日志输出的格式-->
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss SSS} [%t] %-3level %logger{1024} - %msg%n"/>
+        </console>
+
+        <!--文件会打印出所有信息，该log在每次test时都会被覆写，而不是追加-->
+        <File name="log" fileName="${LOG_PATH}\logFile\testLog\test.log" append="false">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>
+        </File>
+
+        <!--
+            fileName表示要将日志文件存入的文件夹，使用${name}来嵌入之前声明的变量
+            filePattern指定日志文件的名称格式
+        -->
+        <RollingFile name="RollingFile" fileName="${LOG_PATH}\logFile\minLog\log"
+                     filePattern="${LOG_PATH}\logFile\bigLog\$${date:yyyy-MM}\app-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n"/>
+            <!-- 如果堆存起来的日志信息超过了50MB，那么把它们放入指定的文件夹内 -->
+            <SizeBasedTriggeringPolicy size="50MB"/>
+            <!-- DefaultRolloverStrategy属性如不设置，
+            则默认为最多同一文件夹下7个文件，这里设置了20 -->
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+    </appenders>
+</configuration>
+~~~
+
++ 接下来使用Maven进行一下测试，就可以看到控制台输出了打印信息，同时也在对应路径下创建了日志文件
++ 我们也可以手动的输出日志:
+
+~~~java
+    // 这里列出我们需要导入的类，不要导错了
+    import org.slf4j.Logger;
+    import org.slf4j.LoggerFactory;
+
+    @Test
+        public void test2(){
+            Logger logger= LoggerFactory.getLogger(User.class);
+            logger.debug("调试");
+            logger.info("输出信息");
+            logger.error("出现错误");
+            logger.trace("跟踪");
+            logger.warn("警告");
+        }
+~~~
+
+---
+
+## 三、IOC
+
+### （一）概述
+
++ `IOC(Inverse of Control)`指控制反转，它是一种思想，它可以降低程序的耦合度，并提高程序扩展力
++ 反转，指我们**将对象创建和对象与对象之间关系维护的权力交给第三方容器管理**，这里的第三方容器就是Spring
++ 控制反转通过**依赖注入(DI,Dependency Injection)**实现，依赖注入有两种实现方式
+  + set注入
+  + 构造注入
+
+---
+
+### （二）IOC容器
+
++ Spring的IOC容器是Spring对IOC思想的实现，在Spring的容器中，它管理的组件被称为`Bean`
++ 我们在创建Bean之前，需要先创建容器对象，Spring为我们提供了两种方式来创建容器对象:
+  + 使用底层的`BeanFactory`创建
+  + 使用具有更多高级特性，且是BeanFctory的子接口的`ApplicationContext`创建
++ ApplicationContext接口的实现类包括
+
+|实现类|简介|
+|:---:|:---:|
+|ClassPathXmlApplicationContext|通过读取类路径下的 XML 格式的配置文件创建 IOC 容器对象|
+|FileSystemXmlApplicationContext|通过文件系统路径读取 XML 格式的配置文件创建 IOC 容器对象|
+|ConfigurableApplicationContext|ApplicationContext 的子接口，包含一些扩展方法 refresh() 和 close() ，让 ApplicationContext 具有启动、关闭和刷新上下文的能力。|
+|WebApplicationContext|专门为 Web 应用准备，基于 Web 环境创建 IOC 容器对象，并将对象引入存入 ServletContext 域中。|
+
+
+
+

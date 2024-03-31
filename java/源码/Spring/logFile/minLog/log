@@ -1,0 +1,10 @@
+2024-03-31 at 16:57:05 CST DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@34a97744
+2024-03-31 at 16:57:05 CST DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 1 bean definitions from class path resource [user.xml]
+2024-03-31 at 16:57:05 CST DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'user'
+2024-03-31 at 17:02:28 CST DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@bcec031
+2024-03-31 at 17:02:28 CST DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 1 bean definitions from class path resource [user.xml]
+2024-03-31 at 17:02:29 CST DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'user'
+2024-03-31 at 17:02:29 CST DEBUG com.spring.test.UserTest 25 test2 - 调试
+2024-03-31 at 17:02:29 CST INFO  com.spring.test.UserTest 26 test2 - 输出信息
+2024-03-31 at 17:02:29 CST ERROR com.spring.test.UserTest 27 test2 - 出现错误
+2024-03-31 at 17:02:29 CST WARN  com.spring.test.UserTest 29 test2 - 警告
