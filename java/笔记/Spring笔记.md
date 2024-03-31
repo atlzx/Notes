@@ -246,13 +246,31 @@
   + 使用底层的`BeanFactory`创建
   + 使用具有更多高级特性，且是BeanFctory的子接口的`ApplicationContext`创建
 + ApplicationContext接口的实现类包括
+![ApplicationContext接口与其实现类](../文件/图片/Spring图片/ApplicationContext接口与其实现类.png)
 
-|实现类|简介|
+|实现类|作用|
 |:---:|:---:|
 |ClassPathXmlApplicationContext|通过读取类路径下的 XML 格式的配置文件创建 IOC 容器对象|
 |FileSystemXmlApplicationContext|通过文件系统路径读取 XML 格式的配置文件创建 IOC 容器对象|
-|ConfigurableApplicationContext|ApplicationContext 的子接口，包含一些扩展方法 refresh() 和 close() ，让 ApplicationContext 具有启动、关闭和刷新上下文的能力。|
+|ConfigurableApplicationContext|ApplicationContext的子接口，包含一些扩展方法 refresh() 和 close() ，让 ApplicationContext 具有启动、关闭和刷新上下文的能力。|
 |WebApplicationContext|专门为 Web 应用准备，基于 Web 环境创建 IOC 容器对象，并将对象引入存入 ServletContext 域中。|
+
+---
+
+### （三）xml文件管理Bean
+
+#### ①xml标签详解
+
+~~~xml
+
+
+~~~
+
+---
+
+#### ②常用方法
+
+
 
 
 
