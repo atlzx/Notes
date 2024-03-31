@@ -23,7 +23,7 @@
     + lib目录:含有`Maven`运行时所需的`Java`类库
     + LICENSE、NOTICE、README.txt：针对Maven版本，第三方软件等简要介绍
 3. 配置`MAVEN_HOME`环境变量，值为`Maven`所在目录。同时配置`%MAVEN_HOME%\bin`环境变量。通过`mvn -v`命令验证是否配置成功
-4. 配置`Maven->conf->setting.xml`文件，主要为下面的部分:
+4. 配置`Maven->conf->settings.xml`文件，主要为下面的部分:
 
 ~~~xml
     <!-- 配置本地仓库，在下面的注释下面配置 -->
