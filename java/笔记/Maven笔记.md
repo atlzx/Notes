@@ -199,7 +199,7 @@
 
 
 
-        <modelVersion>4.0.0</modelVersion>
+        <modelVersion>4.0.0</modelVersion>  <!-- 指定pom.xml的版本 -->
         <groupId>com.maven.javase</groupId>  <!-- 指定项目所属的组ID，必填。如果是子项目，该标签内的值由父项目决定 -->
         <artifactId>Maven_JavaSE</artifactId>  <!-- 指定项目在组内的唯一标识ID，默认与项目名称一致，必填 -->
         <version>1.0-SNAPSHOT</version>  <!-- 指定项目版本，IDEA会自动创建，必填。如果是子项目，该标签内的值由父项目决定-->
@@ -224,7 +224,7 @@
 
         <!-- 这是项目是父项目时才需要指定的标签，它用于表示聚合关系 -->
         <modules>
-            <module>child-project1</module>
+            <module>child-project1</module>  <!-- 注意：里面的值是路径 -->
             <module>child-project2</module>
         </modules>
 
@@ -381,7 +381,12 @@
 
 
 
-        <!-- repositories标签内可以指定我们希望Maven从哪里下载我们需要的依赖到我们的本地仓库 -->
+        <!-- 
+            repositories标签内可以指定我们希望Maven从哪里下载我们需要的依赖到我们的本地仓库 
+            pom.xml配置的仓库路径优先级大于settings.xml配置的镜像路径
+            因为settings.xml配置的是全局的，而pom.xml内配置的是本项目的
+            只有当pom.xml内的路径找不到资源或全部失效时，才会去找settings.xml的路径
+        -->
         <repositories>
             <repository>
                 <id>nexus-mine</id>  <!-- 需要与setting.xml文件保持一致 -->
@@ -462,9 +467,10 @@
   + 编译:对源码进行编译，并放入`target`文件夹内
   + 测试:测试test文件夹的东西
   + 报告:测试的时候会自动生成报告，存放在`target/surefire-reports`内
-  + 打包:生成项目对应的jar或war包，打包会自动进行编译
-  + 部署:将生成的jar或war包上传到本地或私服仓库，部署会包含了打包过程
+  + 打包:生成项目对应的jar或war包
+  + 部署:将生成的jar或war包上传到本地或私服仓库
 + 本地仓库内各依赖按照`groupId->artifactId->version`来区分每个依赖，我们也可以通过这种方式找到我们想要的包
++ 生命周期靠后的步骤在执行时，会先执行其生命周期之前的步骤，这样是为了**简化我们的构建流程，使我们不必每次构建都要执行多次步骤**
 
 ![构建过程](../文件/图片/Maven图片/项目构建.png)
 
@@ -499,6 +505,8 @@
       </plugins>
   </build>
 ~~~
+
++ 如果是`IDEA`等图形化界面，直接点开右边的Maven选项，点开项目，在`lifecycle`中选择生命周期（双击）执行即可
 
 ---
 
@@ -603,8 +611,8 @@
 ~~~xml
     <distributionManagement>
         <snapshotRepository>
-            <id>nexus-mine</id>
-            <name>Nexus Snapshot</name>
+            <id>nexus-mine</id>  <!-- 指定与settings.xml一样的id -->
+            <name>Nexus Snapshot</name>  <!-- 名字随便取 -->
             <url>http://localhost:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
@@ -614,18 +622,52 @@
 + 如果我们想使用别人上传的jar包,需要在应项目的xml文件内配置信息:
 
 ~~~xml
+<!-- repositories用来配置我们的Maven优先从哪里下载依赖到我们的本地仓库 -->
 <repositories>
     <repository>
-        <id>nexus-mine</id>
+        <id>nexus-mine</id>  <!-- 指定与settings.xml一样的id -->
         <name>nexus-mine</name>
         <url>http://localhost:8081/repository/maven-snapshots/</url>
         <snapshots>
-            <enabled>true</enabled>
+            <enabled>true</enabled>  <!-- 是否支持快照版本 -->
         </snapshots>
         <releases>
-            <enabled>true</enabled>
+            <enabled>true</enabled>  <!-- 是否支持正式版本 -->
         </releases>
     </repository>
 </repositories>
 
 ~~~
+
+---
+
+## 五、综合案例
+
++ 需求案例：搭建一个电商平台项目模板，该平台包括用户服务、订单服务、通用工具模块等。
+![综合案例](../文件/图片/Maven图片/综合案例.png)
+
+项目架构：
+
+1. **用户服务**：负责处理用户相关的逻辑，例如用户信息的管理、用户注册、登录等。
+   - spring-context 6.0.6 
+   - spring-core 6.0.6
+   - spring-beans 6.0.6
+   - common-service
+2. **订单服务**：负责处理订单相关的逻辑，例如订单的创建、订单支付、退货、订单查看等。
+   - spring-context 6.0.6 
+   - spring-core 6.0.6
+   - spring-beans 6.0.6
+   - spring-security 6.0.6
+   - common-service
+3. **通用模块**：负责存储其他服务需要通用工具类，其他服务依赖此模块。
+   - commons-io 2.11.0
+   - junit 5.9.2
+
++ 分析
+  + 可以搭建一个父项目，将三个服务聚合在一起
+  + 三个子项目分别是用户服务、订单服务和通用模块
+  + 父项目有全部的依赖，**通用模块完全继承父项目的依赖，用户服务和订单服务依赖于通用模块**，并根据自己的需求剔除调不需要传递过来的依赖
++ [样例1](../源码/Maven/Maven_Father/pom.xml)
++ [样例2](../源码/Maven/Maven_Father/Maven_Son_Common/pom.xml)
++ [样例3](../源码/Maven/Maven_Father/Maven_Son_Service/pom.xml)
++ [样例4](../源码/Maven/Maven_Father/Maven_Son_User/pom.xml)

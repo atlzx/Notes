@@ -31,6 +31,12 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.maven.nexus</groupId>
+            <artifactId>NexusSample</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
 

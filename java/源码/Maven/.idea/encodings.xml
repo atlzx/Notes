@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/Maven_Father/Maven_Son_Common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Maven_Father/Maven_Son_Common/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Maven_Father/Maven_Son_Service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Maven_Father/Maven_Son_Service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Maven_Father/Maven_Son_User/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Maven_Father/Maven_Son_User/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Maven_Father/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Maven_Father/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Maven_JavaSE/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Maven_JavaSE/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Maven_JavaWeb1/src/main/java" charset="UTF-8" />
