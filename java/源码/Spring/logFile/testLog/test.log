@@ -1,7 +1,5 @@
-17:02:28.822 DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@bcec031
-17:02:28.984 DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 1 bean definitions from class path resource [user.xml]
-17:02:29.007 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'user'
-17:02:29.051 DEBUG com.spring.test.UserTest 25 test2 - 调试
-17:02:29.052 INFO  com.spring.test.UserTest 26 test2 - 输出信息
-17:02:29.052 ERROR com.spring.test.UserTest 27 test2 - 出现错误
-17:02:29.052 WARN  com.spring.test.UserTest 29 test2 - 警告
+22:08:59.216 DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@1a7288a3
+22:08:59.360 DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 3 bean definitions from class path resource [user.xml]
+22:08:59.384 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'helloWorld'
+22:08:59.395 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'user'
+22:08:59.396 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'interface1'

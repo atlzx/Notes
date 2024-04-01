@@ -8,3 +8,43 @@
 2024-03-31 at 17:02:29 CST INFO  com.spring.test.UserTest 26 test2 - 输出信息
 2024-03-31 at 17:02:29 CST ERROR com.spring.test.UserTest 27 test2 - 出现错误
 2024-03-31 at 17:02:29 CST WARN  com.spring.test.UserTest 29 test2 - 警告
+2024-03-31 at 21:47:02 CST DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@bcec031
+2024-03-31 at 21:47:02 CST DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 1 bean definitions from class path resource [user.xml]
+2024-03-31 at 21:47:02 CST DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'helloWorld'
+2024-03-31 at 21:47:02 CST DEBUG com.spring.test.HelloWorldTest 26 test2 - 调试
+2024-03-31 at 21:47:02 CST INFO  com.spring.test.HelloWorldTest 27 test2 - 输出信息
+2024-03-31 at 21:47:02 CST ERROR com.spring.test.HelloWorldTest 28 test2 - 出现错误
+2024-03-31 at 21:47:02 CST WARN  com.spring.test.HelloWorldTest 30 test2 - 警告
+2024-03-31 at 21:47:26 CST DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@bcec031
+2024-03-31 at 21:47:26 CST DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 1 bean definitions from class path resource [user.xml]
+2024-03-31 at 21:47:26 CST DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'helloWorld'
+2024-03-31 at 21:47:26 CST DEBUG com.spring.test.HelloWorldTest 26 test2 - 调试
+2024-03-31 at 21:47:26 CST INFO  com.spring.test.HelloWorldTest 27 test2 - 输出信息
+2024-03-31 at 21:47:26 CST ERROR com.spring.test.HelloWorldTest 28 test2 - 出现错误
+2024-03-31 at 21:47:26 CST WARN  com.spring.test.HelloWorldTest 30 test2 - 警告
+2024-03-31 at 21:48:16 CST DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@bcec031
+2024-03-31 at 21:48:16 CST DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 1 bean definitions from class path resource [user.xml]
+2024-03-31 at 21:48:16 CST DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'user'
+2024-03-31 at 21:48:17 CST DEBUG com.spring.test.HelloWorldTest 26 test2 - 调试
+2024-03-31 at 21:48:17 CST INFO  com.spring.test.HelloWorldTest 27 test2 - 输出信息
+2024-03-31 at 21:48:17 CST ERROR com.spring.test.HelloWorldTest 28 test2 - 出现错误
+2024-03-31 at 21:48:17 CST WARN  com.spring.test.HelloWorldTest 30 test2 - 警告
+2024-03-31 at 21:53:00 CST DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@1a7288a3
+2024-03-31 at 21:53:00 CST DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 2 bean definitions from class path resource [user.xml]
+2024-03-31 at 21:53:00 CST DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'helloWorld'
+2024-03-31 at 21:53:00 CST DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'user'
+2024-03-31 at 21:56:04 CST DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@1a7288a3
+2024-03-31 at 21:56:04 CST DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 3 bean definitions from class path resource [user.xml]
+2024-03-31 at 21:56:04 CST DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'helloWorld'
+2024-03-31 at 21:56:04 CST DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'user'
+2024-03-31 at 21:56:04 CST DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'user1'
+2024-03-31 at 22:06:46 CST DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@1a7288a3
+2024-03-31 at 22:06:46 CST DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 3 bean definitions from class path resource [user.xml]
+2024-03-31 at 22:06:46 CST DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'helloWorld'
+2024-03-31 at 22:06:46 CST DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'user'
+2024-03-31 at 22:06:46 CST DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'interface1'
+2024-03-31 at 22:08:59 CST DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@1a7288a3
+2024-03-31 at 22:08:59 CST DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 3 bean definitions from class path resource [user.xml]
+2024-03-31 at 22:08:59 CST DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'helloWorld'
+2024-03-31 at 22:08:59 CST DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'user'
+2024-03-31 at 22:08:59 CST DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'interface1'

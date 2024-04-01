@@ -263,12 +263,91 @@
 
 ~~~xml
 
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+        <!-- id属性用来指定该bean标签的唯一标识，class属性用来指定该bean标签对应的类的全类名 -->
+        <bean id="helloWorld" class="com.spring.sample.HelloWorld"></bean>
+        <bean id="user" class="com.spring.sample.User"></bean>
+    <!--    <bean id="user1" class="com.spring.sample.User"></bean>   多个id指向一个类，使用getBean(Class<T> requiredType)方法时会报错      -->
+    <!-- 如果id指向的类是该xml文件中某个接口的唯一实现类，那么通过传入接口的Class对象来得到对应的实现类对象时，加载的就是该类 -->
+        <bean id="interface1" class="com.spring.sample.GetBeanSampleImpl2"></bean>
+
+
+
+
+
+
+        <bean id="xxx" class="xxxxx">
+            <!-- 
+                property标签用来进行属性值的注入，是setter注入的相关标签
+                    name属性需要以该类中的某个属性名一致
+                    value属性表示初始要赋给该对象的值，它只能注入普通的值，而且它本质上注入的是字符串。他设置的是我们刚得到对象时，对象的该属性的初始值
+                使用property标签需要类实现setter方法
+             -->
+            <property name="yyyy" value="vvvv"></property>
+
+            <property>
+                <null />  <!-- null标签用于表示该属性值是空值，无法使用value属性置空，因为value传递的是字符串 -->
+            </property>
+
+            <!-- 
+                constructor-arg标签用来进行属性值的注入，是构造器注入的相关标签
+                    其value属性表示依次向构造器传递的值
+                    index属性表示设置的value在构造器内从左到右的索引位置(从0开始)，这是一个可选属性值
+                    name属性与property的name属性一致
+             -->
+            <constructor-arg value="vvvv" index="number" name="nnn"></constructor-arg>
+
+            <value></value>
+            <null />  <!-- 使用null自结束标签来 -->
+        </bean>
+    </beans>
 
 ~~~
 
 ---
 
 #### ②常用方法
+
+|所属类|方法/构造器|参数|作用|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|ClassPathXmlApplicationContext|public ClassPathXmlApplicationContext(String configLocation)|configLocation:想读取的xml相对于resources的路径|根据xml文件生成容器对象|容器对象|ClassPathXmlApplicationContext|无异常|无|[样例]()|
+|BeanFactory|Object getBean(String name)|name:xml文件内标签中对应类路径的id|得到指定id对应的类对象|指定类对象|Object|BeansException|无|^|
+|^|<T> T getBean(Class<T> requiredType)|requiredType:想得到类对应Class对象|得到指定的类对象|^|^|^|无|^|
+|^|<T> T getBean(String name, Class<T> requiredType)|name:xml文件内标签中对应类路径的id<br>requiredType:想得到类对应Class对象|得到指定的类对象|^|^|^|无|^|
+
+---
+
+#### ③创建类对象
+
++ 可以通过`getBean`方法得到指定的类对象，Spring为我们重载了多个该方法，方便我们调用
+  + getBean(String name)
+  + getBean(Class<T> requiredType)
+  + getBean(String name, Class<T> requiredType)
+
+
+~~~xml
+    <bean id="user1" class="com.spring.test.User"></bean>
+    <bean id="user2" class="com.spring.test.User"></bean>
+    <!-- 这样会报错: -->
+~~~
+
++ **注意**:
+> + 如果同一个类在xml文件中被两个id指向，那么使用第二个方法时会报错
+> + 如果直接传入接口的Class对象来获取指定的类对象，此时**如果我们的xml文件内仅声明了一个该接口的实现类，那么就会创建该类的对象**。如果声明了多个，会报错
+
++ [样例1](../源码/Spring/SpringTest1/src/test/java/com/spring/test/UserTest.java)
++ [样例2](../源码/Spring/SpringTest1/src/test/java/com/spring/test/GetBeanTest.java)
+
+---
+
+#### ④依赖注入
+
++ 上面的获取类对象都是通过调用空参的构造函数得到的对象，如果我们想得到有参的对象的话，我们就需要用到**依赖注入**了
++ 依赖注入分为两种
+  + 
 
 
 
