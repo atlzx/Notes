@@ -280,28 +280,36 @@
 
 
         <bean id="xxx" class="xxxxx">
+
+
             <!-- 
-                property标签用来进行属性值的注入，是setter注入的相关标签
+                property标签用来进行属性值的注入，是setter注入的相关标签，他需要对应类实现其属性的setter方法
                     name属性需要以该类中的某个属性名一致
-                    value属性表示初始要赋给该对象的值，它只能注入普通的值，而且它本质上注入的是字符串。他设置的是我们刚得到对象时，对象的该属性的初始值
+                    value属性表示初始要赋给该对象的值，它只能注入普通的值，而且它本质上注入的是字符串。他设置的是我们刚得到对象时，对象的该属性的初始值.
+                    指定了value属性以后，就不要再向标签里面继续写赋值的标签了
                 使用property标签需要类实现setter方法
              -->
-            <property name="yyyy" value="vvvv"></property>
 
-            <property>
+            <!-- 如果想注入的值是xml实体，那么注入的第一种方式是使用字符实体在value属性内直接插入，字符实体详见html+css笔记 -->
+            <property name="yyyy" value="a &nbsp; b"></property>
+
+            <property >
                 <null />  <!-- null标签用于表示该属性值是空值，无法使用value属性置空，因为value传递的是字符串 -->
+                <!-- 注入xml实体的第二种方式是把想注入的值写在 <![CDATA[]]> 最里面的括号内，如下例，注入的值是 a < b -->
+                <value><![CDATA[a < b]]></value>  
             </property>
 
             <!-- 
                 constructor-arg标签用来进行属性值的注入，是构造器注入的相关标签
                     其value属性表示依次向构造器传递的值
                     index属性表示设置的value在构造器内从左到右的索引位置(从0开始)，这是一个可选属性值
-                    name属性与property的name属性一致
+                    name属性与property的name属性不是一致的，这个name属性是跟着构造器的参数名来的，而不是类内的属性名
+                    name和index属性是不可以混用的，但是混用可能不会报错，虽然IDEA会报错，但是Spring貌似会以某种方式正常的创建对象
+                    推测是先把index对应的value赋上，再根据有name属性的constructor-arg在xml文件内的声明顺序依次赋值，越靠上面越先赋值(不确定)
              -->
             <constructor-arg value="vvvv" index="number" name="nnn"></constructor-arg>
 
             <value></value>
-            <null />  <!-- 使用null自结束标签来 -->
         </bean>
     </beans>
 
@@ -347,7 +355,22 @@
 
 + 上面的获取类对象都是通过调用空参的构造函数得到的对象，如果我们想得到有参的对象的话，我们就需要用到**依赖注入**了
 + 依赖注入分为两种
-  + 
+  + setter注入:Spring通过类定义的setter方法对类对象的属性进行赋值
+    + setter注入使用`property`标签进行赋值，它有两个属性可选
+      + name属性用于指定要赋值的属性名
+      + value属性用于指定要赋值的属性值，它的本质是一个字符串
+  + 构造器注入:Spring通过类定义的构造器对类对象的属性进行赋值
+    + 构造器注入使用`constructor-arg`标签进行赋值，它有三个属性可选
+      + name属性用于指定要赋值的**构造器内的参数名**，与类内的属性名没有关系
+      + value属性用于指定要赋值的属性值，它的本质是一个字符串
+      + index属性用于指定要赋值的构造器的参数所在其参数列表内的索引，索引从0开始
+      + **name和index不要混用**
+
+---
+
+
+
+
 
 
 

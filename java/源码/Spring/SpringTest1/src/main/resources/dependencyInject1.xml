@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="diSample1" class="com.spring.sample.dependencyInject.DependencyInjectSample1">
+        <!-- 通过property的标签指定属性的默认初始值，property标签起作用需要对应类实现setter方法 -->
+        <property name="age" value="19"></property>
+        <property name="name" value="lzx"></property>
+        <property name="description">
+            <null />  <!-- 使用null自结束标签可以传递空值，value传递的是字符串null而不是字面量null -->
+        </property>
+        <property name="gender" value="男"></property>
+    </bean>
+
+    <bean id="diSample2" class="com.spring.sample.dependencyInject.DependencyInjectSample1">
+        <!--
+            可以通过index指定该标签的value值对应的是构造器参数列表内的哪个参数，index索引从0开始
+            也可以通过name属性指定构造器，name属性表示构造器内参数的名字，而不是类内的属性名称
+            name和index不要混用，虽然混用有的时候不会报错，但是创建出来的对象赋值会出现错误
+            这里不再演示使用name属性进行赋值
+         -->
+        <constructor-arg value="1" index="0"></constructor-arg>
+        <constructor-arg value="2" index="1"></constructor-arg>
+        <constructor-arg value="3" index="2"></constructor-arg>
+        <constructor-arg value="4" index="3"></constructor-arg>
+    </bean>
+</beans>

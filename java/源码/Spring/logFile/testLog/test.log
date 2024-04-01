@@ -1,5 +1,4 @@
-22:08:59.216 DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@1a7288a3
-22:08:59.360 DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 3 bean definitions from class path resource [user.xml]
-22:08:59.384 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'helloWorld'
-22:08:59.395 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'user'
-22:08:59.396 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'interface1'
+22:33:07.337 DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@2974f221
+22:33:07.496 DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 2 bean definitions from class path resource [dependencyInject1.xml]
+22:33:07.522 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'diSample1'
+22:33:07.565 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'diSample2'
