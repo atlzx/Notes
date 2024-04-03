@@ -14,9 +14,10 @@
 
     <bean id="diSample2" class="com.spring.sample.dependencyInject.DependencyInjectSample1">
         <!--
-            可以通过index指定该标签的value值对应的是构造器参数列表内的哪个参数
+            可以通过index指定该标签的value值对应的是构造器参数列表内的哪个参数，index索引从0开始
             也可以通过name属性指定构造器，name属性表示构造器内参数的名字，而不是类内的属性名称
             name和index不要混用，虽然混用有的时候不会报错，但是创建出来的对象赋值会出现错误
+            这里不再演示使用name属性进行赋值
          -->
         <constructor-arg value="1" index="0"></constructor-arg>
         <constructor-arg value="2" index="1"></constructor-arg>

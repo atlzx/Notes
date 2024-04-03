@@ -9,7 +9,7 @@
         <property name="description">
             <null />  <!-- 使用null自结束标签可以传递空值，value传递的是字符串null而不是字面量null -->
         </property>
-        <property name="gender" value="男"></property>e
+        <property name="gender" value="男"></property>
     </bean>
 
     <bean id="diSample2" class="com.spring.sample.dependencyInject.DependencyInjectSample1">
