@@ -3015,7 +3015,7 @@
   + 字符缓冲流:`BufferedReader`、`BufferedWriter`
 
 |构造器|参数|描述|返回值|返回值类型|备注|样例|
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 |`public BufferedInputStream(InputStream in)`|`in`:抽象基类字节输入流对象|根据传入的字节输入流对象创建缓冲字节输入流对象|缓冲字节输入流对象|`BufferedInputStream`|无|[样例]()|
 |`public BufferedOutputStream(OutputStream out)`|`out`:抽象基类字节输出流对象|根据传入的字节输出流对象创建缓冲字节输出流对象|缓冲字节输出流对象|`BufferedOutputStream`|无|^|
 |`public BufferedReader(Reader read)`|`read`:抽象基类字符输入流对象|根据传入的字符输入流对象创建缓冲字符输入流对象|缓冲字符输入流对象|`BufferedInputStream`|无|^|
@@ -3030,7 +3030,7 @@
 ![转换流](../文件/图片/Java图片/转换流.png)
 
 |构造器|参数|描述|返回值|返回值类型|备注|样例|
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 |`public InputStreamReader(InputStream in)`|`in`:抽象基类字符输入流对象|根据传入的字符输入流对象创建默认的字符集的转换字符输入流对象|转换字符输入流对象|`InputStreamReader`|无|[样例]()|
 |`public InputStreamReader(InputStream in,String charsetName)`|`out`:抽象基类字符输入流对象<br>`charsetName`:字符集编码格式|根据传入的字符输入流对象创建指定的字符集的转换字符输入流对象|转换字符输入流对象|`InputStreamReader`|无|^|
 |`public OutputStreamWriter(OutputStream out)`|`in`:抽象基类字符输出流对象|根据传入的字符输出流对象创建默认的字符集的转换字符输出流对象|转换字符输出流对象|`OutputStreamWriter`|无|^|
@@ -3044,7 +3044,7 @@
 + 而对象流`ObjectOutputStream`和`ObjectInputStream`可以将基本数据类型和引用数据类型都进行序列化转换
 
 |构造器/方法|参数|描述|返回值|返回值类型|备注|所属|样例|
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 |`public ObjectOutputStream(OutputStream out)`|`out`:抽象基类字节输出流对象|根据传入的字节输出流对象创建缓冲字节输出流对象|缓冲字节输出流对象|`ObjectOutputStream`|无|`java.io.OutputStream`|[样例]()|
 |`public void writeBoolean(boolean val)`|`val`:想写出的值|写出一个`boolean`值|无返回值|`void`|无|^|^|
 |`public void writeByte(int val)`|^|写出一个`byte`值|^|^|无|^|^|
