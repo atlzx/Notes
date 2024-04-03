@@ -264,12 +264,29 @@
 ~~~xml
 
     <?xml version="1.0" encoding="UTF-8"?>
+    <!-- 下面引用了util和p命名空间 -->
     <beans xmlns="http://www.springframework.org/schema/beans"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-        <!-- id属性用来指定该bean标签的唯一标识，class属性用来指定该bean标签对应的类的全类名 -->
-        <bean id="helloWorld" class="com.spring.sample.HelloWorld"></bean>
-        <bean id="user" class="com.spring.sample.User"></bean>
+        xmlns:util="http://www.springframework.org/schema/util"
+        xmlns:p="http://www.springframework.org/schema/p"  
+        xsi:schemaLocation="http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util 
+        http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/p 
+        http://www.springframework.org/schema/p/spring-p.xsd">
+        <!-- 
+            id 属性用来指定该bean标签的唯一标识
+            class 属性用来指定该bean标签对应的类的全类名
+            name 属性和id属性的作用是一样的
+            lazy-init 用来表示是否懒加载，默认是false，设置为true会使该对象在我们真正调用getBean方法时才创建
+            depends-on 用来设置每个Bean在IOC容器内的加载顺序，因为我们不确定IOC怎么加载的对象，因此可以设置上该属性以确保其加载顺序可控，它的作用是IOC在加载对象时，先加载其depends-on属性设置的bean，这样该bean就一定会在其设置的depends-on的bean加载完成后再进行加载
+            scope 用来设置bean的作用域
+                它的默认值是singleton，在该模式下，每次我们得到的对应bean对象都是同一个，也就是说，它是单例的
+                设置为prototype可以使我们每次获取到的bean都是不同的对象，从而摆脱单例模式
+         -->
+        <bean id="helloWorld" class="com.spring.sample.HelloWorld" name="xxx" lazy-init="true" scope="prototype"></bean>
+        <bean id="user" class="com.spring.sample.User" depends-on="helloWorld"></bean>
     <!--    <bean id="user1" class="com.spring.sample.User"></bean>   多个id指向一个类，使用getBean(Class<T> requiredType)方法时会报错      -->
     <!-- 如果id指向的类是该xml文件中某个接口的唯一实现类，那么通过传入接口的Class对象来得到对应的实现类对象时，加载的就是该类 -->
         <bean id="interface1" class="com.spring.sample.GetBeanSampleImpl2"></bean>
@@ -279,7 +296,7 @@
 
 
 
-        <bean id="xxx" class="xxxxx">
+        <bean id="xxx" name="" class="xxxxx" >
 
 
             <!-- 
@@ -287,27 +304,70 @@
                     name属性需要以该类中的某个属性名一致
                     value属性表示初始要赋给该对象的值，它只能注入普通的值，而且它本质上注入的是字符串。他设置的是我们刚得到对象时，对象的该属性的初始值.
                     指定了value属性以后，就不要再向标签里面继续写赋值的标签了
+                    ref属性用来注入引用数据类型对象，它的值是其它bean的id值，它是注入引用数据类型对象的第一种方式
                 使用property标签需要类实现setter方法
              -->
 
             <!-- 如果想注入的值是xml实体，那么注入的第一种方式是使用字符实体在value属性内直接插入，字符实体详见html+css笔记 -->
-            <property name="yyyy" value="a &nbsp; b"></property>
-
-            <property >
-                <null />  <!-- null标签用于表示该属性值是空值，无法使用value属性置空，因为value传递的是字符串 -->
+            <property name="yyyy" value="a &nbsp; b" ref="id">
+                <!-- null标签用于表示该属性值是空值，无法使用value属性置空，因为value传递的是字符串 -->
+                <null />  
                 <!-- 注入xml实体的第二种方式是把想注入的值写在 <![CDATA[]]> 最里面的括号内，如下例，注入的值是 a < b -->
-                <value><![CDATA[a < b]]></value>  
+                <value><![CDATA[a < b]]></value>
+                
+
+                <!-- 在property内插入bean标签意味着向该属性注入bean标签所映射的类的对象，这是注入引用数据类型对象的第二种方式 -->
+                <bean class="com.test.xxx">
+                    <property></property>
+                    <property></property>
+                    <property></property>
+                </bean>
+                <!-- 使用array标签来向数组类型的属性注入值 --> 
+                <array>
+                    <value>抽烟</value>
+                    <value>喝酒</value>
+                    <value>烫头</value>
+                    <ref bean="xxxx"></ref>
+                </array>
+
+                <!-- 使用list标签来向list类型的属性注入值 -->  
+                <list>
+                    <value>xxx</value>
+                    <value>yyy</value>
+                    <ref bean="xxxx"></ref>
+                </list>
+                <!-- 使用map标签来向map类型的属性注入值 -->
+                <map>
+                    <!-- 可以直接使用属性赋值 -->
+                    <entry key="test1" value="aaa"><entry>
+                    <!-- 也可以使用标签嵌套的方式赋值 -->
+                    <entry>
+                        <key>
+                            <value>xxx</value>
+                        </key>
+                        <ref bean="yyyy"></ref>
+                    </entry>
+                </map>
+
             </property>
+            <!-- 让property标签内的name= 上面的映射引用数据类型的property标签内的 name值.类属性名 的方式 ，可以用value修改其对应属性值的初始值-->
+            <property name="yyyy.zz" value="xxxx"></property>
+
+
+
+
+
 
             <!-- 
                 constructor-arg标签用来进行属性值的注入，是构造器注入的相关标签
                     其value属性表示依次向构造器传递的值
                     index属性表示设置的value在构造器内从左到右的索引位置(从0开始)，这是一个可选属性值
                     name属性与property的name属性不是一致的，这个name属性是跟着构造器的参数名来的，而不是类内的属性名
+                    type属性的作用是当存在多个重载的且形参列表数量相同的参数时，用来具体区分其参数类型以确定最终调用哪个构造器
                     name和index属性是不可以混用的，但是混用可能不会报错，虽然IDEA会报错，但是Spring貌似会以某种方式正常的创建对象
                     推测是先把index对应的value赋上，再根据有name属性的constructor-arg在xml文件内的声明顺序依次赋值，越靠上面越先赋值(不确定)
              -->
-            <constructor-arg value="vvvv" index="number" name="nnn"></constructor-arg>
+            <constructor-arg value="vvvv" index="number" name="nnn" type="int"></constructor-arg>
 
             <value></value>
         </bean>
@@ -356,17 +416,9 @@
 + 上面的获取类对象都是通过调用空参的构造函数得到的对象，如果我们想得到有参的对象的话，我们就需要用到**依赖注入**了
 + 依赖注入分为两种
   + setter注入:Spring通过类定义的setter方法对类对象的属性进行赋值
-    + setter注入使用`property`标签进行赋值，它有两个属性可选
-      + name属性用于指定要赋值的属性名
-      + value属性用于指定要赋值的属性值，它的本质是一个字符串
+    + setter注入使用`property`标签进行赋值
   + 构造器注入:Spring通过类定义的构造器对类对象的属性进行赋值
-    + 构造器注入使用`constructor-arg`标签进行赋值，它有三个属性可选
-      + name属性用于指定要赋值的**构造器内的参数名**，与类内的属性名没有关系
-      + value属性用于指定要赋值的属性值，它的本质是一个字符串
-      + index属性用于指定要赋值的构造器的参数所在其参数列表内的索引，索引从0开始
-      + **name和index不要混用**
-
----
+    + 构造器注入使用`constructor-arg`标签进行赋值
 
 
 
