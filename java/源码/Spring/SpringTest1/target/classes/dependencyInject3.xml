@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util.xsd
+">
+    <context:property-placeholder location="jdbc.properties" />
+
+    <import resource="dependencyInject2.xml" />
+
+    <bean id="stu1" class="com.spring.sample.dependencyInject.Student" p:name="lzx" />
+
+    <util:list id="list">
+        <ref bean="LiMing" />
+        <ref bean="ZhangSan" />
+    </util:list>
+
+    <bean
+        id="stu3"
+        class="com.spring.sample.dependencyInject.Student"
+        p:courseMap-ref="courseMap"
+        p:name="ssk"
+        p:teacherList-ref="list"
+    />
+
+    <bean
+            id="jdbcTest"
+            class="com.spring.sample.dependencyInject.JDBCTest"
+            p:url="${url}"
+            p:userName="${username}"
+            p:password="${password}"
+            p:driverPath="${driverClassName}"
+            p:initialSize="${initialSize}"
+            p:maxActive="${maxActive}"
+    />
+</beans>

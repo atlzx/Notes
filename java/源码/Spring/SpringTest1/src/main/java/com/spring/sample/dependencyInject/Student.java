@@ -23,14 +23,45 @@ public class Student {
     @Override
     public String toString() {
         return "Student{\n" +
-            "name='" + name + "\n" +
+            "name=" + name + "\n" +
             "teacherList=" + teacherList +
             "\nteachers=" + Arrays.toString(teachers) +
             "\ncourseMap=" + courseMap +
             '}';
     }
 
-//    @Override
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Teacher> getTeacherList() {
+        return teacherList;
+    }
+
+    public void setTeacherList(List<Teacher> teacherList) {
+        this.teacherList = teacherList;
+    }
+
+    public Teacher[] getTeachers() {
+        return teachers;
+    }
+
+    public void setTeachers(Teacher[] teachers) {
+        this.teachers = teachers;
+    }
+
+    public Map<Teacher, Course> getCourseMap() {
+        return courseMap;
+    }
+
+    public void setCourseMap(Map<Teacher, Course> courseMap) {
+        this.courseMap = courseMap;
+    }
+    //    @Override
 //    public String toString() {
 //        String str1 = "studentName=" + this.name + "\n";
 //        String str2 = "teacherList=[";

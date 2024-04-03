@@ -264,17 +264,32 @@
 ~~~xml
 
     <?xml version="1.0" encoding="UTF-8"?>
-    <!-- 下面引用了util和p命名空间 -->
+    <!-- 
+        下面引用了util、context和p命名空间 
+        p命名空间的引入不需要更新xsi:schemaLocation对应的链接
+    -->
     <beans xmlns="http://www.springframework.org/schema/beans"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:util="http://www.springframework.org/schema/util"
-        xmlns:p="http://www.springframework.org/schema/p"  
+        xmlns:p="http://www.springframework.org/schema/p"
+        xmlns:context="http://www.springframework.org/schema/context"  
         xsi:schemaLocation="http://www.springframework.org/schema/beans 
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/util 
         http://www.springframework.org/schema/util/spring-util.xsd
-        http://www.springframework.org/schema/p 
-        http://www.springframework.org/schema/p/spring-p.xsd">
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd
+        ">
+
+
+
+        <!-- 使用import标签用来导入其它xml文件，import标签是自带的，不用外部导入 -->
+        <import resource="dependencyInject2.xml" />
+        <!-- 使用context:property-placeholder来导入外部属性文件 -->
+        <context:property-placeholder location="jdbc.properties" />
+
+
+
         <!-- 
             id 属性用来指定该bean标签的唯一标识
             class 属性用来指定该bean标签对应的类的全类名
@@ -339,7 +354,14 @@
                 <!-- 使用map标签来向map类型的属性注入值 -->
                 <map>
                     <!-- 可以直接使用属性赋值 -->
-                    <entry key="test1" value="aaa"><entry>
+                    <!-- 
+                        entry标签有四个属性
+                            key属性用来赋值基本的数据值
+                            key-ref属性用来赋值引用数据类型的对应key值
+                            value属性用来赋值基本的数据值
+                            value-ref属性用来赋值引用数据类型的对应value值
+                     -->
+                    <entry key="test1" value-ref="interface1" ><entry>
                     <!-- 也可以使用标签嵌套的方式赋值 -->
                     <entry>
                         <key>
@@ -377,11 +399,15 @@
 
 |标签|作用|备注|
 |:---:|:---:|:---:|
-|bean|指定类的bean映射，一个bean即代表一个类的配置|无|
-|property|用来指定对应类对象内属性的值|无|
+|bean|指定类的bean映射，一个bean即代表一个类对象的配置|无|
+|property|用来指定对应类对象内属性的值，它是setter注入的相关标签|无|
+|constructor-arg|用来指定对应类对象内属性的值，它是构造器注入的相关标签|无|
 |value|用来指定一些基础值|无|
 |ref|用来指定一些引用数据类型的赋值|无|
-
+|array|表示数组的依赖注入|无|
+|list|表示List类型的依赖注入|无|
+|map|表示map类型的依赖注入|无|
+|entry|表示map的一个键值对|无|
 
 ---
 
@@ -414,6 +440,7 @@
 > + 如果同一个类在xml文件中被两个id指向，那么使用第二个方法时会报错
 > + 如果直接传入接口的Class对象来获取指定的类对象，此时**如果我们的xml文件内仅声明了一个该接口的实现类，那么就会创建该类的对象**。如果声明了多个，会报错
 
++ [xml文件](../源码/Spring/SpringTest1/src/main/resources/dependencyInject1.xml)
 + [样例1](../源码/Spring/SpringTest1/src/test/java/com/spring/test/UserTest.java)
 + [样例2](../源码/Spring/SpringTest1/src/test/java/com/spring/test/GetBeanTest.java)
 
@@ -427,6 +454,19 @@
     + setter注入使用`property`标签进行赋值
   + 构造器注入:Spring通过类定义的构造器对类对象的属性进行赋值
     + 构造器注入使用`constructor-arg`标签进行赋值
++ 上述标签拥有value属性可以赋基本类型的值，而其拥有的ref属性可以赋引用数据类型的值，但是依然有一些值需要额外注意:
+  + 数组类型的值，需要使用`array`标签包裹
+  + List类型的值，需要使用`list`标签包裹
+  + Map类型的值，需要使用`map`标签包裹，且每个map元素需要使用entry表示
++ 此外，util可以让我们独立于bean在xml内创建一组集合对象，便于ref引用
++ p命令空间支持直接通过`p:属性名`的方式来作为bean标签的属性给该类对象的属性赋值，而不需要写property标签
++ context可以使我们引入外部的文件，如果**想使用其他xml文件，请使用自带的import标签**
++ [样例](../源码/Spring/SpringTest1/src/test/java/com/spring/test/DependencyTest.java)
++ [xml文件1](../源码/Spring/SpringTest1/src/main/resources/dependencyInject2.xml)
++ [xml文件2](../源码/Spring/SpringTest1/src/main/resources/dependencyInject3.xml)
+
+
+---
 
 
 

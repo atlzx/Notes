@@ -1,66 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util.xsd">
     <bean id="math" class="com.spring.sample.dependencyInject.Course">
-        <property name="name" value="数学"></property>
+        <property name="name" value="数学" />
     </bean>
 
     <bean id="english" class="com.spring.sample.dependencyInject.Course">
-        <property name="name" value="英语"></property>
+        <property name="name" value="英语" />
     </bean>
 
     <bean id="LiMing" class="com.spring.sample.dependencyInject.Teacher">
-        <constructor-arg index="0" value="LiMing"></constructor-arg>
-        <constructor-arg index="1" value="18"></constructor-arg>
+        <constructor-arg index="0" value="LiMing" />
+        <constructor-arg index="1" value="18" />
         <constructor-arg index="2">
             <!-- 引用数据类型依赖注入的第一种方式:将bean写在constructor-arg或property标签内 -->
             <bean class="com.spring.sample.dependencyInject.Course">
-                <property name="name" value="数学"></property>
+                <property name="name" value="数学" />
             </bean>
         </constructor-arg>
     </bean>
 
     <bean id="ZhangSan" class="com.spring.sample.dependencyInject.Teacher">
-        <property name="name" value="ZhangSan"></property>
-        <property name="age" value="28"></property>
+        <property name="name" value="ZhangSan" />
+        <property name="age" value="28" />
         <!-- 引用数据类型依赖注入的第二种方式:将bean写在constructor-arg或property标签内 -->
-        <property name="course" ref="english"></property>
+        <property name="course" ref="english" />
         <!-- 在引用依赖注入下面使用name.属性名的方式可以更改一些属性值 -->
-        <property name="course.name" value="science"></property>
+        <property name="course.name" value="science" />
     </bean>
 
+    <!-- 可以使用util:的方式先创建一个集合类型的标签，然后通过ref标签或属性直接引入 -->
+    <util:map id="courseMap">
+        <entry key-ref="LiMing" value-ref="math" />
+        <entry key-ref="ZhangSan" value-ref="english" />
+    </util:map>
+
     <bean id="stu1" class="com.spring.sample.dependencyInject.Student">
-        <constructor-arg index="0" value="lzx"></constructor-arg>
+        <constructor-arg index="0" value="lzx" />
         <constructor-arg index="1">
             <list>
-                <ref bean="LiMing"></ref>
-                <ref bean="ZhangSan"></ref>
+                <ref bean="LiMing" />
+                <ref bean="ZhangSan" />
             </list>
         </constructor-arg>
         <constructor-arg index="2">
             <array>
-                <ref bean="LiMing"></ref>
-                <ref bean="ZhangSan"></ref>
+                <ref bean="LiMing" />
+                <ref bean="ZhangSan" />
             </array>
         </constructor-arg>
         <constructor-arg index="3">
             <map>
-                <entry>
-                    <key>
-                        <ref bean="ZhangSan"></ref>
-                    </key>
-                    <ref bean="english"></ref>
-                </entry>
-                <entry>
-                    <key>
-                        <ref bean="LiMing"></ref>
-                    </key>
-                    <ref bean="math"></ref>
-                </entry>
+                <entry key-ref="ZhangSan" value-ref="english" />
+                <entry value-ref="math" key-ref="LiMing" />
             </map>
         </constructor-arg>
     </bean>
 
+    <bean id="stu2" class="com.spring.sample.dependencyInject.Student">
+        <property name="courseMap" ref="courseMap" />
+    </bean>
 
 </beans>
