@@ -299,12 +299,26 @@
             scope 用来设置bean的作用域
                 它的默认值是singleton，在该模式下，每次我们得到的对应bean对象都是同一个，也就是说，它是单例的
                 设置为prototype可以使我们每次获取到的bean都是不同的对象，从而摆脱单例模式
+            autowire 可以用来设置自动装配，即让Spring在xml文件内自己寻找符合条件的值进行依赖注入，它有下面的一些属性可选:
+                byType:根据类型进行自动装配，它会寻找xml文件内符合自己属性所需的类型的bean。如果发现了多个，会报错。它需要类提供setter方法
+                byName:根据名称进行自动装配，他会寻找xml文件内id或name属性与自己类的属性一致的bean。它需要类提供setter方法
+                constructor:根据构造器进行依赖注入，默认是依据的byType，它需要类提供构造器
+            p:xxx p命名空间支持我们不用编写property标签的方式来对属性赋值，p: 的后面需要直接加属性名来指定为哪个属性赋值，它通过类的setter方法进行赋值。如果是引用数据类型，可以通过p:xxx-ref 进行赋值
          -->
-        <bean id="helloWorld" class="com.spring.sample.HelloWorld" name="xxx" lazy-init="true" scope="prototype"></bean>
+        <bean id="helloWorld" class="com.spring.sample.HelloWorld" name="xxx" lazy-init="true" scope="prototype" autowire="byType" p:name="xx"></bean>
         <bean id="user" class="com.spring.sample.User" depends-on="helloWorld"></bean>
     <!--    <bean id="user1" class="com.spring.sample.User"></bean>   多个id指向一个类，使用getBean(Class<T> requiredType)方法时会报错      -->
     <!-- 如果id指向的类是该xml文件中某个接口的唯一实现类，那么通过传入接口的Class对象来得到对应的实现类对象时，加载的就是该类 -->
         <bean id="interface1" class="com.spring.sample.GetBeanSampleImpl2"></bean>
+
+
+
+
+
+        <!-- 使用util可以在xml文件内生成一个集合对象，这样在依赖注入时就能通过其id直接引用了 -->
+        <util:map id="xxx">
+            <entry key="key" value="value">
+        </util:map>
 
 
 

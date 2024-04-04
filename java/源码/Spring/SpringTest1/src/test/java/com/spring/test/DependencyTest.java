@@ -12,6 +12,7 @@ public class DependencyTest {
     private final ApplicationContext context1=new ClassPathXmlApplicationContext("dependencyInject1.xml");
     private final ApplicationContext context2=new ClassPathXmlApplicationContext("dependencyInject2.xml");
     private final ApplicationContext context3=new ClassPathXmlApplicationContext("dependencyInject3.xml");
+    private final ApplicationContext context4=new ClassPathXmlApplicationContext("dependencyInject4.xml");
 
     @Test
     // 测试property基本的setter依赖注入
@@ -57,5 +58,13 @@ public class DependencyTest {
         Student stu3 = context3.getBean("stu3", Student.class);
         System.out.println(jdbcTest);
         System.out.println(stu3);
+    }
+
+    @Test
+    public void test7(){
+        JDBCTest jdbcTest = context4.getBean("jdbcTest2", JDBCTest.class);
+        Teacher teacherTest = context4.getBean("teacherSample", Teacher.class);
+        System.out.println(jdbcTest);
+        System.out.println(teacherTest);
     }
 }
