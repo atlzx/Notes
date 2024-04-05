@@ -61,6 +61,7 @@ public class DependencyTest {
     }
 
     @Test
+    // 测试自动装配
     public void test7(){
         JDBCTest jdbcTest = context4.getBean("jdbcTest2", JDBCTest.class);
         Teacher teacherTest = context4.getBean("teacherSample", Teacher.class);

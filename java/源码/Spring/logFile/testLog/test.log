@@ -1,41 +1,18 @@
-14:06:51.364 DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@476b0ae6
-14:06:51.526 DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 2 bean definitions from class path resource [dependencyInject1.xml]
-14:06:51.556 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'diSample1'
-14:06:51.625 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'diSample2'
-14:06:51.644 DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@1dfd5f51
-14:06:51.683 DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 7 bean definitions from class path resource [dependencyInject2.xml]
-14:06:51.687 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'math'
-14:06:51.688 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'english'
-14:06:51.689 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'LiMing'
-14:06:51.691 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'ZhangSan'
-14:06:51.692 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'courseMap'
-14:06:51.700 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'stu1'
-14:06:51.703 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'stu2'
-14:06:51.708 DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@5215cd9a
-14:06:51.760 DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 7 bean definitions from class path resource [dependencyInject2.xml]
-14:06:51.766 DEBUG org.springframework.beans.factory.support.DefaultListableBeanFactory 1029 registerBeanDefinition - Overriding bean definition for bean 'stu1' with a different definition: replacing [Generic bean: class [com.spring.sample.dependencyInject.Student]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodNames=null; destroyMethodNames=null; defined in class path resource [dependencyInject2.xml]] with [Generic bean: class [com.spring.sample.dependencyInject.Student]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodNames=null; destroyMethodNames=null; defined in class path resource [dependencyInject3.xml]]
-14:06:51.769 DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 11 bean definitions from class path resource [dependencyInject3.xml]
-14:06:51.773 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'org.springframework.context.support.PropertySourcesPlaceholderConfigurer#0'
-14:06:51.781 DEBUG org.springframework.core.env.PropertySourcesPropertyResolver 115 logKeyFound - Found key 'driverClassName' in PropertySource 'localProperties' with value of type String
-14:06:51.782 DEBUG org.springframework.core.env.PropertySourcesPropertyResolver 115 logKeyFound - Found key 'initialSize' in PropertySource 'localProperties' with value of type String
-14:06:51.782 DEBUG org.springframework.core.env.PropertySourcesPropertyResolver 115 logKeyFound - Found key 'maxActive' in PropertySource 'localProperties' with value of type String
-14:06:51.783 DEBUG org.springframework.core.env.PropertySourcesPropertyResolver 115 logKeyFound - Found key 'password' in PropertySource 'localProperties' with value of type String
-14:06:51.783 DEBUG org.springframework.core.env.PropertySourcesPropertyResolver 115 logKeyFound - Found key 'url' in PropertySource 'localProperties' with value of type String
-14:06:51.784 DEBUG org.springframework.core.env.SystemEnvironmentPropertySource 95 getProperty - PropertySource 'systemEnvironment' does not contain property 'username', but found equivalent 'USERNAME'
-14:06:51.784 DEBUG org.springframework.core.env.PropertySourcesPropertyResolver 115 logKeyFound - Found key 'username' in PropertySource 'systemEnvironment' with value of type String
-14:06:51.784 DEBUG org.springframework.core.env.PropertySourcesPropertyResolver 115 logKeyFound - Found key 'username' in PropertySource 'environmentProperties' with value of type String
-14:06:51.786 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'math'
-14:06:51.786 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'english'
-14:06:51.787 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'LiMing'
-14:06:51.788 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'ZhangSan'
-14:06:51.789 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'courseMap'
-14:06:51.791 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'stu1'
-14:06:51.792 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'stu2'
-14:06:51.793 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'list'
-14:06:51.794 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'stu3'
-14:06:51.795 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'jdbcTest'
-14:06:51.797 DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@37ff4054
-14:06:51.808 DEBUG org.springframework.beans.factory.xml.XmlBeanDefinitionReader 402 doLoadBeanDefinitions - Loaded 3 bean definitions from class path resource [dependencyInject4.xml]
-14:06:51.809 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'jdbcTest2'
-14:06:51.811 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'course'
-14:06:51.811 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'teacherSample'
+23:20:15.292 DEBUG org.springframework.context.support.AbstractApplicationContext 671 prepareRefresh - Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@2a2c13a8
+23:20:15.308 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalConfigurationAnnotationProcessor'
+23:20:15.372 DEBUG org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider 476 scanCandidateComponents - Identified candidate component class: file [E:\大学文件\笔记类\各学科笔记\java\源码\Spring\SpringAnnotationSample\target\classes\com\spring\sample\annotationInject\AnnoInjectSample1.class]
+23:20:15.373 DEBUG org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider 476 scanCandidateComponents - Identified candidate component class: file [E:\大学文件\笔记类\各学科笔记\java\源码\Spring\SpringAnnotationSample\target\classes\com\spring\sample\annotationInject\AnnoInjectSample2.class]
+23:20:15.374 DEBUG org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider 476 scanCandidateComponents - Identified candidate component class: file [E:\大学文件\笔记类\各学科笔记\java\源码\Spring\SpringAnnotationSample\target\classes\com\spring\sample\annotationInject\AnnoInjectSample3.class]
+23:20:15.375 DEBUG org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider 476 scanCandidateComponents - Identified candidate component class: file [E:\大学文件\笔记类\各学科笔记\java\源码\Spring\SpringAnnotationSample\target\classes\com\spring\sample\annotationInject\CommonInject.class]
+23:20:15.525 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'org.springframework.context.event.internalEventListenerProcessor'
+23:20:15.529 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'org.springframework.context.event.internalEventListenerFactory'
+23:20:15.532 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalAutowiredAnnotationProcessor'
+23:20:15.534 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalCommonAnnotationProcessor'
+23:20:15.540 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'config'
+23:20:15.544 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'annoInjectSample1'
+23:20:15.556 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'commonInject'
+23:20:15.577 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'annoInjectSample2'
+23:20:15.581 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'annoInjectSample3'
+23:20:15.582 DEBUG org.springframework.beans.factory.support.ConstructorResolver 945 registerDependentBeans - Autowiring by type from bean name 'annoInjectSample3' via constructor to bean named 'commonInject'
+23:20:15.583 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'anno1'
+23:20:15.586 DEBUG org.springframework.beans.factory.support.DefaultSingletonBeanRegistry 225 getSingleton - Creating shared instance of singleton bean 'anno3'

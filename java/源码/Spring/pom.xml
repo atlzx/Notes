@@ -11,6 +11,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>SpringTest1</module>
+        <module>SpringAnnotationSample</module>
     </modules>
 
     <properties>
@@ -21,6 +22,7 @@
         <spring.version>6.1.5</spring.version>
         <junit.version>5.10.2</junit.version>
         <log4j.version>2.20.0</log4j.version>
+        <annotation.version>2.1.1</annotation.version>
     </properties>
 
 
@@ -49,6 +51,11 @@
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-slf4j2-impl</artifactId>
                 <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${annotation.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

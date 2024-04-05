@@ -18,7 +18,10 @@
         <constructor-arg index="0" value="LiMing" />
         <constructor-arg index="1" value="18" />
         <constructor-arg index="2">
-            <!-- 引用数据类型依赖注入的第一种方式:将bean写在constructor-arg或property标签内 -->
+            <!--
+                引用数据类型依赖注入的第一种方式:将bean写在constructor-arg或property标签内
+                内嵌的bean引用数据对象可以不写id
+            -->
             <bean class="com.spring.sample.dependencyInject.Course" autowire-candidate="false">
                 <property name="name" value="数学" />
             </bean>

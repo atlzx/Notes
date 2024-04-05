@@ -5,7 +5,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
-    <bean id="jdbcTest2" class="com.spring.sample.dependencyInject.JDBCTest" autowire="byName" />
+    <!-- autowire属性用来进行自动装配 -->
+    <bean id="jdbcTest2" class="com.spring.sample.dependencyInject.JDBCTest" autowire="byType" />
 
     <bean id="course" class="com.spring.sample.dependencyInject.Course" p:name="math" />
 

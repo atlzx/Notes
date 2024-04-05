@@ -303,6 +303,7 @@
                 byType:根据类型进行自动装配，它会寻找xml文件内符合自己属性所需的类型的bean。如果发现了多个，会报错。它需要类提供setter方法
                 byName:根据名称进行自动装配，他会寻找xml文件内id或name属性与自己类的属性一致的bean。它需要类提供setter方法
                 constructor:根据构造器进行依赖注入，默认是依据的byType，它需要类提供构造器
+            autowire-candidate 用来设置该bean能否被自动装配识别，置为false表示该bean不参与到自动装配中去，可以避免重复的自动装配冲突
             p:xxx p命名空间支持我们不用编写property标签的方式来对属性赋值，p: 的后面需要直接加属性名来指定为哪个属性赋值，它通过类的setter方法进行赋值。如果是引用数据类型，可以通过p:xxx-ref 进行赋值
          -->
         <bean id="helloWorld" class="com.spring.sample.HelloWorld" name="xxx" lazy-init="true" scope="prototype" autowire="byType" p:name="xx"></bean>
@@ -319,6 +320,37 @@
         <util:map id="xxx">
             <entry key="key" value="value">
         </util:map>
+
+
+
+
+
+
+        <!--
+            context:component-scan标签用于开启组件扫描功能
+                base-package用于指定扫描的路径，默认会递归的扫描该包下的所有内部文件
+                use-default-filters用于设置是否递归的扫描该包下的所有内部文件，设置为false说明不这样做，不写是true
+        -->
+        <context:component-scan base-package="com.atguigu.spring6" use-default-filters="false">
+            <!-- 
+                context:exclude-filter标签用来指定基本包下我们不想让它扫描的路径，这里的含义是:
+                    递归扫描(use-default-filters="false"是为了示范context:include-filter标签而设置的，这里请无视)com.atguigu.spring6包下的的所有文件，但不扫描org.springframework.stereotype.Controller
+ 		            type 属性用于设置排除或包含的依据
+		                type="annotation"，根据注解排除，expression中设置要排除的注解的全类名
+		                type="assignable"，根据类型排除，expression中设置要排除的类型的全类名
+	        -->
+            <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+            <!-- 
+                context:include-filter标签：指定在原有扫描规则的基础上追加的规则，这里的含义是:
+                    仅扫描org.springframework.stereotype.Controller
+                    use-default-filters属性：取值false表示关闭默认扫描规则
+                    此时必须设置use-default-filters="false"，因为默认规则即扫描指定包下所有类
+ 	        	    type 属性用于设置排除或包含的依据
+	        	        type="annotation"，根据注解排除，expression中设置要排除的注解的全类名
+	        	        type="assignable"，根据类型排除，expression中设置要排除的类型的全类名
+	        -->
+            <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        </context:component-scan>
 
 
 
@@ -405,7 +437,6 @@
              -->
             <constructor-arg value="vvvv" index="number" name="nnn" type="int"></constructor-arg>
 
-            <value></value>
         </bean>
     </beans>
 
@@ -475,12 +506,125 @@
 + 此外，util可以让我们独立于bean在xml内创建一组集合对象，便于ref引用
 + p命令空间支持直接通过`p:属性名`的方式来作为bean标签的属性给该类对象的属性赋值，而不需要写property标签
 + context可以使我们引入外部的文件，如果**想使用其他xml文件，请使用自带的import标签**
++ 使用bean标签自带的autowire和autowire-candidate属性用来指定进行**自动装配**和使对应的bean对象不参与自动装配
 + [样例](../源码/Spring/SpringTest1/src/test/java/com/spring/test/DependencyTest.java)
 + [xml文件1](../源码/Spring/SpringTest1/src/main/resources/dependencyInject2.xml)
 + [xml文件2](../源码/Spring/SpringTest1/src/main/resources/dependencyInject3.xml)
++ [xml文件3](../源码/Spring/SpringTest1/src/main/resources/dependencyInject4.xml)
 
 
 ---
+
+#### ⑤作用域与生命周期
+
++ 每个IoC容器的bean都有其作用域，它的作用域默认是singleton，即**单例的，且对象在IoC容器初始化时就被创建**
+  + 使用scope属性可以修改指定bean的作用域，修改为prototype可以使**每次通过IoC容器获取对象时得到的对象都是新对象，且对象在获取bean时才被创建**
+  + 如果在WebApplicationContext环境下还会有另外几个作用域:request(单次请求有效)和session(会话范围内有效)
++ 每个bean也有其生命周期
+  1. bean对象的创建
+  2. 给bean对象的属性赋值
+  3. 调用bean的后置处理器
+  4. bean对象初始化
+  5. 调用bean的后置处理器
+  6. bean对象就绪
+  7. bean对象销毁
+  8. IoC容器关闭
++ 使用init-method和destroy-method属性可以指定初始化时执行的方法(第四步)和销毁时执行的方法(第七步)
++ 后置处理器用来在bean对象初始化前后执行额外的操作，**后置处理器需要我们自己手动写**:
+  + 首先定义一个类，实现BeanPostProcessor接口，并实现接口的方法
+  + 在xml文件内引入以使Spring检测到
+  + 这样就能使了
++ [样例](../源码/Spring/SpringTest1/src/test/java/com/spring/test/SALCTest.java)
++ [xml样例](../源码/Spring/SpringTest1/src/main/resources/SALC.xml)
+
+---
+
+#### ⑥FactoryBean
+
++ FactoryBean是Spring提供的一种整合第三方框架的常用机制，它可以帮我们把复杂组件创建的详细过程和繁琐细节都屏蔽起来，只把最简洁的使用界面展示给我们
++ **FactoryBean和BeanFactory不是一个东西**
++ 想要使用FactoryBean，我们需要做如下操作:
+  + 创建一个类，实现FactoryBean接口，并指定其对应的想生产的泛型对象。同时实现方法
+  + 在xml文件内引入该实现类，让Spring能够检测到它
+  + 调用getBean方法得到对象，传入实现类的bean的id，可以看到最终得到的是实现类指定的泛型类对象
++ [样例](../源码/Spring/SpringTest1/src/test/java/com/spring/test/FactoryBeanTest.java)
++ [xml样例](../源码/Spring/SpringTest1/src/main/resources/factoryBean.xml)
+
+---
+
+### （四）注解管理bean
+
++ 使用xml配置bean在配置大型项目时会变得繁琐，且非常不便捷
++ 为解决这一问题，Spring在2.5版本引入了注解来配置bean
+
+|注解|作用|备注|样例|
+|:---:|:---:|:---:|:---:|
+|@Configuration|声明作用类为配置类，免除xml文件内配置扫描注解路径|无|[样例](../源码/Spring/SpringAnnotationSample/src/test/java/com/test/AnnotationInjectTest.java)|
+|@ComponentScan|配置扫描注解路径|无|^|
+|@Bean|用于配置一个bean对象，对应xml文件内的一个bean标签。|无|^|
+|@Lazy|指定是否懒加载|无|^|
+|@DependOn|指定依赖加载对象|无|^|
+|@Scope|指定作用域|无|^|
+|@PreDestroy|指定销毁方法|该注解来源于`jakarta`包|^|
+|@PostConstruct|指定初始化方法|^|^|
+|@Component|将类定义为一个bean对象|它可以作用于任何层|^|
+|@Service|^|作用于Service层|^|
+|@Controller|^|作用于Controller层|^|
+|@Repository|^|作用在Dao层|^|
+|@Value|注入基本数据类型对象|无|^|
+|@Autoware|根据byType模式匹配对应的引用数据类型对象并注入|该注解无法自动装配JDK自带的数据类型|^|
+|@Qualifier|使自动装配按照byName的方式匹配，且依据的是该注解内指定的name值进行匹配|无|^|
+|@Resource|依据 指定的name -> byName -> byType的模式依次匹配对应的引用数据类型对象并注入|该注解来源于`jakarta`包|^|
+
++ 如果使用了配置类，那么**获取IoC容器对象的类就从ClassPathXmlApplicationContext变到了AnnotationConfigApplicationContext**，并需要向其构造器内传入配置类的Class对象
++ 在未使用配置类的情况下，仍需要使用xml文件进行配置:
+  + xml需要引入context相关约束
+
+~~~xml
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!-- 需要引入context相关约束 -->
+    <beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context
+                http://www.springframework.org/schema/context/spring-context.xsd">
+        <!--
+            context:component-scan标签用于开启组件扫描功能
+                base-package用于指定扫描的路径，默认会递归的扫描该包下的所有内部文件
+                use-default-filters用于设置是否递归的扫描该包下的所有内部文件，设置为false说明不这样做，不写是true
+        -->
+
+        <context:component-scan base-package="com.atguigu.spring6" use-default-filters="false">
+            <!-- 
+                context:exclude-filter标签用来指定基本包下我们不想让它扫描的路径，这里的含义是:
+                    递归扫描(use-default-filters="false"是为了示范context:include-filter标签而设置的，这里请无视)com.atguigu.spring6包下的的所有文件，但不扫描org.springframework.stereotype.Controller
+ 		            type 属性用于设置排除或包含的依据
+		                type="annotation"，根据注解排除，expression中设置要排除的注解的全类名
+		                type="assignable"，根据类型排除，expression中设置要排除的类型的全类名
+	        -->
+            <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+            <!-- 
+                context:include-filter标签：指定在原有扫描规则的基础上追加的规则，这里的含义是:
+                    仅扫描org.springframework.stereotype.Controller
+                    use-default-filters属性：取值false表示关闭默认扫描规则
+                    此时必须设置use-default-filters="false"，因为默认规则即扫描指定包下所有类
+ 	        	    type 属性用于设置排除或包含的依据
+	        	        type="annotation"，根据注解排除，expression中设置要排除的注解的全类名
+	        	        type="assignable"，根据类型排除，expression中设置要排除的类型的全类名
+	        -->
+            <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        </context:component-scan>
+    </beans>
+
+~~~
+
+---
+
+
+
 
 
 
