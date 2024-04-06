@@ -3240,6 +3240,13 @@
 
 ---
 
+### （六）代理模式
+
++ 代理模式用到了与反射相关的**java.lang.reflect.Proxy类**和**java.lang.reflect.InvocationHandler接口**
++ 详见[设计模式笔记](设计模式.md)
+
+---
+
 ## 十五、JDK特性
 
 + 此处收录的新特性包括:
