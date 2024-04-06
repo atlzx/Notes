@@ -3216,17 +3216,17 @@
 |^|`public Type getGenericSuperclass()`|无参|获得父类的泛型类型|`Type`对象|`Type`|无|^|
 |^|`public Package getPackage()`|无参|得到所在包的对象|包的对象|`Package`|无|^|
 |^|`public InputStream getResourceAsStream(String name)`|`name`:相对路径|得到相对于当前类所在目录下的文件的输入流对象|输入流对象|`InputStream`|无|^|
+|^|isArray()|无参|判断是否为数组|布尔值|boolean|无|^|
+|^|isAnnotation()|无参|判断是否为注解|^|^|无|^|
+|^|isInterface()|无参|判断是否为接口|^|^|无|^|
+|^|isEnum()|无参|判断是否为枚举类|^|^|无|^|
+|java.lang.ClassLoader|getResource(String name)|name:相对路径|得到相对于类加载器所在根路径的资源的URL对象|对应资源的URL对象|URL|**不同的类加载器作用路径是不同的，它们的根路径都是他们负责加载的类所在的公共路径**，参见[类加载器](#classLoader)。一般都使用应用程序类加载器对象来调用该方法，因为其根路径是classpath，后面就是`com.xx.xxxx`|^|
 |`java.lang.reflect.Method`|`public Class<?> getReturnType()`|无参|得到方法的返回值类型|返回值类型对应的`Class`对象|`Class`|无|^|
 |^|`public Class<?>[] getParameterTypes()`|无参|得到方法的参数类型数组|>|`Class`类型数组|无|^|
 |^|`public int getModifiers()`|无参|得到方法的修饰符|数值|`int`|每个修饰符都有自己对应的`int`值，详情看[下表](#ModifierValue)|^|
 |^|`public Class<?>[] getExceptionTypes()`|无参|得到|>|`Class`类型数组|无|^|
 |^|`public void setAccessible(boolean flag)`|`flag`:布尔值|设置`true`可以取消权限修饰符的限制|无返回值|`void`|无|^|
 |^|`public Object invoke(Object obj, Object... args)`|`obj`:方法所在的类对象<br>`args`:向方法传入的实参，没有就不写|调用该指定方法|取决于调用方法的返回值|取决于调用方法的返回值类型|无|^|
-|^|isArray()|无参|判断是否为数组|布尔值|boolean|无|^|
-|^|isAnnotation()|无参|判断是否为注解|^|^|无|^|
-|^|isInterface()|无参|判断是否为接口|^|^|无|^|
-|^|isEnum()|无参|判断是否为枚举类|^|^|无|^|
-|java.lang.ClassLoader|getResource(String name)|name:相对路径|得到相对于类加载器所在根路径的资源的URL对象|对应资源的URL对象|URL|**不同的类加载器作用路径是不同的，它们的根路径都是他们负责加载的类所在的公共路径**，参见[类加载器](#classLoader)。一般都使用应用程序类加载器对象来调用该方法，因为其根路径是classpath，后面就是`com.xx.xxxx`|^|
 |`java.lang.reflect.Field`|`public int getModifiers()`|无参|得到参数的修饰符|数值|`int`|每个修饰符都有自己对应的`int`值，详情看[下表](#ModifierValue)|^|
 |^|`public Class<?> getType()`|无参|得到属性的类型|类型对应的`Class`对象|`Class`|无|^|
 |^|`public String getName()`|无参|得到属性名|名称|`String`|无|^|
