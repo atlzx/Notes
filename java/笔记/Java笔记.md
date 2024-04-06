@@ -3211,7 +3211,7 @@
 |^|`public T newInstance()`|无参|调用缺省构造函数，返回该`Class`对象的一个实例|实例对象|`T`|该方法从`JDK9`被标记为过时|^|
 |^|`public Class[] getInterfaces()`|无参|获取当前`Class`对象的接口|>|`Class`数组|无|^|
 |^|`public ClassLoader getClassLoader()`|无参|返回该类的类加载器|类加载器对象|`ClassLoader`|无|^|
-|^|`public T getAnnotation(Class<T> annotationClass)`|`annotationClass`:注解类对应的`Class`对象|得到该类对应的注解对象|注解对象|`T`|无|^|
+|^|`public T getAnnotation(Class<T> annotationClass)`|`annotationClass`:注解类对应的`Class`对象|得到该类对应的注解对象|注解对象|`T`|**该方法是通用方法，其它反射相关类也可以用**|^|
 |^|`public Annotation[] getDeclaredAnnotations()`|无参|得到该类的注解对象数组|>|`Annotation`数组|无|^|
 |^|`public Type getGenericSuperclass()`|无参|获得父类的泛型类型|`Type`对象|`Type`|无|^|
 |^|`public Package getPackage()`|无参|得到所在包的对象|包的对象|`Package`|无|^|

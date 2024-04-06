@@ -58,7 +58,6 @@ public class AnnotationApplicationContext implements ApplicationContext {
                 String classPath = file.getAbsolutePath().substring(filePath.length() - 1).replaceAll("\\\\", ".").replace(".class", "");
                 // 生成一个对象
                 Class<?> clazz = Class.forName(classPath);
-                clazz.is
                 // 查看对象是否是接口
                 if (!clazz.isInterface()) {
                     // 如果不是接口，那么得到对象关于bean的注解对象，如果有，那么说明存在注解
