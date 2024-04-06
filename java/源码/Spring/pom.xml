@@ -13,6 +13,7 @@
         <module>SpringTest1</module>
         <module>SpringAnnotationSample</module>
         <module>CreateIoC</module>
+        <module>AOPSample</module>
     </modules>
 
     <properties>

@@ -1,0 +1,11 @@
+-------------------------------------------------------------------------------
+Test set: com.test.ProxyTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.136 s <<< FAILURE! -- in com.test.ProxyTest
+com.test.ProxyTest.test1 -- Time elapsed: 0.114 s <<< ERROR!
+java.lang.ClassCastException: class org.springframework.cglib.proxy.Proxy$ProxyImpl$$EnhancerByCGLIB$$caddd84d cannot be cast to class com.spring.sample.ProxyInterfaceImpl (org.springframework.cglib.proxy.Proxy$ProxyImpl$$EnhancerByCGLIB$$caddd84d and com.spring.sample.ProxyInterfaceImpl are in unnamed module of loader 'app')
+	at com.test.ProxyTest.test1(ProxyTest.java:22)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+

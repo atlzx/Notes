@@ -9,6 +9,7 @@
         <module name="SpringAnnotationSample" />
         <module name="CreateIoC" />
         <module name="SpringTest1" />
+        <module name="AOPSample" />
       </profile>
     </annotationProcessing>
   </component>
