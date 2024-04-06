@@ -2682,6 +2682,7 @@
 |^|`public final void setPriority(int newPriority)`|`newPriority`:要设定的优先级（1~10）|设定线程对象的优先级|无返回值|`void`|无|
 |^|`public final boolean isDaemon()`|无参|判断该线程是否为守护线程|是返回`true`,反之返回`false`|`boolean`|无|
 |^|`public final void setDaemon(boolean on)`|`on`:写成`true`表示设置为守护线程，`false`表示不设置成守护线程|设置该线程对象为守护线程|无返回值|`void`|**必须在线程启动之前设置**，否则会报`IllegalThreadStateException`异常|
+|^|public ClassLoader getContextClassLoader()|无参|获得上下文类加载器对象，一般就是应用程序类加载器对象|ClassLoader对象|ClassLoader|无|
 |优先级常量|`MAX_PRIORITY`|非方法|最高优先级|非方法|非方法|相当于10|
 |^|`MIN _PRIORITY`|^|最低优先级|^|^|相当于1|
 |^|`NORM_PRIORITY`|^|普通优先级|^|^|默认情况下`main`主方法所在的主线程拥有该优先级，相当于5|
@@ -3147,6 +3148,8 @@
 
 ---
 
+<a id="classLoader"></a>
+
 ### （三）类加载器
 
 + `JDK8`中共存在两种加载器:`引导类加载器(Bootstrap ClassLoader)`和`自定义类加载器(User-Defined ClassLoader)`，`JVM`规范规定，所有派生于抽象类`ClassLoader`类的类加载器都属于自定义加载器，在程序中我们能看到的类加载器主要为:
@@ -3219,6 +3222,11 @@
 |^|`public Class<?>[] getExceptionTypes()`|无参|得到|>|`Class`类型数组|无|^|
 |^|`public void setAccessible(boolean flag)`|`flag`:布尔值|设置`true`可以取消权限修饰符的限制|无返回值|`void`|无|^|
 |^|`public Object invoke(Object obj, Object... args)`|`obj`:方法所在的类对象<br>`args`:向方法传入的实参，没有就不写|调用该指定方法|取决于调用方法的返回值|取决于调用方法的返回值类型|无|^|
+|^|isArray()|无参|判断是否为数组|布尔值|boolean|无|^|
+|^|isAnnotation()|无参|判断是否为注解|^|^|无|^|
+|^|isInterface()|无参|判断是否为接口|^|^|无|^|
+|^|isEnum()|无参|判断是否为枚举类|^|^|无|^|
+|java.lang.ClassLoader|getResource(String name)|name:相对路径|得到相对于类加载器所在根路径的资源的URL对象|对应资源的URL对象|URL|**不同的类加载器作用路径是不同的，它们的根路径都是他们负责加载的类所在的公共路径**，参见[类加载器](#classLoader)。一般都使用应用程序类加载器对象来调用该方法，因为其根路径是classpath，后面就是`com.xx.xxxx`|^|
 |`java.lang.reflect.Field`|`public int getModifiers()`|无参|得到参数的修饰符|数值|`int`|每个修饰符都有自己对应的`int`值，详情看[下表](#ModifierValue)|^|
 |^|`public Class<?> getType()`|无参|得到属性的类型|类型对应的`Class`对象|`Class`|无|^|
 |^|`public String getName()`|无参|得到属性名|名称|`String`|无|^|
