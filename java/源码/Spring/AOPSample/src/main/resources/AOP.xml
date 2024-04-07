@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!-- 使Spring在对应路径下扫描相关注解 -->
+    <context:component-scan base-package="com.spring.sample" />
+    <!-- 使Spring自动代理，该标签是作用于注解的，相当于配置类的EnableAspectJAutoProxy注解。在这里配置只是写一下，说明xml文件如何支持注解 -->
+<!--    <aop:aspectj-autoproxy/>-->
+    <!-- 配置通知 -->
+    <aop:config>
+        <!-- 配置AOPXmlSample是一个切面类 -->
+        <aop:aspect ref="AOPXmlSample">
+
+            <!-- aop:pointcut用来配置可复用的切入点表达式 -->
+            <aop:pointcut id="pointCut" expression="execution(* com.spring.sample.ProxyInterfaceImpl.*(..))"/>
+
+            <!-- 配置该类中的各方法的通知方法类型 -->
+            <aop:before method="beforeMethod" pointcut="com.spring.sample.AOPAnnoSample.pointCut()" />
+            <aop:after-returning method="afterReturningMethod" pointcut="com.spring.sample.AOPAnnoSample.pointCut()" returning="aa"/>
+            <aop:after-throwing method="afterThrowing" pointcut="com.spring.sample.AOPAnnoSample.pointCut()" throwing="e" />
+            <aop:after method="afterMethod" pointcut="com.spring.sample.AOPAnnoSample.pointCut()"/>
+            <!-- 使用pointcut-ref便捷的使用可复用的切入点表达式 -->
+            <aop:around method="aroundMethod" pointcut-ref="pointCut"/>
+        </aop:aspect>
+    </aop:config>
+
+</beans>

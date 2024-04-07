@@ -18,9 +18,7 @@
 
 ---
 
-## 二、入门
-
-### （一）HelloWorld
+## 二、HelloWorld
 
 + 首先创建一个父项目，再创建其子项目，在pom.xml内引入依赖:
 
@@ -103,127 +101,6 @@
 + 我们创建的`ApplicationContext`对象会加载对应的user.xml文件，获取内部对应的标签的属性
 + 接下来根据类的全路径，创建该类的无参对象
 + 创建完的对象会放在Map中，其key是该类的唯一标识，value是类的信息描述信息
-
----
-
-### （二）log4j2
-
-+ **Apache Log4j2**是一个开源的日志记录组件，使用非常的广泛，它由几个重要的组件构成
-  + 日志信息的优先级:日志信息的优先级从高到低有TRACE < DEBUG < INFO < WARN < ERROR < FATAL，**设置高优先级的输出会默认屏蔽低优先级的输出**
-    + **TRACE**：追踪，是最低的日志级别，相当于追踪程序的执行
-    + **DEBUG**：调试，一般在开发中，都将其设置为最低的日志级别
-    + **INFO**：信息，输出重要的信息，使用较多
-    + **WARN**：警告，输出警告的信息
-    + **ERROR**：错误，输出错误信息
-    + **FATAL**：严重错误
-  + 日志信息的输出地
-  + 日志信息的输出格式
-+ 首先引入依赖
-
-~~~xml
-
-    <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-core</artifactId>
-        <version>2.20.0</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j2-impl -->
-    <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-slf4j2-impl</artifactId>
-        <version>2.20.0</version>
-    </dependency>
-
-~~~
-
-+ 接下来在resources目录下创建一个叫`log4j2.xml`的文件，**名字不能修改**，在里面写入如下内容:
-
-~~~xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-    configuration有两个可选属性
-        status用于指定日志框架本身输出的日志优先级，可以修改为DEBUG
-        monitorInterval用于指定自动加载配置文件的间隔时间，单位为秒
-
--->
-<configuration>
-
-    <!-- properties内可以声明一些变量，标签体内的值就是变量的值，标签体的name就是变量名，使用时需要使用${name}嵌入 -->
-    <properties>
-        <property name="LOG_PATH">E:\大学文件\笔记类\各学科笔记\java\源码\Spring</property>
-    </properties>
-
-
-    <loggers>
-        <!--
-            level指定日志级别，从低到高的优先级：
-                TRACE < DEBUG < INFO < WARN < ERROR < FATAL
-                trace：追踪，是最低的日志级别，相当于追踪程序的执行
-                debug：调试，一般在开发中，都将其设置为最低的日志级别
-                info：信息，输出重要的信息，使用较多
-                warn：警告，输出警告的信息
-                error：错误，输出错误信息
-                fatal：严重错误
-        -->
-        <!-- 设置优先级为DEBUG,TRACE将被忽略 -->
-        <root level="DEBUG">
-            <appender-ref ref="spring6log"/>  <!-- 这里的ref属性对应着下面标签的name属性 -->
-            <appender-ref ref="RollingFile"/>
-            <appender-ref ref="log"/>
-        </root>
-    </loggers>
-
-    <appenders>
-        <!--输出日志信息到控制台-->
-        <!--
-            name与上面标签的ref需要一致
-            target值为SYSTEM_OUT时，输出黑色，SYSTEM_ERR输出红色
-        -->
-        <console name="spring6log" target="SYSTEM_OUT">
-            <!--控制日志输出的格式-->
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss SSS} [%t] %-3level %logger{1024} - %msg%n"/>
-        </console>
-
-        <!--文件会打印出所有信息，该log在每次test时都会被覆写，而不是追加-->
-        <File name="log" fileName="${LOG_PATH}\logFile\testLog\test.log" append="false">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>
-        </File>
-
-        <!--
-            fileName表示要将日志文件存入的文件夹，使用${name}来嵌入之前声明的变量
-            filePattern指定日志文件的名称格式
-        -->
-        <RollingFile name="RollingFile" fileName="${LOG_PATH}\logFile\minLog\log"
-                     filePattern="${LOG_PATH}\logFile\bigLog\$${date:yyyy-MM}\app-%d{MM-dd-yyyy}-%i.log.gz">
-            <PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n"/>
-            <!-- 如果堆存起来的日志信息超过了50MB，那么把它们放入指定的文件夹内 -->
-            <SizeBasedTriggeringPolicy size="50MB"/>
-            <!-- DefaultRolloverStrategy属性如不设置，
-            则默认为最多同一文件夹下7个文件，这里设置了20 -->
-            <DefaultRolloverStrategy max="20"/>
-        </RollingFile>
-    </appenders>
-</configuration>
-~~~
-
-+ 接下来使用Maven进行一下测试，就可以看到控制台输出了打印信息，同时也在对应路径下创建了日志文件
-+ 我们也可以手动的输出日志:
-
-~~~java
-    // 这里列出我们需要导入的类，不要导错了
-    import org.slf4j.Logger;
-    import org.slf4j.LoggerFactory;
-
-    @Test
-        public void test2(){
-            Logger logger= LoggerFactory.getLogger(User.class);
-            logger.debug("调试");
-            logger.info("输出信息");
-            logger.error("出现错误");
-            logger.trace("跟踪");
-            logger.warn("警告");
-        }
-~~~
 
 ---
 
@@ -460,9 +337,9 @@
 
 |所属类|方法/构造器|参数|作用|返回值|返回值类型|异常|备注|样例|
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|ClassPathXmlApplicationContext|public ClassPathXmlApplicationContext(String configLocation)|configLocation:想读取的xml相对于resources的路径|根据xml文件生成容器对象|容器对象|ClassPathXmlApplicationContext|无异常|无|[样例]()|
+|ClassPathXmlApplicationContext|public ClassPathXmlApplicationContext(String configLocation)|configLocation:想读取的xml相对于resources的路径|根据xml文件生成容器对象|容器对象|ClassPathXmlApplicationContext|无异常|无|[样例](../源码/Spring/SpringTest1/src/test/java/com/spring/test/GetBeanTest.java)|
 |BeanFactory|Object getBean(String name)|name:xml文件内标签中对应类路径的id|得到指定id对应的类对象|指定类对象|Object|BeansException|无|^|
-|^|<T> T getBean(Class<T> requiredType)|requiredType:想得到类对应Class对象|得到指定的类对象|^|^|^|无|^|
+|^|<T> T getBean(Class<T> requiredType)|requiredType:想得到类对应Class对象|得到指定的类对象|^|^|^|**如果对应类实现了接口，那么方法接收的是接口的Class对象**|^|
 |^|<T> T getBean(String name, Class<T> requiredType)|name:xml文件内标签中对应类路径的id<br>requiredType:想得到类对应Class对象|得到指定的类对象|^|^|^|无|^|
 
 ---
@@ -635,8 +512,344 @@
 
 ## 四、AOP
 
++ AOP指面向切片编程,它是通过预编译方式和运行期动态代理方式实现的，在不修改源代码的情况下，给程序动态统一添加额外功能的一种技术
++ AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率。
+
+### （一）概念术语
+
++ **横切关注点**:分散在每个各个模块中解决同一样的问题，如用户验证、日志管理、事务处理、数据缓存都属于
++ **通知**:就是我们想添加的额外功能，通知分为五种类型:
+  + 前置通知：在被代理的**目标方法执行前执行**
+  + 返回通知：在被代理的**目标方法执行完毕后执行**
+  + 异常通知：在被代理的**目标方法出现异常时执行**
+  + 后置通知：该通知方法一定**在最后执行**
+  + 环绕通知：使用try...catch...finally结构围绕整个被代理的目标方法，包括上面四种通知对应的所有位置
++ **切面**:封装通知方法的类
++ **目标**:被代理的目标对象。
++ **代理**:作为目标的代理的代理对象
++ **连接点**:可以理解为通知与方法执行的衔接处，即spring允许我们使用通知的地方
+
+---
+
+### （二）切入点表达式
+
++ 切入点表达式用来描述该通知的作用范围，其具体语法格式如下:`修饰符 返回值 包名.类名.方法名(形参类型列表)`
+  + 权限修饰符与返回值:
+    + 用*号代替“权限修饰符”和“返回值”部分表示“权限修饰符”和“返回值”不限
+    + **如果想要明确指定一个返回值类型，那么必须同时写明权限修饰符**
+      + 例如：execution(public int *..*Service.*(.., int))	正确
+      + 例如：execution(* int *..*Service.*(.., int))	错误
+  + 包、类与方法:
+    + 一个`*`号只能代表**匹配包的任意一层**
+      + 例如：*.Hello匹配com.Hello，不匹配com.atguigu.Hello
+    + 使用`*..`表示**匹配包名任意、包的层次深度任意**
+    + 可以使用*号表示类名或方法名任意，也可以表示匹配类名或方法名的一部分
+      + 例如：*Service匹配所有名称以Service结尾的类或接口
+      + 例如：*Operation匹配所有方法名以Operation结尾的方法
+  + 形参类型列表:
+    + 使用`..`表示参数列表任意
+    + 使用`int,..`表示参数列表以一个int类型的参数开头
+    + **基本数据类型和对应的包装类型是不一样的**
+      + 切入点表达式中使用 int 和实际方法中 Integer 是不匹配的
++ **可复用的切入点表达式**
+  + 一个一个配置切入点表达式会非常麻烦，因此我们希望切入点表达式像方法一样可以被复用
+  + 使用@PointCut注解，在注解内配置value的值为切入点表达式，可以使切入点表达式被复用。该注解作用在方法上，可以写一个空方法，使该注解作用在其上面
+    + 如果是同类下，直接调用即可:`@Around(value = "pointCut()")`
+    + 如果是不同类下，需要使用全类名:`@Before(value = "com.spring.sample.AOPAnnoSample.pointCut()")`
+  + 使用xml配置时，需要使用`<aop:pointcut id="xxx" expression="..." />`标签，其它标签使用时，仅需要使用pointcut-ref属性指定其标签上的id即可
+
+---
+
+### （三）注解配置
+
+|注解|作用|备注|
+|:---:|:---:|:---:|
+|@EnableAspectJAutoProxy|使Spring自动创建代理支持AOP操作|**该注解发挥作用需要@Configuration注解**，因此，它必须与该注解一起放在配置类上|
+|@Aspect|声明作用类为切面类|仅声明切面是不够用的，**需要加上@Component注解来使其受IoC容器管理**|
+|@Before|声明方法为**前置通知方法**|无|
+|@AfterReturning|声明方法为**返回通知方法**|无|
+|@AfterThrowing|声明方法为**异常通知方法**|无|
+|@After|声明方法为**后置通知方法**|无|
+|@Around|声明方法为**环绕通知方法**|无|
+|@PointCut|声明方法为切入点表达式复用方法|**仅能作用在方法上**|
+
++ [样例](../源码/Spring/AOPSample/src/main/java/com/spring/sample/AOPAnnoSample.java)
++ [测试样例](../源码/Spring/AOPSample/src/test/java/com/test/AOPTest.java)
+
+---
+
+### （四）xml配置
+
+~~~xml
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+        <!-- 使Spring在对应路径下扫描相关注解 -->
+        <context:component-scan base-package="com.spring.sample" />
+        <!-- 使Spring自动代理，该标签是作用于注解的，相当于配置类的EnableAspectJAutoProxy注解。在这里配置只是写一下，说明xml文件如何支持注解 -->
+    <!--    <aop:aspectj-autoproxy/>-->
+        <!-- 配置通知 -->
+        <aop:config>
+            <!-- 配置AOPXmlSample是一个切面类 -->
+            <aop:aspect ref="AOPXmlSample">
+                
+                <!-- aop:pointcut用来配置可复用的切入点表达式 -->
+                <aop:pointcut id="pointCut" expression="execution(* com.spring.sample.ProxyInterfaceImpl.*(..))"/>
+
+                <!-- 配置该类中的各方法的通知方法类型 -->
+                <aop:before method="beforeMethod" pointcut="com.spring.sample.AOPAnnoSample.pointCut()" />
+                <aop:after-returning method="afterReturningMethod" pointcut="com.spring.sample.AOPAnnoSample.pointCut()" returning="aa"/>
+                <aop:after-throwing method="afterThrowing" pointcut="com.spring.sample.AOPAnnoSample.pointCut()" throwing="e" />
+                <aop:after method="afterMethod" pointcut="com.spring.sample.AOPAnnoSample.pointCut()"/>
+                <!-- 使用pointcut-ref便捷的使用可复用的切入点表达式 -->
+                <aop:around method="aroundMethod" pointcut-ref="pointCut"/>
+            </aop:aspect>
+        </aop:config>
+
+    </beans>
+
+~~~
+
++ [样例](../源码/Spring/AOPSample/src/main/java/com/spring/sample/AOPXmlSample.java)
++ [测试样例](../源码/Spring/AOPSample/src/test/java/com/test/AOPTest.java)
+
+---
+
+## 五、配置汇总与杂项
+
+### （一）依赖总览
+
+~~~xml
+
+<properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <spring.version>6.1.5</spring.version>
+        <junit.version>5.10.2</junit.version>
+        <log4j.version>2.20.0</log4j.version>
+        <annotation.version>2.1.1</annotation.version>
+    </properties>
 
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- Spring核心框架 -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <!--spring aop依赖-->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aop</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <!--spring aspects依赖-->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aspects</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <!-- spring junit兼容依赖 -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <!-- junit依赖，用来测试 -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <!-- log4j依赖，用来输出日志 -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <!-- log4j2，用来输出日志 -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j2-impl</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <!-- JDK注解拓展，有一些依赖注入的注解 -->
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${annotation.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+~~~
+
+---
+
+### （二）beans标签值
+
+~~~xml
+    <!-- 
+        xmlns和xmlns:xsi是最基本的属性，在开始就有。
+        xmlns:util支持在beans标签内直接写可复用的集合类对象。它需要在xsi:schemaLocation增加约束
+        xmlns:p用来引入p命名空间，支持直接在bean标签内进行依赖注入，不需要增加约束
+        xmlns:context用来支持Spring对注解进行扫描。它需要在xsi:schemaLocation增加约束
+        xmlns:aop用来支持Spring的AOP操作。它需要在xsi:schemaLocation增加约束
+        增加约束仅需要按照前面的约束，然后修改最后面的值为想增加的约束名称即可
+     -->
+
+    <beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:util="http://www.springframework.org/schema/util"
+        xmlns:p="http://www.springframework.org/schema/p"
+        xmlns:context="http://www.springframework.org/schema/context"  
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util 
+        http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        ">
+
+~~~
+
+### （三）log4j2
+
++ **Apache Log4j2**是一个开源的日志记录组件，使用非常的广泛，它由几个重要的组件构成
+  + 日志信息的优先级:日志信息的优先级从高到低有TRACE < DEBUG < INFO < WARN < ERROR < FATAL，**设置高优先级的输出会默认屏蔽低优先级的输出**
+    + **TRACE**：追踪，是最低的日志级别，相当于追踪程序的执行
+    + **DEBUG**：调试，一般在开发中，都将其设置为最低的日志级别
+    + **INFO**：信息，输出重要的信息，使用较多
+    + **WARN**：警告，输出警告的信息
+    + **ERROR**：错误，输出错误信息
+    + **FATAL**：严重错误
+  + 日志信息的输出地
+  + 日志信息的输出格式
++ 首先引入依赖
+
+~~~xml
+
+    <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>2.20.0</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j2-impl -->
+    <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j2-impl</artifactId>
+        <version>2.20.0</version>
+    </dependency>
+
+~~~
+
++ 接下来在resources目录下创建一个叫`log4j2.xml`的文件，**名字不能修改**，在里面写入如下内容:
+
+~~~xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    configuration有两个可选属性
+        status用于指定日志框架本身输出的日志优先级，可以修改为DEBUG
+        monitorInterval用于指定自动加载配置文件的间隔时间，单位为秒
+
+-->
+<configuration>
+
+    <!-- properties内可以声明一些变量，标签体内的值就是变量的值，标签体的name就是变量名，使用时需要使用${name}嵌入 -->
+    <properties>
+        <property name="LOG_PATH">E:\大学文件\笔记类\各学科笔记\java\源码\Spring</property>
+    </properties>
+
+
+    <loggers>
+        <!--
+            level指定日志级别，从低到高的优先级：
+                TRACE < DEBUG < INFO < WARN < ERROR < FATAL
+                trace：追踪，是最低的日志级别，相当于追踪程序的执行
+                debug：调试，一般在开发中，都将其设置为最低的日志级别
+                info：信息，输出重要的信息，使用较多
+                warn：警告，输出警告的信息
+                error：错误，输出错误信息
+                fatal：严重错误
+        -->
+        <!-- 设置优先级为DEBUG,TRACE将被忽略 -->
+        <root level="DEBUG">
+            <appender-ref ref="spring6log"/>  <!-- 这里的ref属性对应着下面标签的name属性 -->
+            <appender-ref ref="RollingFile"/>
+            <appender-ref ref="log"/>
+        </root>
+    </loggers>
+
+    <appenders>
+        <!--输出日志信息到控制台-->
+        <!--
+            name与上面标签的ref需要一致
+            target值为SYSTEM_OUT时，输出黑色，SYSTEM_ERR输出红色
+        -->
+        <console name="spring6log" target="SYSTEM_OUT">
+            <!--控制日志输出的格式-->
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss SSS} [%t] %-3level %logger{1024} - %msg%n"/>
+        </console>
+
+        <!--文件会打印出所有信息，该log在每次test时都会被覆写，而不是追加-->
+        <File name="log" fileName="${LOG_PATH}\logFile\testLog\test.log" append="false">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>
+        </File>
+
+        <!--
+            fileName表示要将日志文件存入的文件夹，使用${name}来嵌入之前声明的变量
+            filePattern指定日志文件的名称格式
+        -->
+        <RollingFile name="RollingFile" fileName="${LOG_PATH}\logFile\minLog\log"
+                     filePattern="${LOG_PATH}\logFile\bigLog\$${date:yyyy-MM}\app-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n"/>
+            <!-- 如果堆存起来的日志信息超过了50MB，那么把它们放入指定的文件夹内 -->
+            <SizeBasedTriggeringPolicy size="50MB"/>
+            <!-- DefaultRolloverStrategy属性如不设置，
+            则默认为最多同一文件夹下7个文件，这里设置了20 -->
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+    </appenders>
+</configuration>
+~~~
+
++ 接下来使用Maven进行一下测试，就可以看到控制台输出了打印信息，同时也在对应路径下创建了日志文件
++ 我们也可以手动的输出日志:
+
+~~~java
+    // 这里列出我们需要导入的类，不要导错了
+    import org.slf4j.Logger;
+    import org.slf4j.LoggerFactory;
+
+    @Test
+        public void test2(){
+            Logger logger= LoggerFactory.getLogger(User.class);
+            logger.debug("调试");
+            logger.info("输出信息");
+            logger.error("出现错误");
+            logger.trace("跟踪");
+            logger.warn("警告");
+        }
+~~~
+
+---
 
 
 
