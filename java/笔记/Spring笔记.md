@@ -624,7 +624,118 @@
 
 ---
 
-## 五、配置汇总与杂项
+## 五、事务
+
+### （一）JdbcTemplate
+
++ Spring封装了JDBC操作，简化了我们与数据库的交互过程，它将JDBC的操作封装为JdbcTemplate类供我们调用
++ 要使用JdbcTemplate，需要用到两个依赖:
+
+~~~xml
+
+    <mysql-connection.version>8.0.33</mysql-connection.version>
+    <druid.version>1.2.22</druid.version>
+
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>${mysql-connection.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>druid</artifactId>
+        <version>${druid.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jdbc</artifactId>
+        <version>6.0.2</version>
+    </dependency>
+
+~~~
+
++ JdbcTemplate是Spring自己的类，我们无法更改，因此没办法给它加Component注解，所以我们需要**在配置类里面使用Bean注解来提供它的bean，或者在xml文件内配置**
++ Druid连接池同理，也需要这么配置
++ [使用配置类提供bean](../源码/Spring/Spring-JDBC/src/main/java/com/example/Config.java)
++ [使用xml文件提供bean]()
+
+|方法|参数|作用|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|update(String sql, Object... args)|sql:PreparedStatement格式的sql语句<br>args:sql语句需要用到的值，**按顺序填写**|执行sql语句|影响的行数|int|DataAccessException|无|[样例](../源码/Spring/Spring-JDBC/src/main/java/com/example/dao/JdbcTemplateDaoImpl.java)|
+|query(String sql, RowMapper<T> rowMapper)|sql:PreparedStatement格式的sql语句<br>rowMapper:处理结果集并返回结果的接口对象|查询|List对象|List|^|无|^|
+|queryForObject(String sql, Class<T>requiredType)|sql:PreparedStatement格式的sql语句<br>requiredType:想得到的结果类型的Class对象|得到单行单列的值|>|取决于requiredType|^|无|^|
+|String sql, RowMapper<T> rowMapper, Object... args|sql:PreparedStatement格式的sql语句<br>rowMapper:处理结果集并返回结果的接口对象<br>args:sql语句需要用到的值|查询|>|Object|^|无|^|
+
+---
+
+### （二）事务
+
++ 事务分为两种:
+  + 编程式事务:事务功能的相关操作全部通过自己编写代码来实现
+  + 声明式事务:通过框架为我们提供的配置，然后让框架实现事务功能
++ 由于编程式事务过于复杂并且具有高度耦合性，这里仅说明声明式事务
++ **事务在底层由AOP实现**，因此需要aop相关依赖
+
+---
+
+### （三）使用注解
+
+|注解|作用|备注|
+|:---:|:---:|:---:|
+|@EnableTransactionManagement|让Spring支持事务管理|配置在配置类上|
+|@Transactional|配置事务处理规则|可以作用在类上或方法上，如果作用在类上，即代表类的全部方法都使用该事务|
+
+|规则|值类型|说明|备注|
+|:---:|:---:|:---:|:---:|
+|readOnly|boolean|声明为true说明方法内仅允许查询操作|无|
+|timeout|int|超时指定秒后回滚|**这个时间是与数据库连接的时间，而不是方法执行的总时间，且如果作用方法内没有任何与数据库的操作，也不会回滚**|
+|propagation|Propagation,这是个枚举类|指定事务的传播行为|无|
+|isolation|Isolation,这是个枚举类|指定事务的隔离级别|无|
+|rollbackFor|Class<? extends Throwable>[]|指定某些异常出现时才回滚|无|
+|rollbackForClassName|String[]|当出现的异常的类名在本数组中时，才会滚|无|
+|noRollbackFor|Class<? extends Throwable>[]|指定某些异常出现时不回滚|无|
+|noRollbackForClassName|String[]|当出现的异常的类名在本数组中时，不会滚|无|
+
++ propagation属性有多个值:
+
+|值|含义|备注|
+|:---:|:---:|:---:|
+|**REQUIRED**|如果没有事务，那么创建一个，如果有，汇入当前事务中执行|无|
+|SUPPORTS|如果当前没有事务，就以非事务方式执行，否则汇入当前事务中执行|无|
+|MANDATORY|如果当前没有事务，直接抛出异常。否则汇入当前事务中执行|无|
+|**REQUIRES_NEW**|开启一个新的事务，该事务独立于正在运行的事务。新事务执行时，老事务被挂起|无|
+|NOT_SUPPORTED|以非事务方式运行，如果有事务，那么让事务挂起|无|
+|NEVER|以非事务方式运行，如果有事务存在，抛出异常|无|
+|NESTED|如果当前正有一个事务在进行中，则该方法应当运行在一个嵌套式事务中。被嵌套的事务可以独立于外层事务进行提交或回滚。如果外层事务不存在，则行为与REQUIRED保持一致|各厂商对该传播行为的支持存在差异|
+
++ isolation属性也有多个值:
+
+|值|含义|脏读|不可重复读|幻读|备注|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|READ UNCOMMITTED|允许事务读取其它事务未提交的修改|有|有|有|
+|READ COMMITTED|事务仅能读取其他事务已提交的修改|无|有|有|
+|REPEATABLE READ|事务执行期间，禁止其他事务对本事务字段进行更新操作|无|无|有|
+|SERIALIZABLE|事务执行期间，禁止其他事务对本事务字段进行添加、修改、删除操作|无|无|无|
+
++ 隔离级别越高，安全性越高，同时效率也越低
++ [注解样例1](../源码/Spring/Spring-JDBC/src/main/java/com/example/dao/JdbcTemplateDaoImpl.java)
++ [注解样例2](../源码/Spring/Spring-JDBC/src/main/java/com/example/service/JdbcTemplateServiceImpl.java)
++ [注解样例3](../源码/Spring/Spring-JDBC/src/main/java/com/example/service/CheckImpl.java)
++ [测试样例](../源码/Spring/Spring-JDBC/src/test/java/JdbcTemplateTest.java)
+
+---
+
+### （四）xml配置
+
++ 这个傻逼xml配置，真他妈操蛋
+  + 事务的底层是由AOP实现的，因此**必须配置AOP**，并**使用切入点表达式配置事务的详细处理路径**。它**必须是服务层的类**
++ [xml样例](../源码/Spring/Spring-JDBC/src/main/resources/JDBC.xml)
++ [测试类](../源码/Spring/Spring-JDBC/src/test/java/JdbcTemplateXmlTest.java)
++ 如果想使用xml测试方法，**需要暂时把Config的EnableTransactionManagement注解注释掉，并注释掉Config类里面的方法**
+
+---
+
+## 配置汇总与杂项
 
 ### （一）依赖总览
 
@@ -639,6 +750,8 @@
         <junit.version>5.10.2</junit.version>
         <log4j.version>2.20.0</log4j.version>
         <annotation.version>2.1.1</annotation.version>
+        <mysql-connection.version>8.0.33</mysql-connection.version>
+        <druid.version>1.2.22</druid.version>
     </properties>
 
 
@@ -662,6 +775,18 @@
                 <artifactId>spring-aspects</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+            <!-- spring-jdbc依赖 -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jdbc</artifactId>
+                <version>6.1.5</version>
+            </dependency>
+            <!-- JDK注解拓展，有一些依赖注入的注解 -->
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${annotation.version}</version>
+            </dependency>
             <!-- spring junit兼容依赖 -->
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -673,6 +798,18 @@
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
                 <version>${junit.version}</version>
+            </dependency>
+            <!-- MySQL驱动 -->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql-connection.version}</version>
+            </dependency>
+            <!-- Druid连接池 -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid.version}</version>
             </dependency>
             <!-- log4j依赖，用来输出日志 -->
             <dependency>
@@ -686,12 +823,8 @@
                 <artifactId>log4j-slf4j2-impl</artifactId>
                 <version>${log4j.version}</version>
             </dependency>
-            <!-- JDK注解拓展，有一些依赖注入的注解 -->
-            <dependency>
-                <groupId>jakarta.annotation</groupId>
-                <artifactId>jakarta.annotation-api</artifactId>
-                <version>${annotation.version}</version>
-            </dependency>
+
+
 
         </dependencies>
     </dependencyManagement>
