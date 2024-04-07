@@ -851,6 +851,81 @@
 
 ---
 
+### （四）整合junit
+
++ 测试时，每次测试都需要创建一个ApplicationContext容器对象，很麻烦
++ Spring提供了专门整合junit的依赖，让junit不需要再创建容器对象，就能读取到对象的值
++ 依赖:
+
+~~~xml
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>6.1.5</version>
+    </dependency>
+~~~
+
++ 在resources文件夹下添加xml文件，加下面的语句(需要context约束)
+
+~~~xml
+    <!-- 让Spring扫描下面的路径的注解 -->
+    <context:component-scan base-package="org.example" />
+
+~~~
+
++ 需要为测试类添加如下注解:
+
+~~~java
+    @SpringJUnitConfig(locations = "classpath:junit.xml")  // 这是根据xml配置的
+    @SpringJUnitConfig(classes = Config.class)  // 如果用注解配置，向classes传入配置类的Class对象
+
+    // 下面的是整合Junit5的另一种注解方式
+
+    @ExtendWith(SpringExtension.class)  // 这是固定格式
+    @ContextConfiguration("classpath:beans.xml")  // 与上面的xml配置值一样
+
+    // 下面是junit4整合的注解写法
+    @RunWith(SpringJUnit4ClassRunner.class)  // 固定格式
+    @ContextConfiguration("classpath:beans.xml")  //  与上面的xml配置值一样
+~~~
+
++ 然后就能使了
+
+~~~java
+
+    package org.example;
+
+    import org.junit.jupiter.api.Test;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.beans.factory.annotation.Value;
+    import org.springframework.stereotype.Component;
+    import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+
+
+    //  该注解能让junit在测试时直接就能找到Spring的对应bean对象，而不需要再创建IoC容器对象获取了
+    @SpringJUnitConfig(classes = Config.class)
+    @Component
+    public class JunitTest {
+        @Value("12")
+        private int age;
+
+        @Autowired
+        private User user;
+
+        @Test
+        public void printTest(){
+            System.out.println(age);
+            System.out.println(user);
+        }
+    }
+
+
+~~~
+
++ [样例](../源码/Spring/Spring-JUnit/src/main/java/org/example/JunitTest.java)
+
+---
+
 
 
 
