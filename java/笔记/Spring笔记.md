@@ -116,7 +116,9 @@
 
 ---
 
-### （二）IOC容器
+### （二）ApplicationContext
+
+#### ①实现类
 
 + Spring的IOC容器是Spring对IOC思想的实现，在Spring的容器中，它管理的组件被称为`Bean`
 + 我们在创建Bean之前，需要先创建容器对象，Spring为我们提供了两种方式来创建容器对象:
@@ -128,9 +130,22 @@
 |实现类|作用|
 |:---:|:---:|
 |ClassPathXmlApplicationContext|通过读取类路径下的 XML 格式的配置文件创建 IOC 容器对象|
+|AnnotationConfigApplicationContext|通过读取配置类的Class对象创建IoC容器对象|
 |FileSystemXmlApplicationContext|通过文件系统路径读取 XML 格式的配置文件创建 IOC 容器对象|
 |ConfigurableApplicationContext|ApplicationContext的子接口，包含一些扩展方法 refresh() 和 close() ，让 ApplicationContext 具有启动、关闭和刷新上下文的能力。|
 |WebApplicationContext|专门为 Web 应用准备，基于 Web 环境创建 IOC 容器对象，并将对象引入存入 ServletContext 域中。|
+
+---
+
+#### ②访问通配符
+
++ Spring允许我们通过通配符和前缀的方式，一次性读取多个xml文件
+  + 如果仅使用`classpath:`，那么**仅会匹配到第一个符合后续条件的文件**
+  + 使用`classpath*`来确定我们要加载类加载路径下**所有满足该规则的配置文件**
+  + 在后续条件加上*,如`bean*.xml`，表示匹配以bean为前缀的文件
+  + 二者可以混用:如`classpath*:bean*.xml`
++ [样例](../源码/Spring/Resources/src/test/java/ApplicationContextTest.java)
+
 
 ---
 
@@ -409,7 +424,7 @@
 + 使用init-method和destroy-method属性可以指定初始化时执行的方法(第四步)和销毁时执行的方法(第七步)
 + 后置处理器用来在bean对象初始化前后执行额外的操作，**后置处理器需要我们自己手动写**:
   + 首先定义一个类，实现BeanPostProcessor接口，并实现接口的方法
-  + 在xml文件内引入以使Spring检测到
+  + 在xml文件内创建一个bean来表示该类的实例
   + 这样就能使了
 + [样例](../源码/Spring/SpringTest1/src/test/java/com/spring/test/SALCTest.java)
 + [xml样例](../源码/Spring/SpringTest1/src/main/resources/SALC.xml)
@@ -572,6 +587,7 @@
 |@After|声明方法为**后置通知方法**|无|
 |@Around|声明方法为**环绕通知方法**|无|
 |@PointCut|声明方法为切入点表达式复用方法|**仅能作用在方法上**|
+|@Order|指定Bean的初始化顺序/切面类的执行顺序|无|
 
 + [样例](../源码/Spring/AOPSample/src/main/java/com/spring/sample/AOPAnnoSample.java)
 + [测试样例](../源码/Spring/AOPSample/src/test/java/com/test/AOPTest.java)
@@ -623,6 +639,13 @@
 + [测试样例](../源码/Spring/AOPSample/src/test/java/com/test/AOPTest.java)
 
 ---
+
+### （五）切面优先级
+
++ 一个方法上面可能会被多个切面作用，我们可以通过@Order注解控制切面的优先级
+  + 注解的值越大，优先级越小。值越小，优先级越大
+  + 优先级高的嵌套在外面，其前置方法先执行。优先级低的被嵌套在里面，其返回、异常和后置通知先执行
+  + 使用@Order注解可以指定切面执行的优先级
 
 ## 五、事务
 
@@ -761,6 +784,10 @@
 |getFilename|无参|得到文件名称|名称|String|无|无|^|
 |getDescription|无参|得到资源信息|描述信息|String|无|无|^|
 
++ Resource有下列实现类
+
+![Resource实现类](../文件/图片/Spring图片/Resource接口实现类.png)
+
 ---
 
 #### ①UrlResource
@@ -768,8 +795,115 @@
 + UrlResource是Resource接口的实现类之一，用来访问网络资源。它支持下面的类型:
   + http: 该前缀用于访问**基于HTTP协议**的网络资源
   + ftp: 该前缀用于访问**基于FTP协议**的网络资源
-  + file: 该前缀用于从**文件系统**中读取资源
+  + file: 该前缀用于从**文件系统**中读取资源，如果使用相对路径，**相对的是项目根路径**
++ 正常情况下，使用UrlResource构造器，并传入带上面的前缀的路径就能创建资源对象
++ 注意:
+> + 在测试类内，相对路径**相对于当前项目的根路径**
+> + 在其他类内，相对路径**相对于最外层项目的根路径**
++ [样例](../源码/Spring/Resources/src/test/java/UrlResourceTest.java)
+
+---
+
+#### ②ClassPathResource
+
++ ClassPathResource用来访问**相对于classpath**下的资源
++ 正常情况下，使用UrlResource构造器，并传入带上面的前缀的路径就能创建资源对象
++ [样例](../源码/Spring/Resources/src/test/java/UrlResourceTest.java)
+
+---
+
+#### ③FileSystemResource
+
++ FileSystemResource用于访问文件系统资源，但是Java 提供的 File 类也可用于访问文件系统资源，它相对于File类并没有太大的优势
++ 正常情况下，使用UrlResource构造器，并传入带上面的前缀的路径就能创建资源对象
++ 注意:
+> + 在测试类内，相对路径**相对于当前项目的根路径**
+> + 在其他类内，相对路径**相对于最外层项目的根路径**
++ [样例](../源码/Spring/Resources/src/test/java/UrlResourceTest.java)
+
+---
+
+#### ④其它相关类
+
++ **ServletContextResource**:ServletContext资源的Resource实现，它解释相关Web应用程序根目录中的相对路径。它始终支持流(stream)访问和URL访问，但只有在扩展Web应用程序存档且资源实际位于文件系统上时才允许java.io.File访问。无论它是在文件系统上扩展还是直接从JAR或其他地方（如数据库）访问，实际上都依赖于Servlet容器。
++ **InputStreamResource**:是给定的输入流(InputStream)的Resource实现。它的使用场景在没有特定的资源实现的时候使用(感觉和@Component 的适用场景很相似)。与其他Resource实现相比，这是已打开资源的描述符。 因此，它的isOpen()方法返回true。如果需要将资源描述符保留在某处或者需要多次读取流，请不要使用它。
++ **ByteArrayResource**:字节数组的Resource实现类。通过给定的数组创建了一个ByteArrayInputStream。它对于从任何给定的字节数组加载内容非常有用，而无需求助于单次使用的InputStreamResource。
+
+---
+
+### （二）ResourceLoader接口
+
++ Spring的ResourceLoader接口内仅包含了一个方法:
+  + `Resource getResource（String location）`:该方法可以直接获取相关的资源对象
++ 当Spring应用需要进行资源访问时，实际上并不需要直接使用Resource实现类，而是调用ResourceLoader实例的getResource()方法来获得资源，ReosurceLoader将会负责选择Reosurce实现类，也就是确定具体的资源访问策略，从而**将应用程序和具体的资源访问策略分离开来**
++ 因此，ResourceLoader接口的作用就是**使用实现类的访问策略来得到资源**
+  + ApplicationContext实现类都实现了ResourceLoader接口，因此**ApplicationContext可直接获取Resource实例**
+  + 使用ApplicationContext实现类对象获取Resource对象时，**可以通过制定不同前缀强制获取指定的Resource实现类对象，默认得到的Resource实现类对象取决于ApplicationContext实现类对象类型**，如FileSystemXmlApplicationContext得到的就是FileSystemResource实例；是ClassPathXmlApplicationContextResource得到的就是ClassPathResource实例
++ Spring有两个相关接口
+  + ResourceLoader接口:[样例](../源码/Spring/Resources/src/test/java/ResourceLoaderTest.java)
+  + ResourceLoaderAware接口
+    + 它属于Bean Aware的一个接口，所以它的实现类实现的方法会在Spring容器初始化其实例的时候就执行，我们可以**通过该实现方法在该bean加载时获取它的ResourceLoader对象，并进行一些操作**
+
+---
+
+### （三）提取Resource路径
+
++ 在上面的样例中，我们想得到Resource实例对象，还是需要**将路径写死在代码中，一旦路径发生修改，还要更改程序，这并不是我们希望的**
++ 因此，我们可以创建一个类，让Resource对象作为该类的一个属性存在，并为该类写一些方法来表示Resource对象的一些操作
++ 这样，我们就可以通过**依赖注入**的方式，通过xml文件的方式将得到Resource对象了，这可以帮助我们提取出程序中的路径，并将它放在文件中。以后我们修改，只需要修改文件中的路径就可以了，就不用修改程序了
++ 样例略
+
+---
+
+## 七、国际化
+
++ 国际化也称作i18n，其来源是英文单词 internationalization的首末字符i和n，18为中间的字符数。由于软件发行可能面向多个国家，对于不同国家的用户，软件显示不同语言的过程就是国际化。通常来讲，软件中的国际化是通过配置文件来实现的，假设要支撑两种语言，那么就需要两个版本的配置文件。
++ Java提供了java.util.Locale和java.util.ResourceBundle来支持国际化
+  + Locale用于**指定当前用户所属的语言环境等信息**，Locale包含了language信息和country信息
+  + ResourceBundle用于**查找绑定对应的资源文件**
++ 为了实现国际化，需要:
+  + **在resources目录下创建properties文件**，其命名格式需要遵守`basename_language_country.properties`的格式，其中basename是必须的，language和country可选
++ [Java原生的国际化样例](../源码/Spring/I18n/src/test/java/I18nJDKTest.java)
++ Spring也提供了相关的国际化API，它通过MessageSource这个接口来支持，他有多个实现类
+  + **ResourceBundleMessageSource**:基于Java的ResourceBundle基础类实现，允许仅通过资源名加载国际化资源
+  + **ReloadableResourceBundleMessageSource**:相比第一个，多了定时刷新功能，允许在不重启系统的情况下，更新资源的信息
+  + **StaticMessageSource**:它允许通过编程的方式提供国际化信息，可以通过这个来实现db中存储国际化信息的功能。
++ [Spring国际化样例](../源码/Spring/I18n/src/test/java/I18nSpringTest.java)
+
+---
+
+## 八、数据校验
+
++ 进行数据的合法性检验是开发过程中常有的事，因此，Spring提供了数据校验的相关API供我们便捷的进行数据校验，并有效地减少了代码的耦合度。
++ 在Spring中，可以使用三种方式进行数据校验:
+  + 通过实现org.springframework.validation.Validator接口，然后在代码中调用这个类
+  + 按照Bean Validation方式来进行校验，即通过注解的方式。
+  + 基于方法实现校验
+  + 实现自定义校验
++ 使用数据校验需要引入相关依赖:
+
+~~~xml
+
+    <dependencies>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>8.0.1.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.el</artifactId>
+            <version>5.0.0-M1</version>
+        </dependency>
+    </dependencies>
+
+~~~
+
+### （一）接口校验
+
 + 
+
 
 ## 配置汇总与杂项
 

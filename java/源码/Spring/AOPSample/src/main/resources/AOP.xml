@@ -20,7 +20,6 @@
 
             <!-- aop:pointcut用来配置可复用的切入点表达式 -->
             <aop:pointcut id="pointCut" expression="execution(* com.spring.sample.ProxyInterfaceImpl.*(..))"/>
-
             <!-- 配置该类中的各方法的通知方法类型 -->
             <aop:before method="beforeMethod" pointcut="com.spring.sample.AOPAnnoSample.pointCut()" />
             <aop:after-returning method="afterReturningMethod" pointcut="com.spring.sample.AOPAnnoSample.pointCut()" returning="aa"/>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!--
+        这个id不能改
+     -->
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <!-- 配置basenames,以列表形式注入 -->
+        <property name="basenames">
+            <list>
+                <value>China</value>
+                <value>message</value>
+            </list>
+        </property>
+        <!-- 配置编码格式 -->
+        <property name="defaultEncoding" value="UTF-8" />
+    </bean>
+</beans>

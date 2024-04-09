@@ -17,6 +17,8 @@
         <module>Spring-JUnit</module>
         <module>Spring-JDBC</module>
         <module>Resources</module>
+        <module>I18n</module>
+        <module>Validation</module>
     </modules>
 
     <properties>
@@ -102,6 +104,16 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid</artifactId>
                 <version>${druid.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate.validator</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>8.0.1.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>jakarta.el</artifactId>
+                <version>5.0.0-M1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

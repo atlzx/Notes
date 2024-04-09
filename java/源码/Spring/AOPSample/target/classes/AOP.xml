@@ -17,12 +17,15 @@
     <aop:config>
         <!-- 配置AOPXmlSample是一个切面类 -->
         <aop:aspect ref="AOPXmlSample">
-            <!-- 配置该类中的各方法的通知方法类型 -->
+
+            <!-- aop:pointcut用来配置可复用的切入点表达式 -->
             <aop:pointcut id="pointCut" expression="execution(* com.spring.sample.ProxyInterfaceImpl.*(..))"/>
+            <!-- 配置该类中的各方法的通知方法类型 -->
             <aop:before method="beforeMethod" pointcut="com.spring.sample.AOPAnnoSample.pointCut()" />
             <aop:after-returning method="afterReturningMethod" pointcut="com.spring.sample.AOPAnnoSample.pointCut()" returning="aa"/>
             <aop:after-throwing method="afterThrowing" pointcut="com.spring.sample.AOPAnnoSample.pointCut()" throwing="e" />
             <aop:after method="afterMethod" pointcut="com.spring.sample.AOPAnnoSample.pointCut()"/>
+            <!-- 使用pointcut-ref便捷的使用可复用的切入点表达式 -->
             <aop:around method="aroundMethod" pointcut-ref="pointCut"/>
         </aop:aspect>
     </aop:config>
