@@ -735,6 +735,42 @@
 
 ---
 
+## 六、Resources
+
++ java提供的原生的资源相关类有时无法满足我们的相关需求，因此，Spring在Resources方面对这些需求做了封装
+
+### （一）Resource接口
+
++ Resource接口提供了如下方法，它有很多实现类
+  + 同时它继承了InputStreamSource接口，因此也继承了该接口的方法，该接口**只有一个方法**:getInputStream()
+
+|方法|参数|作用|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|getInputStream|无参|得到资源的输入流对象|输入流对象|InputStream|IOException|**这是继承的InputStreamSource接口的方法**|[样例](../源码/Spring/Resources/src/test/java/UrlResourceTest.java)|
+|exists|无参|检查资源是否存在|true或false|boolean|无|无|^|
+|isReadable|无参|检查资源是否可读|true或false|boolean|无|无|^|
+|isOpen|无参|检查资源是否已经被打开|true或false|boolean|无|无|^|
+|isFile|无参|检查资源是否是文件|true或false|boolean|无|无|^|
+|getURL|无参|得到资源的URL对象|URL对象|URL|IOException|无|^|
+|getURI|无参|得到资源的URI对象|URI对象|URI|^|无|^|
+|getFile|无参|得到文件对象|File对象|File|^|无|^|
+|readableChannel|无参|获取资源的可读通道|通道对象|ReadableByteChannel|^|无|^|
+|contentLength|无参|获取资源的内容长度|数值|long|^|无|^|
+|lastModified|无参|最后一次修改的时间戳|时间戳|long|^|无|^|
+|createRelative(String relativePath)|relativePath:相对路径|创建相对于资源的资源对象|资源对象|Resource|^|无|^|
+|getFilename|无参|得到文件名称|名称|String|无|无|^|
+|getDescription|无参|得到资源信息|描述信息|String|无|无|^|
+
+---
+
+#### ①UrlResource
+
++ UrlResource是Resource接口的实现类之一，用来访问网络资源。它支持下面的类型:
+  + http: 该前缀用于访问**基于HTTP协议**的网络资源
+  + ftp: 该前缀用于访问**基于FTP协议**的网络资源
+  + file: 该前缀用于从**文件系统**中读取资源
++ 
+
 ## 配置汇总与杂项
 
 ### （一）依赖总览

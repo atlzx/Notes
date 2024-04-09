@@ -16,6 +16,7 @@
         <module>AOPSample</module>
         <module>Spring-JUnit</module>
         <module>Spring-JDBC</module>
+        <module>Resources</module>
     </modules>
 
     <properties>

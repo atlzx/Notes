@@ -1567,6 +1567,7 @@
 |`public static String valueOf(Object obj,int beginIndex,int endIndex)`|`obj`:基本数据类型值或`char[]`类型数组<br>`beginIndex`:转换的开始索引<br>`endIndex`:转换的结束索引|将`obj`的`[beginIndex,endIndex)`区间内的数据转换为字符串|新的字符串|`String`|^|^|
 |`public static String copyValueOf(char[] data)`|`data`:要复制的字符数组|复制该字符数组并转换为字符串|新的字符串|`String`|^|^|
 |`public static String copyValueOf(char[] data,int beginIndex,int endIndex)`|`data`:要复制的字符数组<br>`beginIndex`:复制的开始索引<br>`endIndex`:复制的结束索引|复制该字符数组的`[beginIndex,endIndex)`区间内的数据并转换为字符串|新的字符串|`String`|^|^|
+|public static String format(String format, Object... args)|`format`:格式化字符串，例:`%.2f`保留两位小数并四舍五入<br>`args`:待格式化对象|将指定的值格式化为字符串|格式化的字符串|String|**可以进行数值的精度控制顺带四舍五入**|^|
 |`public char charAt(int index)`|`index`:下标|得到字符串指定下标的字符|对应下标的字符|`char`|无|^|
 |`public String toLowerCase()`|无参|将字符串的大写字母转换为小写|新的字符串|`String`|无|^|
 |`public String toUpperCase()`|无参|将字符串的小写字母转换为大写|新的字符串|`String`|无|^|

@@ -7,11 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Spring-JDBC" />
+        <module name="AOPSample" />
         <module name="Spring-JUnit" />
+        <module name="Resources" />
         <module name="SpringAnnotationSample" />
         <module name="CreateIoC" />
         <module name="SpringTest1" />
-        <module name="AOPSample" />
       </profile>
     </annotationProcessing>
   </component>
