@@ -11,6 +11,7 @@
         <module name="AOPSample" />
         <module name="Spring-JUnit" />
         <module name="Resources" />
+        <module name="SpringEL" />
         <module name="SpringAnnotationSample" />
         <module name="CreateIoC" />
         <module name="SpringTest1" />

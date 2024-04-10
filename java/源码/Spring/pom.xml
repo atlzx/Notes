@@ -19,6 +19,7 @@
         <module>Resources</module>
         <module>I18n</module>
         <module>Validation</module>
+        <module>SpringEL</module>
     </modules>
 
     <properties>

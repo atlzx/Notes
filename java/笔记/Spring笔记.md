@@ -145,6 +145,7 @@
   + 在后续条件加上*,如`bean*.xml`，表示匹配以bean为前缀的文件
   + 二者可以混用:如`classpath*:bean*.xml`
 + [样例](../源码/Spring/Resources/src/test/java/ApplicationContextTest.java)
++ [样例拓展](../源码/Spring/SpringEL/src/test/java/PathTest.java)
 
 
 ---
@@ -1050,6 +1051,20 @@
 
 ---
 
+## 九、SpringEL表达式
+
++ SpEL是一种强大，简洁的装配 Bean 的方式。它可以通过执行运行期间执行的表达式将值装配到属性或构造器内，也可以调用JDK提供的静态常量，还能读取外部Properties的配置
+
+### （一）读取Properties文件
+
++ 我们可以通过@PropertySource注解来读取properties文件的内容，它作用在类上，受其影响的类可以**通过@Value注解搭配插值表达式来得到对应的内容**
+  + 可以通过encoding属性指定解码字符集
+  + 可以通过value属性指定读取的文件路径，如果想读取类路径下的，需要加`classpath:`作为前缀
+
+
+
+---
+
 ## 配置汇总与杂项
 
 ### （一）依赖总览
@@ -1373,6 +1388,27 @@
 + [样例](../源码/Spring/Spring-JUnit/src/main/java/org/example/JunitTest.java)
 
 ---
+
+### （五）文件路径前缀与通配符
+
+|前缀|作用|备注|
+|:---:|:---:|:---:|
+|classpath:|相对于类路径加载资源|无|
+|context:|相对于Spring上下文加载资源|无|
+|file:|相对于文件系统加载资源，支持绝对路径和相对路径|无|
+|url|直接指定URL，支持多种协议|无|
+|http:/https:|从http或https协议加载资源|无|
+|ftp: / ftps:|从ftp或ftps协议加载资源|无|
+|databasetable:|从数据库表中加载资源|无|
+|classpath*:|匹配类路径下所有符合条件的资源并加载|无|
+
+|后缀|作用|备注|
+|:---:|:---:|:---:|
+|aaa*|匹配前缀为aaa的资源|无|
+|*aaa|匹配后缀是aaa的资源|无|
+|a*b|匹配前缀是a，后缀是b的资源|无|
+
++ [样例](../源码/Spring/SpringEL/src/test/java/PathTest.java)
 
 
 
