@@ -464,9 +464,9 @@
 |@Controller|^|作用于Controller层|^|
 |@Repository|^|作用在Dao层|^|
 |@Value|注入基本数据类型对象|无|^|
-|@Autoware|根据byType模式匹配对应的引用数据类型对象并注入|该注解无法自动装配JDK自带的数据类型|^|
+|@Autoware|根据byType模式匹配对应的引用数据类型对象并注入|1.该注解无法自动装配JDK自带的数据类型<br>**不能作用于测试类**|^|
 |@Qualifier|使自动装配按照byName的方式匹配，且依据的是该注解内指定的name值进行匹配|无|^|
-|@Resource|依据 指定的name -> byName -> byType的模式依次匹配对应的引用数据类型对象并注入|该注解来源于`jakarta`包|^|
+|@Resource|依据 指定的name -> byName -> byType的模式依次匹配对应的引用数据类型对象并注入|1.该注解来源于`jakarta`包<br>2.**不能作用于测试类**|^|
 
 + 如果使用了配置类，那么**获取IoC容器对象的类就从ClassPathXmlApplicationContext变到了AnnotationConfigApplicationContext**，并需要向其构造器内传入配置类的Class对象
 + 在未使用配置类的情况下，仍需要使用xml文件进行配置:
@@ -902,8 +902,153 @@
 
 ### （一）接口校验
 
-+ 
++ 创建一个类，需要**实现Validator接口，并实现supports和validate方法**
+  + 导入org.springframework.validation.Validator接口
+  + public boolean supports(Class<?> clazz)方法**用来判断传入的对象是否是判断类对象**，如果是返回true
+    + clazz表示待判断的对象
+  + public void validate(Object target, Errors errors)方法**用来进行校验**
+    + target表示当前校验的类对象
+    + errors表示错误对象
++ 创建后，需要创建一个DataBinder对象来执行校验
+  + DataBinder(Object target)构造器用来创建一个DataBinder对象
+  + setValidator(Validator validator)方法用来设置校验器对象
+  + validate()方法执行校验
+  + getBindingResult()方法得到校验结果
 
+|所属|方法|参数|作用|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|Validator|supports(Class<?> clazz)|clazz:待判断的对象|判断传入的对象是否符合校验条件|符合返回true|boolean|无|无|[样例](../源码/Spring/Validation/src/main/java/com/example/InterfaceValidationSample.java)|
+|^|validate(Object target, Errors errors)|target:当前校验的类对象<br>errors:错误对象|进行校验|无返回值|void|无|无|^|
+|ValidationUtils|rejectIfEmpty(Errors errors, String field, String errorCode, String defaultMessage)|errors:错误对象<br>field:被校验对象的属性名<br>errorCode:错误码<br>defaultMessage:错误提示|判断对象的指定属性名的属性是否为空，如果是空，那么报异常并输出错误信息|无返回值|void|无|无|^|
+|Errors|rejectValue(String field, String errorCode)|field:被校验对象的属性名<br>errorCode:错误码|向错误对象内注入相关属性的校验错误信息|无返回值|void|无|无|^|
+|DataBinder|DataBinder(Object target)|target:被校验的对象|DataBinder的构造器|DataBinder对象|DataBinder|无|无|[样例](../源码/Spring/Validation/src/test/java/InterfaceValidationTest.java)|
+|^|setValidator(Validator validator)|validator:校验器对象|设置校验器对象|无返回值|void|无|无|^|
+|^|validate()|无参|执行校验|无返回值|void|无|无|^|
+|^|getBindingResult()|无参|得到校验结果|校验结果|BindingResult|无|无|^|
+|BindingResult|getAllErrors()|无参|得到全部的错误信息|列表对象|List<ObjectError>|无|无|^|
+
+---
+
+### （二）注解校验
+
++ 使用注解校验，首先需要创建一个LocalValidatorFactoryBean类的Bean，可以在配置类里使用@Bean注解创建
++ 接下来使用注解作用于被校验类的属性上，便可以指定校验规则了
+
+|注解|作用|备注|
+|:---:|:---:|:---:|
+|@NotNull|非空|无|
+|@NotEmpty|非空|**作用于String类型属性**|
+|@NotBlank|去首尾空白字符后非空|^|
+|@DecimalMax(value)|设置上限|无|
+|@DecimalMin(value)|设置下限|无|
+|@Max(value)|设置上限|无|
+|@Min(value)|设置下限|无|
+|@Pattern(value)|正则匹配|无|
+|@Size(max,min)|限制字符长度在指定区间内|无|
+|@Email|校验邮箱格式|无|
+
++ 使用注解校验可以使用两种校验器进行校验
+  + 一种是jakarta.validation.Validator下的校验器
+  + 一种是org.springframework.validation.Validator下的校验器
++ 得到校验器对象后，都调用其validate方法进行校验即可
+
+|所属|方法|参数|作用|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|Validator(jakarta)|validate(T var1, Class<?>... var2)|var1:被校验对象<br>var2:指定验证组,没有不用传|执行校验|set对象|Set<ConstraintViolation<?>>|无|无|见下|
+|Validator(spring)|validate(Object target, Errors errors)|target<br>被校验对象<br>errors:错误对象|执行校验|无返回值|void|无|无|^|
+|bindException|BindException(Object target, String objectName)|target:被检验对象<>objectName:对象名称|BindException的构造器|BindException对象|BindException|无|无|^|
+|^|getBindingResult()|无参|得到校验结果|校验结果|BindingResult|无|无|^|
+
++ [配置类](../源码/Spring/Validation/src/main/java/com/example/Config.java)
++ [被校验类](../源码/Spring/Validation/src/main/java/com/example/annovalidation/Person.java)
++ [测试](../源码/Spring/Validation/src/test/java/AnnotationValidationTest.java)
+
+---
+
+### （三）方法校验
+
++ 想使用方法校验，需要在配置类中生成一个MethodValidationPostProcessor的Bean对象
++ 之后创建测试用的被校验类
++ 然后创建一个类，它提供方法来启动校验方法，该方法接收被校验类的对象来进行校验
++ 在测试类中测试，得到启动校验的类对象，接着执行其方法
++ **使用方法注解需要用到@Validated和@Valid注解**
+
++ [配置类](../源码/Spring/Validation/src/main/java/com/example/Config.java)
++ [被校验类](../源码/Spring/Validation/src/main/java/com/example/User.java)
++ [校验服务类](../源码/Spring/Validation/src/main/java/com/example/MethodValidateSample.java)
++ [测试](../源码/Spring/Validation/src/test/java/MethodValidationTest.java)
+
+---
+
+#### （四）自定义校验
+
++ 自定义校验需要我们自定义注解来实现，我们自定义的注解模板可以直接复制本来就有的注解模板，然后加以修改:
+
+~~~java
+    import jakarta.validation.Constraint;
+    import jakarta.validation.Payload;
+    import jakarta.validation.constraints.NotNull;
+    import org.hibernate.validator.internal.constraintvalidators.bv.NotBlankValidator;
+
+    import java.lang.annotation.*;
+
+    @Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.PARAMETER})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @Constraint(validatedBy = {NoBlankValidator.class})
+    public @interface NoBlank {
+        // 提示信息
+        String message() default "{不能包含空格}";
+        Class<?>[] groups() default {};
+        Class<? extends Payload>[] payload() default {};
+        @Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.TYPE_USE})
+        @Retention(RetentionPolicy.RUNTIME)
+        @Documented
+        public @interface List {
+            NotNull[] value();
+        }
+    }
+~~~
+
++ 接下来定义实现类
+
+~~~java
+    import jakarta.validation.ConstraintValidator;
+    import jakarta.validation.ConstraintValidatorContext;
+    import jakarta.validation.ConstraintViolation;
+
+    // 实现的校验器需要实现ConstraintValidator接口，它的两个泛型分别表示该校验器作用的是被哪个注解作用的属性，以及该属性的类型
+    public class NoBlankValidator implements ConstraintValidator<NoBlank,String> {
+
+        @Override
+        public void initialize(NoBlank constraintAnnotation) {
+            ConstraintValidator.super.initialize(constraintAnnotation);
+        }
+
+        @Override
+        // isValid用来指定校验逻辑，如果通过校验返回true
+        public boolean isValid(String s, ConstraintValidatorContext context) {
+            if(s==null||s.contains(" ")){
+                //获取默认提示信息
+                String defaultConstraintMessageTemplate = context.getDefaultConstraintMessageTemplate();
+                System.out.println("default message :" + defaultConstraintMessageTemplate);
+                //禁用默认提示信息
+                context.disableDefaultConstraintViolation();
+                //设置提示语
+                context.buildConstraintViolationWithTemplate("不能包含空格").addConstraintViolation();
+                return false;
+            }
+            return true;
+        }
+    }
+
+~~~
+
++ [自定义校验注解](../源码/Spring/Validation/src/main/java/com/example/NoBlank.java)
++ [校验注解的校验器](../源码/Spring/Validation/src/main/java/com/example/NoBlankValidator.java)
++ 方便起见，直接使用上面的方法校验的[样例](../源码/Spring/Validation/src/test/java/MethodValidationTest.java)来测试自定义校验是否成立
+
+---
 
 ## 配置汇总与杂项
 

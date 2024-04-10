@@ -17,7 +17,6 @@ public class InterfaceValidationTest {
     // 测试接口校验方式
     public void test(){
         People bean = context.getBean(People.class);
-        bean.setName("Lucy");
         bean.setAge(201);
         // 生成一个专门校验该bean对象的dataBinder
         DataBinder dataBinder = new DataBinder(bean);
