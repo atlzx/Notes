@@ -147,7 +147,6 @@
 + [样例](../源码/Spring/Resources/src/test/java/ApplicationContextTest.java)
 + [样例拓展](../源码/Spring/SpringEL/src/test/java/PathTest.java)
 
-
 ---
 
 ### （三）xml文件管理Bean
@@ -1060,8 +1059,33 @@
 + 我们可以通过@PropertySource注解来读取properties文件的内容，它作用在类上，受其影响的类可以**通过@Value注解搭配插值表达式来得到对应的内容**
   + 可以通过encoding属性指定解码字符集
   + 可以通过value属性指定读取的文件路径，如果想读取类路径下的，需要加`classpath:`作为前缀
++ [注入的类](../源码/Spring/SpringEL/src/main/java/com/example/PropertiesValueSample.java)
++ [测试样例](../源码/Spring/SpringEL/src/test/java/SpringELTest.java)
 
+---
 
+### （二）简单使用
+
++ Spring提供了ExpressionParser类用来得到一个Spel分析器对象
++ 调用parseExpression方法来得到SPEL对象
++ 使用getValue方法来得到表达式的值
+
+|所属|方法|参数|作用|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|SpelExpressionParser|SpelExpressionParser()|无参|>|生成一个ExpressionParser类型对象|ExpressionParser|无|无|[样例](../源码/Spring/SpringEL/src/main/java/com/example/Config.java)|
+|ExpressionParser|parseExpression(String expressionString)|expressionString:SpEL表达式|得到SpEL表达式对象|SpEL表达式对象|Expression|ParseException|无|[样例](../源码/Spring/SpringEL/src/test/java/SpringELTest.java)|
+|Expression|getValue()|无参|得到表达式执行结果|结果|Object|EvaluationException|无|^|
+|^|getValue(Object rootObject)|rootObject:表达式作用的类对象|^|结果|Object|EvaluationException|无|^|
+
++ SpEL有一些运算符和语法:
+  + 类似JS对象的Map类型声明方式:`{name:'lzx',age:'12'}`
+  + 直接的List类型声明方式:`{1,2,3,4,5}`
+  + .?运算符:用于进行数据过滤并返回过滤后的结果:`list.?[name=='lzx']`，这里**选择list属性的每一个元素的name属性为lzx字符串的元素**，加入新的ArrayList对象内。如果是map,那么返回的是HashMap对象
+  + .!运算符:用于解构，使我们选择我们想要的属性值:`list.![name]`，这里**选择list属性的每一个元素的name属性值**，加入新的ArrayList对象内。如果是map,那么返回的是HashMap对象
+    + 如果想得到键值对形式的值，键的名字就是key，值是想得到的值，可以写:`{'key':key}`
+    + 想得到List封装的值，可以写:`{key,value}`，这样可以得到多个值
+    + 想得到一个值，直接写就行
+  + ?.可选链运算符:用于判断前面的值是否为空，**如果为空结束执行并返回null,如果不空继续执行后面的语句**
 
 ---
 
