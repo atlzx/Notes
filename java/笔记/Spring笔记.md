@@ -1075,7 +1075,8 @@
 |SpelExpressionParser|SpelExpressionParser()|无参|>|生成一个ExpressionParser类型对象|ExpressionParser|无|无|[样例](../源码/Spring/SpringEL/src/main/java/com/example/Config.java)|
 |ExpressionParser|parseExpression(String expressionString)|expressionString:SpEL表达式|得到SpEL表达式对象|SpEL表达式对象|Expression|ParseException|无|[样例](../源码/Spring/SpringEL/src/test/java/SpringELTest.java)|
 |Expression|getValue()|无参|得到表达式执行结果|结果|Object|EvaluationException|无|^|
-|^|getValue(Object rootObject)|rootObject:表达式作用的类对象|^|结果|Object|EvaluationException|无|^|
+|^|getValue(Object rootObject)|rootObject:表达式作用的类对象|^|结果|Object|^|无|^|
+|^|setValue(Object rootObject,Object value)|rootObject:表达式作用的类对象<br>value:想赋的值|给指定对象的指定属性(在SpEL内声明)赋值|无返回值|void|^|无|^|
 
 + SpEL有一些运算符和语法:
   + 类似JS对象的Map类型声明方式:`{name:'lzx',age:'12'}`
