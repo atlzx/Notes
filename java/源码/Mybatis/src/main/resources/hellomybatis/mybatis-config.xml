@@ -11,7 +11,6 @@
     </settings>
 
     <typeAliases>
-        <typeAlias type=""
         <!-- 设定该包下自动获得别名，别名为首字母小写的类名，如果有Alias注解，那么别名为注解内设置的值 -->
         <package name="com.mybatis.example.hellomybatis.pojo"/>
     </typeAliases>

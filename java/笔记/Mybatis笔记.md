@@ -85,7 +85,22 @@
 
 ---
 
-## 三、类型传入与结果输出
+## 三、相关API
+
+|归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|Resources(ibatis)|getResourceAsStream(String resource)|resource:mybatis配置xml文件**相对于classpath的路径**|得到配置文件的输入流对象|输入流对象|InputStream|IOException|无|[样例](../源码/Mybatis/src/test/java/hellomybatis/HelloMybatisTest.java)
+|SqlSessionFactoryBuilder|SqlSessionFactoryBuilder()|无参|SqlSessionFactory实现类的空参构造器|得到生成会话对象的工厂对象的构建器对象|SqlSessionFactory|无|无|^|
+|^|build(InputStream inputStream)|inputStream:配置文件的输入流对象|>|得到生成数据库会话的工厂对象|SqlSessionFactory|无|无|^|
+|SqlSessionFactory|openSession()|无参|>|得到一个会话数据库会话对象|SqlSession|无|无|^|
+|^|openSession(boolean autoCommit)|autoCommit:设置执行数据库操作时是否自动提交，默认否|^|^|^|^|无|^|
+|SqlSession|<T> getMapper(Class<T> type)|type:接口类的Class对象|>|得到对应接口类的代理对象|T|无|无|^|
+|^|commit()|无参|手动进行事务提交|无返回值|void|无|无|^|
+|^|close()|无参|关闭会话|无返回值|void|无|无|^|
+
+---
+
+## 四、类型传入与结果输出
 
 ### （一）插值运算符
 
@@ -132,6 +147,14 @@
 + [测试样例](../源码/Mybatis/src/test/java/hellomybatis/TypeInjectTest.java)
 
 ---
+
+## 五、主键回显与维护
+
+
+
+---
+
+## 六、
 
 
 ## 配置汇总
