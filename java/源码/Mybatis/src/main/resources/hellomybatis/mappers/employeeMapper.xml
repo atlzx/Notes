@@ -21,4 +21,18 @@
     <delete id="deleteEmployeeById">
         delete from mybatis_emp where emp_id=#{empId}
     </delete>
+
+
+    <!-- 返回值是List时，需要指定List的泛型类型，这里使用了@Alias注解标注的别名 -->
+    <select id="selectSlicedEmployee" resultType="mybatisemployee">
+        <!-- 传入多个值时，注入的名称需要与Param注解指定的名称相同 -->
+        select * from mybatis_emp limit #{begin},#{end}
+    </select>
+
+    <!-- 返回值是Map时，直接声明resultType是map即可 -->
+    <select id="selectInfoByMap" resultType="map">
+        <!-- 传入的值是Map时，使用map中含有的key名称进行注入 -->
+        select * from mybatis_emp where emp_name=#{name} and emp_salary=#{salary}
+    </select>
+
 </mapper>

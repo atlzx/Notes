@@ -1,5 +1,8 @@
 package com.mybatis.example.hellomybatis.pojo;
 
+import org.apache.ibatis.type.Alias;
+
+@Alias("mybatisemployee")
 public class Employee {
     private Integer empId;
     private String empName;

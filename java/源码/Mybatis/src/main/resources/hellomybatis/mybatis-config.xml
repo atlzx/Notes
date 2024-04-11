@@ -5,6 +5,16 @@
 
 
 <configuration>
+    <settings>
+        <!-- 启用数据库表字段的自动小驼峰命名转换 -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+
+    <typeAliases>
+        <typeAlias type=""
+        <!-- 设定该包下自动获得别名，别名为首字母小写的类名，如果有Alias注解，那么别名为注解内设置的值 -->
+        <package name="com.mybatis.example.hellomybatis.pojo"/>
+    </typeAliases>
     <!-- environments表示配置Mybatis的开发环境，可以配置多个环境，在众多具体环境中，使用default属性指定实际运行时使用的环境。default属性的取值是environment标签的id属性的值。 -->
     <environments default="development">
         <!-- environment表示配置Mybatis的一个具体的环境 -->
