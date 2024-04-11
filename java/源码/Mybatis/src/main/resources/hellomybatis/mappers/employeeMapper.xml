@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 指定该mapper的作用对象，mybatis会根据该全类名得到里面定义的方法，并依照里面标签的sql语句进行执行 -->
+<mapper namespace="com.mybatis.example.hellomybatis.mapper.EmployeeMapper">
+    <!-- 在mapper标签内部可以写一些数据库的操作，它们的标签名与sql语句的执行名一致:select就是select标签... -->
+    <!--
+        标签的id告知mybatis寻找上面的namespace全类名下的id方法
+        标签的resultType属性表示方法的返回值类型
+        mybatis通过指定方法名称与方法返回值类型来唯一确定该方法，因此，mybatis不支持重载，因为它无法识别同名称同返回值类型不同形参列表的方法
+     -->
+    <select id="selectEmployeeById" resultType="com.mybatis.example.hellomybatis.pojo.Employee">
+        <!-- 在xml文件内部配置我们想执行的sql语句，把想注入的值使用#{}包起来，来进行插入 -->
+        <!-- 我们需要保证我们查询出来的结果与我们的Java类中的属性名称一一对应，不然会返回null -->
+        select emp_id empId,emp_name empName, emp_salary empSalary from mybatis_emp where emp_id=#{empId}
+    </select>
+
+    <!-- delete永远返回int类型的值，因此无需指定resultType -->
+    <delete id="deleteEmployeeById">
+        delete from mybatis_emp where emp_id=#{empId}
+    </delete>
+</mapper>
