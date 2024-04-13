@@ -1,6 +1,7 @@
 package com.mybatis.example.hellomybatis.mapper;
 
 import com.mybatis.example.hellomybatis.pojo.Employee;
+import com.mybatis.example.hellomybatis.pojo.Teacher;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -15,6 +16,8 @@ public interface EmployeeMapper {
     List<Employee> selectSlicedEmployee(@Param("begin") Integer begin, @Param("end") Integer end);
 
     Map<String,String> selectInfoByMap(Map<String,Object> map);
+
+    int generatedKeyInsert(Employee employee);
 
 
 }

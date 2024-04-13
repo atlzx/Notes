@@ -5,7 +5,7 @@ import org.apache.ibatis.type.Alias;
 
 @Alias(value = "mybatisteacher")
 public class Teacher {
-    private Integer teacherId;
+    private String teacherId;
     private String teacherName;
     private Integer teacherAge;
 
@@ -18,11 +18,11 @@ public class Teacher {
             '}';
     }
 
-    public Integer getTeacherId() {
+    public String getTeacherId() {
         return teacherId;
     }
 
-    public void setTeacherId(Integer teacherId) {
+    public void setTeacherId(String teacherId) {
         this.teacherId = teacherId;
     }
 

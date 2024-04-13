@@ -35,4 +35,8 @@
         select * from mybatis_emp where emp_name=#{name} and emp_salary=#{salary}
     </select>
 
+    <insert id="generatedKeyInsert" useGeneratedKeys="true" keyProperty="empId">
+        insert into mybatis_emp (emp_name,emp_salary) values (#{empName},#{empSalary})
+    </insert>
+
 </mapper>
