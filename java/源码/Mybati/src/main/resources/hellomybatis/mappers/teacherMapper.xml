@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mybatis.example.hellomybatis.mapper.TeacherMapper">
+    <insert id="uuidInsert" useGeneratedKeys="true">
+        <!--
+            keyProperty相当于给查询结果起一个别名，该别名需要与对应实体类的属性名一致，否则会报错。而如果查询结果已经有别名了，仍然以keyProperty为准
+            resultType用来声明查询结果的类型
+            order有两个值:
+                AFTER:在插入执行后执行语句
+                BEFORE:在插入执行前执行语句
+         -->
+        <selectKey keyProperty="teacherId" resultType="string" order="BEFORE">
+            select UUID()
+        </selectKey>
+        insert into mybatis_teacher values(#{teacherId},#{teacherName},#{teacherAge})
+    </insert>
+
+</mapper>
