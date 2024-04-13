@@ -255,6 +255,8 @@
 |sql|id|起一个id值|生成可复用的sql片段|无|^|
 |include|refid|指定sql标签的id值|复用sql片段|无|^|
 
++ 如果使用foreach进行批量插入，需要在config文件内的数据库路径下添加`xxx?allowMultiQueries=true`来使数据库支持批量操作
+
 + [测试样例](../源码/Mybatis/src/test/java/dynamicsql/DynamicSQLTest.java)
 
 ---
