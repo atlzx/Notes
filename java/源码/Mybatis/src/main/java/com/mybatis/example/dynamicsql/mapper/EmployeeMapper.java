@@ -1,23 +1,18 @@
-package com.mybatis.example.hellomybatis.mapper;
+package com.mybatis.example.dynamicsql.mapper;
 
-import com.mybatis.example.hellomybatis.pojo.Employee;
-import com.mybatis.example.hellomybatis.pojo.Teacher;
+import com.mybatis.example.dynamicsql.pojo.Employee;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
 
 public interface EmployeeMapper {
-    Employee selectEmployeeById(Integer empId);
+    Employee selectByNameAndSalary(@Param("empName") String empName,@Param("empSalary")Double empSalary);
 
-    Integer deleteEmployeeById(Integer empId);
+    List<Employee> selectByNameOrSalary(@Param("empName") String empName,@Param("empSalary")Double empSalary);
 
-    // 使用@Param注解使Mybatis能够识别出来多个参数
-    List<Employee> selectSlicedEmployee(@Param("begin") Integer begin, @Param("end") Integer end);
+    int batchInsertEmployee(List<Employee> list);
 
-    Map<String,String> selectInfoByMap(Map<String,Object> map);
-
-    int generatedKeyInsert(Employee employee);
-
-
+    int updateEmployeeInfoById(@Param("empName") String empName,@Param("empSalary") Double empSalary,@Param("empId") Integer empId);
+    List<Employee> selectPage();
 }

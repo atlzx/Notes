@@ -9,13 +9,19 @@
         <!-- 启用数据库表字段的自动小驼峰命名转换 -->
         <setting name="mapUnderscoreToCamelCase" value="true"/>
         <!-- 配置日志打印输出 -->
-        <setting name="logImpl" value="STDOUT_LOGGING"/>
+<!--        <setting name="logImpl" value="STDOUT_LOGGING"/>-->
     </settings>
 
     <typeAliases>
         <!-- 设定该包下自动获得别名，别名为首字母小写的类名，如果有Alias注解，那么别名为注解内设置的值 -->
-        <package name="com.mybatis.example.multitablemapping.pojo"/>
+        <package name="com.mybatis.example.dynamicsql.pojo"/>
     </typeAliases>
+
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <property name="helperDialect" value="mysql"/>
+        </plugin>
+    </plugins>
     <!-- environments表示配置Mybatis的开发环境，可以配置多个环境，在众多具体环境中，使用default属性指定实际运行时使用的环境。default属性的取值是environment标签的id属性的值。 -->
     <environments default="development">
         <!-- environment表示配置Mybatis的一个具体的环境 -->
@@ -39,7 +45,6 @@
         <!-- resource属性：指定Mapper映射文件的实际存储位置，这里需要使用一个以类路径根目录为基准的相对路径 -->
         <!--    对Maven工程的目录结构来说，resources目录下的内容会直接放入类路径，所以这里我们可以以resources目录为基准 -->
         <!-- 该路径是相对于类路径的，而不是相对于当前配置文件路径的 -->
-        <mapper resource="multitablemapping/mappers/CustomerMapper.xml" />
-        <mapper resource="multitablemapping/mappers/OrderMapper.xml" />
+        <mapper resource="dynamicsql/mappers/EmployeeMapper.xml" />
     </mappers>
 </configuration>

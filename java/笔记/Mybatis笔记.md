@@ -231,6 +231,143 @@
 
 ## 七、动态语句
 
++ 当查询的条件增多时，如果使用传统的JDBC的方式来生成查询语句，那么我们需要根据传入的参数进行复杂的字符串拼接操作，这是非常痛苦的事情
++ mybatis为了解决这一问题，在对应的mapper.xml文件中添加了许多动态生成sql语句的相关标签，通过使用这些标签，我们将可以便捷的生成动态sql语句
+
+|标签|属性|属性作用|作用|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|where|>|无属性|**自动补全where关键字，并去掉多余的and和or关键字**|无|[样例](../源码/Mybatis/src/main/resources/dynamicsql/mappers/EmployeeMapper.xml)|
+|if|test|测试表达式是否为真|若test内的表达式值为true,那么将标签内的语句拼接到sql语句上|**如果想写`>`、`<`、`>=`、`<=`等符号，推荐使用[字符实体](https://www.w3school.com.cn/charsets/ref_html_8859.asp)**|^|
+|set|>|无属性|**自动补全set关键字，并去掉多余的逗号**|无|^|
+|trim|prefix|指定要动态添加的前缀，如where、set等|自定义补全前后缀语句并去掉多余符号|无|^|
+|^|suffix|指定要动态添加的后缀|^|无|^|
+|^|prefixOverrides|指定要动态去掉的前缀，如果有多个，使用`\|`隔开|^|无|^|
+|^|suffixOverrides|指定要动态去掉的后缀，如果有多个，使用`\|`隔开|^|无|^|
+|choose|>|无属性|类似于switch开始，内部的when从上到下，哪个成立就将其内容拼接上去，且之后的when无论**是否正确都不再拼接**|无|^|
+|when|test|同if标签的test|类似于case|无|^|
+|otherwise|>|无属性|类似于default,都不成立时执行|无|^|
+|foreach|collection|想遍历的集合对象，**需要与参数名一致**|遍历集合，并对每个元素进行操作|无|^|
+|^|item|给当前遍历到的元素起个名字|^|无|^|
+|^|separator|指定每个元素拼接时，相互之间隔开使用的字符|^|无|^|
+|^|open|在遍历完成的字符串整体前需要加的字符串|^|无|^|
+|^|close|在遍历完成的字符串整体后需要加的字符串|^|无|^|
+|^|index|给当前遍历到的元素对应的下标索引起别名，如果是List，得到的是索引。如果是Map,得到的是key|^|无|^|
+|sql|id|起一个id值|生成可复用的sql片段|无|^|
+|include|refid|指定sql标签的id值|复用sql片段|无|^|
+
++ [测试样例](../源码/Mybatis/src/test/java/dynamicsql/DynamicSQLTest.java)
+
+---
+
+## 八、缓存
+
+
+
+
+---
+
+## 九、批量映射
+
++ mapper标签总是需要我们一个一个的去配，如果xml文件量过大，会变的非常麻烦
++ mybatis提供了package标签来解决该问题，它可以自动扫描指定路径下的包，并找到对应的mapper文件映射
+  + **需要mapper文件名与接口名一致**
+  + **需要它们所在包的路径相对于classpath路径相同**
++ 由于相对于classpath路径相同的包内的文件最终会被合并到一起，而resources和java目录都是classpath的起始路径，因此我们可以**在resources目录下创建与java目录内完全相同的包，然后把mapper文件放入，这样，他们在打包后就会被放置在一起**
+
+![批量映射示例1](../文件/图片/Mybatis图片/批量映射示例1.png)
+![批量映射示例2](../文件/图片/Mybatis图片/批量映射示例2.png)
+
+---
+
+## 十、插件
+
++ mybatis提供了插件功能，在mybatis的基础上可以对其功能进行进一步的拓展
+  + MyBatis 的插件机制包括以下三个组件
+    + Interceptor（拦截器）:定义一个拦截方法，该方法在执行SQL语句、执行查询、查询结果的映射时会被调用
+    + Invocation（调用）：实际上是对被拦截的方法的封装，封装了 Object target、Method method 和 Object[] args 这三个字段
+    + InterceptorChain（拦截器链）：对所有的拦截器进行管理，包括将所有的 Interceptor 链接成一条链，并在执行 SQL 语句时按顺序调用
++ 插件的开发非常简单，只需要实现 Interceptor 接口，并使用注解 @Intercepts 来标注需要拦截的对象和方法，然后在 MyBatis 的配置文件中添加插件即可。
+
+### （一）PageHelper
+
++ PageHelper是一个分页插件，它可以帮助我们进行分页操作，而不需要我们再手写limit子句
++ 依赖:
+
+~~~xml
+
+    <dependency>
+        <groupId>com.github.pagehelper</groupId>
+        <artifactId>pagehelper</artifactId>
+        <version>6.1.0</version>
+    </dependency>
+
+~~~
+
++ 在mybatis-config.xml文件下的plugins标签内配置:
+
+~~~xml
+
+    <plugins>
+        <!-- 指定拦截器的全类名 -->
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <!-- 
+                helperDialect的作用是分页插件会自动检测当前的数据库链接，自动选择合适的分页方式
+                value属性告知插件使用什么数据库
+             -->
+            <property name="helperDialect" value="mysql"/>
+        </plugin>
+    </plugins>
+
+~~~
+
++ 相关API
+
+|归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|PageHelper|static startPage(int pageNum, int pageSize)|pageNum:当前页码(从1开始)<br>pageSize:每页的数据量|告诉插件我们想得到的页的基本参数|返回一个Page对象，里面有此次分页的基本配置信息|List<Object>|无异常|无|[样例](../源码/Mybatis/src/test/java/dynamicsql/DynamicSQLTest.java)|
+|PageInfo|PageInfo(List list)|list:查询得到的list对象|通过查询结果得到页的信息对象|>|PageInfo对象|无|无|^|
+|^|getPageSize()|无参|得到每页的标准数据量|数值|int|无|无|^|
+|^|getPages()|^|得到总页数|数值|int|无|无|^|
+|^|getSize()|^|得到当前页包含的数据量|数值|int|无|无|^|
+|^|getList()|^|得到页的List集合|List集合|List|无|无|^|
+|^|getTotal()|^|得到数据总量|数值|long|无|无|^|
+|^|getEndRow()|^|得到本页的最后一行数据的下标(从1开始)|数值|long|无|无|^|
+|^|getStartRow()|^|得到本页的第一行数据的下标(从1开始)|数值|long|无|无|^|
+
+---
+
+### （二）MybatisX
+
++ MyBatisX 是一个 MyBatis 的代码生成插件，可以通过简单的配置和操作快速生成 MyBatis Mapper、pojo 类和 Mapper.xml 文件
++ 我们可以通过idea下载该插件，直接在插件界面下载即可
++ 按照下图进行配置即可
+
+![MybatisX示例1](../文件/图片/Mybatis图片/MybatisX示例1.png)
+![MybatisX示例2](../文件/图片/Mybatis图片/MybatisX示例2.png)
+
++ 去查看生成结果即可
+
+---
+
+## 十一、逆向工程
+
++ ORM（Object-Relational Mapping，对象-关系映射）是一种**将数据库和面向对象编程语言中的对象之间进行转换的技术**，它通常有半自动和全自动两种方式
+  + 半自动 ORM 通常**需要程序员手动编写 SQL 语句或者配置文件**，将实体类和数据表进行映射，还需要手动将查询的结果集转换成实体对象，Mybatis是典型的半自动ORM的代表
+  + 全自动则**不需要程序员手动进行映射**，它会自动完成，hibernate、Spring Data JPA、MyBatis-Plus是全自动ORM的典型代表
+
+|各方面|半自动ORM|全自动ORM|
+|:---:|:---:|:---:|
+|**映射方式**|需要程序员手动指定实体类和数据表之间的映射关系，通常使用 XML 文件或注解方式来指定|可以自动进行实体类和数据表的映射，无需手动干预|
+|**查询方式**|需要程序员手动编写 SQL 语句并将查询结果集转换成实体对象|自动组装 SQL 语句、执行查询操作，并将查询结果转换成实体对象|
+|**性能**|程序员必须对 SQL 语句和数据库的底层知识有一定的了解，才能编写高效的 SQL 语句|通过自动优化生成的 SQL 语句来提高性能，程序员无需进行优化，也不能进行优化|
+|**学习成本**|要求程序员具备较高的数据库和 SQL 知识|程序员无需了解过多的数据库和 SQL 知识|
+
++ 通过自动化生成持久层代码和映射文件，被称为**逆向工程**
+  + 逆向工程工具可以根据数据库表结构和设置的参数生成对应的实体类、Mapper.xml 文件、Mapper 接口等代码文件，简化手动生成过程
+  + Mybatis的逆向工程可以通过两种方式实现
+    + MyBatis Generator 插件
+    + Maven 插件
+  + **逆向工程仅能生成单表CRUD的操作，多表查询依旧需要我们自己编写**
 
 ---
 
@@ -335,7 +472,7 @@
 ~~~
 
 
-#### ①mapper标签
+#### ①mapper标签 
 
 + mapper标签是mapper文件的根标签
 
@@ -354,7 +491,9 @@
 |keyProperty|指定主键回显赋值的对象属性|属性名|无|无|
 |
 
-#### ③
+#### ③update/delete/insert标签
+
+
 
 ---
 
