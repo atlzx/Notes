@@ -450,6 +450,55 @@
 
 ---
 
+#### ⑦environments标签
+
+~~~xml
+
+    <!-- 
+        environments表示配置Mybatis的开发环境
+        可以配置多个环境，在众多具体环境中，使用default属性指定实际运行时使用的环境。
+        default属性的取值是environment标签的id属性的值。 -->
+    <environments default="development">
+        <!-- environment表示配置Mybatis的一个具体的环境 -->
+        <environment id="development">
+            <!-- Mybatis的内置的事务管理器 -->
+            <transactionManager type="JDBC"/>
+            <!-- 配置数据源 -->
+            <dataSource type="POOLED">
+                <!-- 建立数据库连接的具体信息 -->
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/atguigudb"/>
+                <property name="username" value="root"/>
+                <property name="password" value="1928564318asd"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+~~~
+
+---
+
+#### ⑧mappers标签
+
++ mappers标签用来关联各mapper文件的映射
+
+~~~xml
+
+    <mappers>
+
+        <!-- 
+            mapper标签用于指定对应mapper文件的映射
+                rsource属性用来指定该mapper文件的路径，该路径是相对于classpath的，并不是相对于config文件的
+         -->
+        <mapper resource="hellomybatis/mappers/employeeMapper.xml"/>
+        <mapper resource="hellomybatis/mappers/teacherMapper.xml" />
+    </mappers>
+
+~~~
+
+---
+
+
 ### （二）mapper配置文件
 
 + mapper配置文件一般被命名为xxxMapper.xml，它的标签结构如下:
@@ -489,15 +538,90 @@
 |resultType|指定返回值类型|返回值类型的全类名或别名|无|**如果返回的是集合，那应该设置为集合包含的类型，而不是集合本身的类型**|
 |useGeneratedKeys|设置主键是否回显|true/false|false|无|
 |keyProperty|指定主键回显赋值的对象属性|属性名|无|无|
-|
+|timeout|驱动程序若等待数据库返回请求结果时间超出指定秒数会抛出异常|数值|unset(未设置)|无|
+|statementType|指定Mybatis使用的Statement类型|STATEMENT:使用Statement类型<br>PREPARED:**默认值**，使用PreparedStatement<br>CALLABLE:使用CallableStatement|无|
+|resultMap|指定自定义映射id|id值|无|无|
 
 #### ③update/delete/insert标签
 
-
+|属性|作用|可选值|默认值|备注|
+|:---:|:---:|:---:|:---:|:---:|
+|id|关联接口的对应方法|接口的方法名|无|无|
+|timeout|驱动程序若等待数据库返回请求结果时间超出指定秒数会抛出异常|数值|unset(未设置)|无|
+|statementType|指定Mybatis使用的Statement类型|STATEMENT:使用Statement类型<br>PREPARED:**默认值**，使用PreparedStatement<br>CALLABLE:使用CallableStatement|无|
+|useGeneratedKeys|设置主键回显|true/false|false|**仅适用于insert标签与update标签**|
+|keyProperty|设置主键回显赋值的对应属性|属性名|未设置|^|
 
 ---
 
+#### ④selectKey标签
+
++ **该标签仅在insert标签内能使用**
+
+|属性|作用|可选值|默认值|备注|
+|:---:|:---:|:---:|:---:|:---:|
+|keyProperty|**给查询结果起别名**，用于后续引用，如果结果有多个值，每个别名间使用逗号隔开|字符串|无|无论查询结果怎么样，最后**引用查询结果的值时**都以该属性的值为准|
+|keyColumn|**给列名起别名**，用于后续引用|如果列名有多个，每个别名间使用逗号隔开|^|无|无论查询结果怎么样，最后**引用列名时**都以该属性的值为准|
+|resultType|返回值类型，通常Mybatis是可以自己推断出来的，但写上也不会有什么问题|全类名或别名|Mybatis自己推断|无|
+|order|设置查询的执行时机|BEFORE:在插入执行前执行<br>AFTER:在插入执行后执行|无|无|
+|statementType|>|>|>|同select标签的statementType属性|
+
+---
+
+#### ⑤resultMap
+
++ resultMap用于自定义结果映射
+
+|属性|作用|可选值|默认值|备注|
+|:---:|:---:|:---:|:---:|:---:|
+|id|指定id，便于其它标签引用|字符串|无|无|
+|type|最终返回的类型，支持全类名和别名|全类名和别名|无|无|
+
+
+~~~xml
+
+    <!--
+        resultMap用来实现实体类属性的嵌套映射，即自定义映射
+        其id属性便于后面引用
+        type属性为生成的实体类的类型
+     -->
+    <resultMap id="selectCustomerByCustomerIdMap" type="customer">
+        <!--
+            id用来映射主键
+                column属性用来指定数据库查询结果的字段名称
+                property属性用来指定该字段对应的值赋值给实体类的哪一个属性，写属性名
+         -->
+        <id column="customer_id" property="customerId"/>
+        <!--  result用来映射普通属性  -->
+        <result column="customer_name" property="customerName" />
+
+        <!--
+            collection用来映射集合(List)类型
+                property用来指定被赋值的属性的属性名
+                ofType用来指定集合内的元素的类型，即指定其泛型
+         -->
+        <collection property="list" ofType="order">
+            <id column="order_id" property="orderId" />
+            <result column="order_name" property="orderName" />
+        </collection>
+        <!--
+            association用来映射其它实体类类型
+                property用来指定被赋值的属性的属性名
+                javaType用来其他实体类型的具体名称，可以是全类名，也可以是别名
+         -->
+        <association property="customer" javaType="customer">
+            <id column="customer_id" property="customerId" />
+            <result column="customer_name" property="customerName" />
+        </association>
+    </resultMap>
+
+~~~
+
+
+
 ### （三）配置日志
+
+
 
 
 
