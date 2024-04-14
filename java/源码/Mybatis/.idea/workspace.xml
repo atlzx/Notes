@@ -5,19 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="097ccb71-454d-495d-af0a-583ccf4bdfd0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../SpringMVC/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../SpringMVC/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../SpringMVC/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../SpringMVC/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SSM/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SSM/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SSM/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SSM/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SSM/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SSM/pom.xml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/HelloMVC/src/main/java/com/springmvc/example/controller/ParamController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/HelloMVC/src/main/java/com/springmvc/example/pojo/People.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SpringMVC/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../SpringMVC/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../笔记/SpringMVC笔记.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../笔记/SpringMVC笔记.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../笔记/问题汇总.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../笔记/问题汇总.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -51,7 +42,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "E:/大学文件/笔记类/各学科笔记/java/源码/Spring",
+    "last_opened_file_path": "E:/大学文件/笔记类/各学科笔记/java/源码/Mybatis",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -113,6 +104,7 @@
       <workItem from="1712997801545" duration="1619000" />
       <workItem from="1713010492281" duration="162000" />
       <workItem from="1713010905237" duration="79000" />
+      <workItem from="1713068997267" duration="27000" />
     </task>
     <servers />
   </component>

@@ -45,3 +45,57 @@
 
 ---
 
+### （三）访问路径设置
+
++ @RequestMapping注解用来设置访问路径的映射，它可以作用于类和方法上
+  + 作用于类上时，设置的路径会**成为其类内所有方法匹配路径的公共前缀**
+  + 作用于方法上时，设置的路径会与类上的前缀做拼接，从而得到完整路径的映射，匹配时，匹配的是该完整路径的映射。如果类上无路径，那么设置路径就是完整路径
+  + 除此以外，该注解还能指定作用的方法接收什么类型的请求。直接通过它的method属性接收枚举类RequestMethod中的属性值
+    + 同时，为了方便我们指定类型请求，SpringMVC提供了一些注解专门就可以直接设置接收类型请求，它们的含义也可以直接看名字看出来
+      + @GetMapping
+      + @PostMapping
+      + @PutMapping
+      + @DeleteMapping
+      + @PatchMapping
++ 设置路径时，路径可以使用通配符来匹配
+
+|通配符|作用|备注|例|
+|:---:|:---:|:---:|:---:|
+|?|匹配任意一个字符|无|`/pages/t?st.html` 匹配 `/pages/test.html`|
+|*|匹配一层路径的零个或多个字符|无|`/*/test.html` 匹配 `/pages/test.html`|
+|**|匹配零层或多层路径|**必须写在路径最后**|`/pages/**`匹配`/pages/test/page.html`|
+|{name}|取出对应路径的字段值|无|`/{page}/test.html`匹配`/pages/test.html`，读取到的值为name=pages|
+|{name:[a-z]}|取出对应路径满足后面的正则表达式的值|`/{page:[a-z]}/test.html`匹配`/pages/test.html`，但不匹配`/pages1/test.html`|
+|{*path}|从当前路径开始截取，直到最后|**需要写在路径最后**|`/resources/{*file}`匹配`/resources/images/file.png`，读取到的值为file=/images/file.png|
+
+---
+
+### （四）参数接收
+
+#### ①param参数
+
++ 可以使用@RequestParam注解param参数的接收
+  + @RequestParam注解是专门接收param参数的
+    + 如果传来的参数名与方法对应的参数名不同，可以使用value**指定传来的前端参数名**，并将该注解作用于其对应的方法参数上
+    + required可以**指定该参数是否必须**，默认是true，改为false为不必须，**此时参数可以不传，不传不会报错**
+    + defaultValue用来**指定参数的默认值**
+    + **注解必须作用于相关参数，否则会报500错误**
++ 使用Param参数传递可以传递有多种情况
+  + 前端传来的参数名与方法对应的参数名不一致:指定@RequestParam的value为前端参数名，并将该注解作用于对应的方法参数上
+  + 一个key对应多个值:使用List来接收，使用@RequestParam指定List接收的key的名称
+  + 使用实体类接收:要求**前端参数名与方法实体类的属性名必须一致**（不需要注解）
++ [样例](../源码/SpringMVC/HelloMVC/src/main/java/com/springmvc/example/controller/ParamController.java)
+
+---
+
+#### ②路径参数
+
++ @PathVariable注解是用于将通过通配符得到的值注入到方法参数中去的，但通配符也可以得到param参数，因此它也能接收
+  + value属性用来指定要注入的通配符的名称，该名称**必须与通配符中写的名称一致**
+  + required与上面的@RequestParam一致
++ [样例](../源码/SpringMVC/HelloMVC/src/main/java/com/springmvc/example/controller/ParamController.java)
+
+---
+
+#### ③JSON参数
+

@@ -12,6 +12,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>HelloMVC</module>
+        <module>GetParam</module>
     </modules>
 
     <properties>
@@ -20,6 +21,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>6.1.5</spring.version>
         <servlet.version>6.0.0</servlet.version>
+        <lombok.version>1.18.32</lombok.version>
+        <jackson.version>2.17.0</jackson.version>
 
     </properties>
 
@@ -39,6 +42,18 @@
             <artifactId>jakarta.servlet-api</artifactId>
             <version>${servlet.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+
     </dependencies>
 
 
