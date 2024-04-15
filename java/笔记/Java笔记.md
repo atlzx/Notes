@@ -3825,7 +3825,7 @@ GC是Java主要优势之一。 然而，当GC停顿太长，就会开始影响�
      3. `i`执行自增操作，并被赋值，此时`i`的值为`1`
      4. 将临时空间内的值赋值给`i`，此时`i`的值为`0`
 7. 如何将两个变量的值互换
-   + [交换变量的值](../源码/Java/StudyCode/src/Operator4.java)
+   + [交换变量的值](../源码/Java/StudyCode/src/operatorSample/Operator4.java)
 8. `boolean`类型占用多少字节
    + `boolean`类型在编译时不谈占用多少字节
    + 在`JVM`中执行时，`boolean`类型的变量会被分配一个槽位(`slot`,相当于4个字节)

@@ -99,3 +99,62 @@
 
 #### ③JSON参数
 
++ 为了接收参数，我们需要在配置类上**加上@EnableWebMvc注解**
+  + 该注解可以自动提供RequestMappingHandlerMapping和RequestMappingHandlerAdapter的bean对象，就不需要我们再手动提供了
+  + 该注解可以在接收到JSON类型参数时自动解析JSON，从而避免出现415错误
++ 接下来创建一个该JSON串对应的实体类，**实体类的属性需要与JSON的key一致**
++ 在对应的方法内使用该实体类对象接收JSON，并**使用@RequestBody注解将JSON值注入**
++ [样例](../源码/SpringMVC/GetParam/src/main/java/com/springmvc/example/controller/ParamController.java)
+
+---
+
+#### ④Cookie、Session与请求头参数
+
++ @CookieValue注解用来读取Cookie内的指定字段的值，可以使用value属性指定要读取的key的字段名
++ @SessionAttribute注解用来读取session内的指定key的值，可以使用value属性指定要读取的key的字段名
++ @RequestHeader注解用来读取请求头内的指定字段的值，使用value属性指定要读取的key的字段名，这里是请求头的[参数列表](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Accept)
++ [样例](../源码/SpringMVC/GetParam/src/main/java/com/springmvc/example/controller/ParamController.java)
+
+---
+
+#### ⑤原生API对象
+
++ SpringMVC支持我们直接在方法内声明Servlet的原生API对象并调用它们，其中:
+  + 在Request域中，我们可以**通过方法参数的ServletRequest、Map、Model、ModelMap、ModelAndView等对象来直接获得**
+  + 在Session域中，我们可以**通过方法参数的HttpSession对象来获得**
+  + 在Application域中，我们可以**直接在类中声明一个ServletContext对象，然后给它一个@AutoWired注解直接注入**
+
+|对象所属类|作用|
+|:---:|:---:|
+|ServletRequest|请求信息对象|
+|ServletResponse|响应信息对象|
+|HttpSession|会话对象，该会话对象永不为空|
+|InputStream|请求信息的字节输入流对象|
+|Reader|请求信息的字符输入流对象|
+|OutputStream|响应信息的字节输出流对象|
+|Writter|相应信息的字符输出流对象|
+|Map/Model/ModelMap|request域对象|
+|Errors、BindingResult|验证中的错误对象和数据绑定结果对象|
+
+
+
+---
+
+## 部分内容汇总
+
+### （一）注解汇总
+
+|注解|作用|备注|
+|:---:|:---:|:---:|
+|@EnableWebMvc|1.自动提供RequestMappingHandlerMapping和RequestMappingHandlerAdapter的bean对象<br>2.在接收到JSON类型参数时自动解析JSON，避免出现415错误|无|
+|@RequestMapping|指定映射路径与支持的请求类型等|无|
+|@ResponseBody|使当前类的所有方法或当前方法的返回值直接返回给前端|无|
+|@{Get\|Post\|Put\|Delete\|Patch}Mapping|指定不同请求类型的映射路径|无|
+|@RequestParam|接收param参数|无|
+|@PathVariable|接收路径参数|无|
+|@RequestBody|接收JSON参数|无|
+|@Cookie|得到Cookie携带的指定值|无|
+|@SessionAttribute|得到session内的指定值|无|
+|@RequestHeader|读取请求头内的指定字段的值|无|
+
+
