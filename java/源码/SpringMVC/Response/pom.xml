@@ -10,7 +10,7 @@
     </parent>
 
 
-    <artifactId>HelloMVC</artifactId>
+    <artifactId>Response</artifactId>
     <packaging>war</packaging>
 
     <properties>

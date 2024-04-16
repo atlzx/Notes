@@ -136,9 +136,159 @@
 |Map/Model/ModelMap|request域对象|
 |Errors、BindingResult|验证中的错误对象和数据绑定结果对象|
 
+---
+
+### （五）响应数据
+
++ handler在接收到参数并进行处理后，需要向前端响应数据，它可以这样响应:
+  + 响应对应的静态资源
+  + 响应页面跳转
+  + 返回JSON数据
+  + 请求转发与重定向
+
+#### ①返回模板视图
+
++ 现在的Web开发分为两种:
+  + 前后端分离:这是**目前的主流趋势**。前后端分离开发可以提高开发效率，降低代码耦合并提高项目的可拓展性和维护性
+  + 混合开发模式:以jsp为代表的开发模式，它将Java代码内嵌在HTML中，来生成一个动态页面，现在该模式已经逐渐过时
++ 这里演示如何在老的jsp项目中返回模板视图:
+  + 首先先创建一个jsp页面，jsp页面建议创建在WEB-INF目录下，该目录下的资源无法被外部直接访问，比较安全
+  + **让配置类实现WebMvcConfigurer接口**，该接口定义了一系列的方法来支持我们开启一些SpringMVC默认关闭的。我们可以重写对应的方法来开启对应的功能
+  + 重写configureViewResolvers(ViewResolverRegistry registry)方法，来使SpringMVC支持对jsp的视图模板数据返回
+  + 在方法内调用`registry.jsp("/WEB-INF/views/",".jsp");`来使SpringMVC支持对jsp的视图模板数据返回
+  + 在cotroller层创建类，使用相关注解来配置方法，最后直接返回想返回的模板数据即可
++ [配置类示例](../源码/SpringMVC/Response/src/main/java/com/springmvc/example/config/Config.java)
++ [控制类示例](../源码/SpringMVC/Response/src/main/java/com/springmvc/example/controller/JSPSample.java)
++ [jsp页面示例](../源码/SpringMVC/Response/src/main/webapp/WEB-INF/view/index.jsp)
+
+---
+
+#### ②返回静态资源
+
++ DispathcerServlet在向HandlerMapping确认地址映射时，如果路径不匹配，默认就返回404，但是前端在请求静态资源时，应该不需要经过路径映射而直接得到响应
++ 前端在请求静态资源失败时，原因是静态资源并没有被@RequestMapper注解作用，而只有实现@RequestMapper注解，才能被HandlerMapping记住其映射
++ 为了让前端能够正常请求到静态资源，我们继续**在配置类中实现WebMvcConfigurer接口的configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer方法**
++ 在方法内执行`configurer.enable();`语句来使前端正确请求到静态资源，即使SpringMVC开启静态资源匹配
++ 该方法的原理是，DispatcherServlet在发现HandlerMapping未成功映射后，会再向DefaultServleHttpRequestHandler寻找路径映射，而该类是专门寻找静态资源的
++ [配置类示例](../源码/SpringMVC/Response/src/main/java/com/springmvc/example/config/Config.java)
+
+---
+
+#### ③转发与重定向
+
++ 转发需要handler方法返回以`forwar:`开头的字符串，而重定向需要handler方法返回以`redirect:`开头的字符串
++ 如果是项目下的路径，**直接写classpth路径（webapp与java目录同级，都是classpath路径）即可，不需要写项目根路径**
++ **如果转发或重定向的是方法，后面的路径跟的是对应方法的@RequestMapping的映射路径，不是相对于classpath的路径**
++ [控制类示例](../源码/SpringMVC/Response/src/main/java/com/springmvc/example/controller/JSPSample.java)
+
+---
+
+#### ④返回JSON数据
+
++ 想实现返回JSON数据需要**配置类实现WebMvcConfigurer接口**
++ 确保**jackson依赖被导入**
++ 确保方法或方法所在类**被@ResponseBody注解作用**，该注解的作用是**使方法返回值接收JSON转换器处理并不通过视图解析器**
++ [控制类样例](../源码/SpringMVC/Response/src/main/java/com/springmvc/example/controller/ReturnJSON.java)
++ 注意
+> + @RestController注解相当于@Controller+@ResponseBody
+> + 一般来说，返回任意类型的都可以，返回前都会被转换成JSON字符串
+
+---
+
+### （六）Restful开发模式
+
++ RESTful（Representational State Transfer）是一种软件架构风格，用于设计网络应用程序和服务之间的通信。它是一种基于标准 HTTP 方法的简单和轻量级的通信协议，广泛应用于现代的Web服务开发
++ 通过遵循 RESTful 架构的设计原则，可以构建出易于理解、可扩展、松耦合和可重用的 Web 服务。RESTful API 的特点是简单、清晰，并且易于使用和理解，它们使用标准的 HTTP 方法和状态码进行通信，不需要额外的协议和中间件
++ 总而言之，**RESTful 是一种基于 HTTP 和标准化的设计原则的软件架构风格，用于设计和实现可靠、可扩展和易于集成的 Web 服务和应用程序**
+
+#### ①Restful风格特点
+
++ 每个URI都是一个资源的唯一标识，**该资源是一个，而不能是一组**
++ 客户端通过get、post、put、delete请求分别实现查询、保存、更新和删除操作
++ 资源的表现形式需要是JSON或XML文件
++ 客户端与服务端之间的交互在请求之间是无状态的，从客户端到服务端的每个请求都必须包含理解请求所必需的信息
+
+---
+
+#### ②设计规范
+
+|请求方式|对应操作|
+|:---:|:---:|
+|GET|查询操作|
+|POST|保存操作|
+|PUT|更新操作|
+|DELETE|删除操作|
+
+|操作|传统请求路径|Restful风格请求路径|
+|:---:|:---:|:---:|
+|保存|/CRUD/saveEmp|/CRUD/emp|
+|删除|/CRUD/removeEmp?empId=2|/CRUD/emp/2|
+|更新|/CRUD/updateEmp|/CRUD/emp|
+|查询|/CRUD/editEmp?empId=2|/CRUD/emp/2|
+
++ 把原本的请求路径由携带动标识修改为名词，将URI整体作为资源的唯一标识
++ 根据接口的具体实现功能，选择具体的请求方式
++ 路径参数应该用于指定资源的唯一标识或者 ID，而请求参数应该用于指定查询条件或者操作参数
++ **请求参数应该限制在 10 个以内**，过多的请求参数可能导致接口难以维护和使用
++ 对于**敏感信息，最好使用 POST 和请求体来传递参数**
+
+---
+
+#### ③示例
+
++ 数据结构： User {id 唯一标识,name 用户名，age 用户年龄}
++ 功能分析:
+  + 用户数据分页展示功能（条件：page 页数 默认1，size 每页数量 默认 10）
+  + 保存用户功能
+  + 根据用户id查询用户详情功能
+  + 根据用户id更新用户数据功能
+  + 根据用户id删除用户数据功能
+  + 多条件模糊查询用户功能（条件：keyword 模糊关键字，page 页数 默认1，size 每页数量 默认 10）
+
+|功能|请求路径|请求方式|参数|备注|
+|:---:|:---:|:---:|:---:|:---:|
+|分页查询|/user/|GET|page=1<br>size=10|URI必须对应的是一个资源，但是分页查询得到的是一批资源，需要使用param|
+|保存用户|/user|POST|用户信息|无|
+|根据id查询|/user/{id}|GET|无参|无|
+|根据id更新|/user/{id}|PUT|用户信息|无|
+|根据id删除|/user/{id}|DELETE|无|无|
+|模糊查询|/user|GET|keyword=xxx<br>page=xxx<br>size=xxx|URI必须对应的是一个资源，但是模糊查询得到的是一批资源，需要使用param|
+
++ 注意:
+> + **路径重复是URI和请求方式都重复才叫重复**
+
+---
+
+### （七）异常处理
+
++ 异常处理有两种方式:
+  + 第一种方式（编程式异常处理）是在代码内部显式的调用try-catch-finally语句来处理异常，该语句会**导致代码混杂在业务代码中**，且团队协作时不同的人编写的针对相同异常处理的逻辑可能会不同，**不利于代码维护，且可读性较差**
+  + 另一种方式（声明式异常处理）是通过配置的方式统一处理程序运行时出现的异常，**声明式异常处理可以使代码更加简洁、易于维护和扩展**
++ 想使用声明式异常处理，我们需要:
+  + 创建一个异常处理的控制类，并**使用@ControllerAdvice注解作用于该类，该注解可以声明作用类为异常处理的控制类**
+  + @RestControllerAdvice注解相当于@ControllerAdvice+@ResponseBody注解
+  + 接下来**在异常处理控制类内的方法上使用@ExceptionHadler注解，传入指定异常的Class对象,来声明该方法用来处理什么异常**
+    + 如果某个控制类的方法出现了异常，但是异常控制类的方法中仅有该异常父类的处理方法，那么该方法会被执行
+    + 如果有具体的异常类方法，那么具体的类方法会执行而其异常父类的处理方法不会执行
+    + 也就是说，**具体的异常类处理方法比其父类异常类处理方法优先级更高**
+  + 在控制类中手动抛出异常，查看处理情况
+
+---
+
+### （八）拦截器
+
 
 
 ---
+
+
+### （九）参数校验
+
+
+
+---
+
+
 
 ## 部分内容汇总
 
@@ -148,7 +298,7 @@
 |:---:|:---:|:---:|
 |@EnableWebMvc|1.自动提供RequestMappingHandlerMapping和RequestMappingHandlerAdapter的bean对象<br>2.在接收到JSON类型参数时自动解析JSON，避免出现415错误|无|
 |@RequestMapping|指定映射路径与支持的请求类型等|无|
-|@ResponseBody|使当前类的所有方法或当前方法的返回值直接返回给前端|无|
+|@ResponseBody|使方法返回值接收JSON转换器处理并不通过视图解析器|无|
 |@{Get\|Post\|Put\|Delete\|Patch}Mapping|指定不同请求类型的映射路径|无|
 |@RequestParam|接收param参数|无|
 |@PathVariable|接收路径参数|无|
@@ -156,5 +306,6 @@
 |@Cookie|得到Cookie携带的指定值|无|
 |@SessionAttribute|得到session内的指定值|无|
 |@RequestHeader|读取请求头内的指定字段的值|无|
+|@RestController|@Controller+@ResponseBody|无|
 
 
