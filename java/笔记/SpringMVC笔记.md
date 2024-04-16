@@ -395,5 +395,6 @@
 |@RestController|@Controller+@ResponseBody|无|
 |@ControllerAdvice|声明异常处理类|无|
 |@RestControllerAdvice|@ControllerAdvice+@ResponseBody|无|
+|@Validated|针对实体类对象进行校验|无|
 
 
