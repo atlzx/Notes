@@ -1,5 +1,6 @@
 package com.springmvc.example.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 // @RestControllerAdvice相当于@ControllerAdvice+@ResponseBody

@@ -1,0 +1,29 @@
+.ht{
+    text-align: center;
+    color: cadetblue;
+    font-family: 幼圆;
+}
+.login-table{
+    border-radius: 5px;
+    border: 5px solid cadetblue;
+    margin: 0px auto;
+    width: 500px;
+    font-family: 幼圆;
+}
+.login-tr input{
+    border: 0px;
+    width: 50%;
+}
+.login-table .login-td{
+    border: 1px solid powderblue;
+}
+.login-tr:last-child .login-td{
+    text-align: center;
+}
+.login-tr:last-child button{
+    border: 2px solid powderblue;
+    border-radius: 4px;
+    width:60px;
+    background-color: antiquewhite;
+    cursor: pointer;
+}

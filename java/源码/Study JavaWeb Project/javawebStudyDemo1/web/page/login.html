@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+    <!-- 在idea中，可以直接通过将指定文件拖拽到网页文件中来实现页面引入指定文件 -->
+    <link rel="stylesheet" href="../static/css/login.css">
+    <script src="../static/js/login.js"></script>
+</head>
+<body>
+    <h1 class="ht">欢迎使用日程管理系统</h1>
+    <h3 class="ht">请登录</h3>
+    <form action="./aaa" name="dateManager" class="login-form" method="post">
+        <table class="login-table" cellspacing="0px">
+            <tbody>
+                <tr class="login-tr">
+                    <td class="login-td">请输入账号</td>
+                    <td class="login-td">
+                        <input type="text" id="userNameInput" name="login_name">
+                        <span id="userNameTip"></span>
+                    </td>
+                </tr>
+                <tr class="login-tr">
+                    <td class="login-td">请输入密码</td>
+                    <td class="login-td">
+                        <input type="text" id="passwordInput" name="pwd">
+                        <span id="passwordTip"></span>
+                    </td>
+                </tr>
+                <tr class="login-tr">
+                    <td colspan="2" class="login-td">
+                        <button type="submit" class="button" id="submitButton">登录</button>
+                        <button type="reset" class="button">重置</button>
+                        <button type="button" class="button" id="registerButton">去注册</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</body>
+</html>

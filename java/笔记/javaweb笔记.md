@@ -336,40 +336,6 @@ Date: Mon, 13 Aug 2018 02:47:57 GMT  响应的时间，这可能会有8小时的
   3. 在`service`方法中，写入业务处理代码
   4. 在`web.xml`文件中，配置`servlet`对应的请求映射路径
 
-+ `web.xml`的配置代码如下:
-
-~~~xml
-  <servlet>
-      <!--给UserServlet起一个别名-->
-      <servlet-name>userServlet</servlet-name>
-      <!-- 告诉tomcat在这个要实例化的servlet类在哪里 -->
-      <servlet-class>com.atguigu.servlet.UserServlet</servlet-class>
-  </servlet>
-
-
-  <!-- 
-    servlet-name可以对应多个url-pattern，但一个url-pattern仅能对应一个servlet-name
-    一个servlet可以对应多个servlet-mapping
-   -->
-
-
-  <servlet-mapping>
-      <!--关联别名和映射路径-->
-      <servlet-name>userServlet</servlet-name>
-      <!--可以为一个Servlet匹配多个不同的映射路径,但是不同的Servlet不能使用相同的url-pattern-->
-      <url-pattern>/userServlet</url-pattern>
-     <!-- <url-pattern>/userServlet2</url-pattern>-->
-      <!--
-          *        *在哪里，哪里就模糊，即可以匹配任意路径，但是*不是写在哪里都可以
-          /        表示通配所有资源,不包括jsp文件
-          /*       表示通配所有资源,包括jsp文件
-          /a/*     精确匹配前缀a,模糊匹配后缀
-          *.action 精确匹配后缀.action,模糊匹配前缀
-      -->
-     <!-- <url-pattern>/*</url-pattern>-->
-  </servlet-mapping>
-~~~
-
 ![web.xml的中配置servlet的映射关系](../文件/图片/JavaWeb图片/web.xml的中配置servlet的映射关系.png)
 
 ---
@@ -995,6 +961,49 @@ private static final String METHOD_TRACE = "TRACE";
 |^|`filter-name`|过滤器的别名|给过滤器设定别名|应写在`filter`标签内|无|
 |^|`filter-class`|对应的`filter`别名的位置|在这里告诉`tomcat`指定`filter`的路径|应写在`filter`标签内|无|
 |^|`filter-mapping`|内部嵌套配置指定`filter`对应的映射路径的详细标签|配置`filter`映射关系的总标签|应写在`web-app`根目录内|1.该标签可以包含多个`servlet-name`和`url-pattern`<br>2.**该标签的上下顺序是过滤器执行的先后顺序**|
+
++ `web.xml`的配置代码如下:
+
+~~~xml
+  <servlet>
+      <!--给UserServlet起一个别名-->
+      <servlet-name>userServlet</servlet-name>
+      <!-- 告诉tomcat在这个要实例化的servlet类在哪里 -->
+      <servlet-class>com.atguigu.servlet.UserServlet</servlet-class>
+  </servlet>
+
+
+  <!-- 
+    servlet-name可以对应多个url-pattern，但一个url-pattern仅能对应一个servlet-name
+    一个servlet可以对应多个servlet-mapping
+   -->
+
+
+  <servlet-mapping>
+      <!--关联别名和映射路径-->
+      <servlet-name>userServlet</servlet-name>
+      <!--可以为一个Servlet匹配多个不同的映射路径,但是不同的Servlet不能使用相同的url-pattern-->
+      <url-pattern>/userServlet</url-pattern>
+     <!-- <url-pattern>/userServlet2</url-pattern>-->
+      <!--
+          *        *在哪里，哪里就模糊，即可以匹配任意路径，但是*不是写在哪里都可以
+          /        表示通配所有资源,不包括jsp文件
+          /*       表示通配所有资源,包括jsp文件
+          /a/*     精确匹配前缀a,模糊匹配后缀
+          *.action 精确匹配后缀.action,模糊匹配前缀
+      -->
+     <!-- <url-pattern>/*</url-pattern>-->
+  </servlet-mapping>
+
+    <filter>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>com.springmvc.filter.EncodingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>encodingFilter</filter-name>
+        <url-pattern>/</url-pattern>
+    </filter-mapping>
+~~~
 
 ---
 
