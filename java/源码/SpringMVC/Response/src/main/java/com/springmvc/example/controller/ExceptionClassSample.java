@@ -21,6 +21,7 @@ public class ExceptionClassSample {
         return ""+index;
     }
 
+    @RequestMapping("/error3")
     public void error3(){
         throw new RuntimeException("出现错误");
     }

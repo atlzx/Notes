@@ -272,20 +272,105 @@
     + 如果有具体的异常类方法，那么具体的类方法会执行而其异常父类的处理方法不会执行
     + 也就是说，**具体的异常类处理方法比其父类异常类处理方法优先级更高**
   + 在控制类中手动抛出异常，查看处理情况
-+ 
++ [异常处理类](../源码/SpringMVC/Response/src/main/java/com/springmvc/example/controller/ExceptionClass.java)
++ [异常控制类](../源码/SpringMVC/Response/src/main/java/com/springmvc/example/controller/ExceptionClassSample.java)
 
 ---
 
 ### （八）拦截器
 
-+ 
+#### ①拦截器概念
+
++ 在JavaWeb中，过滤器仅能在**请求到达控制前和控制类返回后进行一些操作**，局限性较大
++ SpringMVC提供了拦截器，它可以**在SpringMVC负责请求的任意的地方对请求进行拦截**并进行一些操作
+  + 拦截器可以在handler方法执行前后以及在渲染视图后执行，它相对于拦截器更加灵活
+
+![拦截器拦截位置](../文件/图片/SpringMVC图片/拦截器拦截位置.png)
+
+
+|名称|拦截情况|过滤情况|放行情况|工作平台|拦截范围|IoC容器是否支持|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|过滤器|把请求拦截住，并执行一些操作再放行|针对请求进行统一处理|针对请求执行了相关操作后，如果请求满足条件，那么放行|工作在Servlet容器内|能够拦截整个Web应用|需要调用专门的工具方法才能得到IoC容器的支持|
+|拦截器|^|^|^|工作在SpringMVC的基础上|能够拦截整个SpringMVC负责的请求|本身受IoC容器管理，当然支持|
 
 ---
 
+#### ②拦截器的使用
+
++ 首先先创建一个拦截器类，该类需要**实现HandlerInterceptor接口**，并实现接口的三个方法
++ 让配置类**实现WebMvcConfigurer接口，实现addInterceptors(InterceptorRegistry registry)方法**
+  + 调用registry.addInterceptor()方法，传入我们刚才创建的拦截器对象，该配置会使所有方法都被拦截器拦截
+  + 在上面的基础上，我们可以再调用addPathPatterns方法（可以链式调用），并向方法传入多个字符串匹配路径来精确的设置哪些方法需要被拦截
+  + excludePathPatterns（可以链式调用）方法可以指定哪些方法被排除在拦截范围内，也是向方法内传入指定字符串即可
+
+|方法|参数|作用|返回值|返回值类型|异常|备注|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)|request:请求对象<br>response:响应对象<br>handler:handler方法对象|在handler方法执行前执行|返回true代表放行，false代表不放行|boolean|Exception|无|
+|postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)|request:请求对象<br>response:响应对象<br>handler:handler方法对象<br>modelAndView:不知道干嘛的|在handler方法**正常执行完毕后**执行|无返回值|void|Exception|**如果handler方法执行时出现异常,那么该方法不会执行**|
+|afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)|request:请求对象<br>response:响应对象<br>handler:handler方法对象<br>ex:不知道干嘛的|在逻辑上是在视图解析器解析完毕后执行，但**返回值不经过视图解析器时，也会执行**|无返回值|void|Exception|无|
+
+~~~java
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        
+        //将拦截器添加到Springmvc环境,默认拦截所有Springmvc分发的请求
+        registry.addInterceptor(new Process01Interceptor());
+        
+        //精准匹配,设置拦截器处理指定请求 路径可以设置一个或者多个,为项目下路径即可
+        //addPathPatterns("/common/request/one") 添加拦截路径
+        registry.addInterceptor(new Process01Interceptor()).addPathPatterns("/common/request/one","/common/request/tow");
+        
+        
+        //排除匹配,排除应该在匹配的范围内排除
+        //addPathPatterns("/common/request/one") 添加拦截路径
+        //excludePathPatterns("/common/request/tow"); 排除路径,排除应该在拦截的范围内
+        registry.addInterceptor(new Process01Interceptor())
+                .addPathPatterns("/common/request/one","/common/request/tow")
+                .excludePathPatterns("/common/request/tow");
+    }
+
+~~~
+
+---
 
 ### （九）参数校验
 
++ JSR 303 是 Java 为 Bean 数据合法性校验提供的标准框架，它已经包含在 JavaEE 6.0 标准中
++ 该标准规定了一些用于校验的注解
 
+|注解|作用|备注|
+|:---:|:---:|:---:|
+|@Null|必须为null|无|
+|@NotNull|必须非空|无|
+|@AssertTrue|必须为true|无|
+|@AssertFalse|必须为false|无|
+|@Digits(integer,fratction)|限制数值范围在指定区间|**作用于数值**|
+|@DecimalMax(value)|设置上限|无|
+|@DecimalMin(value)|设置下限|无|
+|@Max(value)|设置上限|无|
+|@Min(value)|设置下限|无|
+|@Pattern(value)|正则匹配|无|
+|@Past|必须是过去的日期|**作用于日期类**|
+|@Future|必须是未来的日期|^|
+|@Size(max,min)|限制字符长度在指定区间内|无|
+
++ Hibernate是对JSR 303 的一个参考实现，下面是它自定义的一些注解
+
+|注解|作用|备注|
+|:---:|:---:|:---:|
+|@Email|校验邮箱格式|无|
+|@NotEmpty|非空|**作用于String类型属性**|
+|@NotBlank|去首尾空白字符后非空|^|
+|@Length|标注值字符串大小必须在指定的范围内|^|
+|@Range|作用值必须在指定范围内|**作用于数值类型**|
+
++ 首先我们需要创建一个实体类，在实体类内的属性上加一些校验注解
++ 接下来在对应的控制类上添加方法，**在实体类对象前加上@Validated注解**，同时，**BindingResult对象必须紧紧跟在被校验对象的后面**
++ 测试
+
++ [实体类](../源码/SpringMVC/Response/src/main/java/com/springmvc/example/pojo/User.java)
++ [控制类](../源码/SpringMVC/Response/src/main/java/com/springmvc/example/controller/ValidationController.java)
 
 ---
 
@@ -303,10 +388,12 @@
 |@{Get\|Post\|Put\|Delete\|Patch}Mapping|指定不同请求类型的映射路径|无|
 |@RequestParam|接收param参数|无|
 |@PathVariable|接收路径参数|无|
-|@RequestBody|接收JSON参数|无|
+|@RequestBody|接收JSON参数|**它无法接收同名的param参数**|
 |@Cookie|得到Cookie携带的指定值|无|
 |@SessionAttribute|得到session内的指定值|无|
 |@RequestHeader|读取请求头内的指定字段的值|无|
 |@RestController|@Controller+@ResponseBody|无|
+|@ControllerAdvice|声明异常处理类|无|
+|@RestControllerAdvice|@ControllerAdvice+@ResponseBody|无|
 
 

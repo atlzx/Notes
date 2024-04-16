@@ -7,17 +7,20 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ExceptionClass {
     @ExceptionHandler(ArithmeticException.class)
-    public String arithmeticExceptionHandler(){
-        return "发生了数据错误";
+    public String arithmeticExceptionHandler(Exception e){
+        e.printStackTrace();
+        return "some math error has happened";
     }
 
     @ExceptionHandler(NullPointerException.class)
-    public String nullPointerExceptionHandler(){
-        return "出现了空指针异常";
+    public String nullPointerExceptionHandler(Exception e){
+        e.printStackTrace();
+        return "nullPointException was happened";
     }
 
     @ExceptionHandler(Exception.class)
-    public String otherExceptionHandler(){
-        return "未知错误";
+    public String otherExceptionHandler(Exception e){
+        e.printStackTrace();
+        return "I don't know what was happened,but something has wrong";
     }
 }
