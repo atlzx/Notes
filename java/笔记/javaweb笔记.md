@@ -412,21 +412,7 @@ Date: Mon, 13 Aug 2018 02:47:57 GMT  响应的时间，这可能会有8小时的
 
 ---
 
-### （五）注解配置
-
-+ 使用`WebServlet`注解可以**简洁**的配置`Servlet`对应的请求映射路径
-
-|属性名|描述|属性值|对应`xml`标签|备注|
-|:---:|:---:|:---:|:---:|:---:|
-|`name`|当前的类的别名|字符串|`servlet-name`|无|
-|`value`|`urlPatterns`的别名，二者互相影响，用来指定对应`Servlet`类对应的请求映射路径|字符串或`{"xxx","yyy"}`型的数组|`url-pattern`|注解中仅写有单个路径的前提下，可以只写属性值，不写属性名|
-|`urlPatterns`|`value`的别名，用来指定对应`Servlet`类对应的请求映射路径|^|^|^|
-|`loadOnStartup`|设置该类在`tomcat`启动时的构建优先级|传入数值,`tomcat`会**依据此数值判断是否在容器启动时进行类的实例化，并根据数值协调各个类之间的实例顺序**，`1`为第一个，`2`为第二个...默认值为`-1`，表示**不在容器启动时进行构建**|`load-on-startup`(写在`servlet`标签内)|数值设置一致导致冲突时，`tomcat`会**自动协调**|
-|`initParams`|为当前`Servlet`配置`ServletConfig`初始化参数|`initParams={@WebInitParam(name="xxxx",value="xxxx",description(可选)="xxxx"),@WebInitParam(...)}`|`init-param`:写在`servlet`标签内<br>`param-name`:设置键,写在`init-param`内<br>`param-value`:设置值,写在`init-param`内.<br>一个`init-param`**仅允许包含一对键值对**|`initParams`所需的数组内的参数**实际上也是一个类型注解**|
-
----
-
-### （六）继承结构
+### （五）继承结构
 
 #### ①Servlet接口
 
@@ -647,7 +633,7 @@ private static final String METHOD_TRACE = "TRACE";
 
 ---
 
-### （七）请求转发
+### （六）请求转发
 
 ![请求转发示意图](../文件/图片/JavaWeb图片/请求转发示意图.png)
 
@@ -668,7 +654,7 @@ private static final String METHOD_TRACE = "TRACE";
 
 ---
 
-### （八）响应重定向
+### （七）响应重定向
 
 ![响应重定向示意图](../文件/图片/JavaWeb图片/响应重定向示意图.png)
 
@@ -691,7 +677,7 @@ private static final String METHOD_TRACE = "TRACE";
 
 ---
 
-### （九）MVC架构
+### （八）MVC架构
 
 + `MVC（Model View Controller）`是软件工程中的一种**软件架构模式，它把软件系统分为模型、视图和控制器**三个基本部分。用一种业务逻辑、数据、界面显示分离的方法组织代码，将业务逻辑聚集到一个部件里面，在改进和个性化定制界面及用户交互的同时，不需要重新编写业务逻辑。
   + `Model` **模型层**:
@@ -872,6 +858,7 @@ private static final String METHOD_TRACE = "TRACE";
 ### （三）过滤器
 
 + `Filter(过滤器)`是`JAVAEE`技术规范之一,作用目标资源的请求进行过滤的一套技术规范,是`Java Web`项目中**最为实用的技术之一**
++ 想要实现过滤器，**需要对应的类实现Filter接口**
 
 ![过滤器工作位置](../文件/图片/JavaWeb图片/过滤器工作位置.png)
 
@@ -890,7 +877,6 @@ private static final String METHOD_TRACE = "TRACE";
 |方法|参数描述|方法描述|返回值|备注|
 |:---:|:---:|:---:|:---:|:---:|
 |`filterChain.doFilter(ServletRequest servletRequest, ServletResponse servletResponse)`|`servletRequest`、`servletResponse`:要传递给`service`方法的`req`和`resp`对象|第一次过滤操作后的放行操作|`void`|不进行放行，将不会处理请求|
-|``
 
 ---
 
@@ -984,6 +970,59 @@ private static final String METHOD_TRACE = "TRACE";
 |`getServletContext()`|获取`ServletContext`对象|
 
 + `HttpSessionEvent`对象代表事件对象，通过`getSession()`方法获取事件涉及的`HttpSession`对象
+
+## 五、配置汇总
+
+### （一）web.xml配置汇总
+
+|分类|标签|内容描述|标签描述|写入位置|备注|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|配置`Servlet`|`servlet`|内部嵌套配置`servlet`的详细标签|配置`servlet`的总标签|应写在`web-app`根标签内|无|
+|^|`servlet-name`|对应`servlet`的别名|设置`servlet`别名|可以写在`servlet`、`servlet-mapping`或`filter-mapping`标签内|写在`servlet`和`servlet-mapping`中时表示对应`servlet`的别名<br>写在`filter-mapping`中时表示该别名的`servlet`要经过对应的`filter`过滤检验|
+|^|`servlet-mapping`|内部嵌套配置指定`servlet`对应的映射路径的详细标签|配置`servlet`映射关系的总标签|应写在`web-app`根目录内|无|
+|^|`servlet-class`|>|告诉`tomcat`要实例化的`servlet`的路径|应写在`servlet`标签内|无|
+|^|`url-pattern`|>|客户端提交的路径|应写在`servlet-mapping`或`filter-mapping`标签内|写在`servlet-mapping`中时表示该路径要交给对应别名的`servlet`处理<br>写在`filter-mapping`中表示该路径需要先经过指定别名的`filter`进行过滤检验|
+|^|`load-on-startup`|对应`servlet`启动时的优先级,大于`0`的值为启动时就构建,并表示构建时排在第几位，`-1`为请求时再构建，默认为`-1`|设置对应`servlet`何时构建与其构|^建的优先级|写在`servlet`标签内|1.前面几个大于`0`的值已经被`tomcat`默认启动的`servlet`占用了，建议从`5`以后开始写<br>2.数值一致冲突时，`tomcat`会**自动协调**|
+|^|`init-param`|内部嵌套配置`ServletConfig`的详细标签|配置`ServletConfig`的总标签|应写在`servlet`标签内|一个`init-param`仅允许有一个键值对|
+|^|`context-param`|内部嵌套配置`ServletContext`的详细标签|配置`ServletContext`的总标签|1.应写在`servlet`标签内|一个`context-param`仅允许有一个键值对|
+|^|`param-name`|>|设置`ServletConfig`的一个键|应写在`init-param`或`context-param`标签内|无|
+|^|`param-value`|>|设置`ServletConfig`的键对应的值|^|无|
+|配置`session`|`session-config`|内部嵌套配置`session`的详细标签|配置`session`的总标签|应写在`web-app`根标签内|无|
+|^|`session-timeout`|>|设置`session`存在的时间长度(单位:分钟)|写在`session-config`标签内|无|
+|配置启动资源|`welcome-file-list`|>|设置项目启动时默认寻找并打开的资源集合|写在`web-app`标签内|该标签可以包含多个`welcome-file`标签|
+|^|`welcome-file`|>|设置项目启动时默认寻找并打开的资源|写在`welcome-file-list`标签内|无|
+|配置`filter`|`filter`|内部嵌套配置`filter`的详细标签|配置`filter`的总标签|应写在`web-app`根目录内|无|
+|^|`filter-name`|过滤器的别名|给过滤器设定别名|应写在`filter`标签内|无|
+|^|`filter-class`|对应的`filter`别名的位置|在这里告诉`tomcat`指定`filter`的路径|应写在`filter`标签内|无|
+|^|`filter-mapping`|内部嵌套配置指定`filter`对应的映射路径的详细标签|配置`filter`映射关系的总标签|应写在`web-app`根目录内|1.该标签可以包含多个`servlet-name`和`url-pattern`<br>2.**该标签的上下顺序是过滤器执行的先后顺序**|
+
+---
+
+### （二）context.xml配置
+
++ `Context.xml`文件位于`web`目录下的`META-INF`文件夹内
+
+|分类|标签|内容描述|标签描述|写入位置|备注|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|配置`session`|`Manager`|`className`属性用来指定具体类的路径,一般为`org.apache.catalina.session.PersistentManager`<br>`maxIdleSwap`属性指定`session`对象多长时间没有被访问后存入内存,单位为分钟(不确定)|指定`Session`管理器中`Session`数据的**持久化存储方式和存储路径**|根标签`Context`内|无|
+|^|`Store`|`className`属性用来指定具体类的路径,一般为`org.apache.catalina.session.FileStore`<br>`directory`属性用来指定`session`存储在磁盘中的路径|配置`session`钝化与活化的路径|写在`Manager`标签内|无|
+
+---
+
+### （三）注解配置
+
+|分类|属性名|描述|属性值|备注|
+|:---:|:---:|:---:|:---:|:---:|
+|`@WebServlet`|`name`|当前的类的别名|字符串|`servlet-name`|无|
+|^|`value`|`urlPatterns`的别名，二者互相影响，用来指定对应`Servlet`类对应的请求映射路径|字符串或`{"xxx","yyy"}`型的数组|注解中仅写有单个路径的前提下，可以只写属性值，不写属性名|
+|^|`urlPatterns`|`value`的别名，用来指定对应`Servlet`类对应的请求映射路径|^|^|
+|^|`loadOnStartup`|设置该类在`tomcat`启动时的构建优先级|传入数值,`tomcat`会**依据此数值判断是否在容器启动时进行类的实例化，并根据数值协调各个类之间的实例顺序**，`1`为第一个，`2`为第二个...默认值为`-1`，表示**不在容器启动时进行构建**|数值设置一致导致冲突时，`tomcat`会**自动协调**|
+|^|`initParams`|为当前`Servlet`配置`ServletConfig`初始化参数|`initParams={@WebInitParam(name="xxxx",value="xxxx",description(可选)="xxxx"),@WebInitParam(...)}`|`initParams`所需的数组内的参数**实际上也是一个类型注解**|
+|`@WebFilter`|`filterName`|设置`filter`的别名|字符串|无|
+|^|`value`|`urlPatterns`的别名，二者互相影响，用来指定对应`Servlet`类对应的请求映射路径|字符串或`{"xxx","yyy"}`型的数组|注解中仅写有单个路径的前提下，可以只写属性值，不写属性名|
+|^|`urlPatterns`|`value`的别名，用来指定对应`Servlet`类对应的请求映射路径|^|^|
+|^|`servletNames`|用来指定哪些`Servlet`类在处理请求前交给该`filter`进行过滤|字符串或`{"xxx","yyy"}`型的数组|无|
+|^|`initParams`|为当前`filter`配置`FilterConfig`初始化参数|`initParams={@WebInitParam(name="xxxx",value="xxxx",description(可选)="xxxx"),@WebInitParam(...)}`|`initParams`所需的数组内的参数**实际上也是一个类型注解**|
 
 ---
 
