@@ -1,8 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="">
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <!-- 启用数据库表字段的自动小驼峰命名转换 -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+        <setting name="autoMappingBehavior" value="FULL"/>
+    </settings>
 
+    <typeAliases>
+        <!-- 设定该包下自动获得别名，别名为首字母小写的类名，如果有Alias注解，那么别名为注解内设置的值 -->
+        <package name="com.springmvc.example.pojo"/>
+    </typeAliases>
+    
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <property name="helperDialect" value="mysql"/>
+        </plugin>
+    </plugins>
 
-</mapper>
+    <mappers>
+        <!-- Mapper注册：指定Mybatis映射文件的具体位置 -->
+        <!-- mapper标签：配置一个具体的Mapper映射文件 -->
+        <!-- resource属性：指定Mapper映射文件的实际存储位置，这里需要使用一个以类路径根目录为基准的相对路径 -->
+        <!--    对Maven工程的目录结构来说，resources目录下的内容会直接放入类路径，所以这里我们可以以resources目录为基准 -->
+        <!-- 该路径是相对于类路径的，而不是相对于当前配置文件路径的 -->
+        <mapper resource="com/springmvc/example/mapper/EmployeeMapper.xml"/>
+    </mappers>
+</configuration>

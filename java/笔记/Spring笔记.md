@@ -453,7 +453,7 @@
 |:---:|:---:|:---:|:---:|
 |@Configuration|声明作用类为配置类，免除xml文件内配置扫描注解路径|无|[样例](../源码/Spring/SpringAnnotationSample/src/test/java/com/test/AnnotationInjectTest.java)|
 |@ComponentScan|配置扫描注解路径|无|^|
-|@Bean|用于配置一个bean对象，对应xml文件内的一个bean标签。|无|^|
+|@Bean|用于配置一个bean对象，对应xml文件内的一个bean标签。|**被该注解作用的方法执行早于被@Value注解作用的属性注入赋值**|^|
 |@Lazy|指定是否懒加载|无|^|
 |@DependOn|指定依赖加载对象|无|^|
 |@Scope|指定作用域|无|^|

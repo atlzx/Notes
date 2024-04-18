@@ -5,10 +5,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="097ccb71-454d-495d-af0a-583ccf4bdfd0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../SpringMVC/HelloMVC/src/main/java/com/springmvc/example/controller/ParamController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../SpringMVC/HelloMVC/src/main/java/com/springmvc/example/pojo/People.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/java/com/springmvc/example/config/ControllerConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/java/com/springmvc/example/config/InitConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/java/com/springmvc/example/config/MapperConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/java/com/springmvc/example/config/MapperConfigNew.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/java/com/springmvc/example/config/ServiceConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/java/com/springmvc/example/controller/SSMController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/java/com/springmvc/example/exception/SSMException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/java/com/springmvc/example/mapper/EmployeeMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/java/com/springmvc/example/pojo/Employee.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/java/com/springmvc/example/service/EmployeeService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/java/com/springmvc/example/service/impl/EmployeeServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/java/com/springmvc/example/utils/Page.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/java/com/springmvc/example/utils/Result.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/resources/com/springmvc/example/mapper/EmployeeMapper.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/resources/jdbc.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/resources/mybatis-config.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/webapp/WEB-INF/view/index.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../SpringMVC/SSM/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SpringMVC/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../SpringMVC/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../SpringMVC/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../SpringMVC/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../笔记/SpringMVC笔记.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../笔记/SpringMVC笔记.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../笔记/备忘录.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../笔记/备忘录.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../笔记/问题汇总.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../笔记/问题汇总.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -42,7 +63,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "E:/大学文件/笔记类/各学科笔记/java/源码/Mybatis",
+    "last_opened_file_path": "E:/大学文件/笔记类/各学科笔记/java/源码/SpringMVC",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -105,6 +126,9 @@
       <workItem from="1713010492281" duration="162000" />
       <workItem from="1713010905237" duration="79000" />
       <workItem from="1713068997267" duration="27000" />
+      <workItem from="1713356001302" duration="892000" />
+      <workItem from="1713364650079" duration="625000" />
+      <workItem from="1713365817509" duration="12000" />
     </task>
     <servers />
   </component>
