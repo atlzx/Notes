@@ -1035,6 +1035,77 @@ private static final String METHOD_TRACE = "TRACE";
 
 ---
 
+### （四）跨域问题
+
++ 浏览器有自动保护的机制，它在收到响应时会依次检索响应源与当前服务器的**协议和端口**是否一致，如果不一致，浏览器会认为这是不安全的，便不予处理
++ 为了应对这一问题，我们需要在后端添加如下代码:
+
+~~~java
+  import jakarta.servlet.FilterChain;
+  import jakarta.servlet.ServletException;
+  import jakarta.servlet.http.HttpServletRequest;
+  import jakarta.servlet.http.HttpServletResponse;
+
+  import java.io.IOException;
+  import jakarta.servlet.*;
+  import jakarta.servlet.annotation.WebFilter;
+
+  @WebFilter("/*")
+  public class ServletFilter implements Filter {
+      @Override
+      public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+          HttpServletRequest request = (HttpServletRequest) servletRequest;
+          System.out.println(request.getMethod());
+          HttpServletResponse response = (HttpServletResponse) servletResponse;
+          // 设置允许跨域的请求源，可以设置为*，表示所有请求都可以跨域
+          response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+          // 设置允许跨域的请求方式，也可以设置为*，表示所有请求方式都可以跨域
+          response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT,OPTIONS, DELETE, HEAD");
+          // 设置此次跨域凭证的持续时间，单位为秒，需要使用字符串进行设置
+          response.setHeader("Access-Control-Max-Age", "3600");
+          // 设置允许跨域的请求头中的属性，可以设置为*，表示请求头随便写，都可以跨域
+          response.setHeader("Access-Control-Allow-Headers", "access-control-allow-origin, authority, content-type, version-info, X-Requested-With");
+          // 设置跨域需要跨域凭证，该设置需要在前后端都进行设置，设置该项后，后端的session便不会出现一次请求更新一次session的情况了
+          response.setHeader("Access-Control-Allow-Credentials", "true");
+          // 如果是跨域预检请求,则直接在此响应200业务码
+          if(request.getMethod().equalsIgnoreCase("OPTIONS")){
+              response.getWriter().write("OK");
+              System.out.println("跨域响应");
+          }else{
+              // 非预检请求,放行即可
+              filterChain.doFilter(servletRequest, servletResponse);
+          }
+      }
+  }
+~~~
+
++ 同时，为了不使后端的`session`出现变化，前端在发送请求时需要设置**预检**的相关属性为`true`,这里以`axios`为例:
+
+~~~js
+    // axios.post方法第一个参数为url(请求路径),第二个参数为data(向后端发送的数据),第三个属性是config(其他配置)
+    axios.post(
+        'http://localhost:8080/test',
+        {upload:file.file},
+        {
+            headers:{
+                // 设置响应头类型为 multipart/form-data ,说明这是一个文件
+                "Content-Type":'multipart/form-data'
+            },
+            // 设置跨域时进行预检，该设置可以保证后端的session不会一次请求就变化一次
+            withCredentials:true
+        }
+    ).then(
+        (response)=>{
+            console.log(response);
+            if(response.data==='OK'){
+                console.log('上传后端成功');
+            }
+        }
+    );
+~~~
+
+---
+
 # 前端工程化
 
 + **前端工程化**是使用软件工程的方法来**单独解决**前端的开发流程中**模块化、组件化、规范化、自动化**的问题,其主要目的为了**提高效率和降低成本**。 
