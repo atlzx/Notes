@@ -989,6 +989,51 @@
 
 + mapper层写接口就好，然后在对应的xml文件内实现对应的CRUD方法
 
+~~~java
+
+    import com.springmvc.example.pojo.Employee;
+
+    import java.util.List;
+
+    public interface EmployeeMapper {
+        List<Employee> selectAll();
+    }
+
+~~~
+
++ 对应的xml文件
+
+~~~xml
+
+    <?xml version="1.0" encoding="UTF-8" ?>
+
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+            "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="com.springmvc.example.mapper.EmployeeMapper">
+        <select id="selectAll" resultType="employee">
+            select first_name,last_name,email from employees
+        </select>
+
+    </mapper>
+
+~~~
+
++ 实体类放在pojo包下:
+
+~~~java
+
+    import lombok.Data;
+    import org.apache.ibatis.type.Alias;
+
+    @Data
+    public class Employee {
+        private String firstName;
+        private String lastName;
+        private String email;
+    }
+
+~~~
+
 ---
 
 ## 部分内容汇总
