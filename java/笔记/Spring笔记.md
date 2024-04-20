@@ -413,13 +413,13 @@
   + 使用scope属性可以修改指定bean的作用域，修改为prototype可以使**每次通过IoC容器获取对象时得到的对象都是新对象，且对象在获取bean时才被创建**
   + 如果在WebApplicationContext环境下还会有另外几个作用域:request(单次请求有效)和session(会话范围内有效)
 + 每个bean也有其生命周期
-  1. bean对象的创建
-  2. 给bean对象的属性赋值
+  1. bean对象的创建:Spring会将所有可以加入IOC容器的对象加入到IOC容器内，包括但可能不限于:配置类对象、MVC三层类对象、**被@Bean注解作用的配置类内的方法返回的对象**...
+  2. 给bean对象的属性赋值:在得到所有的对象后，Spring会批量给每个属性进行赋值,**如果@Bean注解作用的方法使用了其所在类下的被@Autowired注解作用的属性，此时由于属性赋值发生在bean对象创建之后，因此无法得到详细的值，只能得到null或属性的默认值**
   3. 调用bean的后置处理器
-  4. bean对象初始化
+  4. bean对象初始化:执行初始化方法
   5. 调用bean的后置处理器
   6. bean对象就绪
-  7. bean对象销毁
+  7. bean对象销毁:关闭IOC容器时，bean对象会在IOC容器关闭之前销毁
   8. IoC容器关闭
 + 使用init-method和destroy-method属性可以指定初始化时执行的方法(第四步)和销毁时执行的方法(第七步)
 + 后置处理器用来在bean对象初始化前后执行额外的操作，**后置处理器需要我们自己手动写**:
@@ -437,6 +437,7 @@
 + **FactoryBean和BeanFactory不是一个东西**
 + 想要使用FactoryBean，我们需要做如下操作:
   + 创建一个类，实现FactoryBean接口，并指定其对应的想生产的泛型对象。同时实现方法
+    + **需要实现的有两个方法:getObject和getObjectType，一个返回bean的实例对象，一个返回bean的类型的Class对象**
   + 在xml文件内引入该实现类，让Spring能够检测到它
   + 调用getBean方法得到对象，传入实现类的bean的id，可以看到最终得到的是实现类指定的泛型类对象
 + [样例](../源码/Spring/SpringTest1/src/test/java/com/spring/test/FactoryBeanTest.java)
@@ -453,7 +454,7 @@
 |:---:|:---:|:---:|:---:|
 |@Configuration|声明作用类为配置类，免除xml文件内配置扫描注解路径|无|[样例](../源码/Spring/SpringAnnotationSample/src/test/java/com/test/AnnotationInjectTest.java)|
 |@ComponentScan|配置扫描注解路径|无|^|
-|@Bean|用于配置一个bean对象，对应xml文件内的一个bean标签。|**被该注解作用的方法执行早于被@Value注解作用的属性注入赋值**|^|
+|@Bean|用于配置一个bean对象，对应xml文件内的一个bean标签。|**1.被该注解作用的方法执行早于被@Value注解作用的属性注入赋值**<br>2.**如果不指定name属性，那么作用方法返回的bean名称与方法名一致**|^|
 |@Lazy|指定是否懒加载|无|^|
 |@DependOn|指定依赖加载对象|无|^|
 |@Scope|指定作用域|无|^|
