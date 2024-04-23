@@ -12,7 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class HelloController {
     @GetMapping
     public String hello(){
-        log.info("请求方法执行");
+        log.trace("hello方法的trace日志");
+        log.debug("hello方法的debug日志");
+        log.info("hello方法的info日志");
+        log.warn("hello方法的warn日志");
+        log.error("hello方法的error日志");
         return "Hello World";
     }
 }

@@ -373,13 +373,19 @@ public class People {
     + 单引号内的转义字符不会生效
     + 双引号内的转义字符会生效
   + 对于大文本，即多行文本
-    + 使用`\|`开头，然后将大文本写在其下方，**注意是正下方或右下，不能写的相对于该符号靠左**，它可以保留文本格式，即文本写的是什么样，输出就是什么样
+    + 使用`|`开头，然后将大文本写在其下方，**注意是正下方或右下，不能写的相对于该符号靠左**，它可以保留文本格式，即文本写的是什么样，输出就是什么样
     + 使用`>`开头，然后将大文本写在其下方，**注意是正下方或右下，不能写的相对于该符号靠左**，它会折叠换行符，改为一个空格隔开
   + 还可以使用`---`将多个yml文档合并在一个文档中，每个文档区依然认为内容独立
 
 ---
 
-### （三）日志配置
+
+
+
+
+## 配置汇总
+
+### （一）日志配置
 
 #### ①日志简述
 
@@ -421,12 +427,925 @@ public class People {
 + 默认输出值为:`%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}`
 + 可以修改为`%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} ===> %msg%n`
 
++ [配置类样例](../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
 
 ---
 
-#### ④
+#### ④日志级别与分组
+
++ 日志级别一般分为如下类别（由高到低）:
+  + ALL:打印所有日志
+  + TRACE:追踪框架的详细流程日志并打印
+  + DEBUG:开发调试细节日志
+  + INFO:关键的、感兴趣的日志
+  + WARN:警告但不是错误的日志，如版本过时的信息
+  + ERROR:业务错误日志，如出现各种异常
+  + FATAL:致命错误日志，如JVM虚拟机系统崩溃
+  + OFF:关闭所有日志记录
++ 在以上的日志级别中，**我们可以主动输出日志信息的有TRACE、DEBUG、INFO、WARN、ERROR这五个**
++ **在指定某一日志级别后，系统只会打印该级别或该级别以下的日志信息**，如指定了INFO作为日志级别，那么系统仅会打印INFO、WARN、ERROR、FATAL等日志信息，而级别高的DEBUG和TRACE不会打印
++ **SpringBoot默认使用Logback作为日志实现依赖，且默认指定的日志级别为INFO**
++ SpringBoot支持我们自定义全局的日志级别，或自定义某一类的日志级别
+  + 我们可以通过[下表]查阅如何指定，或者查看[样例]()
+  + 但是，当我们想手动指定的类的日志级别变多时，配置会非常繁琐，因此SpringBoot又提供了分组功能来简化配置
+    + 我们可以将多个类组成一个组，然后将这一个组看成一个整体，进行日志级别的指定
+    + SpringBoot已经为我们提供了两个默认的组:
+      + web组:包含org.springframework.core.codec、org.springframework.http、org.springframework.web、org.springframework.boot.actuate.endpoint.web、org.springframework.boot.web.servlet.ServletContextInitializerBeans类
+      + sql组:包含org.springframework.jdbc.core、org.hibernate.SQL、org.jooq.tools.LoggerListener类
+
++ [配置类样例](../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
+
+---
+
+#### ⑤文件输出、归档与滚动切割
+
++ **文件输出**
+  + 通过`logging.file.name`可以指定输出的文件的名字，如果文件不存在，会在当前项目所在目录内创建一个，然后输出日志
+    + 可以为其指定路径，使得日志文件保存在指定路径下，且名称也可以自定义，因此**推荐使用该方式**
+  + 通过`logging.file.path`可以指定输出的文件的路径，使用该方式输出文件，spring会自动创建一个Spring.log文件。当`logging.file.name`配置存在时，后者优先级更高
++ **归档**
+  + 通过某种区分方式来将日志划分到指定目录叫做归档（一般按时间，如一天对应一个目录）
+  + 该方式主要是为了防止一直将日志输出到一个文件导致文件过大的问题
+  + 归档是只有当一整天结束时，SpringBoot才会进行本日的日志归档，因此我们如果想看到效果，需要向后调一天
++ **滚动切割**
+  + 即使使用了归档，可能也会出现日志文件过大的情况，因此我们可以按某些标准（如限制单文件最大大小）来将文件切片
+  + 该方式进一步解决了文件过大的问题
+  + 这玩意貌似只能识别整数，比如设置的是1MB大小的限制，它会等到日志文件到2MB以上才会进行切割
+
++ [配置类样例](../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
+
+---
+
+#### ⑥自定义配置
+
++ 如果我们认为SpringBoot的配置文件用着不爽，我们也可以使用传统的xml文件的方式来自定义日志
+  + xml文件的命名需要严格遵守SpringBoot的对应规范:
+    + 建议名称都以`xxx-spring.xml`的规范命名，因为这样SpringBoot可以完全控制该配置文件
+
+|日志系统|文件命名规范|
+|:---:|:---:|
+|Logback|logback-spring.xml(**推荐**), logback-spring.groovy, logback.xml, or logback.groovy|
+|Log4j2|log4j2-spring.xml（**推荐**） or log4j2.xml|
+|JDK (Java Util Logging)|logging.properties|
+
++ 另外，当我们想切换日志组合时，我们需要先排除掉SpringBoot所指定的默认日志组合
+  + 我们可以利用Maven的就近原则，在我们的项目内直接引入spring-boot-starter依赖，然后在下面排除掉spring-boot-starter-logging依赖
+
+~~~xml
+
+  <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>
+      <exclusions>
+          <exclusion>
+              <groupId>org.springframework.boot</groupId>
+              <artifactId>spring-boot-starter-logging</artifactId>
+          </exclusion>
+      </exclusions>
+  </dependency>
+
+~~~
+
++ 接下来导入我们对应的场景，比如我们想导入log4j2的场景，导入前需要确认[官方](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.logging)是否支持
+
+~~~xml
+  <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-log4j2</artifactId>
+  </dependency>
+~~~
+
++ 然后就可以使用了
++ log4j2的性能相较于Logback有很大提升，推荐使用log4j2
++ 如果想使用log4j2,**Spring官方推荐其配置文件写log4j2-spring.xml**
++ **log4j2支持yaml和json格式的配置文件**:
+
+|文件格式|实现支持需要导入的依赖|规范文件名|
+|YAML|**com.fasterxml.jackson.core:jackson-databind**和**com.fasterxml.jackson.dataformat:jackson-dataformat-yaml**|log4j2.yaml或log4j2.yml|
+|JSON|com.fasterxml.jackson.core:jackson-databind|log4j2.json或log4j2.jsn|
+
++ [项目pom.xml文件](../源码/SpringBoot/SpringBootLogging/pom.xml)
++ [配置类样例](../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
++ [log4j2-spring.xml样例](../源码/SpringBoot/SpringBootLogging/src/main/resources/log4j2-spring.xml)
+
+---
+
+#### ⑦配置总览
+
+|配置|作用|备注|
+|:---:|:---:|:---:|
+|logging.level.{root\|sql\|web\|类的全类名\|自定义组名}|指定全局/sql组/web组/类/自定义组的日志级别|无|
+|logging.group.自定义组名|将多个类划分为一个组|无|
+|logging.file.name|指定日志输出的文件|也可以写路径，如果是相对路径，那么是相对于项目所在目录的|
+|loggging.file.path|指定日志输出的路径|优先级没有logging.file.name高|
+|logging.logback.rollingpolicy.file-name-pattern|指定日志归档的命名格式，默认值是`${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz`|从配置项可以看出，只有使用Logback才能使用该配置|
+|logging.logback.rollingpolicy.clean-history-on-start|应用启动前是否清除以前日志文件（默认为false）|^|
+|logging.logback.rollingpolicy.max-file-size|指定每个日志文件的最大大小|^|
+|logging.logback.rollingpolicy.total-size-cap|指定日志文件总大小超过指定大小后，就删除旧的日志文件（默认0B）|^|
+|logging.logback.rollingpolicy.max-history|日志文件保存的最大天数（默认7，单位天）|^|
+
+---
+
+### （二）Web配置
+
+#### ①资源配置
+
++ SpringBoot的Web开发能力，是由SpringMVC实现的
++ 如果我们想配置Web,我们需要明确配置什么东西，下面是与Web相关的AutoConfiguration:
+
+~~~java
+    org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration
+    org.springframework.boot.autoconfigure.web.embedded.EmbeddedWebServerFactoryCustomizerAutoConfiguration
+    ====以下是响应式web场景和现在的没关系======
+    org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration
+    org.springframework.boot.autoconfigure.web.reactive.ReactiveMultipartAutoConfiguration
+    org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration
+    org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration
+    org.springframework.boot.autoconfigure.web.reactive.WebSessionIdResolverAutoConfiguration
+    org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration
+    org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration
+    org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration
+    ================以上没关系=================
+    org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration
+    org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration
+    org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
+    org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration
+    org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration
+    org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
+~~~
+
++ 上面是与web相关的AutoConfiguration类，它们都是负责自动装配我们的Web项目的
++ 同时，它们对应的配置类绑定了配置文件的一堆配置项:
+  + SpringMVC的所有配置 spring.mvc
+  + Web场景通用配置 spring.web
+  + 文件上传配置 spring.servlet.multipart
+  + 服务器的配置 server: 比如：编码方式
+
+##### ⅠWebMvcAutoConfiguration类
+
++ 与SpringMVC相关的自动配置功能，都由WebMvcAutoConfiguration类来装配:
+
+~~~java
+    @AutoConfiguration(
+        after = {DispatcherServletAutoConfiguration.class, TaskExecutionAutoConfiguration.class, ValidationAutoConfiguration.class}
+    )  // 该配置类的初始化在这些配置类之后
+    @ConditionalOnWebApplication(
+        type = Type.SERVLET
+    )  // 如果type属于SERVLET时才生效
+    @ConditionalOnClass({Servlet.class, DispatcherServlet.class, WebMvcConfigurer.class})  // 类路径下存在这些类才生效
+    @ConditionalOnMissingBean({WebMvcConfigurationSupport.class})  // 不存在WebMvcConfigurationSupport的bean时生效，默认确实不存在
+    @AutoConfigureOrder(-2147483638)  // 设置初始化优先级
+    @ImportRuntimeHints({WebResourcesRuntimeHints.class})  // 不知道干嘛的
+    public class WebMvcAutoConfiguration {
+        ...
 
 
+        @Bean
+        @ConditionalOnMissingBean({HiddenHttpMethodFilter.class})
+        @ConditionalOnProperty(
+            prefix = "spring.mvc.hiddenmethod.filter",
+            name = {"enabled"}
+        )
+        // 该过滤器用来支持服务器接收表单提交Rest请求
+        public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
+            return new OrderedHiddenHttpMethodFilter();
+        }
+
+        @Bean
+        @ConditionalOnMissingBean({FormContentFilter.class})
+        @ConditionalOnProperty(
+            prefix = "spring.mvc.formcontent.filter",
+            name = {"enabled"},
+            matchIfMissing = true
+        )
+        // 该过滤器可以得到表单提交到的内容
+        public OrderedFormContentFilter formContentFilter() {
+            return new OrderedFormContentFilter();
+        }
+
+        ...
+
+        private <T extends AbstractUrlHandlerMapping> T createWelcomePageHandlerMapping(ApplicationContext applicationContext, FormattingConversionService mvcConversionService, ResourceUrlProvider mvcResourceUrlProvider, WelcomePageHandlerMappingFactory<T> factory) {
+            TemplateAvailabilityProviders templateAvailabilityProviders = new TemplateAvailabilityProviders(applicationContext);
+            // 得到静态的前端请求路径，即/**
+            String staticPathPattern = this.mvcProperties.getStaticPathPattern();
+            // this.getIndexHtmlResource()方法会得到四个默认的请求资源路径下，包含默认的index前缀文件的Resource对象
+            // 所以该方法的作用就是建立/**的前端请求路径和默认寻找静态资源路径下的index文件路径之间的映射
+            T handlerMapping = factory.create(templateAvailabilityProviders, applicationContext, this.getIndexHtmlResource(), staticPathPattern);
+            // 下面又配了点东西，看不懂，不过没关系
+            handlerMapping.setInterceptors(this.getInterceptors(mvcConversionService, mvcResourceUrlProvider));
+            handlerMapping.setCorsConfigurations(this.getCorsConfigurations());
+            return handlerMapping;
+        }
+    }
+~~~
+
+---
+
+##### ⅡWebMvcConfigurer接口
+
++ WebMvcConfigurer接口内有多个方法，我们只需要让我们的配置类实现对应的方法，就可以使我们的项目支持一些功能
+
+|方法|作用|备注|
+|:---:|:---:|:---:|
+|addArgumentResolvers|添加请求参数的解析器|无|
+|addCorsMappings|添加跨域请求配置|无|
+|addFormatters|添加格式化器|无|
+|addInterceptors|添加拦截器|无|
+|addResourceHandlers|添加静态资源处理器，用来处理静态资源的映射关系|无|
+|addReturnValueHandlers|添加返回值处理器|无|
+|addViewControllers|添加视图控制器|无|
+|configureAsyncSupport|配置异步支持|无|
+|configureContentNegotiation|配置内容协商|无|
+|configureDefaultServletHandling|配置默认处理的请求路径，默认为/，表示接收所有请求|无|
+|configureHandlerExceptionResolvers|配置异常处理器|无|
+|configureMessageConverters|配置消息转换器|无|
+|configurePathMatch|配置路径匹配|无|
+|configureViewResolvers|配置视图解析|无|
+|extendsHandlerExceptionResolvers|拓展异常处理器|无|
+|extendsMessageConverters|拓展消息转换器|无|
+
++ 我们可以让配置类实现WebMvcConfigurer接口，在里面实现对应的方法来进行相关的配置，**推荐配置类不要加@EnableWebMvc注解，因为不加这个注解可以在保留SpringBoot默认配置的前提下追加配置，而加了以后SpringBoot的相关默认配置就会失效，我们就需要全部自己进行相应的配置**
++ 另外，我们其实也可以直接提供一个WebMvcConfigurer接口对象，在该对象内实现指定的方法(使用匿名内部类)。
++ 第二种方式也可行的原因是，**SpringBoot在底层会把全部的实现了WebMvcConfigurer接口的对象汇聚成一个List，然后逐个调用对应的方法**，我们的配置类实现了该接口，且配置类也会加入IOC容器，因此配置类对象也满足WebMvcConfigurer接口的对象条件，故也会执行里面的方法
+  + 详细的源码在DelegatingWebMvcConfiguration，该类是WebMvcAutoConfiguration的一个内部类EnableWebMvcConfiguration父类
+
+~~~java
+    @Configuration(proxyBeanMethods = false)
+    public class DelegatingWebMvcConfiguration extends WebMvcConfigurationSupport {
+        private final WebMvcConfigurerComposite configurers = new WebMvcConfigurerComposite();
+
+        @Autowired(required = false)
+        // 收集全部的WebMvcConfigurer实现类对象，并加入configurers中，方便以后使用
+        public void setConfigurers(List<WebMvcConfigurer> configurers) {
+            if (!CollectionUtils.isEmpty(configurers)) {
+                this.configurers.addWebMvcConfigurers(configurers);  
+            }
+
+        }
+    }
+~~~
+
+---
+
+##### ⅢWebMvcConfigurationSupport类
+
++ 提供了很多的默认设置。
++ 判断系统中是否有相应的类：如果有，就加入相应的HttpMessageConverter
+
+~~~java
+    static {
+        ClassLoader classLoader = WebMvcConfigurationSupport.class.getClassLoader();
+        romePresent = ClassUtils.isPresent("com.rometools.rome.feed.WireFeed", classLoader);
+        jaxb2Present = ClassUtils.isPresent("jakarta.xml.bind.Binder", classLoader);
+        jackson2Present = ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", classLoader) && ClassUtils.isPresent("com.fasterxml.jackson.core.JsonGenerator", classLoader);
+        jackson2XmlPresent = ClassUtils.isPresent("com.fasterxml.jackson.dataformat.xml.XmlMapper", classLoader);
+        jackson2SmilePresent = ClassUtils.isPresent("com.fasterxml.jackson.dataformat.smile.SmileFactory", classLoader);
+        jackson2CborPresent = ClassUtils.isPresent("com.fasterxml.jackson.dataformat.cbor.CBORFactory", classLoader);
+        gsonPresent = ClassUtils.isPresent("com.google.gson.Gson", classLoader);
+        jsonbPresent = ClassUtils.isPresent("jakarta.json.bind.Jsonb", classLoader);
+        kotlinSerializationCborPresent = ClassUtils.isPresent("kotlinx.serialization.cbor.Cbor", classLoader);
+        kotlinSerializationJsonPresent = ClassUtils.isPresent("kotlinx.serialization.json.Json", classLoader);
+        kotlinSerializationProtobufPresent = ClassUtils.isPresent("kotlinx.serialization.protobuf.ProtoBuf", classLoader);
+    }
+
+~~~
+
+---
+
+##### Ⅳ静态资源配置
+
+###### <一>源码分析
+
++ SpringBoot通过WebMvcAutoConfiguration类向IOC容器内自动装配对应的bean:
+  + 该自动配置类中自动配置了静态资源相关的配置，具体为:
+    + 当前端请求/webjars/**相关资源时，后端从默认从classpath:META-INF/resources/webjars文件夹内找
+    + 当前端请求/**相关资源时，后端默认从下面四个路径下找:
+      + classpath:/META-INF/resources/
+      + classpath:/resources/
+      + classpath:/static/
+      + classpath:/public/
+  + 同时，该自动配置类内也配置了缓存相关的内容，大概有
+    + period:**什么时候浏览器找服务器要新的资源**，单位是秒，默认空
+    + cacheControl:**缓存控制对象**，默认没什么用
+    + useLastModified:**开启后，浏览器找服务器请求资源前，先发送请求资源是否发生了更改，在服务器确认后，再发送请求**。默认是true
++ WebMvcAutoConfiguration类内的WebMvcAutoConfigurationAdapter内部类配置了静态资源的相关路径匹配映射:
+
+~~~java
+
+    // 下面是WebMvcAutoConfiguration内声明的内部类，可以看到它实现了WebMvcConfigurer接口
+
+    @Configuration(proxyBeanMethods = false)  // 声明为配置类
+    @Import({EnableWebMvcConfiguration.class})  // 导入对应类加入IOC容器
+    @EnableConfigurationProperties({WebMvcProperties.class, WebProperties.class})  // 声明两个类通过属性依赖注入属性值，并将这俩类加入IOC容器
+    @Order(0)  // 没用
+    public static class WebMvcAutoConfigurationAdapter implements WebMvcConfigurer, ServletContextAware {
+        private static final Log logger = LogFactory.getLog(WebMvcConfigurer.class);
+        private final WebProperties.Resources resourceProperties;
+        private final WebMvcProperties mvcProperties;
+        private final ListableBeanFactory beanFactory;
+        private final ObjectProvider<HttpMessageConverters> messageConvertersProvider;
+        private final ObjectProvider<DispatcherServletPath> dispatcherServletPath;
+        private final ObjectProvider<ServletRegistrationBean<?>> servletRegistrations;
+        private final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
+        private ServletContext servletContext;
+
+        // 内部类构造器
+        public WebMvcAutoConfigurationAdapter(
+            WebProperties webProperties, 
+            WebMvcProperties mvcProperties, 
+            ListableBeanFactory beanFactory, 
+            ObjectProvider<HttpMessageConverters> messageConvertersProvider, 
+            ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider, ObjectProvider<DispatcherServletPath> dispatcherServletPath, 
+            ObjectProvider<ServletRegistrationBean<?>> servletRegistrations
+        ) {
+            this.resourceProperties = webProperties.getResources();
+            this.mvcProperties = mvcProperties;
+            this.beanFactory = beanFactory;
+            this.messageConvertersProvider = messageConvertersProvider;
+            this.resourceHandlerRegistrationCustomizer = (ResourceHandlerRegistrationCustomizer)resourceHandlerRegistrationCustomizerProvider.getIfAvailable();
+            this.dispatcherServletPath = dispatcherServletPath;
+            this.servletRegistrations = servletRegistrations;
+        }
+
+        ...
+
+        // 实现WebMvcConfigurer声明的addResourceHandler方法
+        public void addResourceHandlers(ResourceHandlerRegistry registry) {
+
+            // resourceProperties在上面的构造器中被赋值，而正常情况下addMappings属性的值都是true，因此一般情况下都会走else
+            if (!this.resourceProperties.isAddMappings()) {
+                logger.debug("Default resource handling disabled");
+            } else {
+                //  添加请求路径与静态资源匹配路径
+                //  这里的getWebjarsPathPattern方法得到的路径是"/webjars/**"，它直接被写在了WebMvcProperties内的属性中
+                // 这句话的意思是，当前端请求的/webjars/**资源时，后端去类路径下的META-INF/resources/webjars文件夹下找
+                // 这里调用的是重载的addResourceHandler方法
+                this.addResourceHandler(registry, this.mvcProperties.getWebjarsPathPattern(), "classpath:/META-INF/resources/webjars/");
+                /* 这里的getStaticPathPattern方法返回"/**"，而下面的getStaticLocations方法返回值是 
+                    new String[]{"classpath:/META-INF/resources/", "classpath:/resources/", "classpath:/static/", "classpath:/public/"}
+                    这个值就是WebProperties类的内部类Resources类的staticLocations属性
+                    它在构造器中被赋值为CLASSPATH_RESOURCE_LOCATIONS，而上面的值就是CLASSPATH_RESOURCE_LOCATIONS属性被显式赋在代码中的值
+                    这里调用的也是重载的addResourceHandler方法，但是调用的方法是不一样的，因为二者传的参数不一样
+                */
+                this.addResourceHandler(registry, this.mvcProperties.getStaticPathPattern(), (registration) -> {
+                    registration.addResourceLocations(this.resourceProperties.getStaticLocations());
+                    // 查看是否配置了ServletContext类对象，这取决于我们是否配置了ServletContext
+                    if (this.servletContext != null) {
+                        ServletContextResource resource = new ServletContextResource(this.servletContext, "/");
+                        // 为后端响应前端的请求路径再添加一个路径映射
+                        registration.addResourceLocations(new Resource[]{resource});
+                    }
+
+                });
+                // 整体上来说，SpringBoot让WebMvcAutoConfigurationAdapter类对象先调用其重载的方法，再经过重载的方法将前端请求路径和后端寻找路径加入映射中去
+            }
+        }
+
+        private void addResourceHandler(ResourceHandlerRegistry registry, String pattern, String... locations) {
+            // 这里最后调的也是下面的方法
+            this.addResourceHandler(registry, pattern, (registration) -> {
+                // 设置对应的后端寻找资源的路径
+                registration.addResourceLocations(locations);
+            });
+        }
+
+        private void addResourceHandler(ResourceHandlerRegistry registry, String pattern, Consumer<ResourceHandlerRegistration> customizer) {
+            // 判断要加入的pattern是否已经有映射了
+            if (!registry.hasMappingForPattern(pattern)) {
+                // 这里真正将前端请求的路径加入映射
+                ResourceHandlerRegistration registration = registry.addResourceHandler(new String[]{pattern});
+                // 这里将对应前端请求的后端寻找资源路径加入映射
+                customizer.accept(registration);
+                // 设置缓存
+                registration.setCachePeriod(this.getSeconds(this.resourceProperties.getCache().getPeriod()));
+                registration.setCacheControl(this.resourceProperties.getCache().getCachecontrol().toHttpCacheControl());
+                registration.setUseLastModified(this.resourceProperties.getCache().isUseLastModified());
+                this.customizeResourceHandlerRegistration(registration);
+            }
+        }
+    }
+
+~~~
+
++ 在上面的代码中，有些代码与WebMvcProperties类和WebProperties配置类有关
+  + WebMvcProperties类包含了前端的请求路径相关的配置
+  + WebProperties类包含了后端对于请求路径和静态资源的响应相关的配置
+
+~~~java
+
+    //WebMvcProperties类的部分代码:
+    // 从这里可以看出，如果想mvc的相关配置，对应前缀是spring.mvc
+    @ConfigurationProperties(prefix = "spring.mvc")
+    public class WebMvcProperties {
+        private String staticPathPattern = "/**";  // 静态资源匹配路径
+        private String webjarsPathPattern = "/webjars/**";  // webjars资源匹配路径
+    }
+    // 得到默认的Webjars路径映射
+    public String getWebjarsPathPattern() {
+        return this.webjarsPathPattern;
+    }
 
 
-## 配置汇总
+    // WebProperties类的部分代码:
+    // 从这里可以看出，如果想配置web相关配置，对应前缀是spring.web
+    @ConfigurationProperties("spring.web")
+    public class WebProperties {
+        // Resources类是WebProperties的内部类
+        public static class Resources {
+            // 默认后端寻找静态资源锁寻找的路径
+            private static final String[] CLASSPATH_RESOURCE_LOCATIONS = new String[]{"classpath:/META-INF/resources/", "classpath:/resources/", "classpath:/static/", "classpath:/public/"};
+            private String[] staticLocations;  // 静态资源锁寻找的路径
+            private boolean addMappings;  
+            private boolean customized;
+            private final Chain chain;
+            private final Cache cache;  // 前端缓存相关配置
+
+            public Resources() {
+                this.staticLocations = CLASSPATH_RESOURCE_LOCATIONS;  // staticLocations属性直接被赋值为CLASSPATH_RESOURCE_LOCATIONS，就是上面那一串
+                this.addMappings = true;  //addMappings属性默认是true
+                this.customized = false;
+                this.chain = new Chain();
+                this.cache = new Cache();
+            }
+
+            // 得到后端寻找静态资源的默认路径
+            public String[] getStaticLocations() {
+                return this.staticLocations;  
+            }
+
+              // 注意，这个Cache类是Resources的内部类
+            public static class Cache {
+                private boolean customized = false;
+                @DurationUnit(ChronoUnit.SECONDS)
+                private Duration period;  // period默认是空
+                private final Cachecontrol cachecontrol = new Cachecontrol();  // cachecontrol会得到对应的对象，但是该对象没有进行任何配置
+                private boolean useLastModified = true;  // 默认开启useLastModified
+                // Cachecontrol类是Cache类的内部类
+                public static class Cachecontrol {
+                    private boolean customized = false;
+                    @DurationUnit(ChronoUnit.SECONDS)
+                    private Duration maxAge;
+                    private Boolean noCache;
+                    private Boolean noStore;
+                    private Boolean mustRevalidate;
+                    private Boolean noTransform;
+                    private Boolean cachePublic;
+                    private Boolean cachePrivate;
+                    private Boolean proxyRevalidate;
+                    @DurationUnit(ChronoUnit.SECONDS)
+                    private Duration staleWhileRevalidate;
+                    @DurationUnit(ChronoUnit.SECONDS)
+                    private Duration staleIfError;
+                    @DurationUnit(ChronoUnit.SECONDS)
+                    private Duration sMaxAge;
+                }
+            }
+
+
+        }
+    }
+
+~~~
+
+---
+
+###### <二>静态资源配置
+
++ 静态资源配置可以通过两种方式配置:
+  + 通过配置文件配置:由于在上面出现了配置文件前缀，因此只要找对应的前缀，配置对应的属性即可
+  + 通过代码进行配置:通过配置类实现WebMvcConfigurer接口并实现其addResourceHandlers来进行配置，但**不要在配置类上加@EnableWebMvc注解，一旦加上，原有的默认配置会失效**
++ 另外，部分浏览器会自动请求favicon.ico这个文件，因此在`/**`路径想映射的后端路径内加一个favicon.ico文件，就可以让网页显示出自定义的小图标了
+
+|配置|作用|属性值|备注|
+|:---:|:---:|:---:|:---:|
+|spring.mvc.static-path-pattern|用来**设置匹配的前端请求静态资源的路径**|字符串值|无|
+|spring.mvc.webjars-path-pattern|用来**设置匹配的前端请求webjars资源的路径**|字符串值|无|
+|spring.web.resources.static-locations|配置用来设置后端处理静态资源要寻找的目录，**它会覆盖掉SpringBoot默认配置的四个路径**|字符串值|**针对webjars的路径匹配依然有效，因为根据源码，webjars相关的路径匹配被单独配置了，而该项配置与webjars的路径匹配没有关系**|
+|spring.web.resources.add-mappings|开启静态资源映射|默认为true|无|
+|spring.web.resources.cache.period|配置浏览器使用资源的大概时间|数值，单位秒|**如果配置了控制项，该配置会被覆盖**|
+|spring.web.resources.cache.use-last-modified|配置是否在浏览器找服务器请求资源前，先发送请求确认资源是否发生了更改|布尔值|无|
+|spring.web.resources.cache.cachecontrol.max-age|配置浏览器使用缓存的最大时间，在此期间，浏览器会使用缓存加载资源|数值，单位秒|无|
+|spring.web.resources.cache.cachecontrol.cache-public|设置是否共享缓存|布尔值|无|
+
++ 可以通过查看状态码来确认是否有缓存，**出现304状态码或网络栏中的履行者显示为`disk cache`即为使用了缓存**
+  + 刷新网页不会使用缓存，详情见下图:
+    + 其中Etag 是 HTTP 响应头部的一部分，用于标识资源的版本。它通常由服务器生成，并在响应中发送给客户端
+
+![缓存机制](../文件/图片/SpringBoot图片/HTTP缓存机制.png)
+
++ [配置文件](../源码/SpringBoot/SpringBootWebStaticResource/src/main/resources/application.properties)
++ [配置类](../源码/SpringBoot/SpringBootWebStaticResource/src/main/java/com/springboot/example/springbootwebstaticresource/config/MyConfig.java)
+
+---
+
+#### ②路径匹配
+
++ Spring5.3之前，只支持AntPathMatcher的路径匹配策略，在Spring5.3时，添加了新的PathPatternParser的路径匹配策略
++ 我们也可以在配置文件内进行相对的配置
+
+|Ant风格通配符|作用|备注|样例|
+|:---:|:---:|:---:|:---:|
+|*|匹配一层下所有字符|无|`*.html`表示匹配任意html文件|
+|?|表示匹配一个任意字符|无|`/fol?er/*.html`表示匹配fol(任意字符)er目录下的任意html文件|
+|**|匹配后面的所有层|无|`/folder2/**/*.jsp` 匹配在folder2目录下任意目录深度的.jsp文件|
+|{name}|将对应层的值取出，放入name中|无|`/{type}/{id}.html` 匹配任意文件名为{id}.html，在任意命名的{type}目录下的文件|
+|[]|匹配对应的字符集合|无|无|
+
++ PathPatternParser兼容 AntPathMatcher语法，并支持更多类型的路径模式，**它的效率较PathPatternParser的效率高**
++ **PathPatternParser的`**`多段匹配仅能写在路径最后，不能再在中间写**。如果想这样用，需要在配置文件内把匹配准则改为PathPatternParser
++ 新版的默认路径匹配规则是PathPatternParser匹配原则
++ 使用`spring.mvc.pathmatch.matching-strategy`来手动修改路径匹配原则
+  + ant_path_matcher表示恢复到AntPathMatcher
+  + path_pattern_parser表示改为新版匹配原则
+
+---
+
+#### ③内容协商
+
+##### Ⅰ默认协商
+
++ 如果我们有多个端向服务器器发送同一个请求，但是各个端期望服务器返回的请求格式不一致，此时SpringBoot会根据前端传来的**请求头参数(Accept)**或**路径参数(Param)**来进行对应的返回格式转换，该操作被称为**内容协商**
+  + SpringBoot默认开启基于请求头的内容协商，服务器会根据Accept请求参数来确认使用什么格式进行返回。通过`spring.mvc.contentnegotiation.favor-parameter`来配置是否开启，默认是true
+  + SpringBoot**默认不开启**基于路径参数的内容协商
+    + 我们需要配置`spring.mvc.contentnegotiation.favor-parameter`来手动设置为true，以开启该方式的内容协商，默认的该方式的请求参数名为format
+    + 还可以设置`spring.mvc.contentnegotiation.parameter-name`参数来手动设置以路径参数请求返回值类型时，传递该返回值类型的请求参数的名字。即SpringBoot会依据该配置的值去请求路径中去寻找对应的参数名，然后读取该值期望的返回值类型
+    + **使用该方式请求的值与Accept请求值略有不同，如Accept指定的application/json，请求参数仅需要传递json即可**
+
+---
+
+##### Ⅱ自定义内容返回
+
++ SpringBoot的默认转换器能转换的格式实在有限，因此我们需要会怎么自定义内容返回
++ 我们以增加yaml返回值类型为例，来举例如何自定义内容返回
++ 首先需要导入相关依赖:
+
+~~~xml
+
+  <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+  </dependency>
+
+~~~
+
++ 在配置类中添加HttpMessageConverter组件，将能够转换yaml文件格式的对象添加进去
+
+~~~java
+
+    @Bean
+    public WebMvcConfigurer webMvcConfigurer(){
+        return new WebMvcConfigurer() {
+            @Override //配置一个能把对象转为yaml的messageConverter
+            public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+                converters.add(new MyYamlHttpMessageConverter());
+            }
+        };
+    }
+
+~~~
+
++ 编写配置新增支持的媒体类型:
+  + spring.mvc.contentnegotiation.media-types.{type}=aaa/bbb
+  + 其中type是我们给这个媒体类型起的名字，这个名字是用来路径传参的时候携带的值，比如`spring.mvc.contentnegotiation.media-types.yaml=text/yaml`,那么路径传参的时候请求参数就是`type=yaml`
+
+~~~properties
+    spring.mvc.contentnegotiation.media-types.yaml=text/yaml
+~~~
+
++ 创建一个实现了HttpMessageConverter接口的类
+  + SpringBoot提供了AbstractHttpMessageConverter类，供我们更简便的实现HttpMessageConverter接口，我们只需继承该类即可
++ 继承了AbstractHttpMessageConverter类**要实现三个方法**
+  + protected boolean supports(Class clazz)这里用来**筛选我们的转换器对象能够把什么类型的对象转换为我们期望的格式**
+  + protected Object readInternal(Class clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException:这玩意是**用来将前端传来的参数转换为被@RequestBody注解作用的变量对象**的
+  + protected void writeInternal(Object o, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException:这玩意是**用来将我们的handler执行结果转换为我们期望的格式**的
++ [自定义实现类样例](../源码/SpringBoot/SpringBootMessageConverter/src/main/java/com/springboot/example/springbootmessageconverter/component/MyHttpMessageConverter.java)
++ 提示:如果使用浏览器进行请求测试，**浏览器因为无法解析yaml格式的返回值，会把它下载下来保存为一个文件**
+---
+
+##### ⅢDispatcherServlet执行的大致流程
+
++ `spring-boot-starter-web`场景导入了`spring-boot-starter-json`场景，而该场景又导入了jackson依赖，使**SpringBoot项目默认就支持JSON数据转换**
++ DispatcherServlet执行的大致流程:
+  + 该类对象拦截请求，并执行doService方法，在方法内执行了doDispatch方法
+  + 在doDispatch方法内通过执行getHandlerAdapter得到HandlerAdapter派发器对象ha，接下来执行派发器对象的handle方法来开始执行方法
+  + 派发器对象是RequestMappingHandlerAdapter类对象，但该类没有实现handle方法，因此执行的handle方法是其父类AbstractHandlerMethodAdapter类的handle方法
+  + 其父类的handle方法调用了handleInternal方法，而在handleInternal方法内部调用了invokeHandlerMethod方法执行
+    + 在invokeHandlerMethod方法执行前，需要准备好两个东西
+      + HandlerMethodArgumentResolver：**参数解析器，确定目标方法每个参数值**
+      + HandlerMethodReturnValueHandler：**返回值处理器，确定目标方法的返回值该怎么处理**
+  + 在invokeHandlerMethod方法最后，执行了ServletInvocableHandlerMethod类对象的invokeAndHandle方法来执行handler
+  + invokeAndHandle方法又调用invokeForRequest来获得handler方法的执行结果
+  + ServletInvocableHandlerMethod类并未实现invokeForRequest方法，因此执行其父类InvocableHandlerMethod的invokeForRequest方法
+  + invokeForRequest方法调用doInvoke方法来执行handler方法
+  + 最终，**在doInvoke方法内，通过得到handler方法的Method对象，通过反射的方式来调用我们定义的handler方法，得到返回结果后开始向上返回**
+  + 现在回到invokeAndHandle方法内，invokeForRequest方法已经返回，开始处理返回值
+  + 在方法的try-catch语句内调用HandlerMethodReturnValueHandlerComposite类对象的handleReturnValue方法
+  + 在handleReturnValue方法中，执行了selectHandler方法来筛选出**能处理请求指定的返回方式的处理对象**，该对象会直接执行下面的handleReturnValue方法
+  + 如果方法被@ResponseBody注解作用，那么得到的处理对象是RequestResponseBodyMethodProcessor类对象,它是HandlerMethodReturnValueHandler接口对象。**handleReturnValue方法调用了该处理对象的handleReturnValue方法**
+  + 该方法的实际执行者是RequestResponseBodyMethodProcessor类对象
+  + 该方法在调用了writeWithMessageConverters方法，来向HttpResponse对象内写入最终内容
+  + **方法在最后使用GenericHttpMessageConverter对象的write方法，最终将我们handler方法的返回值转换成对应的返回类型，然后写入到response中**
++ 总流程:`DispatcherServlet.doService`->`this.doDispatch`->`HandlerAdapter.handle`->`AbstractHandlerMethodAdapter.handle`->`this.handleInternal`->`this.invokeHandlerMethod`->`ServletInvocableHandlerMethod.invokeAndHandle`->`this.invokeForRequest`->`this.doInvoke（使用反射执行handler,并向上返回）`->`ServletInvocableHandlerMethod.invokeAndHandle（方法继续执行）`->`HandlerMethodReturnValueHandlerComposite.handleReturnValue`->`RequestResponseBodyMethodProcessor.handleReturnValue`->`this.writeWithMessageConverters`->`GenericHttpMessageConverter.write（进行返回类型转换并加入response中）`
+
+---
+
+##### ⅣHttpMessageConverter执行原理
+
++ SpringBoot在HandlerMethodReturnValueHandlerComposite类对象的handleReturnValue方法一执行，就调用了selectHandler方法，来筛选出能处理请求指定的返回方式的
+
+~~~java
+
+    private HandlerMethodReturnValueHandler selectHandler(@Nullable Object value, MethodParameter returnType) {
+            boolean isAsyncValue = this.isAsyncReturnValue(value, returnType);
+            // 这个returnValueHandlers就是SpringBoot中默认的用于处理各种返回方式的处理对象组成的集合
+            // 这个处理对象并不是XML转换器对象或者JSON转换器对象之类的东西，它是用于处理我们声明的该方法是以何种方式返回的处理对象
+            // 比如我在类上声明了@ResponseBody注解，那么就会选择到RequestResponseBodyMethodProcessor对象
+            // 因此它是处理返回方式的对象，不是处理返回类型的转换对象
+            Iterator var4 = this.returnValueHandlers.iterator();
+
+            HandlerMethodReturnValueHandler handler;
+            do {
+                do {
+                    if (!var4.hasNext()) {
+                        return null;
+                    }
+
+                    handler = (HandlerMethodReturnValueHandler)var4.next();
+                } while(isAsyncValue && !(handler instanceof AsyncHandlerMethodReturnValueHandler));
+            } while(!handler.supportsReturnType(returnType)); // 如果选中的handler满足类型匹配就停止循环，相当于找到了能进行处理的对象
+            // supportsReturnType对于ResponseBody的判断原理就是判断方法是否被@ResponseBody注解作用
+
+            return handler;
+        }
+
+~~~
+
++ 在得到对应的处理对象之后，调用处理对象的handleReturnValue方法，在handleReturnValue方法内最后又调用了writeWithMessageConverters方法进行最终的操作:
+
+~~~java
+
+    // 这是writeWithMessageConverters方法的部分截取
+
+        ....
+        MediaType selectedMediaType = null;  // 该变量用来表示前端想让后端返回的返回类型
+        MediaType contentType = outputMessage.getHeaders().getContentType();
+        boolean isContentTypePreset = contentType != null && contentType.isConcrete();
+        if (isContentTypePreset) {
+            ...
+            selectedMediaType = contentType;
+        }else{
+            ....
+
+            // 看不懂
+            // 这个compatibleMediaTypes是前端发来的能够接受的返回格式组成的集合
+            // 貌似路径参数会把请求头参数覆盖掉
+            Iterator var15 = compatibleMediaTypes.iterator();
+
+            while(var15.hasNext()) {
+                MediaType mediaType = (MediaType)var15.next();
+                if (mediaType.isConcrete()) {
+                    selectedMediaType = mediaType;  // 最后赋的是这玩意
+                    break;
+                }
+
+                if (mediaType.isPresentIn(ALL_APPLICATION_MEDIA_TYPES)) {
+                    selectedMediaType = MediaType.APPLICATION_OCTET_STREAM;
+                    break;
+                }
+            }
+        }
+
+        if (selectedMediaType != null) {
+            // 什么抽象代码块
+            label166: {
+                selectedMediaType = selectedMediaType.removeQualityValue();
+                // messageConverters里面是能够进行对应的返回值格式的转换器,这里调用iterator方法就是要一个一个遍历来看哪个转换器能够进行对应格式的转换
+                // 可以看到messageConverters是一个List<HttpMessageConverter<?>>对象，也就是说里面的元素都是HttpMessageConverter接口对象
+                Iterator var21 = this.messageConverters.iterator();
+
+                HttpMessageConverter converter;  // 提前声明converter变量
+                GenericHttpMessageConverter genericConverter;
+                // 开始遍历
+                while(true) {
+                    // 遍历到最后直接跳出抽象代码块
+                    if (!var21.hasNext()) {
+                        break label166;
+                    }
+                    // 使用converter进行承接
+                    converter = (HttpMessageConverter)var21.next();
+                    GenericHttpMessageConverter var10000;
+                    // 判断遍历到的converter是否属于GenericHttpMessageConverter相关实例对象
+                    if (converter instanceof GenericHttpMessageConverter) {
+                        GenericHttpMessageConverter ghmc = (GenericHttpMessageConverter)converter;
+                        var10000 = ghmc;
+                    } else {
+                        var10000 = null;
+                    }
+                    // 把当前var10000，也就是当前converter赋给genericConverter，只是如果实例对象不满足条件赋null
+                    genericConverter = var10000;
+                    // 下面开始判断genericConverter能够进行相对应的类型转换
+                    if (genericConverter != null) {
+                        // 如果可以，直接跳出循环
+                        if (((GenericHttpMessageConverter)converter).canWrite((Type)targetType, valueType, selectedMediaType)) {
+                            break;
+                        }
+                        // 如果负责converter也能处理，也跳出循环
+                    } else if (converter.canWrite(valueType, selectedMediaType)) {
+                        break;
+                    }
+                }
+                // 下面的代码一定是循环找到了能进行转换的对象才执行的
+                body = this.getAdvice().beforeBodyWrite(body, returnType, selectedMediaType, converter.getClass(), inputMessage, outputMessage);
+                if (body != null) {
+                    
+                    ...
+
+                    if (genericConverter != null) {
+                        // 进行对应的类型转换，并将其写进response中
+                        genericConverter.write(body, (Type)targetType, selectedMediaType, outputMessage);
+                    } else {
+                        // 如果genericConverter!=null，那么就执行这个
+                        converter.write(body, selectedMediaType, outputMessage);
+                    }
+                }
+
+                ...
+
+                return;
+            }
+        }
+
+~~~
+
++ 因此，**我们如果想自定义内容返回，就需要向IOC容器内添加对应的HttpMessageConverter接口对象**
+
+---
+
+##### Ⅴ与WebMvcAutoConfiguration的关系
+
++ WebMvcAutoConfiguration中有一个内部类EnableWebMvcConfiguration，该类继承自DelegatingWebMvcConfiguration类，而DelegatingWebMvcConfiguration类又继承自WebMvcConfigurationSupport
++ 在资源匹配中我们已经得知，WebMvcConfigurationSupport类中有一个静态代码块，只要项目一开始运行，它的静态代码块就会判断依赖中是否有一些指定的依赖，如果有，就将相关的变量置为true
+
+~~~java
+
+    static {
+        ClassLoader classLoader = WebMvcConfigurationSupport.class.getClassLoader();
+        romePresent = ClassUtils.isPresent("com.rometools.rome.feed.WireFeed", classLoader);
+        jaxb2Present = ClassUtils.isPresent("jakarta.xml.bind.Binder", classLoader);
+        jackson2Present = ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", classLoader) && ClassUtils.isPresent("com.fasterxml.jackson.core.JsonGenerator", classLoader);
+        jackson2XmlPresent = ClassUtils.isPresent("com.fasterxml.jackson.dataformat.xml.XmlMapper", classLoader);
+        jackson2SmilePresent = ClassUtils.isPresent("com.fasterxml.jackson.dataformat.smile.SmileFactory", classLoader);
+        jackson2CborPresent = ClassUtils.isPresent("com.fasterxml.jackson.dataformat.cbor.CBORFactory", classLoader);
+        gsonPresent = ClassUtils.isPresent("com.google.gson.Gson", classLoader);
+        jsonbPresent = ClassUtils.isPresent("jakarta.json.bind.Jsonb", classLoader);
+        kotlinSerializationCborPresent = ClassUtils.isPresent("kotlinx.serialization.cbor.Cbor", classLoader);
+        kotlinSerializationJsonPresent = ClassUtils.isPresent("kotlinx.serialization.json.Json", classLoader);
+        kotlinSerializationProtobufPresent = ClassUtils.isPresent("kotlinx.serialization.protobuf.ProtoBuf", classLoader);
+    }
+
+~~~
+
++ WebMvcConfigurationSupport类中提供了getMessageConverters的方法:
+  
+
+~~~java
+    protected final List<HttpMessageConverter<?>> getMessageConverters() {
+        if (this.messageConverters == null) {
+            this.messageConverters = new ArrayList();
+            this.configureMessageConverters(this.messageConverters);
+            if (this.messageConverters.isEmpty()) {
+                // 配置全在该方法内
+                this.addDefaultHttpMessageConverters(this.messageConverters);
+            }
+
+            this.extendMessageConverters(this.messageConverters);
+        }
+
+        return this.messageConverters;
+    }
+~~~
+
++ 这里主要看全都是空的情况下的addDefaultMessageConverters方法
+
+~~~java
+    protected final void addDefaultHttpMessageConverters(List<HttpMessageConverter<?>> messageConverters) {
+        // 这里导入了一堆的默认转换器
+        messageConverters.add(new ByteArrayHttpMessageConverter());
+        messageConverters.add(new StringHttpMessageConverter());
+        messageConverters.add(new ResourceHttpMessageConverter());
+        messageConverters.add(new ResourceRegionHttpMessageConverter());
+        messageConverters.add(new AllEncompassingFormHttpMessageConverter());
+        if (romePresent) {
+            messageConverters.add(new AtomFeedHttpMessageConverter());
+            messageConverters.add(new RssChannelHttpMessageConverter());
+        }
+
+        Jackson2ObjectMapperBuilder builder;
+        // 静态代码块中被赋值的变量，在这里被使用了
+        if (jackson2XmlPresent) {
+            builder = Jackson2ObjectMapperBuilder.xml();
+            if (this.applicationContext != null) {
+                builder.applicationContext(this.applicationContext);
+            }
+
+            messageConverters.add(new MappingJackson2XmlHttpMessageConverter(builder.build()));
+        } else if (jaxb2Present) {
+            messageConverters.add(new Jaxb2RootElementHttpMessageConverter());
+        }
+
+        if (kotlinSerializationCborPresent) {
+            messageConverters.add(new KotlinSerializationCborHttpMessageConverter());
+        }
+
+        if (kotlinSerializationJsonPresent) {
+            messageConverters.add(new KotlinSerializationJsonHttpMessageConverter());
+        }
+
+        if (kotlinSerializationProtobufPresent) {
+            messageConverters.add(new KotlinSerializationProtobufHttpMessageConverter());
+        }
+
+        if (jackson2Present) {
+            builder = Jackson2ObjectMapperBuilder.json();
+            if (this.applicationContext != null) {
+                builder.applicationContext(this.applicationContext);
+            }
+
+            messageConverters.add(new MappingJackson2HttpMessageConverter(builder.build()));
+        } else if (gsonPresent) {
+            messageConverters.add(new GsonHttpMessageConverter());
+        } else if (jsonbPresent) {
+            messageConverters.add(new JsonbHttpMessageConverter());
+        }
+
+        if (jackson2SmilePresent) {
+            builder = Jackson2ObjectMapperBuilder.smile();
+            if (this.applicationContext != null) {
+                builder.applicationContext(this.applicationContext);
+            }
+
+            messageConverters.add(new MappingJackson2SmileHttpMessageConverter(builder.build()));
+        }
+
+        if (jackson2CborPresent) {
+            builder = Jackson2ObjectMapperBuilder.cbor();
+            if (this.applicationContext != null) {
+                builder.applicationContext(this.applicationContext);
+            }
+
+            messageConverters.add(new MappingJackson2CborHttpMessageConverter(builder.build()));
+        }
+
+    }
+~~~
+
+---
+
+### （三）配置文件
+
+|分组|配置|作用|值|备注|
+|:---:|:---:|:---:|:---:|:---:|
+|日志|logging.level.{root\|sql\|web\|类的全类名\|自定义组名}|指定全局/sql组/web组/类/自定义组的日志级别|字符串值|无|
+|^|logging.group.自定义组名|将多个类划分为一个组|全类名|无|
+|^|logging.file.name|指定日志输出的文件|文件路径|也可以写路径，如果是相对路径，那么是相对于项目所在目录的|
+|^|loggging.file.path|指定日志输出的路径|文件路径|优先级没有logging.file.name高|
+|^|logging.logback.rollingpolicy.file-name-pattern|指定日志归档的命名格式，默认值是`${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz`|配置规则|从配置项可以看出，只有使用Logback才能使用该配置|
+|^|logging.logback.rollingpolicy.clean-history-on-start|应用启动前是否清除以前日志文件|布尔值，默认为false|^|
+|^|logging.logback.rollingpolicy.max-file-size|指定每个日志文件的最大大小|数值|^|
+|^|logging.logback.rollingpolicy.total-size-cap|指定日志文件总大小超过指定大小后，就删除旧的日志文件|大小，默认为0B|^|
+|^|logging.logback.rollingpolicy.max-history|日志文件保存的最大天数|数值，默认7，单位天|^|
+|静态资源|spring.mvc.static-path-pattern|用来**设置匹配的前端请求静态资源的路径**|字符串值|无|
+|^|spring.mvc.webjars-path-pattern|用来**设置匹配的前端请求webjars资源的路径**|字符串值|无|
+|^|spring.web.resources.static-locations|配置用来设置后端处理静态资源要寻找的目录，**它会覆盖掉SpringBoot默认配置的四个路径**|字符串值|**针对webjars的路径匹配依然有效，因为根据源码，webjars相关的路径匹配被单独配置了，而该项配置与webjars的路径匹配没有关系**|
+|^|spring.web.resources.add-mappings|开启静态资源映射|默认为true|无|
+|^|spring.web.resources.cache.period|配置浏览器使用资源的大概时间|数值，单位秒|**如果配置了控制项，该配置会被覆盖**|
+|^|spring.web.resources.cache.use-last-modified|配置是否在浏览器找服务器请求资源前，先发送请求确认资源是否发生了更改|布尔值|无|
+|^|spring.web.resources.cache.cachecontrol.max-age|配置浏览器使用缓存的最大时间，在此期间，浏览器会使用缓存加载资源|数值，单位秒|无|
+|^|spring.web.resources.cache.cachecontrol.cache-public|设置是否共享缓存|布尔值|无|
+|路径匹配|spring.mvc.pathmatch.matching-strategy|设置路径匹配原则|无|
+|内容协商|spring.mvc.contentnegotiation.favor-parameter|设置SpringBoot开启基于路径参数的内容协商|布尔值，默认false|无|
+|^|spring.mvc.contentnegotiation.parameter-name|指定通过参数内容协商传递返回类型的参数名|字符串值|无|
+|^|spring.mvc.contentnegotiation.media-types.{type}=aaa/bbb|type是我们给这个媒体类型起的名字，这个名字是用来路径传参的时候携带的值，比如`spring.mvc.contentnegotiation.media-types.yaml=text/yaml`,那么路径传参的时候请求参数就是`type=yaml`|媒体类型|无|
+
+---
+
+### （四）注解汇总
+
+|分组|注解|作用|作用范围|备注|
+|:---:|:---:|:---:|:---:|:---:|
+|组件注册|@Configuration|声明对应类为配置类|类|无|
+|^|@SpringBootConfiguration|生命对应类为SpringBoot项目的配置类|类|其实跟上面的注解没有区别|
+|^|@Bean|使方法返回值作为bean加入到IOC容器内|方法|无|
+|^|@Scope|声明该类型的bean是单实例还是多实例|方法|无|
+|^|@Controller/@Service/@Repository/@Conponent|声明对应类属于控制层/服务层/DAO层/其它层，并将其纳入IOC容器管理|类|无|
+|^|@Import|指定对应类受IOC容器管理|类|一般用于将第三方包下的类纳入IOC容器管理|
+|^|@ComponentScan|开启组件扫描|类|作用于配置类上|
+|条件注解|@ConditionalOnClass|若类路径下存在该类，那么触发指定行为|类/方法|触发指定行为需要利用其他注解实现，如加入IOC容器需要@Bean注解|
+|^|@ConditionalOnMissingClass|若类路径下不存在该类，那么触发指定行为|^|^|
+|^|@ConditionalOnBean|若IOC容器内存在指定的bean,那么触发指定行为|^|^|
+|^|@ConditionalOnMissingBean|如果容器中不存在这个Bean（组件）,那么触发指定行为|^|^|
+|@ConfigurationProperties|声明组件的属性和配置文件内key的前缀项以进行项绑定|类|该注解生效必须**使作用类被@Component及相关注解作用或被配置类的@EnableConfigurationProperties指定**，且**对应的实体类需要有getter和setter方法**<br>该注解生效的时机貌似是bean创建时检查|
+|@EnableConfigurationProperties|指定某些类是属性绑定类|类|应作用于配置类|
+|Jackson相关注解|@JacksonXmlRootElement|声明对应类可被转换为xml格式|类|无|
+|日志|@Slf4j|被该注解作用的类中的方法内，都默认可以得到一个实现了SLF4J日志门面的日志对象|类|该注解来自于Lombok|

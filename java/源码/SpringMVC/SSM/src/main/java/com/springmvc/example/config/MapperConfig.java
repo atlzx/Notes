@@ -24,34 +24,23 @@ import javax.sql.DataSource;
 @ComponentScan("com.springmvc.example.mapper")  // 开启组件扫描
 @PropertySource(value = "classpath:jdbc.properties")  // 从properties文件内读取jdbc连接所需的相关资源
 public class MapperConfig {
+    @Value("${jdbc.url}")
     private String url;
+    @Value("${jdbc.username}")
     private String username;
+    @Value("${jdbc.password}")
     private String password;
+    @Value("${jdbc.driver}")
     private String driver;
 
     @Bean
     // 提供数据库连接池相关对象，这里提供Druid连接池对象
-    public DataSource dataSource(
-        // 使用@Value注解把从properties文件内读取到的值赋给相关属性，需要使用${}插值表达式
-        // 如果在方法外声明属性，再在方法内使用属性，那么得到的值为空
-        // 出现该情况的原因是被@Bean注解作用的方法执行顺序早于被@Value注解作用的属性赋值顺序，因此方法执行时属性还未被注入
-        // 可以直接在方法参数列表传入参数，再使用@Value注入，这样就可以得到值了
-        @Value("${jdbc.url}") String url,
-        @Value("${jdbc.username}") String username,
-        @Value("${jdbc.password}") String password,
-        @Value("${jdbc.driver}") String driver
-
-    ){
+    public DataSource dataSource(){
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setUrl(url);
         dataSource.setUsername(username);
         dataSource.setPassword(password);
         dataSource.setDriverClassName(driver);
-        // 顺便给属性赋个值
-        this.url=url;
-        this.username=username;
-        this.password=password;
-        this.driver=driver;
         return dataSource;
     }
 

@@ -149,6 +149,17 @@
 
 ---
 
+#### ③常用方法
+
+|所属类|方法/构造器|参数|作用|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|ClassPathXmlApplicationContext|public ClassPathXmlApplicationContext(String configLocation)|configLocation:想读取的xml相对于resources的路径|根据xml文件生成容器对象|容器对象|ClassPathXmlApplicationContext|无异常|无|[样例](../源码/Spring/SpringTest1/src/test/java/com/spring/test/GetBeanTest.java)|
+|BeanFactory|Object getBean(String name)|name:xml文件内标签中对应类路径的id|得到指定id对应的类对象|指定类对象|Object|BeansException|无|^|
+|^|<T> T getBean(Class<T> requiredType)|requiredType:想得到类对应Class对象|得到指定的类对象|^|^|^|**如果对应类实现了接口，那么方法接收的是接口的Class对象**|^|
+|^|<T> T getBean(String name, Class<T> requiredType)|name:xml文件内标签中对应类路径的id<br>requiredType:想得到类对应Class对象|得到指定的类对象|^|^|^|无|^|
+
+---
+
 ### （三）xml文件管理Bean
 
 #### ①xml标签详解
@@ -348,16 +359,7 @@
 
 ---
 
-#### ②常用方法
 
-|所属类|方法/构造器|参数|作用|返回值|返回值类型|异常|备注|样例|
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|ClassPathXmlApplicationContext|public ClassPathXmlApplicationContext(String configLocation)|configLocation:想读取的xml相对于resources的路径|根据xml文件生成容器对象|容器对象|ClassPathXmlApplicationContext|无异常|无|[样例](../源码/Spring/SpringTest1/src/test/java/com/spring/test/GetBeanTest.java)|
-|BeanFactory|Object getBean(String name)|name:xml文件内标签中对应类路径的id|得到指定id对应的类对象|指定类对象|Object|BeansException|无|^|
-|^|<T> T getBean(Class<T> requiredType)|requiredType:想得到类对应Class对象|得到指定的类对象|^|^|^|**如果对应类实现了接口，那么方法接收的是接口的Class对象**|^|
-|^|<T> T getBean(String name, Class<T> requiredType)|name:xml文件内标签中对应类路径的id<br>requiredType:想得到类对应Class对象|得到指定的类对象|^|^|^|无|^|
-
----
 
 #### ③创建类对象
 
@@ -383,7 +385,7 @@
 
 ---
 
-#### ④依赖注入
+#### ③依赖注入
 
 + 上面的获取类对象都是通过调用空参的构造函数得到的对象，如果我们想得到有参的对象的话，我们就需要用到**依赖注入**了
 + 依赖注入分为两种
@@ -407,31 +409,7 @@
 
 ---
 
-#### ⑤作用域与生命周期
-
-+ 每个IoC容器的bean都有其作用域，它的作用域默认是singleton，即**单例的，且对象在IoC容器初始化时就被创建**
-  + 使用scope属性可以修改指定bean的作用域，修改为prototype可以使**每次通过IoC容器获取对象时得到的对象都是新对象，且对象在获取bean时才被创建**
-  + 如果在WebApplicationContext环境下还会有另外几个作用域:request(单次请求有效)和session(会话范围内有效)
-+ 每个bean也有其生命周期
-  1. bean对象的创建:Spring会将所有可以加入IOC容器的对象加入到IOC容器内，包括但可能不限于:配置类对象、MVC三层类对象、**被@Bean注解作用的配置类内的方法返回的对象**...
-  2. 给bean对象的属性赋值:在得到所有的对象后，Spring会批量给每个属性进行赋值,**如果@Bean注解作用的方法使用了其所在类下的被@Autowired注解作用的属性，此时由于属性赋值发生在bean对象创建之后，因此无法得到详细的值，只能得到null或属性的默认值**
-  3. 调用bean的后置处理器
-  4. bean对象初始化:执行初始化方法
-  5. 调用bean的后置处理器
-  6. bean对象就绪
-  7. bean对象销毁:关闭IOC容器时，bean对象会在IOC容器关闭之前销毁
-  8. IoC容器关闭
-+ 使用init-method和destroy-method属性可以指定初始化时执行的方法(第四步)和销毁时执行的方法(第七步)
-+ 后置处理器用来在bean对象初始化前后执行额外的操作，**后置处理器需要我们自己手动写**:
-  + 首先定义一个类，实现BeanPostProcessor接口，并实现接口的方法
-  + 在xml文件内创建一个bean来表示该类的实例
-  + 这样就能使了
-+ [样例](../源码/Spring/SpringTest1/src/test/java/com/spring/test/SALCTest.java)
-+ [xml样例](../源码/Spring/SpringTest1/src/main/resources/SALC.xml)
-
----
-
-#### ⑥FactoryBean
+#### ④FactoryBean
 
 + FactoryBean是Spring提供的一种整合第三方框架的常用机制，它可以帮我们把复杂组件创建的详细过程和繁琐细节都屏蔽起来，只把最简洁的使用界面展示给我们
 + **FactoryBean和BeanFactory不是一个东西**
@@ -516,7 +494,46 @@
 
 ---
 
-### （五）最基本的IoC容器实现
+### （五）作用域与生命周期
+
+#### ①基本概述
+
++ 每个IoC容器的bean都有其作用域，它的作用域默认是singleton，即**单例的，且对象在IoC容器初始化时就被创建**
+  + 使用scope属性可以修改指定bean的作用域，修改为prototype可以使**每次通过IoC容器获取对象时得到的对象都是新对象，且对象在获取bean时才被创建**
+  + 如果在WebApplicationContext环境下还会有另外几个作用域:request(单次请求有效)和session(会话范围内有效)
++ 每个bean也有其生命周期
+  1. bean对象的创建:Spring会将所有可以加入IOC容器的对象加入到IOC容器内，包括但可能不限于:配置类对象、MVC三层类对象、**被@Bean注解作用的配置类内的方法返回的对象**...
+  2. 给bean对象的属性赋值:在得到所有的对象后，Spring会批量给每个属性进行赋值,**如果@Bean注解作用的方法使用了其所在类下的被@Autowired注解作用的属性，此时由于属性赋值发生在bean对象创建之后，因此无法得到详细的值，只能得到null或属性的默认值**
+  3. 调用bean的后置处理器
+  4. bean对象初始化:执行初始化方法
+  5. 调用bean的后置处理器
+  6. bean对象就绪
+  7. bean对象销毁:关闭IOC容器时，bean对象会在IOC容器关闭之前销毁
+  8. IoC容器关闭
+
+
++ 使用init-method和destroy-method属性可以指定初始化时执行的方法(第四步)和销毁时执行的方法(第七步)
++ 后置处理器用来在bean对象初始化前后执行额外的操作，**后置处理器需要我们自己手动写**:
+  + 首先定义一个类，实现BeanPostProcessor接口，并实现接口的方法
+  + 在xml文件内创建一个bean来表示该类的实例
+  + 这样就能使了
++ [样例](../源码/Spring/SpringTest1/src/test/java/com/spring/test/SALCTest.java)
++ [xml样例](../源码/Spring/SpringTest1/src/main/resources/SALC.xml)
+
+---
+
+#### ②bean的创建详情
+
++ Spring在进行bean的创建时，会根据@ComponentScan指定的包路径来寻找符合条件的类
+  + 它会将包按照字典序排序，然后依次扫描
+  + 第一次扫描先扫描到类，然后将包含@Component及相关注解、@Configuration注解、@SpringBootApplication注解的类实例化并加入到IOC容器内
+  + 在加载完这些基本的组件后，接下来会继续**按照包的字典序排序**，扫描对应类下的其它注解，每个类按照@Import->@Bean->@EnableConfigurationProperties的顺序依次初始化，该类的以上注解全部生效后，再扫描下一个类
+  + **Spring保证如果A依赖于B，那么B将先于A加入IOC容器**
++ 每个bean在创建时，都是直接执行其生命周期到就绪状态，Spring再去初始化下一个bean
+
+---
+
+### （六）最基本的IoC容器实现
 
 + [ApplicationContext接口](../源码/Spring/CreateIoC/src/main/java/com/spring/sample/ApplicationContext.java)
 + [ApplicationContext实现类](../源码/Spring/CreateIoC/src/main/java/com/spring/sample/AnnotationApplicationContext.java)
@@ -1435,13 +1452,3 @@
 |a*b|匹配前缀是a，后缀是b的资源|无|
 
 + [样例](../源码/Spring/SpringEL/src/test/java/PathTest.java)
-
-
-
-
-
-
-
-
-
-

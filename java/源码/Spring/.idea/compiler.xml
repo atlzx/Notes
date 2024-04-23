@@ -18,5 +18,8 @@
         <module name="I18n" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="BeanTest" target="17" />
+    </bytecodeTargetLevel>
   </component>
 </project>
