@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.springboot.example</groupId>
-    <artifactId>SpringBootMessageConverter</artifactId>
+    <artifactId>SpringBootThymeleaf</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>SpringBootMessageConverter</name>
-    <description>SpringBootMessageConverter</description>
+    <name>SpringBootThymeleaf</name>
+    <description>SpringBootThymeleaf</description>
     <properties>
         <java.version>17</java.version>
     </properties>
@@ -20,18 +20,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <!-- 导入jackson的xml转换依赖，SpringBoot默认支持xml转换，但是没有提供依赖 -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-xml</artifactId>
-        </dependency>
-
-        <!-- 导入jackson的yaml转换依赖 -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
         </dependency>
 
         <dependency>
@@ -46,6 +34,10 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

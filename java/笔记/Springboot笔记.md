@@ -379,9 +379,58 @@ public class People {
 
 ---
 
+### （三）Thymeleaf
+
+#### ①快速体验
+
++ [Thymeleaf](https://www.thymeleaf.org/)是一款用于前后端不分离时渲染页面的模板引擎，SpringBoot默认支持该模板引擎，但未导入对应场景
+  + 除ThymeLeaf外，SpringBoot还默认支持以下引擎:
+    + FreeMarker
+    + Groovy
+    + Mustache
++ 首先我们要导入场景
+
+~~~xml
+
+  <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+  </dependency>
+
+~~~
+
++ SpringBoot有专门的ThymeleafAutoConfiguration类，在其内部类DefaultTemplateResolverConfiguration内的defaultTemplateResolver方法中，设置了寻找对应模板的前缀和后缀:
+
+~~~java
+    @Bean
+    SpringResourceTemplateResolver defaultTemplateResolver() {
+        SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
+        ...
+        resolver.setPrefix(this.properties.getPrefix());  // 设置寻找模板引擎的前缀
+        resolver.setSuffix(this.properties.getSuffix());  // 设置寻找模板引擎的后缀
+        ...
+        return resolver;
+    }
+~~~
+
++ 我们通过查看getPrefix方法和getSuffix方法可以看到，默认的值分别为`classpath:/templates/`和`.html`
++ 也就是说，**该模板引擎默认从类路径下的tamplates目录下寻找xxx.html文件**
++ 现在我们可以开始编写一个简单的Thtmeleaf模板了:
+  + 首先写一个controller，不要写@ResponseBody,直接返回我们想渲染的模板名称，也不需要带后缀，直接返回字符串即可
+  + 在对应路径下声明一个对应的html模板
++ 然后就可以用了
++ [模板样例](../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/hello.html)
++ [controller样例](../源码/SpringBoot/SpringBootThymeleaf/src/main/java/com/springboot/example/springbootthymeleaf/controller/ThymeleafController.java)
+
+---
+
+#### ②核心语法
 
 
 
+
+
+---
 
 ## 配置汇总
 
@@ -1349,3 +1398,5 @@ public class People {
 |@EnableConfigurationProperties|指定某些类是属性绑定类|类|应作用于配置类|
 |Jackson相关注解|@JacksonXmlRootElement|声明对应类可被转换为xml格式|类|无|
 |日志|@Slf4j|被该注解作用的类中的方法内，都默认可以得到一个实现了SLF4J日志门面的日志对象|类|该注解来自于Lombok|
+
+---

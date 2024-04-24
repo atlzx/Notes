@@ -13,6 +13,7 @@
         <option value="$PROJECT_DIR$/SpringBootLogging/pom.xml" />
         <option value="$PROJECT_DIR$/SpringBootWebStaticResource/pom.xml" />
         <option value="$PROJECT_DIR$/SpringBootMessageConverter/pom.xml" />
+        <option value="$PROJECT_DIR$/SpringBootThymeleaf/pom.xml" />
       </list>
     </option>
   </component>

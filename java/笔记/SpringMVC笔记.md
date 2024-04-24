@@ -1059,7 +1059,7 @@
 |:---:|:---:|:---:|
 |@EnableWebMvc|1.自动提供RequestMappingHandlerMapping和RequestMappingHandlerAdapter的bean对象<br>2.在接收到JSON类型参数时自动解析JSON，避免出现415错误|无|
 |@RequestMapping|指定映射路径与支持的请求类型等|无|
-|@ResponseBody|使方法返回值接收JSON转换器处理并不通过视图解析器|无|
+|@ResponseBody|使方法返回值受对应转换器处理并不通过视图解析器解析|无|
 |@{Get\|Post\|Put\|Delete\|Patch}Mapping|指定不同请求类型的映射路径|无|
 |@RequestParam|接收param参数|无|
 |@PathVariable|接收路径参数|无|
