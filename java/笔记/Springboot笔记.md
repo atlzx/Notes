@@ -29,7 +29,7 @@
           但是不写IDEA（比较老的版本可能不报）可能会报错
           将该标签设置为空体可以使Maven直接从本地仓库中寻找依赖项，就直接绕过了本地路径
          -->
-        <relativePath/>  
+        <relativePath/>
     </parent>
 
 ~~~
@@ -417,7 +417,7 @@ public class People {
 + 也就是说，**该模板引擎默认从类路径下的tamplates目录下寻找xxx.html文件**
 + 现在我们可以开始编写一个简单的Thtmeleaf模板了:
   + 首先写一个controller，不要写@ResponseBody,直接返回我们想渲染的模板名称，也不需要带后缀，直接返回字符串即可
-  + 在对应路径下声明一个对应的html模板
+  + 在对应路径下声明一个对应的html模板，可以在其html标签下加上属性约束:`<html lang="en" xmlns:th="http://www.thymeleaf.org">`，这样idea会有提示
 + 然后就可以用了
 + [模板样例](../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/hello.html)
 + [controller样例](../源码/SpringBoot/SpringBootThymeleaf/src/main/java/com/springboot/example/springbootthymeleaf/controller/ThymeleafController.java)
@@ -426,9 +426,116 @@ public class People {
 
 #### ②核心语法
 
+|语法|作用|值|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|
+|th:text|将文本值渲染到对应标签内|一般使用插值表达式插入|无|[样例1](../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/hello.html)|
+|th:utext|将HTML渲染到对应标签内|^|浏览器会当成HTML语句渲染|^|
+|th:属性|渲染属性值|^|无|^|
+|th:attr|批量渲染属性值|例:`th:attr="style=${style},src=${src}"`|无|^|
+|th:if|如果其表达式为真，那么该属性所在标签会被渲染|一般使用插值表达式插入，并运算|无|^|
+|th:switch|相当于switch语句|一般使用插值表达式插入|无|^|
+|th:case|相当于case语句|^|无|^|
+|th:object|变量选择，配合*{}插值表达式可以在子标签中引用该变量|^|无|^|
+|th:each|遍历集合|例:`th:each="item,state : ${list}"`|[样例2](../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/list.html)|
+|th:fragment|定义模板|例:`th:fragment="xxx"`|无|[样例3](../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/template.html)|
+|th:insert|在标签内部插入对应组件|例:`th:insert="~{templateName :: fragmentName}"`|无|[样例4](../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/useTemplate.html)|
+|th:replace|将该标签替换为组件|例:`th:replace="~{templateName :: fragmentName}"`|无|^|
 
+|插值表达式|作用|备注|
+|:---:|:---:|:---:|
+|${}|将request域中的变量取出使用|无|
+|@{}|专门用于适配URL路径，会动态的加上后端的上下文路径|无|
+|#{}|国际化消息|无|
+|~{}|导入片段（模板）时使用|无|
+|*{}|变量选择，需要配合th:object绑定对象|无|
 
+|系统工具/内置对象|作用|备注|
+|:---:|:---:|:---:|
+|param|请求参数对象|无|
+|session|session对象|无|
+|application|context对象|无|
+|#execInfo|模板执行消息|无|
+|#messages|国际化消息|无|
+|#uris|uri/url工具|无|
+|#conversions|类型转换工具|无|
+|#dates|日期工具，是java.util.Date的工具类|无|
+|#calendars|日期工具，是java.util.Calendar的工具类|无|
+|#temporals|JDK8+,java.time的工具类|无|
+|#numbers|数字操作工具|无|
+|#strings|字符串操作工具|无|
+|#objects|对象操作工具|无|
+|#bools|布尔值操作工具|无|
+|#arrays|数组操作工具|无|
+|#lists|List操作工具|无|
+|#sets|Set操作工具|无|
+|#maps|Map操作工具|无|
+|#aggregates|集合聚合工具(sum、avg)|无|
+|#ids|id生成工具|无|
 
++ 其它相关操作与java基本一致，但是有几个特殊的:
+  + 布尔运算中，**与操作需要使用`and`关键字，或操作需要使用`or`关键字**
+  + 字符串拼接时，可以在拼接的字符串开头和结尾加上`|`来避免传统的使用`+`符号进行拼接，而是使用类似模板字符串的拼接方式进行拼接
+  + 条件运算发生了一些变化:
+    + if-then： `(value)?(then)`
+    + if-then-else: `(value)?(then):(else)`（三元运算符）
+    + default: `(value)?:(defaultValue)`
+  + 如果想在属性内表示字符串，需要使用单引号引起来
+  + **如果想在标签内部直接插值，可以使用`[[...]]`或`[(...)]`进行插值**
+
+---
+
+#### ③遍历
+
++ 使用th:each可以对集合进行遍历:
+  + `th:each="item,state : ${list}`
+    + item表示当前遍历到的集合元素，变量名可以随便取
+    + state表示当前遍历到的元素的状态，这是个键值对类型的集合对象
+    + list表示被遍历的集合对象，它的名字取决于request域中的待遍历对象的变量名
++ state变量中有多个属性，这些属性都有他们各自的名称:
+
+|属性名|作用|备注|
+|:---:|:---:|:---:|
+|index|索引|无|
+|count|遍历到的是第几个元素|无|
+|size|遍历的元素总量|无|
+|current|遍历到的当前元素值|无|
+|even|当前的count是否是偶数|无|
+|odd|当前的count是否是奇数|无|
+|first|是否是第一个元素|无|
+|last|是否是最后一个元素|无|
+
++ [样例](../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/list.html)
+
+---
+
+#### ④属性优先级
+
++ Order值越低，优先级越高
+
+|Order|分类|属性|
+|:---:|:---:|:---:|
+|1|片段包含|th:insert<br>th:replace|
+|2|遍历|th:each|
+|3|判断|th:if<br>th:unless<br>th:switch<br>th:case|
+|4|定义本地变量|th:object<br>th:with|
+|5|通用方式属性修改|th:attr<br>th:attrprepend<br>th:attrappend|
+|6|指定属性修改|th:value<br>th:href<br>th:src<br>...|
+|7|文本值|th:text<br>th:utext|
+|8|片段指定|th:fragment|
+|9|片段移除|th:remove|
+
+---
+
+#### ⑤模板布局
+
++ 我们有时想将网页变成一些可复用的组件，Thymeleaf也为我们提供了这一功能:
+  + 如果我们想定义一个可复用的组件，我们需要在该组件最外层的标签上加上`th:fragment`属性，并给该组件起一个名字
+  + 接下来我们就可以在别的地方引用了
+    + 使用`th:insert`或`th:replace`属性来引用该组件
+    + 属性内使用`~{}`插值表达式来专门进行引用
+    + 语法为`templateName :: componentName`，如我们的组件名字叫top，它所在的文件名是template，那么引用时就是`~{template :: top}`
++ [组件样例](../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/template.html)
++ [调用组件样例](../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/useTemplate.html)
 
 ---
 
@@ -1373,6 +1480,7 @@ public class People {
 |^|spring.web.resources.cache.cachecontrol.max-age|配置浏览器使用缓存的最大时间，在此期间，浏览器会使用缓存加载资源|数值，单位秒|无|
 |^|spring.web.resources.cache.cachecontrol.cache-public|设置是否共享缓存|布尔值|无|
 |路径匹配|spring.mvc.pathmatch.matching-strategy|设置路径匹配原则|无|
+|^|server.servlet.context-path|设置项目的上下文路径|路径字符串|详见[问题汇总](问题汇总.md)|
 |内容协商|spring.mvc.contentnegotiation.favor-parameter|设置SpringBoot开启基于路径参数的内容协商|布尔值，默认false|无|
 |^|spring.mvc.contentnegotiation.parameter-name|指定通过参数内容协商传递返回类型的参数名|字符串值|无|
 |^|spring.mvc.contentnegotiation.media-types.{type}=aaa/bbb|type是我们给这个媒体类型起的名字，这个名字是用来路径传参的时候携带的值，比如`spring.mvc.contentnegotiation.media-types.yaml=text/yaml`,那么路径传参的时候请求参数就是`type=yaml`|媒体类型|无|

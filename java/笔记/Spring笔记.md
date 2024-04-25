@@ -1196,9 +1196,6 @@
                 <artifactId>log4j-slf4j2-impl</artifactId>
                 <version>${log4j.version}</version>
             </dependency>
-
-
-
         </dependencies>
     </dependencyManagement>
 

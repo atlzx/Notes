@@ -1,10 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
     <h1>你好:<span th:text="${message}"></span></h1>
+    <br>
+    <div>th:utext属性效果:<span th:utext="${utext}"></span></div>
+    <br>
+    <div>th:text属性效果:<span th:text="${text}"></span></div>
+    <br>
+    th:属性名效果:
+    <img th:src="@{${src1}}" alt="一张图片">
+    <br>
+    th:attr效果:
+    <!-- 使用@{}来自动加上上下文路径，通过@{}嵌套${}可以达到对应目的并简化操作 -->
+    <img src="盒子模型.png" alt="一张图片" th:attr="src=@{${src2}},style=${style}">
+    <br>
+    <div th:if="${show1} and ${show2}">只有条件为true时才显示</div>
+    <br>
+    使用Thymeleaf提供的工具类:
+    <div th:text="${#strings.toUpperCase(str)}"></div>
+    <br>
+    字符串拼接或替换:
+    <div th:text="|My name is ${name}|"></div>
+    <br>
+    switch-case选择:
+    <div th:switch="${switch}">
+        <span th:case="1">1</span>
+        <span th:case="2">2</span>
+        <span th:case="3">3</span>
+    </div>
+    <br>
+    变量选择:
+    <!-- 使用session的get方法来得到指定的值 -->
+    <div th:object="${session.get('map')}">
+        <div th:text="*{aaa}"></div>
+        <div th:text="*{bbb}"></div>
+        <div th:text="*{ccc}"></div>
+    </div>
+
 </body>
 </html>

@@ -406,6 +406,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        
         <spring.version>6.1.5</spring.version>
         <servlet.version>6.0.0</servlet.version>
         <lombok.version>1.18.32</lombok.version>
