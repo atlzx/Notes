@@ -1,19 +1,29 @@
 package com.springboot.example.springbootthymeleaf.controller;
 
 import com.springboot.example.springbootthymeleaf.pojo.Person;
+import com.springboot.example.springbootthymeleaf.service.MyService;
 import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.logging.log4j.message.Message;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.*;
 
 @Controller
 @RequestMapping("/th")
 public class ThymeleafController {
+    @Autowired
+    private MessageSource messageSource;
+    @Autowired
+    private MyService myService;
     @GetMapping("/hello")
     public String hello(@RequestParam("name") String name, Model model, HttpSession session){
         model.addAttribute("message",name);
@@ -56,5 +66,30 @@ public class ThymeleafController {
     @GetMapping("/template")
     public String template(){
         return "useTemplate";
+    }
+
+    @GetMapping("/national")
+    @ResponseBody
+    public String national(ServletRequest request){
+        Locale locale = request.getLocale();
+        String message = messageSource.getMessage("message", null, locale);
+        return message;
+    }
+
+    @GetMapping("/nationalTemplate")
+    public String nationalTemplate(){
+        return "national";
+    }
+
+    @GetMapping("/error")
+    public String error() throws Exception{
+        int a=1/0;
+        throw new ArithmeticException("aaaa");
+    }
+
+    @GetMapping("/useRequest")
+    public String useRequestAnywhere(){
+        myService.useRequest();
+        return "useRequest";
     }
 }

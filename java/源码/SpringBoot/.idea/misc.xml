@@ -14,7 +14,14 @@
         <option value="$PROJECT_DIR$/SpringBootWebStaticResource/pom.xml" />
         <option value="$PROJECT_DIR$/SpringBootMessageConverter/pom.xml" />
         <option value="$PROJECT_DIR$/SpringBootThymeleaf/pom.xml" />
+        <option value="$PROJECT_DIR$/Spring-SSM/pom.xml" />
+        <option value="$PROJECT_DIR$/SpringBoot-SSM/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/Spring-SSM/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="17" project-jdk-type="JavaSDK">
