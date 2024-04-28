@@ -89,12 +89,14 @@
 
 + 接下来就能访问了，直接访问[指定路径](http://localhost:8080/index)来测试是否正确配置
 <br>
+
 + 除此以外，SpringBoot还额外提供了插件，供我们通过命令行的方式直接运行该jar包或war包
   + 首先执行`mvn clean package`重新打包
   + 接下来在所在包的对应目录下打开cmd,执行`java -jar xxxx.jar/war`来运行
   + 访问路径确认是否项目已经运行
 <br>
 <br>
+
 + 由于SpringBoot为了简化配置，它自动的配置了很多默认配置项
 + 如果我们想修改，我们可以在对应jar包或war包的同级目录下新建一个叫`application.properties`的配置文件，在该配置文件内指定自定义配置:
 
@@ -306,80 +308,7 @@
 
 ---
 
-### （二）yaml文件
-
-#### ①基本语法
-
-+ 我们的application.properties文件不能明显的表示层级关系，因此当其配置变多以后，里面的内容会变得难以阅读和维护
-+ 为了解决这方面的困境，我们可以提供另外一种配置文件:application.yaml配置文件
-  + YAML 是 "YAML Ain't a Markup Language"（YAML 不是一种标记语言）。在开发的这种语言时，YAML 的意思其实是："Yet Another Markup Language"（是另一种标记语言）
-  + 该文件层次分明，方便人类读写
-+ 它的基本语法很简单
-  + 区分大小写
-  + 使用缩进表示层级关系
-  + 使用`key:(空格)value`的键值对形式表示数据，**value前的空格必须写**
-  + 只要两个key的左侧是对齐的，那么它们就是相同层级的
-  + #表示注释
-  + 不能使用Tab键，只能使用空格
-  + **二者的部分配置冲突时，properties文件的优先级比yaml文件的优先级高**
-+ 示例:
-  + 现在我们想对一个java实体类进行属性注入，我们需要在配置类中配置其属性默认值:
-
-~~~java
-
-@Component
-@ConfigurationProperties(prefix = "people")
-@Data
-public class People {
-    private String name;
-    private Integer age;
-    private Date birthDay;
-    private Boolean like;
-    private Child child; //嵌套对象
-    private List<Dog> dogs; //数组（里面是对象）
-    private Map<String,Cat> cats; //表示Map
-}
-
-~~~
-
-+ 首先是[使用properties文件进行配置](../源码/SpringBoot/SpringBootInitializrDemo/src/main/resources/application.properties)
-+ 接下来[使用yaml文件进行配置](../源码/SpringBoot/SpringBootInitializrDemo/src/main/resources/application.yaml)
-
----
-
-#### ②复杂对象表示与语法细节
-
-+ 如果我们想使用properties文件表示复杂对象的话:
-  + 对于Map对象，就直接写xxx.xxx.key.propertyName=yyy
-  + 对于List或数组对象，直接写xxx.xxx.arr[index].propertyName=yyy
-+ 如果我们想使用yml文件表示复杂对象:
-
-~~~yml
-  xxx:
-    yyy: [value1,value2,...] # 表示数组
-    zzz: 
-      - name: lzx  # 如果是对象数组，直接在- 后面加上属性，然后赋值
-      - age: 10
-    kkk: {name: ly,age: 20}  # 如果是对象，可以直接用大括号表示
-    jjj:
-      name: ly  # 或者使用这种方法进行测试
-      age: 20
-~~~
-
-+ 配置文件还有一些特殊语法:
-  + 如果我们的属性名是小驼峰命名法命名的，如birthDay,那么**yml文件或properties文件内都可以写成birth-day**
-  + **在properties文件中**，如果一行文本过长，那么可以写一个`\`字符，然后换行接着写
-  + 对于文本，一般不需要加引号，就默认是字符串。但是yml文件确实提供了引号:
-    + 单引号内的转义字符不会生效
-    + 双引号内的转义字符会生效
-  + 对于大文本，即多行文本
-    + 使用`|`开头，然后将大文本写在其下方，**注意是正下方或右下，不能写的相对于该符号靠左**，它可以保留文本格式，即文本写的是什么样，输出就是什么样
-    + 使用`>`开头，然后将大文本写在其下方，**注意是正下方或右下，不能写的相对于该符号靠左**，它会折叠换行符，改为一个空格隔开
-  + 还可以使用`---`将多个yml文档合并在一个文档中，每个文档区依然认为内容独立
-
----
-
-### （三）Web开发
+### （二）Web开发
 
 #### ①DispatcherServlet执行流程
 
@@ -1942,9 +1871,123 @@ public class ServletWebServerFactoryAutoConfiguration {
 
 ---
 
-### （四）数据访问
+### （三）数据访问
+
+#### ①整合SSM
+
++ 由于SpringBoot自动装配的便捷性，我们整合SSM会十分的方便
+  + 首先需要导入相关依赖，在SpringBoot的项目创建页选择Web开发依赖、Lombok、MySQL驱动、Mybatis依赖（这四个都可以选）
+
+![SSM整合](../文件/图片/SpringBoot图片/SSM整合1.png)
+
+  + 如果想导入Druid连接池，由于SpringBoot没有提供，我们需要自己导:
+
+~~~xml
+    <properties>
+        <java.version>17</java.version>
+
+        <druid.version>1.2.22</druid.version>
+    </properties>
+
+    <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>druid</artifactId>
+        <version>${druid.version}</version>
+    </dependency>
+
+~~~
+
+  + 接下来就创建controller、mapper等java文件
+  + 在创建mapper时，我们在创建接口之后，可以依靠MybatisX插件快速的生成对应的xml文件（按Alt+Enter）
+  + 选择Generate mapper of xml
+
+![SSM整合](../文件/图片/SpringBoot图片/SSM整合2.png)
+
+  + 在下面的页面选择我们的xml文件生成位置，一般我们都会选择resources目录下的mapper目录
+
+![SSM整合3](../文件/图片/SpringBoot图片/SSM整合3.png)
+
+  + 在我们创建出对应的方法时，也可以通过MybatisX快速在对应的xml文件内生成标签
+
+![SSM整合4](../文件/图片/SpringBoot图片/SSM整合4.png)
+
+  + 接下来创建对应的实体类对象，**不要忘记提供setter方法**，一般加一个@Data注解就行了
+  + 最后配置配置文件，提供JDBC相关的四个必须配置和Mybatis的xml文件映射路径，以及选择性提供连接池、配置Mybatis的驼峰映射、主键回显等
+
+![SSM整合5](../文件/图片/SpringBoot图片/SSM整合5.png)
+
+---
+
+#### ②底层原理
 
 
++ SpringBoot的自动配置包（org.springframework.boot.spring-boot.autoconfiguration）中META-INF目录下的spring目录里的文件中已经默认导入了一些jdbc相关的配置类:
+
+~~~java
+    // 配置连接池相关
+    org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+    // 不知道干嘛的
+    org.springframework.boot.autoconfigure.jdbc.JdbcClientAutoConfiguration
+    // 配置Spring提供的JdbcTemplate的配置
+    org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
+    // 下面的没什么关联，也不知道干嘛的
+    org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration
+    org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration
+    // 配置事务的相关类
+    org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
+~~~
+
++ DataSourceAutoConfiguration类默认绑定了DataSourceProperties属性配置类，它的相关前缀是`spring.datasource`
++ 另外，他还默认导入了一些数据库连接池:
+
+~~~java
+    @Configuration(proxyBeanMethods = false)
+    @Conditional({PooledDataSourceCondition.class})
+    @ConditionalOnMissingBean({DataSource.class, XADataSource.class})
+    // 导入了下面的连接池对象，
+    @Import({DataSourceConfiguration.Hikari.class, DataSourceConfiguration.Tomcat.class, DataSourceConfiguration.Dbcp2.class, DataSourceConfiguration.OracleUcp.class, DataSourceConfiguration.Generic.class, DataSourceJmxConfiguration.class})
+    protected static class PooledDataSourceConfiguration {
+        protected PooledDataSourceConfiguration() {
+
+        }
+
+        @Bean
+        @ConditionalOnMissingBean({JdbcConnectionDetails.class})
+        PropertiesJdbcConnectionDetails jdbcConnectionDetails(DataSourceProperties properties) {
+            return new PropertiesJdbcConnectionDetails(properties);
+        }
+    }
+~~~
+
++ 另外，在Mybatis的场景启动器中(org.mybatis.spring.boot.mybatis-spring-boot-autoconfiguration)的META-INF目录下的spring目录中也导入了相关配置类:
+
+~~~java
+    // 语言驱动的自动配置
+    org.mybatis.spring.boot.autoconfigure.MybatisLanguageDriverAutoConfiguration
+    // Mybatis的相关自动配置
+    org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration
+~~~
+
++ 在MybatisAutoConfiguration类中，可以看到它绑定了MybatisProperties属性配置类，可以看到它的配置前缀是`mybatis`
+  + MybatisAutoConfiguration类向IOC容器提供了SqlSessionFactory对象，用来创建数据库会话
+  + 还提供了SqlSessionTemplate对象，用来进行数据库的相关操作
++ 另外，Mybatis能够自动向IOC容器提供代理对象，是因为@MapperScan注解的原因:
+  + 可以看到它导入了MapperScannerRegistrar类
+
+~~~java
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.TYPE})
+    @Documented
+    @Import({MapperScannerRegistrar.class})
+    @Repeatable(MapperScans.class)
+    public @interface MapperScan {
+        ...
+    }
+~~~
+
++ 在MapperScannerRegistrar类中，它会利用扫描机制，扫描指定路径下的对应接口，并批量创建这些接口的bean加入IOC容器中。该操作调用的是registerBeanDefinitions方法来实现的
+
+---
 
 ## 配置汇总
 
@@ -2111,8 +2154,167 @@ public class ServletWebServerFactoryAutoConfiguration {
 
 ### （二）配置文件
 
+#### ①yaml文件
+
+##### Ⅰ基本语法
+
++ 我们的application.properties文件不能明显的表示层级关系，因此当其配置变多以后，里面的内容会变得难以阅读和维护
++ 为了解决这方面的困境，我们可以提供另外一种配置文件:application.yaml配置文件
+  + YAML 是 "YAML Ain't a Markup Language"（YAML 不是一种标记语言）。在开发的这种语言时，YAML 的意思其实是："Yet Another Markup Language"（是另一种标记语言）
+  + 该文件层次分明，方便人类读写
++ 它的基本语法很简单
+  + 区分大小写
+  + 使用缩进表示层级关系
+  + 使用`key:(空格)value`的键值对形式表示数据，**value前的空格必须写**
+  + 只要两个key的左侧是对齐的，那么它们就是相同层级的
+  + #表示注释
+  + 不能使用Tab键，只能使用空格
+  + **二者的部分配置冲突时，properties文件的优先级比yaml文件的优先级高**
++ 示例:
+  + 现在我们想对一个java实体类进行属性注入，我们需要在配置类中配置其属性默认值:
+
+~~~java
+
+@Component
+@ConfigurationProperties(prefix = "people")
+@Data
+public class People {
+    private String name;
+    private Integer age;
+    private Date birthDay;
+    private Boolean like;
+    private Child child; //嵌套对象
+    private List<Dog> dogs; //数组（里面是对象）
+    private Map<String,Cat> cats; //表示Map
+}
+
+~~~
+
++ 首先是[使用properties文件进行配置](../源码/SpringBoot/SpringBootInitializrDemo/src/main/resources/application.properties)
++ 接下来[使用yaml文件进行配置](../源码/SpringBoot/SpringBootInitializrDemo/src/main/resources/application.yaml)
+
+---
+
+##### Ⅱ复杂对象表示与语法细节
+
++ 如果我们想使用properties文件表示复杂对象的话:
+  + 对于Map对象，就直接写xxx.xxx.key.propertyName=yyy
+  + 对于List或数组对象，直接写xxx.xxx.arr[index].propertyName=yyy
++ 如果我们想使用yml文件表示复杂对象:
+
+~~~yml
+  xxx:
+    yyy: [value1,value2,...] # 表示数组
+    zzz: 
+      - name: lzx  # 如果是对象数组，直接在- 后面加上属性，然后赋值
+      - age: 10
+    kkk: {name: ly,age: 20}  # 如果是对象，可以直接用大括号表示
+    jjj:
+      name: ly  # 或者使用这种方法进行测试
+      age: 20
+~~~
+
++ 配置文件还有一些特殊语法:
+  + 如果我们的属性名是小驼峰命名法命名的，如birthDay,那么**yml文件或properties文件内都可以写成birth-day**
+  + **在properties文件中**，如果一行文本过长，那么可以写一个`\`字符，然后换行接着写
+  + 对于文本，一般不需要加引号，就默认是字符串。但是yml文件确实提供了引号:
+    + 单引号内的转义字符不会生效
+    + 双引号内的转义字符会生效
+  + 对于大文本，即多行文本
+    + 使用`|`开头，然后将大文本写在其下方，**注意是正下方或右下，不能写的相对于该符号靠左**，它可以保留文本格式，即文本写的是什么样，输出就是什么样
+    + 使用`>`开头，然后将大文本写在其下方，**注意是正下方或右下，不能写的相对于该符号靠左**，它会折叠换行符，改为一个空格隔开
+  + 还可以使用`---`将多个yml文档合并在一个文档中，每个文档区依然认为内容独立
+
+---
+
+#### ②SpringBootApplication相关配置
+
++ 我们项目启动的时候，可以看到SpringBoot输出了一段类似logo的东西，这玩意叫banner。
++ SpringBoot默认读取spring.banner.location所指定的txt文件来读取banner
++ 我们可以通过配置项spring.banner.location指定对应的banner.txt相关位置来让控制台输出我们自定义的banner
++ 此处提供一个[自定义banner自动生成网站](https://www.bootschool.net/ascii)
++ [banner文件示例](../源码/SpringBoot/SpringBootConfiguration/src/main/resources/banner/myBanner.txt)
++ 另外，SpringBoot在启动时，我们还可以以代码的方式给项目进行一些配置:
+  + 我们都知道项目通过run方法来运行
+  + 在点开源码后，我们发现它实际上是根据我们的Application类对象创建了一个SpringApplication对象，又调用的该对象run方法
+  + 这样，我们其实可以将一行代码拆成两行代码，这样做的目的是为了得到SpringApplication对象
+  + 得到SpringApplication对象，我们只需要保证运行它的run方法即可，但是在中间，我们还可以对该对象进行一些配置
+  + **这些配置会在运行期间生效，但它的优先级没有配置文件设置的优先级高**
+  + 为了简化我们的操作，SpringBoot提供了SpringApplicationBuilder类对象来供我们进行链式调用，方便我们进行配置
+
+~~~java
+    public static ConfigurableApplicationContext run(Class<?> primarySource, String... args) {
+        // 这是我们调用的静态run方法，可以看到它调用了重载的run方法
+        return run(new Class[]{primarySource}, args);
+    }
+    public static ConfigurableApplicationContext run(Class<?>[] primarySources, String[] args) {
+        // 该run方法根据传来的Class数组创建了一个SpringApplication对象，然后调用了该对象的run方法
+        return (new SpringApplication(primarySources)).run(args);
+    }
+~~~
+
++ [代码配置样例](../源码/SpringBoot/SpringBootConfiguration/src/main/java/com/springboot/example/springbootconfiguration/SpringBootConfigurationApplication.java)
+
+---
+
+#### ③配置隔离
+
++ 在开发时，我们可能有多种不同的环境，我们希望我们的环境不同，我们项目的部分类的生效情况也不同
++ SpringBoot针对这种需求，提供了一种配置隔离的方式，来进行配置:
+  + Springboot提供了@Profile注解来让我们指定当我们的项目处于什么环境时，被其作用的类的@Component、@Configuration等注解才会生效
+  + 在项目中，**默认的环境是default**，在该环境下，没有被@Profile注解作用的其他类都可以使用,当然，@Profile("default")注解作用的类也能使用
+  + 我们的环境名可以随便起
+  + 可以在配置文件中指定spring.profiles.active配置项来切换对应环境，它是一个数组对象，可以传多个值
+  + spring.profiles.default配置项可以配置默认环境，默认的默认环境是default
+  + spring.profiles.include用来表示包含的环境
+    + 最终生效的环境=(spring.profiles.active配置的环境)+(spring.profiles.include配置的环境)
+    + **一般我们把基础的环境，也就是无论什么情况都用到的环境加入到包含环境（spring.profiles.include）中去**
+    + **需要动态切换的环境使用spring.profiles.active指定**
+  + 我们还可以进行环境的分组
+    + spring.profiles.group.{groupName}用来进行分组，我们可以把多个环境放到同一个组下，并给组起名字（在groupName那里起）
+    + 必须把profile文件放在与application同级的目录下才有效
+  + 除properties文件外，我们还能编写application-{profile}.properties文件，其中profile与我们的环境名一致
+    + 在application-{profile}.properties文件中，我们可以编写该环境下对应的配置
+    + 如果该环境被激活，SpringBoot就会读取该profile文件
+    + application-{profile}.properties文件内**无法配置profile的相关配置**
+  + 如果@Profile作用在配置类上以及其方法上，那么意思就是，当同时开启满足两个@Profile场景时，该方法上的其它注解才会生效
++ [配置类样例](../源码/SpringBoot/SpringBootConfiguration/src/main/java/com/springboot/example/springbootconfiguration/config/MyConfig.java)
++ [总配置文件](../源码/SpringBoot/SpringBootConfiguration/src/main/resources/application.properties)
++ [profile文件](../源码/SpringBoot/SpringBootConfiguration/src/main/resources/application-other.properties)
++ [启动类](../源码/SpringBoot/SpringBootConfiguration/src/main/java/com/springboot/example/springbootconfiguration/SpringBootConfigurationApplication.java)
+
+---
+
+#### ④优先级
+
++ SpringBoot接收多个来源的配置，这些配置生效的优先级如下（靠后的配置会覆盖掉靠前的）:
+  + 通过SpringApplication对象的setDefaultProperties方法指定的配置
+  + 通过@PropertySource注解导入的配置
+  + **通过配置文件指定的配置**
+  + RandomValuePropertySource支持的random.*配置（如：@Value("${random.int}")）
+  + 操作系统的环境变量，**这里注意username是操作系统内用户名的环境变量名**
+  + Java 系统属性（System.getProperties()）
+  + JNDI 属性（来自java:comp/env）
+  + ServletContext 初始化参数
+  + ServletConfig 初始化参数
+  + SPRING_APPLICATION_JSON属性（内置在环境变量或系统属性中的 JSON）
+  + **命令行参数**
+  + 测试属性。(@SpringBootTest进行测试时指定的属性)
+  + 测试类@TestPropertySource注解导入的配置
+  + Devtools 设置的全局属性。($HOME/.config/spring-boot)
++ 这些配置优先级的原理就是靠前的配置被先加载，靠后的配置被后加载，而后加载的配置覆盖掉了先前配置的值。但是**如果导入了多个配置，但是这些配置都不冲突，最终他们都会生效**
++ 在配置文件中，其优先级又可以被细分为:
+  + 同级properties文件>yaml文件
+  + jar包外的profile文件>jar包外的properties文件>jar包内的profile文件>jar包内的properties文件
+  + jar包内的`classpath:/config`目录下的直接子目录内的文件>`classpath:/config`目录下的文件>类根路径下的文件（即深层的>浅层的）
+
+--
+
+### （三）配置项汇总
+
 |分组|配置|作用|值|备注|
 |:---:|:---:|:---:|:---:|:---:|
+|调试|debug|开启调试模式，终端会打印开启了哪些自动配置|布尔值，默认为false|无|
 |日志|logging.level.{root\|sql\|web\|类的全类名\|自定义组名}|指定全局/sql组/web组/类/自定义组的日志级别|字符串值|无|
 |^|logging.group.自定义组名|将多个类划分为一个组|全类名|无|
 |^|logging.file.name|指定日志输出的文件|文件路径|也可以写路径，如果是相对路径，那么是相对于项目所在目录的|
@@ -2154,10 +2356,16 @@ public class ServletWebServerFactoryAutoConfiguration {
 |^|spring.datasource.type|指定连接池全类名|全类名|无|
 |^|mybatis.configuration.map-underscore-to-camel-case|开启Mybatis驼峰命名映射|布尔值，默认为true(不开启)|无|
 |^|mybatis.mapper-locations|指定mapper对应的xml文件路径映射|路径映射|无|
+|banner|spring.banner.location|指定读取的banner文件|路径|无|
+|^|spring.main.banner-mode|指定banner的显示模式|off:不显示<br>log:使用日志显示<br>console:控制台输出|无|
+|配置隔离|spring.profiles.active|指定要开启的环境|一个或多个环境名|需要动态切换的环境使用它指定|
+|^|spring.profiles.default|指定默认的环境|环境名|默认是default|
+|^|spring.profiles.include|指定包含的环境|一个或多个环境名|一般把基础的环境，也就是无论什么情况都用到的环境加入到这里面|
+|^|spring.profiles.group.{groupName}|配置环境组,groupName是组的名称|一个或多个环境名|无|
 
 ---
 
-### （三）注解汇总
+### （四）注解汇总
 
 |分组|注解|作用|作用范围|备注|
 |:---:|:---:|:---:|:---:|:---:|
@@ -2174,7 +2382,10 @@ public class ServletWebServerFactoryAutoConfiguration {
 |^|@ConditionalOnMissingBean|如果容器中不存在这个Bean（组件）,那么触发指定行为|^|^|
 |@ConfigurationProperties|声明组件的属性和配置文件内key的前缀项以进行项绑定|类|该注解生效必须**使作用类被@Component及相关注解作用或被配置类的@EnableConfigurationProperties指定**，且**对应的实体类需要有getter和setter方法**<br>该注解生效的时机貌似是bean创建时检查|
 |@EnableConfigurationProperties|指定某些类是属性绑定类|类|应作用于配置类|
-|Jackson相关注解|@JacksonXmlRootElement|声明对应类可被转换为xml格式|类|无|
+|Jackson|@JacksonXmlRootElement|声明对应类可被转换为xml格式|类|无|
 |日志|@Slf4j|被该注解作用的类中的方法内，都默认可以得到一个实现了SLF4J日志门面的日志对象|类|该注解来自于Lombok|
+|Mybatis|@MapperScan|指定mapper接口所在的包，用于创建mapper的代理对象|类|无|
+|配置隔离|@Profile|在开启指定环境后，类或方法上的注解才生效|类或方法|无|
+|junit|@SpringBootTest|执行测试时会启动SpringBoot项目进行测试|类|无|
 
 ---

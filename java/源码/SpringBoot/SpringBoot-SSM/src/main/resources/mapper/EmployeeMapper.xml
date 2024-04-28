@@ -3,6 +3,6 @@
 <mapper namespace="com.springboot.example.springbootssm.mapper.EmployeeMapper">
 
     <select id="getEmpById" resultType="com.springboot.example.springbootssm.pojo.Employee">
-        select * from mybatis_emp where emp_id=#{empId}
+        select * from mybatis_emp where emp_id=#{id}
     </select>
 </mapper>

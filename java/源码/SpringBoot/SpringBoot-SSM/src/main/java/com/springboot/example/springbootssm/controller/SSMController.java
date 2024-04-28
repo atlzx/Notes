@@ -21,4 +21,9 @@ public class SSMController {
         log.info("--------------------------"+id);
         return employeeMapper.getEmpById(id);
     }
+
+    @GetMapping("aaa")
+    public String aaa(){
+        return "aaa";
+    }
 }
