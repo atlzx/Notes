@@ -1989,6 +1989,420 @@ public class ServletWebServerFactoryAutoConfiguration {
 
 ---
 
+### （四）生命周期、事件与监听器
+
+#### ①自定义监听器
+
++ 在应用运行的各个生命周期下，我们可以自定义监听器来对事件的生命周期进行监听，并针对其事件做出不同的响应
+  + 我们需要自定义一个类**实现SpringApplicationRunListener接口**
+  + 在META-INF/spring.factories文件内配置`org.springframework.boot.SpringApplicationRunListener=自定义Listener全类名`
+  + 除了我们自定义的监听器，SpringBoot还配置了默认的Listener，因为在org.springframework.boot包下的META-INF目录中的spring.factories文件内就配置了对应的监听器:`sorg.springframework.boot.SpringApplicationRunListener=org.springframework.boot.context.event.EventPublishingRunListener`
++ [监听器示例](../源码/SpringBoot/EventAndListener/src/main/java/com/springboot/example/eventandlistener/listener/MyListener.java)
+
+---
+
+#### ②底层监听器的调用
+
++ 底层监听器的调用都在SpringApplication类中的run方法内有所体现:
+
+~~~java
+
+    // 这里是我们调的run方法
+    public static ConfigurableApplicationContext run(Class<?> primarySource, String... args) {
+        // 调用下面的run方法
+        return run(new Class[]{primarySource}, args);
+    }
+
+    
+    public static ConfigurableApplicationContext run(Class<?>[] primarySources, String[] args) {
+        // 该run方法又调用下面的run方法
+        return (new SpringApplication(primarySources)).run(args);
+    }
+
+    public ConfigurableApplicationContext run(String... args) {
+        Startup startup = SpringApplication.Startup.create();
+        if (this.registerShutdownHook) {
+            shutdownHook.enableShutdownHookAddition();
+        }
+
+        // 创建一个引导项目启动的对象
+        DefaultBootstrapContext bootstrapContext = this.createBootstrapContext();
+        ConfigurableApplicationContext context = null;
+        this.configureHeadlessProperty();
+        // 得到监听器对象组成的集合
+        SpringApplicationRunListeners listeners = this.getRunListeners(args);
+        ...
+    }
+~~~
+
++ 从上面的片段可以看出，run方法几乎一开始执行，就要获得监听器对象
++ 接下来分析监听器对象怎么获得的
+
+~~~java
+
+    private SpringApplicationRunListeners getRunListeners(String[] args) {
+        // 这里是参数解析器的相关操作
+        SpringFactoriesLoader.ArgumentResolver argumentResolver = ArgumentResolver.of(SpringApplication.class, this);
+        argumentResolver = argumentResolver.and(String[].class, args);
+        // 这里调用了getSpringFactoriesInstances方法来从各个spring.factories的配置中得到listener对象集合
+        List<SpringApplicationRunListener> listeners = this.getSpringFactoriesInstances(SpringApplicationRunListener.class, argumentResolver);
+        SpringApplicationHook hook = (SpringApplicationHook)applicationHook.get();
+        SpringApplicationRunListener hookListener = hook != null ? hook.getRunListener(this) : null;
+        if (hookListener != null) {
+            // 这里把listeners转成ArrayList集合
+            listeners = new ArrayList((Collection)listeners);
+            ((List)listeners).add(hookListener);
+        }
+        // 封装一下，返回
+        return new SpringApplicationRunListeners(logger, (List)listeners, this.applicationStartup);
+    }
+
+    // 调用的getSpringFactoriesInstances方法又调用了forDefaultResourceLocation方法
+    private <T> List<T> getSpringFactoriesInstances(Class<T> type, SpringFactoriesLoader.ArgumentResolver argumentResolver) {
+        return SpringFactoriesLoader.forDefaultResourceLocation(this.getClassLoader()).load(type, argumentResolver);
+    }
+
+~~~
+
++ 现在我们查看一下forDefaultResourceLocation是什么玩意
++ 这里就可以知道为什么文件需要是META-INF/spring.factories这样的路径
+
+~~~java
+    // 可以看到它从META-INF/spring.factories中用类加载器去加载东西
+    public static SpringFactoriesLoader forDefaultResourceLocation(@Nullable ClassLoader classLoader) {
+        return forResourceLocation("META-INF/spring.factories", classLoader);
+    }
+~~~
+
++ 接下来继续回到run方法
+
+~~~java
+
+        ...
+        // 这里得到listeners之后直接就调用了各Listeners的starting方法
+        // 因此starting方法几乎在项目开始执行之后就被调用
+        // 此时IOC容器未创建，环境变量也未准备
+        listeners.starting(bootstrapContext, this.mainApplicationClass);
+
+        try {
+            ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+            // 这里配置相关的环境变量
+            // 如果点开该方法，就会发现listeners的environmentPrepared方法被调用了
+            // environmentPrepared方法在环境准备好后，但IOC容器创建前被调用
+            ConfigurableEnvironment environment = this.prepareEnvironment(listeners, bootstrapContext, applicationArguments);
+            Banner printedBanner = this.printBanner(environment);
+            // 这里创建IOC容器对象
+            context = this.createApplicationContext();
+            context.setApplicationStartup(this.applicationStartup);
+            // 在该方法内部，listeners的contextPrepared方法和contextLoaded相继被调用
+            // contextPrepared方法在IOC容器创建与准备完成之后，加载之前执行
+            // contextLoaded方法在IOC容器加载完毕，刷新之前执行
+            this.prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
+            this.refreshContext(context);
+            this.afterRefresh(context, applicationArguments);
+            
+            startup.started();
+            if (this.logStartupInfo) {
+                (new StartupInfoLogger(this.mainApplicationClass)).logStarted(this.getApplicationLog(), startup);
+            }
+            // 在IOC容器refresh之后，调用started方法
+            listeners.started(context, startup.timeTakenToStarted());
+            this.callRunners(context, applicationArguments);
+        } catch (Throwable var10) {
+            // 如果出现问题，在该方法内调用了listeners的failed方法
+            throw this.handleRunFailure(context, var10, listeners);
+        }
+
+        try {
+            if (context.isRunning()) {
+                // 在项目启动完成以后，调用ready方法
+                listeners.ready(context, startup.ready());
+            }
+
+            return context;
+        } catch (Throwable var9) {
+            throw this.handleRunFailure(context, var9, (SpringApplicationRunListeners)null);
+        }
+
+~~~
+
+![生命周期流程](../文件/图片/SpringBoot图片/生命周期流程.png)
+
+---
+
+#### ③事件触发时机
+
++ SpringBoot提供了九大事件，其中包括两个探针:
+  + ApplicationStartingEvent:应用启动但未做任何事情, 除过注册listeners and initializers
+  + ApplicationEnvironmentPreparedEvent: 环境变量已经准备好了，但IOC容器还未创建
+  + ApplicationContextInitializedEvent:IOC容器创建完毕，但还没有任何bean加载
+  + ApplicationPreparedEvent:容器刷新之前，bean定义信息加载
+  + ApplicationStartedEvent:容器刷新完成， runner未调用
+  + AvailabilityChangeEvent:**存活探针**，它表示项目启动到现在，项目依然在运行，但**它不意味着项目能对外界的请求做出响应**
+  + ApplicationReadyEvent:任何runner被调用，该事件就会触发
+  + AvailabilityChangeEvent:ReadinessState.ACCEPTING_TRAFFIC**就绪探针**，可以接请求，它表示runners都执行成功了，项目现在可以接受请求并响应了
+  + ApplicationFailedEvent:启动出错事件
++ 另外，SpringBoot还提供了多个事件回调监听器:
+  + BootstrapRegistryInitializer:感知引导初始化阶段的事件
+  + ApplicationContextInitializer:感知ioc容器初始化的相关事件
+  + ApplicationListener:**感知全阶段事件**。 一旦到了哪个阶段可以做别的事
+  + SpringApplicationRunListener:**感知全阶段生命周期** + 各种阶段都能自定义操作；功能更完善。
+  + ApplicationRunner:感知特定阶段：感知应用就绪Ready。卡死应用，就不会就绪
+  + CommandLineRunner:感知特定阶段：感知应用就绪Ready。卡死应用，就不会就绪
++ 如果我们想使用这些回调监听器，我们需要
+  + 自定义一个类，实现我们想实现的接口，即上面的回调监听器
+  + 接下来在`classpath:META-INF/spring.factories`文件内编写`实现的监听器接口全类名=自定义监听器全类名`
++ 总之，如果我们想做一些事情
+  + 如果项目启动前做事：使用 BootstrapRegistryInitializer和 ApplicationContextInitializer
+  + 如果想要在项目启动完成后做事： 使用ApplicationRunner和 CommandLineRunner
+  + 如果要干涉生命周期做事：SpringApplicationRunListener
+  + 如果想要用事件机制：ApplicationListener
+![事件触发流程1](../文件/图片/SpringBoot图片/事件触发流程1.png)
+![事件触发流程2](../文件/图片/SpringBoot图片/事件触发流程2.png)
+
+---
+
+#### ④生命周期启动加载机制
+
++ 如下图所示:
+
+![生命周期启动加载机制](../文件/图片/SpringBoot图片/生命周期启动加载机制.png)
+
++ 项目启动先进行生命周期的加载，具体就是上面的监听器能够监听到的生命周期，其中掺杂者一些事件
++ 在加载到一半时，即在contextLoaded完成，但started之前会进行IOC容器的刷新操作
++ 刷新操作会将所有的bean加载进IOC容器，就是Spring容器刷新的经典12大步，这12大步可以划分成两部分
+  + 创建工厂
+  + 使用工厂创建bean
++ 其中，自动配置相关的加载会在创建工厂的最后一步，即invokeBeanFactoryPostProcessors（执行bean工厂后置处理器）的方法调用时执行
+
+---
+
+### （五）自动配置
+
+#### ①自动配置流程
+
++ SpringBoot提供了自动配置的服务，它的流程如下:
+
+![自动配置流程](../文件/图片/SpringBoot图片/自动配置流程.png)
+
++ 我们实现自动配置的流程如下:
+  + 首先我们想实现什么功能，就需要导入什么场景
+  + SpringBoot自动进行依赖导入
+  + 寻找类路径下 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports文件
+  + 项目启动时，就加载自动配置类，但**并不是所有自动配置都会生效，因为每个自动配置类生效都有其先决条件**
++ SPI机制
+  + Java中的SPI（Service Provider Interface）是一种软件设计模式，用于在应用程序中动态地发现和加载组件。SPI的思想是，定义一个接口或抽象类，然后通过在classpath中定义实现该接口的类来实现对组件的动态发现和加载。
+  + 在Java中，SPI的实现方式是通过在META-INF/services目录下创建一个以服务接口全限定名为名字的文件，文件中包含实现该服务接口的类的全限定名。当应用程序启动时，Java的SPI机制会自动扫描classpath中的这些文件，并根据文件中指定的类名来加载实现类。
+  + SpringBoot也提供了SPI的实现，就是寻找META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports文件来达到自动配置
++ SpringBoot可以通过@EnableXxx注解手动开启某些功能的开关
+  + 这些注解生效的原理都是利用@Import把此功能要用的组件导入进去
+
+---
+
+#### ②底层原理
+
++ 项目的主程序类上的@SpringBootApplication注解可以进行项目的自动配置
+  + 在该注解内部，它被三个注解作用
+    + @SpringBootConfiguration:这就是个配置类，用来声明作用类是个配置类，其它没什么用
+    + @EnableAutoConfiguration
+    + @ComponentScan(...)
+
+~~~java
+...
+@SpringBootConfiguration
+@EnableAutoConfiguration
+@ComponentScan(
+    excludeFilters = {@Filter(
+    type = FilterType.CUSTOM,
+    classes = {TypeExcludeFilter.class}
+), @Filter(
+    type = FilterType.CUSTOM,
+    classes = {AutoConfigurationExcludeFilter.class}
+)}
+)
+public @interface SpringBootApplication {
+    ...
+}
+~~~
+
+##### Ⅰ@EnableAutoConfiguration
+
++ @EnableAutoConfiguration内又有两个注解作用:
+  + @AutoConfigurationPackage
+  + @Import({AutoConfigurationImportSelector.class})
+
+~~~java
+...
+@AutoConfigurationPackage
+@Import({AutoConfigurationImportSelector.class})
+public @interface EnableAutoConfiguration {
+    ....
+}
+~~~
+
++ 我们先看@AutoConfigurationPackage注解，发现它使用@Import注解导入了一个类`@Import({AutoConfigurationPackages.Registrar.class})`
++ 在该类下有一个方法:
+
+~~~java
+    @Override
+	public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
+		register(registry, new PackageImports(metadata).getPackageNames().toArray(new String[0]));
+	}
+~~~
+
++ 在该方法中调用了PackageImports对象的getPackageNames方法:
+
+~~~java
+    // 在该类的构造器中，我们可以发现这个packageNames是个什么玩意
+    PackageImports(AnnotationMetadata metadata) {
+        // 在该语句的最里面，可以看到调用了AutoConfigurationPackage.class.getName()
+        // 这个在该语句的最里面，可以看到调用了AutoConfigurationPackage注解就是聚合注解@EnableAutoConfiguration注解的两个注解之一
+        // 也就是说，它通过反射得到的class得到的名称是项目启动类所在包的路径
+		AnnotationAttributes attributes = AnnotationAttributes
+			.fromMap(metadata.getAnnotationAttributes(AutoConfigurationPackage.class.getName(), false));
+            // 给packageNames属性赋值
+		List<String> packageNames = new ArrayList<>(Arrays.asList(attributes.getStringArray("basePackages")));
+		for (Class<?> basePackageClass : attributes.getClassArray("basePackageClasses")) {
+			packageNames.add(basePackageClass.getPackage().getName());
+		}
+		if (packageNames.isEmpty()) {
+			packageNames.add(ClassUtils.getPackageName(metadata.getClassName()));
+		}
+		this.packageNames = Collections.unmodifiableList(packageNames);
+	}
+    // 得到packageNames属性
+	List<String> getPackageNames() {
+		return this.packageNames;
+	}
+~~~
+
++ 因此，@AutoConfigurationPackage注解用来将我们自定义的包进行自动配置
++ 现在来讨论@Import({AutoConfigurationImportSelector.class})注解导入的AutoConfigurationImportSelector类:
+  + 在该类中可以找到getAutoConfigurationEntry方法
+
+~~~java
+    protected AutoConfigurationEntry getAutoConfigurationEntry(AnnotationMetadata annotationMetadata) {
+		if (!isEnabled(annotationMetadata)) {
+			return EMPTY_ENTRY;
+		}
+		AnnotationAttributes attributes = getAttributes(annotationMetadata);
+        // 在getCandidateConfigurations中来获得配置类对象
+		List<String> configurations = getCandidateConfigurations(annotationMetadata, attributes);
+		configurations = removeDuplicates(configurations);
+		Set<String> exclusions = getExclusions(annotationMetadata, attributes);
+		checkExcludedClasses(configurations, exclusions);
+		configurations.removeAll(exclusions);
+		configurations = getConfigurationClassFilter().filter(configurations);
+		fireAutoConfigurationImportEvents(configurations, exclusions);
+		return new AutoConfigurationEntry(configurations, exclusions);
+	}
+~~~
+
++ 接下来来看getCandidateConfigurations方法，可以看到它又调用了ImportCandidates.load方法
+
+~~~java
+    protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) {
+		List<String> configurations = ImportCandidates.load(AutoConfiguration.class, getBeanClassLoader())
+			.getCandidates();
+		Assert.notEmpty(configurations,
+				"No auto configuration classes found in "
+						+ "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports. If you "
+						+ "are using a custom packaging, make sure that file is correct.");
+		return configurations;
+	}
+~~~
+
++ 去看load方法:
+
+~~~java
+    public static ImportCandidates load(Class<?> annotation, ClassLoader classLoader) {
+		Assert.notNull(annotation, "'annotation' must not be null");
+		ClassLoader classLoaderToUse = decideClassloader(classLoader);
+        // LOCATION是"META-INF/spring/%s.imports"，调用annotation.getName()，与扫描我们自定义的那个包下的所有文件一样的方式，得到包名
+        // 由于AutoConfiguration在org.springframework.boot.autoconfigure包下，得到的是这个包
+		String location = String.format(LOCATION, annotation.getName());
+		Enumeration<URL> urls = findUrlsInClasspath(classLoaderToUse, location);
+		List<String> importCandidates = new ArrayList<>();
+		while (urls.hasMoreElements()) {
+			URL url = urls.nextElement();
+            // 在这里又调用readCandidateConfigurations方法，将自动配置类放入一个List集合中
+			importCandidates.addAll(readCandidateConfigurations(url));
+		}
+		return new ImportCandidates(importCandidates);
+	}
+~~~
+
++ 接下来看readCandidateConfigurations是什么玩意:
+
+~~~java
+    private static List<String> readCandidateConfigurations(URL url) {
+		try (
+            // 得到对应文件的缓冲字符输入流对象
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new UrlResource(url).getInputStream(), StandardCharsets.UTF_8))
+            ) {
+			List<String> candidates = new ArrayList<>();
+			String line;
+			while ((line = reader.readLine()) != null) {
+                // 经过一些处理，把这些自动配置类依次加入一个List中
+				line = stripComment(line);
+				line = line.trim();
+				if (line.isEmpty()) {
+					continue;
+				}
+				candidates.add(line);
+			}
+            // 返回List
+			return candidates;
+		}
+		catch (IOException ex) {
+			throw new IllegalArgumentException("Unable to load configurations from location [" + url + "]", ex);
+		}
+	}
+~~~
+
++ 至此，我们看到了@Application的@EnableAutoConfiguration可以自动加载项目所在包以及各个自动配置类的组件，从而实现自动装配功能
+
+##### Ⅱ@ComponentScan(...)
+
++ 这玩意在学Spring的时候就见过了，他用来进行组件的扫描
+  + @SpringBootApplication上的这个注解并不是干这个的，因为@EnableAutoConfiguration已经能够扫描指定包下的东西了
+  + 它的全部代码是:`@ComponentScan(excludeFilters = { @Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),@Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) })`
+  + 我们可以明显的看到@Filter这个注解，它是用来进行过滤的
+  + 该注解的作用主要是为了防止配置类重复的问题，我们的项目启动类已经是一个配置类了，如果我们还设置了别的自动配置类，SpringBoot会自动过滤掉
+
+---
+
+### （六）自定义starter
+
++ 如果我们想自定义starter，需要首先写好业务类:
+  + [controller层](../源码/SpringBoot/SpringBoot-starter-robot/src/main/java/com/springboot/example/springbootstarterrobot/controller/RobotController.java)
+  + [service层](../源码/SpringBoot/SpringBoot-starter-robot/src/main/java/com/springboot/example/springbootstarterrobot/service/RobotService.java)
++ 之后要可以写Properties配置类，使用@ConfigurationProperties注解可以指定配置文件的前缀:
+  + [Properties配置类](../源码/SpringBoot/SpringBoot-starter-robot/src/main/java/com/springboot/example/springbootstarterrobot/properties/RobotProperties.java)
++ 之后编写AutoConfiguration类，**可以使用@Import注解或者@Bean注解向IOC容器提供bean**
+  + 我们在此之前，即在controller、service和properties类中写的@Component、@Service和@Controller注解实际上是不会生效的，只是为了防止IDEA报错才写。因为导入时这些类不会被直接导入，而是通过AutoConfiguration类导入，因此**只有在AutoConfiguration类中提供了它们的bean,他们才会加入到IOC容器中**
+  + [AutoConfiguration类](../源码/SpringBoot/SpringBoot-starter-robot/src/main/java/com/springboot/example/springbootstarterrobot/autoconfiguration/RobotAutoConfiguration.java)
++ 接下来我们要使用`mvn install`命令将我们的自定义starter放入本地仓库，因为不放的话Maven就会去别的仓库找，别的仓库那肯定是没有的
+  + 放入本地仓库时，我们需要提供至少一个主类，可以随便写一个然后提供一个main方法，但是main方法里面什么都不写
+  + 这个主类在未来其他人导入本依赖时它不会起作用，因为我们只能使用通过AutoConfiguration类提供的bean，我们只需要让AutoConfiguration类不导入主类，我们就使不了这个主类了
++ 之后就是在pom.xml文件内使用dependency标签导入依赖，注意要**加上版本号（version），要不然Maven依旧认为本地仓库没有这个依赖而去别的仓库寻找**
++ 之后就是使用了，但是仅导入依赖是使用不了的，因为**SpringBoot默认只能扫描项目启动类所在目录内的包，而我们导入的依赖不在这个包下**。我们有三种方式解决该问题
+  + 可以在项目启动类上直接使用@Import导入依赖的自动配置类，然后由自动配置类导入bean
+  + 可以自定义Enable注解，[样例](../源码/SpringBoot/SpringBoot-use-robot/src/main/java/com/springboot/example/springbootuserobot/customannotation/EnableRobot.java)
+  + 依靠SpringBoot的SPI机制，在META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports文件内提供自动配置类的全类名，[样例](../源码/SpringBoot/SpringBoot-use-robot/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports)
++ 最后，我们自定义的Properties内的属性与properties或yaml文件的映射是没有提示的，如果想让IDEA提供提示，需要导入一个依赖:
+  + 这个依赖就在SpringBoot创建模板时，选择依赖一栏中Developer Tools下的Lombok下面，勾一下就行
+
+~~~xml
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-configuration-processor</artifactId>
+        <optional>true</optional>
+    </dependency>
+~~~
+
+---
+
 ## 配置汇总
 
 ### （一）日志配置
@@ -2369,8 +2783,9 @@ public class People {
 
 |分组|注解|作用|作用范围|备注|
 |:---:|:---:|:---:|:---:|:---:|
+|项目启动|@SSpringBootApplication|声明对应类为配置类并自动配置|类|无|
 |组件注册|@Configuration|声明对应类为配置类|类|无|
-|^|@SpringBootConfiguration|生命对应类为SpringBoot项目的配置类|类|其实跟上面的注解没有区别|
+|^|@SpringBootConfiguration|声明对应类为SpringBoot项目的配置类|类|其实跟上面的注解没有区别|
 |^|@Bean|使方法返回值作为bean加入到IOC容器内|方法|无|
 |^|@Scope|声明该类型的bean是单实例还是多实例|方法|无|
 |^|@Controller/@Service/@Repository/@Conponent|声明对应类属于控制层/服务层/DAO层/其它层，并将其纳入IOC容器管理|类|无|
@@ -2387,5 +2802,7 @@ public class People {
 |Mybatis|@MapperScan|指定mapper接口所在的包，用于创建mapper的代理对象|类|无|
 |配置隔离|@Profile|在开启指定环境后，类或方法上的注解才生效|类或方法|无|
 |junit|@SpringBootTest|执行测试时会启动SpringBoot项目进行测试|类|无|
+|^|其它详见[其它依赖笔记](其它依赖笔记.md)|
+|自定义starter|@ConfigurationProperties|设置Properties配置类的一些常见配置，如对应的配置文件前缀|类|无|
 
 ---

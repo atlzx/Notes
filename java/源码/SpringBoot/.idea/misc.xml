@@ -17,6 +17,9 @@
         <option value="$PROJECT_DIR$/Spring-SSM/pom.xml" />
         <option value="$PROJECT_DIR$/SpringBoot-SSM/pom.xml" />
         <option value="$PROJECT_DIR$/SpringBootConfiguration/pom.xml" />
+        <option value="$PROJECT_DIR$/EventAndListener/pom.xml" />
+        <option value="$PROJECT_DIR$/SpringBoot-starter-robot/pom.xml" />
+        <option value="$PROJECT_DIR$/SpringBoot-use-robot/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

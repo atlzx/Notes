@@ -9,12 +9,13 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.springboot.example</groupId>
-    <artifactId>SpringBootConfiguration</artifactId>
+    <artifactId>SpringBoot-use-robot</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>SpringBootConfiguration</name>
-    <description>SpringBootConfiguration</description>
+    <name>SpringBoot-use-robot</name>
+    <description>SpringBoot-use-robot</description>
     <properties>
         <java.version>17</java.version>
+        <robot-starter-version>0.0.1-SNAPSHOT</robot-starter-version>
     </properties>
     <dependencies>
         <dependency>
@@ -23,13 +24,27 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.springboot.example</groupId>
+            <artifactId>SpringBoot-starter-robot</artifactId>
+            <version>${robot-starter-version}</version>
         </dependency>
     </dependencies>
 

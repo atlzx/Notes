@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.springboot.example</groupId>
-    <artifactId>SpringBootConfiguration</artifactId>
+    <artifactId>SpringBoot-starter-robot</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>SpringBootConfiguration</name>
-    <description>SpringBootConfiguration</description>
+    <name>SpringBoot-starter-robot</name>
+    <description>SpringBoot-starter-robot</description>
     <properties>
         <java.version>17</java.version>
     </properties>
@@ -27,9 +27,17 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--        导入配置处理器，配置文件自定义的properties配置都会有提示-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 

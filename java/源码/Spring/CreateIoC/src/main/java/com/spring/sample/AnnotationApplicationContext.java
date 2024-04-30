@@ -14,6 +14,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
     private Map<Class<?>, Object> map = new HashMap<>();
 
     public AnnotationApplicationContext() {
+
     }
 
     public AnnotationApplicationContext(String url) {
