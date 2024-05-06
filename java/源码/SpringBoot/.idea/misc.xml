@@ -20,6 +20,7 @@
         <option value="$PROJECT_DIR$/EventAndListener/pom.xml" />
         <option value="$PROJECT_DIR$/SpringBoot-starter-robot/pom.xml" />
         <option value="$PROJECT_DIR$/SpringBoot-use-robot/pom.xml" />
+        <option value="$PROJECT_DIR$/SpringBootTest/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

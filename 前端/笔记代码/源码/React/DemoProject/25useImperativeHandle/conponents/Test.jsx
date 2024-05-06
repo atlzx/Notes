@@ -16,7 +16,7 @@ const Test=React.forwardRef(
 
         // useImperativeHandle钩子函数有两个参数，第一个参数即forwardRef内的函数所接收的第二个参数ref
         // 第二个参数是一个回调函数，回调函数的返回值会成为第一个参数ref.current的值
-        // 通过这种方式，我们便可以自行指定相传给ref的值了，而不是暴露性的将能够修改整个元素的DOM对象传过去
+        // 通过这种方式，我们便可以自行指定想传给ref的值了，而不是暴露性的将能够修改整个元素的DOM对象传过去
         // 这意味着本组件拥有主动权，从而保证本组件内部的元素不会被其它组件肆意修改
         useImperativeHandle(
             ref,

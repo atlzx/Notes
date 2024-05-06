@@ -826,8 +826,19 @@ INSERT INTO temp_mul VALUES('男','睡觉,写代码,吃饭'); -- 成功
 |^|`SHOW TABLES FROM 数据库名;`|展示指定数据库的所有表|无|^|
 |^|`SHOW CREATE DATABASE 数据库名;`|查看数据库的创建信息|无|^|
 |^|`SELECT DATABASE();`|查看当前正在使用的数据库|无|^|
+|修改数据库|`ALTER DATABASE 数据库名 ...`|修改数据库|无|无|
 |删除数据库|`DROP DATABASE 数据库名;`|删除指定数据库,**如果不存在，则会报错**|无|^|
 |^|`DROP DATABASE IF EXISTS 数据库名;`|如果存在，删除指定的数据库|无|^|
+
+~~~sql
+  -- 数据库创建
+  CREATE DATABASE 数据库名
+  [[DEFAULT] CHARACTER SET 字符集名称]
+  [[DEFAULT] COLLATE 比较规则名称];
+
+  -- 修改数据库数据编码字符集
+  ALTER DATABASE dbtest1 DEFAULT CHARACTER SET 'utf8' COLLATE 'utf8_general_ci';
+~~~
 
 ---
 
@@ -882,6 +893,7 @@ INSERT INTO temp_mul VALUES('男','睡觉,写代码,吃饭'); -- 成功
 |^|`SHOW TABLE STATUS LIKE '表名'`|查看表或视图的属性信息|无|^|
 |修改表|`ALTER TABLE 表名 ADD [COLUMN] 字段名 字段类型 [FIRST/AFTER 字段名];`|新增表字段、字段类型，并决定该字段在表内的位置|无|^|
 |^|`ALTER TABLE 表名 MODIFY [COLUMN] 字段名1 字段类型 [DEFAULT 默认值][FIRST/AFTER 字段名2];`|修改表的字段类型，指定默认值并决定该字段在表内的位置|无|^|
+|^|`ALTER TABLE emp1 DEFAULT CHARACTER SET [编码字符集] COLLATE [比较规则];`|修改表的存储数据所用的字符集和其比较规则|无|无|
 |^|`ALTER TABLE 表名 CHANGE [column] 列名 新列名 新数据类型;`|该变表的字段名称|无|^|
 |^|`ALTER TABLE 表名 DROP [COLUMN] 字段名`|删除表的字段名|无|^|
 |^|`RENAME TABLE 表名 TO 新名称`|修改表名|无|^|
@@ -1483,7 +1495,7 @@ INSERT INTO temp_mul VALUES('男','睡觉,写代码,吃饭'); -- 成功
 -- 格式
 
 CREATE [OR REPLACE]  -- OR REPLACE是视图存在时进行覆盖操作
-[ALGORITHM = {UNDEFINED | MERGE | TEMPTABLE}] 
+[ALGORITHM = {UNDEFINED | MERGE | TEMPTABLE}]
 VIEW 视图名称 [(查询结果各列的别名)]  -- 给表的各个列起别名
 AS 查询语句
 [WITH [CASCADED|LOCAL] CHECK OPTION]
@@ -1962,7 +1974,7 @@ SELECT @name;
 #### ①系统变量
 
 + 系统变量可以分为全局系统变量(使用`GLOBAL`关键字修饰)和会话系统变量(使用`SESSION`关键字修饰)
-  + 全局系统变量又被简称为全局变量，相当于`JavaWeb`中的`Context`，它针对于所有会话均有效，但**重启后会失效**
+  + 全局系统变量又被简称为全局变量，相当于`JavaWeb`中的`Context`，它针对于所有会话均有效，但**服务重启后会失效**
   + 会话系统变量相当于`JavaWeb`中的`SESSION`，每一个会话都有其对应的会话系统变量。**如果没有使用任何关键字修饰变量，默认为会话系统变量**
 + `@@`标记专门用于标记系统变量
   + `@@global`专门表示全局系统变量
@@ -2253,14 +2265,111 @@ SELECT * FROM information_schema.TRIGGERS;
 
 ---
 
-## 十三、新特性
+## 十三、字符集与比较规则
+
++ MySQL有四个级别的字符集和比较规则，分别是:
+  + 服务器级别
+  + 数据库级别
+  + 表级别
+  + 列级别
++ 执行如下SQL语句:`show variables like 'character_%`，可以查看当前mysql默认的字符集
+
+~~~shell
+  mysql> show variables like '%char%';
+  +--------------------------+---------------------------------------------------------+
+  | Variable_name            | Value                                                   |
+  +--------------------------+---------------------------------------------------------+
+  | character_set_client     | gbk                                                     |
+  | character_set_connection | gbk                                                     |
+  | character_set_database   | utf8mb4                                                 |
+  | character_set_filesystem | binary                                                  |
+  | character_set_results    | gbk                                                     |
+  | character_set_server     | utf8mb4                                                 |
+  | character_set_system     | utf8mb3                                                 |
+  | character_sets_dir       | C:\Program Files\MySQL\MySQL Server 8.0\share\charsets\ |
+  +--------------------------+---------------------------------------------------------+
+  8 rows in set, 6 warnings (0.01 sec)
+~~~
+
+|变量名称|含义|备注|
+|:---:|:---:|:---:|
+|character_set_client|mysql收到请求后，用来进行解码的字符集|无|
+|character_set_connection|mysql收到请求后，用character_set_client指定的字符集解码后，对解码后的字符串进行编码的字符集|无|
+|character_set_database|数据库存储数据默认使用的字符集|无|
+|character_set_filesystem|文件系统字符集|无|
+|character_set_results|mysql处理完请求，向客户端回复数据所使用的字符集|无|
+|character_set_server|mysql服务使用的编码字符集，当mysql的数据库或表没有显式的指定字符集时，默认使用它指定的字符集|无|
+|character_set_system|与系统相关的字符集|无|
+|character_sets_dir|一个目录|无|
+
++ character_set_client、character_set_connection、character_set_results是**与客户端请求和响应相关的字符集**
+  + 如果我们想手动更改，我们需要在ini配置文件中编写对应的配置:
+
+~~~ini
+  # 我们需要在这个[musqld]下编写配置，而不是[mysql]和[client]下
+  [mysqld]
+  # 用于控制客户端与服务器之间字符集协商行为的选项。如果启用此选项（即将其设置为ON），MySQL服务器将忽略客户端在连接时指定的字符集信息，而是强制使用服务器配置中的默认字符集和排序规则。
+  skip-character-set-client-handshake  
+  # 设置与server相关的所有编码字符集
+  # 如果没有上面的那一句配置，该配置仅能作用于character_set_server和character_set_database
+  # 加上那一句话以后，作用返回就增加到character_set_server、character_set_database、character_set_client、character_set_connection、character_set_results五个了
+  character-set-server=utf8mb4
+~~~
+
++ 这三个配置项的工作流程如下图所示:
+
+![mysql客户端请求和响应相关的字符集示意图](../文件/图片/mySql/mysql客户端请求和响应相关的字符集示意图.png)
+
++ **character_set_server是服务器级别的字符集配置，character_set_server是数据库级的字符集配置**，它们是配置与数据库和表相关的存储数据的字符集的，一般来说，这两个配置的值都是一致的。它们的配置方式和上面一样，注释中已经体现出来了
++ 我们也可以在创建和修改表的时候指定表的字符集配置，这是**表级别的字符集配置**
+
+~~~sql
+  CREATE DATABASE 数据库名
+  [[DEFAULT] CHARACTER SET 字符集名称]
+  [[DEFAULT] COLLATE 比较规则名称];
+  ALTER DATABASE 数据库名
+  [[DEFAULT] CHARACTER SET 字符集名称]
+  [[DEFAULT] COLLATE 比较规则名称];
+~~~
+
++ 我们也可以指定表中每一个列的字符集，这是**列级别的字符集配置**
+
+~~~sql
+  CREATE TABLE 表名(
+  列名 字符串类型 [CHARACTER SET 字符集名称] [COLLATE 比较规则名称],
+  其他列...
+  );
+  ALTER TABLE 表名 MODIFY 列名 字符串类型 [CHARACTER SET 字符集名称] [COLLATE 比较规则名称];
+~~~
+
++ 字符集还有其对应的比较规则，一个字符集可能有多个比较规则，我们可以为该字符集指定一个我们想要的比较规则
++ 使用`SHOW COLLATION LIKE '[{gbk\|utf8}]%';`来查看GBK或UTF-8字符集的比较规则
+
+---
+
+## 十四、宽松模式与严格模式
+
++ MySQL可以通过sql_mode变量指定MySQL在进行操作时，是否以某些标准来进行操作
+  + 变量名叫sql_mode
+  + 可以通过set对global或session域中的该变量进行设置，来设置不同的作用域下的模式效果
+  + 也可以在ini配置文件中修改,我们可以在ini文件中看到MySQL默认开启了很多模式，因此它的默认模式是严格模式
+
+---
+
+## 新特性
 
 |版本|新特性|备注|
 |:---:|:---:|:---:|
 |`MySQL8.0`|引入`OFFSET`关键字|无|
 |`MySQL8.0`|`DDL`操作原子化|无|
-|`MySQL8.0`|支持使用`CHECK`约束|无|
+|`MySQL8.0`|支持使用`CHECK`约束，|无|
 |`MySQL8.0.17`|不推荐使用显式宽度属性|无|
+
+|情况|5.7版本|8.0版本|
+|:---:|:---:|:---:|
+|默认编码字符集|latin|UTF-8|
+|JSON支持|√|√|
+|CHECK约束|支持，但插入不合法的数据没有任何警报和错误，形同虚设|支持|
 
 ### （一）计算列
 
@@ -2355,41 +2464,147 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
 
 ---
 
-## 杂项
+# MySQL高阶
 
-### （一）查看信息代码汇总
+## 一、Linux安装MySQL
 
-|分类|代码|描述|备注|
-|:---:|:---:|:---:|:---:|
-|查看字符集|`show variables like 'character_%';`|查看数据库所用的默认字符集|无|
-|查看系统变量|`SHOW GLOBAL VARIABLES`|查看全局的系统变量|无|
-|^|`SHOW SESSION VARIABLES`|查看会话的系统变量|无|
-|查看数据库|`SHOW DATABASE1,DATABASE2,....;`|查看指定数据库内的内容|无|
-|^|`SHOW TABLES FROM 数据库名;`|展示指定数据库的所有表|无|
-|^|`SHOW CREATE DATABASE 数据库名;`|查看数据库的创建信息|无|
-|^|`SELECT DATABASE();`|查看当前正在使用的数据库|无|
-|查看表或视图|`DESC/DESCRIPTION 表名;`|查看表结构|无|
-|^|`SHOW CREATE TABLE 表名\G;`|查看表结构|无|
-|^|`SHOW INDEX FROM 表名称;`|查看索引|无|
-|^|`SHOW TABLES`|查看数据库内的表与视图|无|
-|^|`SHOW TABLE STATUS LIKE '表名'`|查看表或视图的属性信息|无|
-|^|`DESC/DESCRIPTION 表名`|查看表结构|无|
-|查看约束|`SELECT * FROM information_schema.表名 WHERE table_name = '表名称';`|查看指定表的约束|无|
-|查看存储过程和函数|`SHOW CREATE PROCEDURE/FUNCTION 存储过程名或函数名`|查看指定的存储过程或函数的结构|无|
-|^|`SHOW CREATE FUNCTION test_db.CountProc \G`|查看函数|无|
-|^|`SHOW PROCEDURE/FUNCTION STATUS [LIKE 'pattern']`|查看存储过程或函数的状态信息|无|
-|^|`SELECT * FROM information_schema.Routines WHERE ROUTINE_NAME='存储过程或函数的名' [AND ROUTINE_TYPE = 'PROCEDURE/FUNCTION'];`|
-|查看变量|`SHOW GLOBAL VARIABLES [like 'xxx'];`|查看满足条件的全局变量|不写`like`语句相当于查看全部的全局系统变量|
-|^|`SHOW [SESSION] VARIABLES [like 'xxx'];`|查看满足条件的当前会话变量|**不写修饰符默认为会话系统变量**，不写`like`语句相当于查看全部的会话系统变量|
-|^|`SELECT @@global.变量名;`|查看指定的全局系统变量|无|
-|^|`SELECT @@session.变量名;`|查看指定的会话系统变量|无|
-|^|`SELECT @@变量名;`|查找某一系统变量|无|
-|^|`SELECT 变量名;`|查看局部变量|无|
-|^|`SELECT @变量名`|查看会话用户变量|无|
-|查看触发器|`SELECT * FROM information_schema.TRIGGERS;`|查看触发器信息|无|
-|^|`SHOW TRIGGERS\G`|查看触发器详情|无|
++ 这里以Ubuntu24版本为例，进行linux安装mysql的教程:
+  + 首先我们需要有一个Ubuntu24
+  + 接下来打开终端，输入`su`并输入密码进入root用户状态
+  + 接下来在终端输入`apt install mysql-client-core-8.0`
+![安装mysql核心依赖](../文件/图片/mySql/安装mysql核心依赖.png)
+  + 接下来在终端输入`mysql --version`，如果弹出版本说明安装成功
+  + 接下来继续输入`apt install mysql-server-core-8.0`
+![安装mysqld核心依赖](../文件/图片/mySql/安装mysqld核心依赖.png)
+  + 接下来输入`mysqld --initialize --user=你的用户名(一般叫root)`来使mysql进行初始化，`--initialize`参数用来设置以安全模式进行初始化，它会自动生成一个密码，**这个密码会在初始化完成后在终端输出**，我们需要记住这个密码，或者把它复制(ctrl+insert)一下放到剪切板中
+![初始化mysql](../文件/图片/mySql/初始化mysql.png)
+  + 接下来在终端输入`apt install mysql-server`
+![安装mysql服务核心依赖](../文件/图片/mySql/安装mysql服务核心依赖.png)
+  + 在终端输入`systemctl status mysql.service`查看mysql的服务是否在启动状态:
+    + 如果没开，输入`systemctl start mysql.service`或`service mysql start`来使服务启动起来
+![查看mysql服务](../文件/图片/mySql/查看mysql服务.png)
+  + 接下来我们就可以连接mysql了:在终端输入`mysql -u root -p`，接下来输入之前让记住的密码直接进入
+![连接mysql](../文件/图片/mySql/连接mysql.png)
+  + 我们连接上以后，需要做的第一件事就是改掉它自动生成的操蛋密码
+    + 在终端输入`alter user 'root'@'localhost' identified by '自定义的密码'`
+    + **出现0 row affected 是正常情况。说明你已经修改成功了**，但是如果你出现`you have an error ....`就不是正常情况了，该情况一般在语法错误时被输出
+![修改mysql密码](../文件/图片/mySql/修改mysql密码.png)
+  + 密码修改完成后，输入`quit`退出mysql连接，再输入`mysql -u root -p`，再连接一次，查看密码是否修改完成
+  + mysql安装完成
 
 ---
+
+## 二、用户与权限管理
+
+### （一）用户与密码管理
+
++ MySQL支持我们进行用户与密码的管理
+  + 用户管理可以进行增删改查的操作
+
+~~~sql
+  -- 用户登录，可以选择性的指定连接的主机和执行的操作
+    -- 不写主机默认localhost
+  mysql [-h 主机名称\|主机IP -P port ]-u username -p [数据库名 -e SQL语句]
+
+  -- 查询mysql数据库的user表，得到当前用户的数据
+    -- 它的列太多了，我们只摘一部分
+  select * from mysql.user;
+
+  -- 查询mysql数据库的user表的用户名和host作用域字段
+  select user,host from mysql.user;
+
+  -- 创建用户，可以一次性创建多个用户，每个用户间使用逗号隔开，也可以指定用户的密码过期天数
+    -- 如果没有指定密码，用户直接就可以进行登录
+    -- host作用域可以通过
+    -- 后面的password选项，expire interval用来设置该用户的密码什么时候过期，可以指定指定天数、从不过期或继承全局配置
+    -- 接下来的history是重置密码的时候指定新密码不能与过去的前n个密码一致，如指定3，那么指定的新密码就不能与在其之前设置的前3个密码中的一个一致
+    -- reuse interval ... 用来配置新密码不能与之前多少天配置的密码一致，如指定365,那么新密码就不能与过去一年设置的全部密码中的一个一致
+  create user 
+  用户名[@host作用域]
+  [identified by 密码 ]
+  [PASSWORD [EXPIRE INTERVAL {天数 DAY\|NEVER\|DEFAULT} ][password {HISTORY 次数|REUSE INTERVAL 天数 DAY}]][,
+  用户名[@host作用域]
+  [identified by 密码 ]
+  [PASSWORD [EXPIRE INTERVAL {天数 DAY\|NEVER\|DEFAULT} ][password {HISTORY 次数|REUSE INTERVAL 天数 DAY}]]
+  ...
+  ]
+
+  -- 使用select host,user,password_lifetime,password_reuse_history from mysql.user;可以查看结果
+  例:create user lzx@'localhost' identified by '123456' password expire never password history 3;
+
+  -- 修改用户名
+    -- 需要使用flush privileges使操作生效
+  update mysql.user set user=用户名 where user=原用户名
+
+  -- 删除用户（推荐），可以一次性删除多个用户，每个用户之间使用逗号隔开
+    -- 如果不写host作用域，那么默认删除host为%
+  drop user 用户名[@host作用域][,用户名[@host作用域],....]
+
+  -- 删除指定host作用域的用户
+    -- 需要使用`flush privileges`使操作生效，不推荐，该操作会使系统有残留信息保留
+  delete from mysql.user where user=用户名 and host=host作用域
+
+
+
+  -- 修改当前登录用户密码（官方推荐）
+  alter user user() identified by 新密码
+
+  -- 修改当前登录用户密码
+  set password = 新密码
+  -- 修改当前登录用户密码
+    -- 不推荐，password函数在MySQL8.0及以后被移除
+
+  set password = PASSWORD(新密码)
+
+  -- 修改指定用户的密码
+  alter user 
+  用户名[@host作用域] 
+  [identified by 新密码][,
+  用户名[@host作用域] 
+  identified by 新密码,
+  ...
+  ]
+
+  -- 修改指定用户的密码
+  set password for 用户名[@host作用域] = 新密码
+
+  -- 修改指定用户的密码
+    -- 不推荐，password函数在MySQL8.0及以后被移除
+  update mysql.user set authentication_string=PASSWORD(新密码) where user = 用户名 and host = host作用域
+
+  -- 设置指定的密码过期，可以进行全局配置，也可以精确到指定用户进行配置
+    -- 如果是全局配置，可以设定全局变量，或者配置配置文件
+    -- 如果是局部配置，可以在创建用户时进行指定
+
+  -- 使指定用户的密码过期
+  alter user 用户名[@host作用域] password expire
+
+  -- 设置全局变量，使所有用户的密码在指定天数后过期
+  set persist default_password_lifetime = 天数
+
+  -- 在配置文件内配置用户密码过期天数
+  [mysqlId]
+  default_password_lifetime=天数
+
+
+
+  -- 设置密码重用策略，和密码过期策略一样，也能进行全局配置和精确到指定用户进行配置
+    -- 如果是全局配置，可以设定全局变量，或者配置配置文件
+    -- 如果是局部配置，可以在创建用户时进行指定
+
+  SET PERSIST password_history = 6; -- 设置不能选择最近使用过的6个密码
+
+  SET PERSIST password_reuse_interval = 365; -- 设置不能选择最近一年内的密码
+
+  -- 使用配置文件进行配置
+  [mysqld]
+  password_history=6
+  password_reuse_interval=365
+
+~~~
+
+
+
 
 # 面试题
 
@@ -2406,3 +2621,56 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
 4. 并不是每个表都可以任意选择存储引擎？
 
 > + 外键约束（FOREIGN KEY）不能跨引擎使用。MySQL支持多种存储引擎，每一个表都可以指定一个不同的存储引擎，需要注意的是：外键约束是用来保证数据的参照完整性的，如果表之间需要关联外键，却指定了不同的存储引擎，那么这些表之间是不能创建外键约束的。所以说，存储引擎的选择也不完全是随意的
+
+---
+
+# 代码与配置汇总
+
+## 一、查看信息代码汇总
+
+|分类|代码|描述|备注|
+|:---:|:---:|:---:|:---:|
+|字符集|`show variables like 'character_%';`、`show variables like '%char%';`|查看数据库所用的默认字符集|无|
+|^|`show charset;`|查看MySQL所有可用的字符集|无|
+|^|`SHOW VARIABLES LIKE '%_server';`、`SHOW VARIABLES LIKE '%_database';`|查看服务器、数据库的字符集|无|
+|^|`SHOW COLLATION LIKE '[{gbk\|utf8}]%';`|查看GBK或UTF-8字符集的比较规则|无|
+|查看变量|`SHOW GLOBAL VARIABLES [like 'xxx'];`|查看满足条件的全局变量|不写`like`语句相当于查看全部的全局系统变量|
+|^|`SHOW [SESSION] VARIABLES [like 'xxx'];`|查看满足条件的当前会话变量|**不写修饰符默认为会话系统变量**，不写`like`语句相当于查看全部的会话系统变量|
+|^|`SELECT @@global.变量名;`|查看指定的全局系统变量|无|
+|^|`SELECT @@session.变量名;`|查看指定的会话系统变量|无|
+|^|`SELECT @@变量名;`|查找某一系统变量|无|
+|^|`SELECT 变量名;`|查看局部变量|无|
+|^|`SELECT @变量名`|查看会话用户变量|无|
+|数据库|`SHOW DATABASE1,DATABASE2,....;`|查看指定数据库内的内容|无|
+|^|`SHOW TABLES FROM 数据库名;`|展示指定数据库的所有表|无|
+|^|`SHOW CREATE DATABASE 数据库名;`|查看数据库的创建信息|可用于查看当前数据库字符集|
+|^|`SELECT DATABASE();`|查看当前正在使用的数据库|无|
+|表或视图|`DESC/DESCRIPTION 表名;`|查看表结构|无|
+|^|`SHOW CREATE TABLE 表名\G;`|查看表结构|可以用来查看表的字符集、引擎等|
+|^|`SHOW INDEX FROM 表名称;`|查看索引|无|
+|^|`SHOW TABLES`|查看数据库内的表与视图|无|
+|^|`SHOW TABLE STATUS LIKE '表名'`|查看表或视图的属性信息|也可以用它来查看表的比较规则|
+|^|`DESC/DESCRIPTION 表名`|查看表结构|无|
+|约束|`SELECT * FROM information_schema.表名 WHERE table_name = '表名称';`|查看指定表的约束|无|
+|存储过程和函数|`SHOW CREATE PROCEDURE/FUNCTION 存储过程名或函数名`|查看指定的存储过程或函数的结构|无|
+|^|`SHOW CREATE FUNCTION test_db.CountProc \G`|查看函数|无|
+|^|`SHOW PROCEDURE/FUNCTION STATUS [LIKE 'pattern']`|查看存储过程或函数的状态信息|无|
+|^|`SELECT * FROM information_schema.Routines WHERE ROUTINE_NAME='存储过程或函数的名' [AND ROUTINE_TYPE = 'PROCEDURE/FUNCTION'];`|
+|触发器|`SELECT * FROM information_schema.TRIGGERS;`|查看触发器信息|无|
+|^|`SHOW TRIGGERS\G`|查看触发器详情|无|
+
+---
+
+## 二、配置文件配置汇总
+
+|分类|配置项|作用|备注|
+|:---:|:---:|:---:|:---:|
+|[client]|aaa|
+|[mysql]|bbb|
+|[mysqld]|skip-character-set-client-handshake|使配置文件中的配置项能够覆盖客户端指定的编码字符集|无|
+|^|character-set-server=utf8mb4|配置客户端请求相关配置、数据库编码与服务编码|**如果想配置客户端请求相关配置，需要先指定上面的配置项**|
+|^|sql-mode|配置MySQL在执行操作时的标准|无|
+
+
+
+---
