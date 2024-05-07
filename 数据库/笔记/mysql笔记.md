@@ -1,4 +1,4 @@
-# MySql基础笔记
+# MySQL基础
 
 ## 一、数据库概述
 
@@ -812,6 +812,7 @@ INSERT INTO temp_mul VALUES('男','睡觉,写代码,吃饭'); -- 成功
 ## 六、DDL语句
 
 + `DDL（Data Definition Languages、数据定义语言）`定义了不同的数据库、表、视图、索引等数据库对象，还可以用来**创建、删除、修改数据库和数据表的结构**
++ **所有DDL语句执行后就会生效，不需要进行刷新**
 
 
 ### （一）数据库管理
@@ -2496,10 +2497,21 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
 
 ## 二、用户与权限管理
 
+<a id="manageUserAndPassword"></a>
+
 ### （一）用户与密码管理
 
 + MySQL支持我们进行用户与密码的管理
   + 用户管理可以进行增删改查的操作
+    + 在添加时，我们可以自行指定用户名和host作用域，**这两个字段共同组合成了聚合主键**
+    + 删除时，仅指定用户名而不指定host作用域，默认删除的是`%`host作用域的用户，没有会报错。且推荐使用drop进行删除
+    + 修改时，推荐使用alter的方式进行修改
+    + 查询时，由于字段过多，可以挑出几个来进行查询
+  + 密码管理支持我们修改密码并指定一些密码的配置
+    + 推荐使用alter的方式进行密码的修改
+    + 可以指定密码重用和密码过期策略
+      + 密码过期后，需要重置密码，否则操作不可用
+      + 密码重用策略用来限制我们的密码重置不能与之前的密码相同
 
 ~~~sql
   -- 用户登录，可以选择性的指定连接的主机和执行的操作
@@ -2602,6 +2614,163 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
   password_reuse_interval=365
 
 ~~~
+
+---
+
+### （二）权限
+
+#### ①权限管理
+
++ MySQL为每个用户都设置了权限，其中，root用户的权限是最大的
++ 为了控制每个用户的权限，MySQL为我们提供了完备的权限管理语句:
+
+~~~sql
+
+  -- 查看当前用户权限，以下三个都可以
+  SHOW GRANTS;
+  SHOW GRANTS FOR CURRENT_USER;
+  SHOW GRANTS FOR CURRENT_USER();
+
+  -- 查看某用户的全局权限
+  SHOW GRANTS FOR 'user'@'主机地址' ;
+
+
+  -- 给用户授权的方式有两种: 直接给用户权限 和 把角色赋予用户使用户具有该角色的权限
+  -- 这里仅演示第一种，第二种在后面的角色笔记中会提供
+  -- 数据库名称、表名称可以进行模糊匹配，使用*来表示所有的数据库或所有的表
+  -- GRANT命令会使权限叠加，而不是使上一条权限被该权限覆盖，也就是说，多条grant命令都执行时，对应用户会得到这些grant命令声明的所有权限而不是后面覆盖前面
+  -- with grant option表示本次赋予的权限，该用户可以再赋给其他用户，写在后面用with的形式可以进一步限制该用户可以赋予其它用户的权限，如root用户给了修改和插入的权限，但是可以限制该用户仅下发修改权限而不能下发插入权限
+  GRANT 权限1,权限2,…权限n ON 数据库名称.表名称 TO 用户名@用户地址 [IDENTIFIED BY ‘密码口令’ ][with grant option];
+  -- 例:
+  GRANT SELECT,INSERT,DELETE,UPDATE ON atguigudb.* TO li4@localhost ;
+  -- 这里表示把所有的权限都赋值给对应用户:
+    -- 它与root用户依然有区别，因为全部权限不包括向其它用户分配权限的权限，因此正常情况下仅root用户可以下发权限，而其它用户不能
+    -- 如果想下发权限，需要加上with grant option
+  GRANT ALL PRIVILEGES ON *.* TO joe@'%' IDENTIFIED BY '123';
+
+
+  -- 收回权限
+    -- 收回权限的操作需要在用户重新登陆后才重新生效
+  REVOKE 权限1,权限2,…权限n ON 数据库名称.表名称 FROM 用户名@用户地址;
+
+  -- 例:
+  -- 收回全部权限
+  REVOKE ALL PRIVILEGES ON *.* FROM joe@'%';
+  -- 收回部分权限
+  REVOKE SELECT,INSERT,UPDATE,DELETE ON mysql.* FROM joe@localhost;
+
+~~~
+
+#### ②权限表
+
++ MySQL底层通过表的形式存放各用户的权限，它们都存放在mysql数据库下,与权限相关的数据库内的表有如下表:
+  + user表，该表在[用户与密码管理](#manageUserAndPassword)章节就遇到过，它用来存储用户对所有数据库的权限
+  + db表，它用来存储用户对指定数据库的权限
+  + tables_priv表:它用来存储用户对数据库内的表的权限
+  + columns_priv表:它用来存储用户对表内字段的权限
+  + procs_priv表:它用来存储存储过程与函数的设置操作权限
+
++ user表字段
+  + 在user表中，host和user共同组成了聚合主键
+
+|分类|字段|作用|备注|
+|:---:|:---:|:---:|:---:|
+|用户列|host|host作用域，表示连接类型，`%`表示支持所有通过TCP方式的连接，另外还支持localhost、IP地址、机器名等|无|
+|^|user|用户名，只要host不一样，user可以重复|无|
+|^|password/authentication_string|密码，5.7及之前称password,8.0及之后改为authentication_string|无|
+|权限列|Grant_priv|表示是否拥有grant权限|无|
+|^|Shutdown_priv|表示是否拥有停止mysql服务的权限|无|
+|^|Super_priv|表示是否拥有超级权限|无|
+|^|Execute_priv|表示是否拥有EXECUTE权限。拥有EXECUTE权限，可以执行存储过程和函数。|无|
+|^|Select_priv、Insert_priv...|该用户所拥有的权限|无|
+|资源控制列|max_questions|用户每小时允许执行的查询操作次数|无|
+|^|max_updates|用户每小时允许执行的更新操作次数|无|
+|^|max_connections|用户每小时允许执行的连接操作次数|无|
+|^|max_user_connections|用户允许同时建立的连接次数|无|
+|安全列|ssl_type|用于加密|无|
+|^|ssl_cipher|用于加密|无|
+|^|x509_issuer|标识用户|无|
+|^|x509_subject|标识用户|无|
+|^|plugin|指定验证用户身份的插件，如果为空，那么启用内建授权验证机制验证用户身份|无|
+
++ db表字段
+  + 在db表中，host、user和Db共同组成了聚合主键
+
+|分类|字段|作用|备注|
+|:---:|:---:|:---:|:---:|
+|用户列|host|host作用域，表示连接类型，`%`表示支持所有通过TCP方式的连接，另外还支持localhost、IP地址、机器名等|无|
+|^|user|用户名，只要host不一样，user可以重复|无|
+|^|password/authentication_string|密码，5.7及之前称password,8.0及之后改为authentication_string|无|
+|权限列|Create_routine_priv|表示是否有创建存储过程的权限|无|
+|^|Alter_routine_priv|表示是否有修改存储过程的权限|无|
+|^|其他权限同user表|
+
++ 其它表也是如此，可以看到，**存储的权限越精确的表，组成其主键的列字段就越多**
+
+---
+
+#### ③访问控制
+
++ 访问控制分为两个阶段:
+  + 连接核实阶段:当用户试图连接MySQL服务器时，服务器基于用户的身份以及用户是否能提供正确的密码验证身份来确定接受或者拒绝连接。服务端在进行核实时，会根据user表中的host、user和authentication_string字段对比客户端传来的信息，从而确定是否建立连接
+  + 请求核实阶段:建立连接后服务器就进入了第二个阶段,此时用户在进行请求时，MySQL首先从user开始找，逐步向更精确的表(db、tables_priv、columns_priv、procs_priv)查找，**一旦找到对应权限就停止向下找，开始执行操作，如果都找不到，那么报错**
+
+---
+
+### （三）角色
+
++ 角色是MySQL8.0新添的特性，它的设计目的是**方便管理拥有相同权限的用户**
+  + 我们可以通过将角色赋予给用户，来使得指定用户具有该角色的权限
+  + 角色需要是激活的状态，这样其权限才会生效，如果我们对一个用户的角色进行了修改，那么最好退出再登陆一下，效果才会显现出来
++ 下面是对角色的相关管理代码:
+
+~~~sql
+  -- 创建一个角色
+  CREATE ROLE 'role_name'[@'host_name'] [,'role_name'[@'host_name']]...
+  
+  -- 给角色赋予权限
+
+  GRANT 权限 ON 数据库.表 TO 'role_name'[@'host_name'];
+
+  -- 查看当前角色的权限
+   SHOW GRANTS FOR 'role_name'[@'host_name'];
+
+  -- 回收对应角色的权限
+  REVOKE 权限 ON 数据库.表 FROM 'role_name'[@'host_name'];
+
+  -- 删除角色
+  DROP ROLE role [,role2]...
+
+  -- 激活角色
+    -- 查看当前被激活的角色
+  select current_role();
+    -- 通过set命令手动激活，这玩意在Windows的MySQL上好像不能使，不知道linux上怎么样
+  SET DEFAULT ROLE ALL TO role1 [,role2,...];
+    -- 通过设置全局配置自动激活，它的意思是对所有角色永久激活
+  SET GLOBAL activate_all_roles_on_login=ON;
+  -- 给用户赋予角色，我们可以同时将多个角色赋予给多个用户
+    -- 这也是给用户权限的第二种方式
+  GRANT role1 [,role2,...] TO user1 [,user2,...];
+
+  -- 移除用户的指定角色
+  REVOKE 'role_name'[@'host_name'] FROM 'user_name'[@'host_name'];
+
+  -- 设置强制角色
+    -- 在配置文件中设置
+  [mysqld]
+  mandatory_roles='role1,role2@localhost,r3@%.atguigu.com'
+    -- 在运行时设置
+      -- 系统重启后仍然有效
+  SET PERSIST mandatory_roles = 'role1,role2@localhost,r3@%.example.com'; 
+      -- 系统重启后失效
+  SET GLOBAL mandatory_roles = 'role1,role2@localhost,r3@%.example.com'; 
+
+~~~
+
+---
+
+## 三、逻辑架构与SQL执行
+
 
 
 
