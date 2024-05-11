@@ -1336,9 +1336,9 @@ INSERT INTO temp_mul VALUES('男','睡觉,写代码,吃饭'); -- 成功
     -- 然后我们关闭数据库服务再重启，再新增一行
       -- 在MySQL8.0之前，新增的行的值是4，因为离它最近的行的值为3
       -- MySQL8.0及以后，新增的行的值是6，因为它可以实现持久化存储了
-
-
 ~~~
+
++ [索引样例]()
 
 ### （六）外键约束
 
@@ -1987,7 +1987,7 @@ SELECT @name;
 + `@@`标记专门用于标记系统变量
   + `@@global`专门表示全局系统变量
   + `@@session`专门表示会话系统变量
-  + 不写默认从会话系统变量开始找，找不到再去找全局的，直到找到或全找不到为止
+  + **不写（即直接写变量名而不写任何修饰符）默认从会话系统变量开始找，找不到再去找全局的，直到找到或全找不到为止**
 + 我们可以通过修改配置文件内的值来修改系统变量，但为了使他们生效，我们需要重启`MySQL`服务，但我们更希望在`MySQL`服务运行过程中就能修改系统变量的值
   + `SET`关键字可以在`MySQL`服务运行过程中修改系统变量的值。但在服务重启后会失效
   + 格式为`SET @@[global./session.]变量名=值;`
@@ -2000,6 +2000,8 @@ SELECT @name;
 |`SELECT @@session.变量名;`|查看指定的会话系统变量|无|
 |`SELECT @@变量名;`|查找某一系统变量|无|
 |`SET @@[global.\|session.]变量名=值;`|在`MySQL`服务运行过程中修改系统变量的值|重启后失效|
+|`set global 变量名=值;`|在`MySQL`服务运行过程中修改全局系统变量的值|重启后失效|
+|`set session 变量名=值;`|在`MySQL`服务运行过程中修改会话系统变量的值|重启后失效|
 
 ---
 
@@ -2008,8 +2010,9 @@ SELECT @name;
 + 用户变量是用户自己定义的变量
   + 根据其作用域的不同，将其分为会话用户变量和局部变量
     + 会话用户变量和会话系统变量的作用域是一致的，都作用于当前会话
-    + 局部变量仅在`BEGIN`和`END`内有效，且仅能在存储过程和函数中被使用，而且**需要写在`BEGIN`的最开始位置**
-  + 它使用`@`来标识
+    + 局部变量仅在`BEGIN`和`END`内有效，且仅能在存储过程和函数中被使用，而且**需要在`BEGIN`的最开始位置使用DECLARE语句创建才能使用**，否则
+    + 会话用户变量需要使用@来修饰，可以在任意地方定义。**局部变量不需要使用@修饰，但需要先定义。否则读取的是系统变量**
+    + **局部变量必须先声明才能调用，否则读取的是系统变量**
 
 |操作|作用|备注|
 |:---:|:---:|:---:|
@@ -2168,6 +2171,8 @@ SELECT @name;
 ---
 
 ### （五）错误处理
+
+<a id="Error"></a>
 
 #### ①定义
 
@@ -2824,6 +2829,8 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
 
 ### （三）验证SQL执行原理
 
+<a id="Profile"></a>
+
 + 我们可以使用代码对SQL执行流程进行查看与验证
 
 ~~~sql
@@ -2976,7 +2983,76 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
 + 而有了索引，我们便可以根据索引，快速的得到我们想要的数据
 + **索引就是帮助MySQL高效获取数据的数据结构**
 
-### （一）索引简易案例
+
+### （一）索引分类
+
++ MySQL的索引包括普通索引、唯一性索引、全文索引、单列索引、多列索引和空间索引等
+  + 从功能逻辑上说，索引主要有 4 种，分别是普通索引、唯一索引、主键索引、全文索引
+  + 按照物理实现方式，索引可以分为 2 种：聚簇索引和非聚簇索引
+  + 按照作用字段个数进行划分，分成单列索引和联合索引
+
+#### ①功能逻辑划分索引
+
+|索引类型|描述|备注|
+|:---:|:---:|:---:|
+|普通索引|不附加任何条件，仅用于查询效率提升的索引，该类索引可以作用在任何类型的字段上|无|
+|唯一性索引|可以使用唯一性约束来创建唯一性索引，唯一性索引允许有空值，但非空值必须是唯一的|无|
+|主键索引|就是非空+唯一，一张表里最多只有一个主键索引，因为它由主键索引的物理存储实现方式决定，存储文件内的数据仅能按照一种顺序进行存储|无|
+|单列索引|单列索引就是仅依据该字段的索引|无|
+|多列/联合索引|就是依据多个字段的索引|无|
+|全文索引|是目前搜索引擎的一种关键技术，查询数据量较大的字符串类型的字段时，使用全文索引可以提高查询速度|MySQL3.23.23版本时开始支持全文索引，但直到5.6.4版本前，仅MyISSAM引擎支持。5.6.4后InnoDB也支持了，但不支持中文分词。5.7.6版本时MySQL内置了ngram全文解析器，用来支持亚洲语种的分词|
+|空间索引|空间索引仅能作用于空间数据类型的字段上，目前仅MyISSAM引擎支持，且索引的字段不能为空|无|
+
++ 另外，不同的存储引擎对不同的索引也有不同的支持能力:
+
+|存储引擎|B+树索引|全文索引|哈希索引|
+|:---:|:---:|:---:|:---:|
+|InnoDB|√|√|×|
+|MyISSAM|√|√|×|
+|Memory|√|×|√|
+|NDB|×|×|√|
+|Archive|×|×|×|
+
+#### ②物理实现方式划分索引
+
+##### Ⅰ聚簇索引
+
++ 优点:
+  + 数据和索引保存在同一个B+树中，从聚簇索引中获取数据比非聚簇索引更快
+  + 聚簇索引一般根据主键进行排序，对于主键的排序查找和范围查找速度非常快。
+  + 按照聚簇索引排列顺序，查询显示一定范围数据的时候，由于数据都是紧密相连，数据库不用从多个数据块中提取数据，所以节省了大量的io操作
++ 缺点:
+  + **插入速度严重依赖于插入顺序**，按照主键的顺序插入是最快的方式，否则将会出现页分裂，严重影响性能。因此，**对于InnoDB表，我们一般都会定义一个自增的ID列为主键**
+  + **更新主键的代价很高**，因为将会导致被更新的行移动。因此，对于InnoDB表，我们一般定义主键为不可更新
+  + 二级索引访问需要两次索引查找，第一次找到主键值，第二次根据主键值找到行数据
++ 特点:
+  + 使用记录主键值的大小进行记录和页的排序，这包括三个方面的含义：
+    + 页内的记录是按照主键的大小顺序排成一个单向链表
+    + 各个存放用户记录的页也是根据页中用户记录的主键大小顺序排成一个双向链表
+    + 存放目录项记录的页分为不同的层次，在同一层次中的页也是根据页中目录项记录的主键大小顺序排成一个双向链表
+
+---
+
+##### Ⅱ二级索引
+
++ 二级索引就是我们将排序的依据从主键改为其它字段
+  + 由于索引的存在会占用额外的资源，因此我们需要确保二级索引仅留下能够实现该索引功能的数据，即将排序字段与主键数据留下，其它数据不要
+  + 二级索引访问需要两次索引查找，由于我们为了减少二级索引的资源占用，仅摘取了一部分数据，因此我们仅能通过二级索引拿到对应数据的主键，还需要再去聚簇索引那里去拿取完整的数据
+
+![二级索引示例](../文件/图片/mySql/二级索引示例.png)
+
++ 联合索引
+  + 联合索引实际上是二级索引的一种
+  + 联合索引就是指定多个字段作为B+树排序的依据，来建立对应的索引
+  + 联合索引虽然使用多个字段作为依据，但是实际上仅会生成一个B+树
+
+---
+
+### （二）索引实现
+
++ 这里主要讨论索引的相关实现方式，以及InnoDB索引结构，附带MyISSAM索引结构
+
+#### ①索引简易案例
 
 + 这里提供一个简易的小案例，来帮助我们理解索引的作用
 + 首先我们有一个表:
@@ -3010,7 +3086,7 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
 
 ---
 
-### （二）索引的迭代
+#### ②索引的迭代
 
 + 上面我们可以看到，我们为这些数据建立了目录，但是当数据太大的时候，我们的目录也会变得非常庞大，但我们还是想提高我们的性能
   + 因此我们需要把这些目录也分页，一页存放多个目录项，每个目录项之间使用链表进行连接
@@ -3031,88 +3107,9 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
 
 ---
 
-### （三）常见索引
+#### ③实现方式
 
-+ 常见的索引分为两类:
-  + 聚簇索引
-  + 非聚簇索引（二级索引/辅助索引）
-
-#### ①聚簇索引
-
-+ 优点:
-  + 数据和索引保存在同一个B+树中，从聚簇索引中获取数据比非聚簇索引更快
-  + 聚簇索引一般根据主键进行排序，对于主键的排序查找和范围查找速度非常快。
-  + 按照聚簇索引排列顺序，查询显示一定范围数据的时候，由于数据都是紧密相连，数据库不用从多个数据块中提取数据，所以节省了大量的io操作
-+ 缺点:
-  + **插入速度严重依赖于插入顺序**，按照主键的顺序插入是最快的方式，否则将会出现页分裂，严重影响性能。因此，**对于InnoDB表，我们一般都会定义一个自增的ID列为主键**
-  + **更新主键的代价很高**，因为将会导致被更新的行移动。因此，对于InnoDB表，我们一般定义主键为不可更新
-  + 二级索引访问需要两次索引查找，第一次找到主键值，第二次根据主键值找到行数据
-+ 特点:
-  + 使用记录主键值的大小进行记录和页的排序，这包括三个方面的含义：
-    + 页内的记录是按照主键的大小顺序排成一个单向链表
-    + 各个存放用户记录的页也是根据页中用户记录的主键大小顺序排成一个双向链表
-    + 存放目录项记录的页分为不同的层次，在同一层次中的页也是根据页中目录项记录的主键大小顺序排成一个双向链表
-
----
-
-#### ②二级索引
-
-+ 二级索引就是我们将排序的依据从主键改为其它字段
-  + 由于索引的存在会占用额外的资源，因此我们需要确保二级索引仅留下能够实现该索引功能的数据，即将排序字段与主键数据留下，其它数据不要
-  + 二级索引访问需要两次索引查找，由于我们为了减少二级索引的资源占用，仅摘取了一部分数据，因此我们仅能通过二级索引拿到对应数据的主键，还需要再去聚簇索引那里去拿取完整的数据
-
-![二级索引示例](../文件/图片/mySql/二级索引示例.png)
-
-+ 联合索引
-  + 联合索引实际上是二级索引的一种
-  + 联合索引就是指定多个字段作为B+树排序的依据，来建立对应的索引
-  + 联合索引虽然使用多个字段作为依据，但是实际上仅会生成一个B+树
-
----
-
-#### ③B+树索引注意事项
-
-+ InnoDB引擎在生成B+树索引时，它不是自底向上生成的，它是从上向下生成的:
-  + 最开始生成一个根节点，如果有数据，就向里添加
-  + 当一页存不了这么多数据时，它会创建一个新的页A，把根节点中的所有数据都放进新创建的页A，接下来再创建一个新的页B，将要添加的数据放进新页B（这里说的是聚簇索引），之后在根节点生成两个页的目录项
-  + 当一个根节点存不了这么多目录项时，它会再创建一个新的页C，将当前根节点的所有目录项数据放入新页C中，再创建一个新页D，将多余的目录项放入新页D，之后在根节点生成这些目录项的目录项
-  + 以此类推，它体现了InnoDB引擎的B+树索引的**根位置永远不动**的特性
-+ InnoDB在生成B+树时，假设这样一种情况:
-  + 我们有两个目录项，它们的对应字段值都是相同的，也就是说，比如一页能存放100条数据，正好有101条数据的对应字段值全都是一样的，那么这两条目录项所用来标识的值就是完全一致的，但它们都指向两个不同的页
-  + 当我们想插入一条数据时，比如这条数据也与该字段值相同，那么InnoDB就不知道怎么办了
-  + 为了解决这一问题，InnoDB规定，**所有的B+树索引的目录项记录必须是唯一的**。为了实现该要求，我们可以把对应数据项的主键也取出来，放入目录项记录中，主键一定非空且必定不重复，因此保证了记录项的唯一性
-  + 如果我们没有指定某一张表的主键，MySQL会自动生成一个隐藏主键，该主键是长整数类型，占用6个字节
-+ 另外，InnoDB规定**一个页面必须至少存储两条记录**
-  + 这很好理解，如果一个页面只能存储一条记录，那么树形结构无法起到“总结数据”的作用，导致我们白白浪费了资源，而且还降低了效率
-
----
-
-#### ④MyISSAM引擎的索引结构
-
-+ 如图所示:
-
-![MyISSAM引擎索引结构1](../文件/图片/mySql/MyISSAM引擎索引结构1.png)
-
-+ 如果建立一个二级索引，那么结构变为:
-
-![MyISSAM引擎索引结构2](../文件/图片/mySql/MyISSAM引擎索引结构2.png)
-
-+ MyISSAM引擎的索引需要回表，回表就是通过索引得到的并不是对应的数据，而是关于该数据的直接“线索”，存储引擎还需要通过该“线索”来得到对应的数据，也就是说，他还需要再去表里找一遍，这个再找一遍的操作，叫做回表。
-
-|对比项|MyISSAM|InnoDB|
-|:---:|:---:|:---:|
-|索引方式|非聚簇|包含一个聚簇|
-|回表|全部需要回表|二级索引需要回表|
-|索引与数据|文件分离|其数据文件本身就是索引文件|
-|目录项指针指向|地址|主键|
-|回表操作速度|根据地址直接定位数据，快速|根据主键还要查找一遍数据，较慢|
-|主键要求|无要求|必须要有主键|
-
----
-
-#### ⑤索引的数据结构
-
-+ 组成索引的数据结构主要就两种:Hash结构与树
++ 索引的实现方式主要就两种:Hash结构与树
 
 ##### Ⅰ全表遍历
 
@@ -3179,6 +3176,19 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
   + B+树的**查询效率更高**，因为B+树通常比B树分叉更多
   + B+树的**查询范围也比B树高**，因为B+树只要找到叶子节点，由于叶子节点之间存在指针，我们就可以顺着指针一个个递增的向下找。但B树需要进行中序遍历，才能完成范围的查找
   + 不过B树和B+树各有各的应用场景，不能完全说B+树就是比B树好
++ **注意**:
+> + InnoDB引擎在生成B+树索引时，它不是自底向上生成的，**它是从上向下生成的**:
+>   + 最开始生成一个根节点，如果有数据，就向里添加
+>   + 当一页存不了这么多数据时，它会创建一个新的页A，把根节点中的所有数据都放进新创建的页A，接下来再创建一个新的页B，将要添加的数据放进新页B（这里说的是聚簇索引），之后在根节点生成两个页的目录项
+>   + 当一个根节点存不了这么多目录项时，它会再创建一个新的页C，将当前根节点的所有目录项数据放入新页C中，再创建一个新页D，将多余的目录项放入新页D，之后在根节点生成这些目录项的目录项
+>   + 以此类推，它体现了InnoDB引擎的B+树索引的**根位置永远不动**的特性
+> + InnoDB在生成B+树时，假设这样一种情况:
+>   + 我们有两个目录项，它们的对应字段值都是相同的，也就是说，比如一页能存放100条数据，正好有101条数据的对应字段值全都是一样的，那么这两条目录项所用来标识的值就是完全一致的，但它们都指向两个不同的页
+>   + 当我们想插入一条数据时，比如这条数据也与该字段值相同，那么InnoDB就不知道怎么办了
+>   + 为了解决这一问题，InnoDB规定，**所有的B+树索引的目录项记录必须是唯一的**。为了实现该要求，我们可以把对应数据项的主键也取出来，放入目录项记录中，主键一定非空且必定不重复，因此保证了记录项的唯一性
+>   + 如果我们没有指定某一张表的主键，MySQL会自动生成一个隐藏主键，该主键是长整数类型，占用6个字节
+> + 另外，InnoDB规定**一个页面必须至少存储两条记录**
+>   + 这很好理解，如果一个页面只能存储一条记录，那么树形结构无法起到“总结数据”的作用，导致我们白白浪费了资源，而且还降低了效率
 
 ---
 
@@ -3192,12 +3202,141 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
 
 ---
 
-### （四）索引管理
+#### ④MyISSAM引擎索引结构
+
++ 如图所示:
+
+![MyISSAM引擎索引结构1](../文件/图片/mySql/MyISSAM引擎索引结构1.png)
+
++ 如果建立一个二级索引，那么结构变为:
+
+![MyISSAM引擎索引结构2](../文件/图片/mySql/MyISSAM引擎索引结构2.png)
+
++ MyISSAM引擎的索引需要回表，回表就是通过索引得到的并不是对应的数据，而是关于该数据的直接“线索”，存储引擎还需要通过该“线索”来得到对应的数据，也就是说，他还需要再去表里找一遍，这个再找一遍的操作，叫做回表。
+
+|对比项|MyISSAM|InnoDB|
+|:---:|:---:|:---:|
+|索引方式|非聚簇|包含一个聚簇|
+|回表|全部需要回表|二级索引需要回表|
+|索引与数据|文件分离|其数据文件本身就是索引文件|
+|目录项指针指向|地址|主键|
+|回表操作速度|根据地址直接定位数据，快速|根据主键还要查找一遍数据，较慢|
+|主键要求|无要求|必须要有主键|
+
+---
+
+### （三）索引管理
+
+#### ①索引的创删查
+
++ 索引有两种创建方式:
+  + 创建表的时候创建，可以通过在字段上声明一些约束，或者在字段最后手动指定来创建
+  + 在已存在的表上创建索引,可以通过ALTER关键字或者CREATE关键字创建
+  + 被主键约束、唯一性约束和外键约束声明的字段，MySQL会为其自动创建对应的索引
++ 索引的删除也有两种删除方式:
+  + 使用ALTER关键字删除
+  + 使用DROP关键字删除
+
++ 下面是索引的具体SQL语句:
+
+~~~sql
+  CREATE TABLE table_name (
+    字段声明 [约束]  -- 主键、非空等约束一旦作用在字段上，MySQL就会自动生成其字段索引
+    ...
+    -- UNIQUE、FULLTEXT、SPATIAL分别表示非空、全文和空间索引，如果想创建普通索引，不用写这些项
+    -- INDEX和KEY的意义是相同的，都是起声明索引的作用
+    -- index_name表示索引名
+    -- col_name表示索引排序所依据的字段名，length是可选项，表示索引长度只有字符串类型的字段才能选择length。如果索引依据的字段有多个，那么各字段之间使用逗号隔开
+    -- ASC和DESC表示该字段按照什么方式进行排序，降序索引是MySQL8.0才开始支持的
+    [UNIQUE | FULLTEXT | SPATIAL] [INDEX | KEY] [index_name] (col_name [length]) [ASC | DESC]
+  )
+
+  -- 使用ALTER关键字进行索引的创建
+  ALTER TABLE table_name
+  ADD [UNIQUE | FULLTEXT | SPATIAL] [INDEX | KEY] [index_name] (col_name[length],...) [ASC | DESC] [,table_name (col_name[length],...) [ASC | DESC] ,...]
+
+  -- 使用CREATE关键字进行索引的创建
+  CREATE [UNIQUE | FULLTEXT | SPATIAL] INDEX index_name ON table_name (col_name[length],...) [ASC | DESC] [,table_name (col_name[length],...) [ASC | DESC] ,...]
+
+  -- 使用ALTER关键字删除索引
+  ALTER TABLE table_name DROP INDEX index_name;
+
+  -- 使用DROP删除索引
+  DROP INDEX index_name ON table_name;
+
+  -- 查看指定表的索引
+  show index from table_name;
+
+~~~
+
++ [索引样例](../源码/MySQL/索引.sql)
++ 注意:
+> + **如果我们删除了对应表的列，如果该列是索引的依据，那么索引内的依据也会被同步删除**
+> + 如果使用了全文索引，那么使用`SELECT * FROM 表名 WHERE MATCH(字段1,字段2) AGAINST (‘查询字符串’);`的语句可以比like语句块数倍，但是存在查询精度问题，可能不能完整的查询到对应要求的值
+
+---
+
+#### ②索引的新特性
+
++ MySQL8.0开始**支持降序索引**，在此之前，索引仅支持升序
++ 另外，MySQL8.0还**支持了隐藏索引**
+  + 当我们想删除某一索引时，我们如果贸然删掉它，就回复不过来了，但删掉他如果导致了一些问题，那可能就会造成非常严重的损失
+  + MySQL提供的隐藏索引的作用就是让我们在真正删除某一索引前，先**让它隐藏，导致MySQL的优化器监测不到它，使得当前的程序就相当于删除了该索引，从而使SQL语句在执行时不会使用到该索引**。方便我们进行索引删除后的副作用效果测试。如果没问题的话，我们再删除它，否则不删除
+  + 即使索引是隐藏的，但是**如果数据发生变动，它依然会同步更新**
+  + 另外，MySQL又提供了一项配置，让我们的优化器能够在索引隐藏时能够检测到它
+
+~~~sql
+
+  -- 建表时就指定该索引是隐藏的
+  CREATE TABLE tablename(
+    propname1 type1[CONSTRAINT1],
+    propname2 type2[CONSTRAINT2],
+    ……
+    propnamen typen,
+    INDEX [indexname](propname1 [(length)]) INVISIBLE  -- 在建表时使用invisible指定索引的隐藏
+  );
 
 
+  -- 在CREATE关键字下使用INVISIBLE指定索引隐藏
+  CREATE INDEX indexname ON tablename(propname[(length)]) INVISIBLE;  
+  -- 在ALTER关键字下使用INVISIBLE指定索引隐藏
+  ALTER TABLE tablename
+  ADD INDEX indexname (propname [(length)]) INVISIBLE;
 
+  -- 切换隐藏索引
+  ALTER TABLE tablename ALTER INDEX index_name INVISIBLE;
+  ALTER TABLE tablename ALTER INDEX index_name VISIBLE;
+  -- 查看查询优化器的开关设置，其中use_invisible_indexes项表示的是查询优化器的开关，如果改成ON，那么就说明隐藏索引对查询优化器可见，为OFF说明不可见
+  select @@optimizer_switch \G;
+  -- 设置optimizer_switch字段，来打开该配置的开关
+  set session optimizer_switch="use_invisible_indexes=on";  
 
+~~~
 
+---
+
+#### ③索引的创建原则
+
++ 推荐的索引原则如下:
+  + **字段数值有唯一性的限制**适合创建索引:因为是唯一的，把他们变得有序便于提高查找效率
+  + **频繁作为WHERE子句的查询条件的字段**适合创建索引:一直用一直查，建索引查的效率更快
+  + **经常ORDER BY和GROUP BY的字段**适合创建索引:ORDER BY可以通过索引快速的得到结果，否则MySQL默认的外部排序效率较低。GROUP BY的字段是需要分组的，而我们建立了索引更利于GROUP BY作用的字段的查找
+  + **UPDATE和DELETE的WHERE子句条件列**适合创建索引:一直用一直查，查的快效率肯定高
+  + **DISTINCT字段**适合创建索引:索引是有序的，因此去重比较方便
+  + **多表连接操作时，两表的连接字段和WHERE条件字段**适合创建索引:两表连接时，连接字段会频繁查询，加索引来提高查询效率。WHERE条件也一样
+  + **使用类型小的列创建索引**:索引的列最好字段范围小，这样浪费的空间比较少，能够提高索引更新的效率
+  + **使用字符串前缀创建索引**:字符串有的时候会很长，但是我们不想浪费多余的资源，因此需要使用字符串的前缀来创建索引，但是使用什么长度是个问题。我们可以利用公式(count(distinct 字段)/count(*))来判断，当该指标大于0.9的时候，差不多就行了。一般20长度就行
+  + **区分度高的列适合创建索引**:上面那个公式就是区分度高的
+  + **使用最频繁的列放到联合索引的左侧**:因为使用频繁所以要放到排序优先级最高的最左边
+  + **多个字段都需要创建索引时，联合索引优于单值索引**:是这样的
+  + **删除不再使用或者很少使用的索引**:删掉可以节省资源
++ 不推荐的索引原则如下:
+  + **在where中使用不到的字段，不要设置索引**:都用不到肯定就不创建索引了
+  + **数据量小的表最好不要使用索引**:这样没什么区别，还浪费了资源
+  + **有大量重复数据的列上不要建立索引**:这数据太重复了，一抓一大把，不用 
+  + **避免对经常更新的表创建过多的索引**:经常更新，导致索引也经常更新，可能会降低表的更新速度。他其实有两层含义，频繁更新的字段不一定要创建索引，以及表上不建议有太多的索引
+  + **不建议用无序的值作为索引**:不建议
+  + **不要定义冗余或重复的索引**:多个字段都需要创建索引时，联合索引优于单值索引
 
 ---
 
@@ -3445,14 +3584,693 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
     + 撤销表空间
     + 临时表空间
 
-
-
 ~~~sql
-
   -- 查看表空间类型，如果出现innodb_file_per_table对应的Value是on，那么说明开启了独立表空间，且说明每张表都会单独创建一个idb文件
   show variables like 'innodb_file_per_table';
+~~~
+
+---
+
+## 六、性能分析与调优
+
+### （一）性能分析
+
+#### ①调优步骤
+
++ 我们调优的步骤如下图所示:
+  + 其中，被S标记的部分需要使用对应的分析工具进行分析
+  + 被A标记的部分说明我们可以在此处采取一些行动来进行优化
+
+![调优步骤1](../文件/图片/mySql/调优步骤1.png)
+![调优步骤2](../文件/图片/mySql/调优步骤2.png)
+
+#### ②性能参数
+
++ 在MySQL中，可以使用`SHOW STATUS`语句查询一些MySQL数据库服务器的性能参数、执行频率
+  + 以下是一些常用的性能参数:
+
+<a id="performanceParameters"></a>
+
+|性能参数|描述|备注|
+|:---:|:---:|:---:|
+|Connections|连接MySQL服务器的次数|无|
+|Uptime|MySQL服务器的上线时间|无|
+|Slow_queries|慢查询的次数|无|
+|last_query_cost|统计SQL查询成本，其返回值描述使用样例说明:查询结果返回100条数据，这100条数据分别来自三个不同的页，因此返回3|无|
+|Innodb_row_read|Select查询返回的次数|无|
+|Innodb_row_inserted|执行INSERT操作插入的行数|无|
+|Innodb_rows_updated|执行UPDATE操作更新的行数|无|
+|Innodb_rows_deleted|执行DELETE操作删除的行数|无|
+|Com_select|查询操作的次数|无|
+|Com_insert|插入操作的次数|无|
+|Com_update|更新操作的次数|无|
+|Com_delete|删除操作的次数|无|
+
++ 查看性能参数的SQL语句:
+
+~~~sql
+  SHOW [GLOBAL|SESSION] STATUS LIKE '参数';
+~~~
+
+---
+
+#### ③慢查询日志
+
++ 慢查询日志主要用来记录慢查询的相关信息，我们可以从这里得到慢查询的相关SQL语句、慢查询的条数等
++ 慢查询日志的相关SQL语句如下:
+
+~~~sql
+  -- -- 查询慢查询目录相关信息
+  show variables like '%slow_query_log%';  -- 查看慢查询日志信息
+  SHOW VARIABLES LIKE '%slow%'; -- 查询慢查询日志所在目录
+  SHOW VARIABLES LIKE '%long_query_time%'; -- 查询超时时长
+  -- 开启慢查询日志
+  set global slow_query_log='ON';
+
+  -- 查看慢查询时间阈值，超过该值时，该查询会被记录为慢查询
+  show variables like '%long_query_time%';
+  -- 手动设置该时间阈值，它的global和session都有该变量，因此都要设置上
+  set global long_query_time = 1;
+  set long_query_time=1;
+  -- 查询当前的慢查询数量
+  SHOW GLOBAL STATUS LIKE '%Slow_queries%';
+
+  -- 关闭慢查询日志
+    -- 通过配置文件关闭，需要重启服务
+    [mysqld]
+    slow_query_log=OFF  -- 或者把它注释掉
+    -- 运行时关闭
+    SET GLOBAL slow_query_log=off;
+  
+  -- 删除慢查询日志
+  -- 一旦执行了该命令，慢查询日志将被删除，并在数据目录下重新生成新的慢查询日志文件
+  mysqladmin -u root -p flush -logs slow
 
 ~~~
+
++ MySQL提供了慢查询日志分析工具mysqldumpslow，**它需要在终端调用**
+
+~~~bash
+  # 查看帮助信息
+  mysqldumpslow --help
+
+  # -a: 不将数字抽象成N，字符串抽象成S
+  # -s: 是表示按照何种方式排序：
+  #   c: 访问次数
+  #   l: 锁定时间
+  #   r: 返回记录
+  #   t: 查询时间
+  #   al:平均锁定时间
+  #   ar:平均返回记录数
+  #   at:平均查询时间 （默认方式）
+  #   ac:平均查询次数
+  # -t: 即为返回前面多少条的数据；
+  # -g: 后边搭配一个正则匹配模式，大小写不敏感的；
+
+
+
+  # 我们想要按照查询时间排序，查看前五条 SQL 语句，这样写即可
+  mysqldumpslow -s t -t 5 日志所在路径
+
+  # 常用参考
+
+  #得到返回记录集最多的10个SQL
+  mysqldumpslow -s r -t 10 日志所在路径
+  #得到访问次数最多的10个SQL
+  mysqldumpslow -s c -t 10 日志所在路径
+  #得到按照时间排序的前10条里面含有左连接的查询语句
+  mysqldumpslow -s t -t 10 -g "left join" 日志所在路径
+  #另外建议在使用这些命令时结合 | 和more 使用 ，否则有可能出现爆屏情况
+  mysqldumpslow -s r -t 10 日志所在路径 | more
+
+~~~
+
+#### ④SQL执行成本PROFILE
+
++ 早在[逻辑架构](#Profile)时，就碰到过Profile
++ Profile用来计算SQL执行成本，它会向我们提供查询操作的每次执行步骤具体耗费的时间，从而让我们能够快速判断出导致慢查询的原因
+
+~~~sql
+  -- 查看是否开启profiling
+  select @@profiling;  
+  show variables like 'profiling';
+
+  -- 如果是MySQL5.7，需要在配置文件内开启查询缓存配置，并重启服务使之生效
+  -- 如果是MySQL8，此方式没有效果，且重启服务会失败，因为MySQL8.0不支持查询缓存
+  [mysqld]
+  query_cache_type=1
+
+  -- 设置profiling，0代表关闭，1代表开启
+  set profiling=1;
+  -- 显示最近的几次查询
+  show profiles;
+  -- 显示上一次查询的详细步骤
+  show profile;
+  -- 使用profiles显示的查询的id来展示对应查询的详细步骤
+  show profile for query 7;
+  -- 展示更详细的步骤
+  show profile cpu,block io for query 7;
+~~~
+
++ SHOW PROFILE的常用参数有:
+
+|参数|作用|备注|
+|:---:|:---:|:---:|
+|ALL|显示所有开销信息|无|
+|BLOCK IO|显示IO块开销|无|
+|CONTEXT SWITCHES|上下文切换开销|无|
+|CPU|显示CPU开销|无|
+|IPC|显示发送和接收开销信息|无|
+|MEMORY|显示内存开销信息|无|
+|PAGE FAULTS|显示页面错误开销信息|无|
+|SOURCE|显示和Source_function，Source_file，Source_line相关的开销信息|无|
+|SWAPS|显示交换次数开销信息|
+
+---
+
+#### ⑤分析查询语句EXPLAIN
+
++ 在MySQL5.6.3版本前，仅能使用EXPLAIN分析查询语句，即仅能分析SELECT语句。
++ MySQL5.6.3以后，EXPLAIN支持分析SELECT、UPDATE、DELETE语句了
++ 同时，在MySQL5.7版本以前，想显示partitions需要使用explain partitions命令，想要显示filtered需要使用explain extended命令。在5.7版本后，默认explain直接显示filtered中的信息
++ 语法:
+
+~~~sql
+  EXPLAIN SELECT select_options
+  或者
+  DESCRIBE SELECT select_options
+~~~
+
++ Explain语句会输出如下内容
+
+|列名|描述|备注|
+|:---:|:---:|:---:|
+|id|每个查询对应一个id|无|
+|select_type|SELECT查询对应的查询类型|无|
+|table|查询作用的表名|无|
+|partitions|匹配的分区信息|无|
+|type|针对单表的访问方法|无|
+|possible_keys|可用的索引|无|
+|key|实际上使用的索引|无|
+|key_len|实际上使用到的索引长度，用来度量索引的效率|无|
+|ref|当使用索引列等值查询时，与索引列进行等值匹配的对象信息|无|
+|rows|预估查询结果的行数|无|
+|filtered|某个表经过搜索条件过滤后剩余记录条数的百分比|无|
+|Extra|额外信息，一般用来描述SQL语句是怎么执行的|
+
++ 下面详细描述上述字段
+
+##### Ⅰid、table与select_type
+
++ id和select很简单，**查询语句有几张表，就有几行数据，table就是哪个。SELECT语句有多少，就有几个id**，如果碰上多个表在一个id内，可以看到它们的id都是相同的，但是table都对应着不同的表
+  + id表示**对应的SELECT语句的标识**
+    + **id的值越大，代表其优先级越高，语句越先执行。如果id相同，那么从上向下执行**
+    + 一个SQL语句应该使id越少越好，这代表它执行的查询更少，效率更高
+  + table表示**id所对应的查询语句所使用的表**
+  + **我们所看到的结果是查询优化器对SQL语句进行优化后的结果，因此我们通过分析我们自己编写的SQL语句得到的结果可能与实际运行结果不符**
++ select_type是一个有很多值的字段，它表示**此次查询的类型**，通过该字段我们可以查看到我们的查询被优化器优化到了什么情况
+  + 优化器一般会将子查询转换为连接查询，并将in运算之类的相关运算转换为exists运算
+
+|select_type字段|含义|备注|
+|:---:|:---:|:---:|
+|SIMPLE|**普通的查询**就是SIMPLE|无|
+|PRIMARY|**包含子查询或UNION或UNION ALL语句的大查询最左边的查询语句**是PRIMARY|无|
+|UNION|在**上面的PRIMARY满足的条件下，右边的查询**UNION|无|
+|UNION RESULT|MySQL用来**进行UNION操作而生成的临时表**的select_type字段是UNION RESULT|UNION ALL表不需要去重，一般没有临时表|
+|SUBQUERY|在优化器优化时，如果**优化器会不能将子查询转变为连接查询**，且**该子查询是不相关子查询也不能被物化**，那么该子查询的第一个SELECT查询语句所查询的表的那个select_type字段就是SUBQUERY|无|
+|DEPENDENT SUBQUERY|**在SUBQUERY的前提下，如果该子查询的第一个SELECT查询语句还是一个相关子查询**，那么所查询的表的那个select_type字段就是DEPENDENT SUBQUERY|无|
+|DEPENDENT UNION|在**包含UNION或者UNION ALL的大查询中，如果各个小查询都依赖于外层查询的话，那除了最左边那个小查询外，其余的小查询**的select_type字段都是DEPENDENT UNION|无|
+|DERIVED|对于**包含派生表的查询**，该派生表对应的子查询的select_type字段就是DERIVED|派生表就是大查询所from的那个表是通过SELECT语句查询出来的，而不是数据库的原生表|
+|MATERIALIZED|当**子查询语句可以被物化**时,此时子查询对应的select_type字段就是MATERIALIZED|物化就是优化器意识到查询可以转换为一个有明确的值的集合（集合是不重复的，因此会去重），就会将其转换为集合然后与驱动表进行连接，最后进行查询。|
+
++ [样例](../源码/MySQL/explain样例.sql)
+
+---
+
+##### Ⅱpartitions
+
++ partitions是用来查看分区记录的
++ 如果想查看其作用，见下:
+
+~~~sql
+  -- 创建分区表，
+  -- 按照id分区，id<100 p0分区，其他p1分区
+  CREATE TABLE user_partitions (id INT auto_increment,
+    NAME VARCHAR(12),PRIMARY KEY(id))
+    PARTITION BY RANGE(id)(
+    PARTITION p0 VALUES less than(100),  -- id<100时分区为p0
+    PARTITION p1 VALUES less than MAXVALUE  -- 其他情况分区为p1
+  );
+
+  DESC SELECT * FROM user_partitions WHERE id>200;  -- 可以看到partitions是p1
+~~~
+
+---
+
+
+##### Ⅲtype、possible_keys、key_len与key
+
++ possible_keys表示**此次查询可以使用的索引**，而key代表**优化器最终选择的索引**
++ key_len显示**MySQL决定使用的键长度**。如果键是 NULL，则长度为 NULL。使用的索引的长度。
+  + **从索引的使用充分性上来看，它的值越大越好**，因为值越大说明MySQL使用索引使用的越充分
+  + **从性能的角度上考虑，它的值越小越好**，小说明优化器可能使用了更少的索引来做更简单的操作，性能可能会提升
+  + 它的计算公式是:
+
+|条件|计算公式|
+|:---:|:---:|
+|varchar(10) 且可以为NULL|10(规定的字段长度)*(utf8=3,GBK=2,latin=1)+1(可以为NULL)+2(变长字段)|
+|varchar(10) 且不允许是NULL|10(规定的字段长度)*(utf8=3,GBK=2,latin=1)+2(变长字段)|
+|char(10) 且允许是NULL|10(规定的字段长度)*(utf8=3,GBK=2,latin=1)+1(可以为NULL)|
+|char(10) 且允许是NULL|10(规定的字段长度)*(utf8=3,GBK=2,latin=1)|
+|int 且允许NULL|4(int类型占4个字节)+1(可以为NULL)|
+
++ type表示我们使用的查询方式，它有多种类型，从效率上从高到低可以分为:system、const、eq_ref、ref、fulltext、ref_of_null、index_merge、unique_subquery、index_subquery、range、index、ALL
+
+|type字段值|含义|备注|
+|:---:|:---:|:---:|
+|system|当优化器能够非常直接的找到对应的字段时，就是system。例:MyISSAM引擎的表仅一条记录，查询全表信息时，就是system|无|
+|const|如果我们根据**主键或者唯一二级索引列**与**常数**进行匹配时，对单表的访问方法就是const|**必须是常数，而不是常量**|
+|eq_ref|在查询连接时，如果**被驱动表是通过主键或者唯一二级索引列等值匹配**的方式进行比较的（如果是联合索引，那么所有的索引列都需要进行比较），那么被驱动表的type字段是eq_ref|无|
+|ref|当**通过普通的二级索引列**与**常量**进行等值匹配时来查询某个表，那么对该表的type可能是ref|这里说了常量，常量是包括常数的，因此说的是type字段可能是ref|
+|fulltext|使用到全文索引时|无|
+|ref_of_null|当**对普通二级索引进行等值匹配查询，该索引列的值也可能是NULL时**，那么对该表的type字段可能是ref_or_null|无|
+|index_merge|**单表访问方法时在某些场景下可以使用intersection（取交集）、union（取并集并去重）、Sort-Union（合并多个有序数据集）这三种索引合并的方式来执行查询**，此时字段值是index_merge|无|
+|unique_subquery|如果**优化器决定将IN子查询转换为EXISTS子查询，即优化器没办法把子查询转换成连接查询时，而且子查询可以使用到主键或唯一键索引进行等值匹配**，那么该子查询的type字段就是unique_subquery|无|
+|index_subquery|**与unique_subquery类似，只是索引使用的是普通索引**，而不是主键或唯一键索引|无|
+|range|如果**使用索引获取某些范围区间的记录**，那么查询的type字段可能会变为range|无|
+|index|当我们可以**使用索引覆盖，但需要扫描全部的索引记录时**，查询的type字段就是index|无|
+|ALL|ALL就是全表扫描，说明**没有索引可用**|无|
+
++ 我们进行索引优化的目标，至少要达到range级别，要求是ref级别，最好是const级别
++ [样例](../源码/MySQL/explain样例.sql)
+
+---
+
+##### Ⅳref、rows、filtered、Extra
+
++ ref表示**使用索引进行等值匹配时，与索引进行等值匹配的对象引用类型信息**
++ rows表示**查询语句执行，预计得到的查询结果的行数**，**这是一个预估的数目，可能不准确**，它的值越小越好
++ filtered表示某个表在搜索条件过滤后剩余记录条数占原表总记录数的百分比。这个值越大越好，因为越大表示我们查询出来的数据越符合条件
++ Extra用来说明一些额外信息
+
+|Extra值|描述|备注|
+|:---:|:---:|:---:|
+|No tables used|表示该**SELECT语句并没有使用任何的表**|无|
+|Impossible WHERE|表示**在全表扫描下使用WHERE过滤**|无|
+|No matching min/max row|表示**一个匹配的字段都没有，表示查询结果一行都没有**|无|
+|Select tables optimized away|表示该表被优化了|无|
+|Using index|表示MySQL优化器动用了索引优化表的查询，它说明**发生了覆盖索引**。|无|
+|Using index condition|表示**使用了索引下推**|无|
+|Using join buffer (hash join)|说明**被驱动表没办法通过索引加快其访问速度，然后MySQL为其专门开辟出一块内存来加快其访问速度**|无|
+|Not exists|在**连接时指定对应字段的过滤条件是字段为空，但是对应字段又限制了不能为空，因此导致矛盾**，从而输出Not exists|无|
+|Using union/Intersect/sort_union(index1,index2,...)|表示**MySQL在查询过程中准备取索引结果的并集/交集/合并多个有序数据集**，括号内表示要取并集的两个索引的名称|无|
+|Zero limit|表示**limit子句参数为0时**的提示，来告诉我们这是无意义的|无|
+|Using filesort|说明**排序操作无法使用索引，此次查询需要使用文件排序的方式进行查询**|无|
+|Using temporary|表示**MySQL使用了临时表来处理一些查询结果的数据**|无|
+
++ 覆盖索引:MySQL在通过索引查到了结果以后，**它的数据项内已经存在了我们想要的字段值了，此时我们就不需要再去回表，而直接从数据项中取出数据即可**
+  +  一般来说我们的数据项会存放二级索引的指定值和主键，只要我们的select语句查询这些字段，那么覆盖索引就能成立
++ 索引下推就是我们在进行多条件过滤时，使用索引筛选出第一层数据时，不立刻进行回表，而是寻找与该索引字段相关的多条件过滤的其他条件进一步过滤，直到找不到索引字段相关的条件时再进行回表，这样做**可以减少IO次数，并提高查询效率**
++ [样例](../源码/MySQL/explain样例.sql)
+
+---
+
+##### Ⅴ输出格式
+
++ EXPLAIN语句共有四种输出格式
+  + 传统格式:就是一个表格形式，是默认的输出格式
+  + JSON格式:以JSON格式输出
+  + TREE格式:在8.0.16版本被引入，主要根据查询的各个部分之间的关系和各部分的执行顺序 来描述如何查询
+  + 可视化输出:主要看IDE支不支持，WorkBench是支持的
+  + 语法就是在EXPLAIN后面加上`FORMAT=xxx`，其中想输出JSON，就写JSON，输出TREE就写TREE，想输出表格就不写
++ 在JSON格式中，还多出了一些字段:
+
+|字段|含义|子字段|子字段含义|备注|
+|:---:|:---:|:---:|:---:|:---:|
+|cost_info|预计查询所需的总成本|read_cost|预计读取数据所花费的成本，由IO成本与监测rows*filtered所需的CPU成本组成|无|
+|^|^|eval_cost|检测rows × filter条记录的成本|无|
+|^|^|prefix_cost|单独查询对应表的成本，即cost_info+eval_cost。如果是被联动表，其对应值为cost_info+eval_cost+联动表的prefix_cost|无|
+|^|^|data_read_per_join|表示在此次查询中需要读取的数据量|无|
+
+---
+
+##### Ⅵ拓展信息查看
+
++ 我们在使用EXPLAIN语句进行了一次分析后，可以使用哦`SHOW WARNINGS`语句来进一步查看此次EXPLAIN分析的拓展信息，**实际上它展示的是最近一条执行的SQL语句产生的警告信息**
++ 智障Navicat输出不出来，需要在终端写才能看见
++ 如果嫌它输出的太乱，加上`\G`来让它输出变得好看一点
++ 最终的输出结果有三个值:
+  + Level,表示警告的级别，有三个值
+    + Warning表示警告，但是警告不会影响操作的继续执行
+    + Note表示注意，它提供了一些关于操作的信息，他不是错误或者警告
+    + Error表示发生了严重错误，可能会中断操作的执行
+  + Code:就是我们的报错信息所呈现出来的[数值型错误代码](#Error)
+  + Message:我们报错的详细信息，**如果没有报错且Code是1003，那么会输出优化器优化后的查询语句，也就是执行器最终执行的查询语句**
+
+---
+
+#### ⑥TRACE与sys_schema
+
++ optimizer_trace是MySQL5.6版本引入的一项跟踪功能，它可以**跟踪优化器做出的各种决策**，并将结果记录到对应的INFORMATION_SCHEMA_OPTIMIZER_TRACE表中
++ 此功能默认是关闭的，需要我们手动打开:
+
+~~~sql
+  -- 打开选项，并设置格式为JSON，同时设置trace能够使用的最大内存大小，避免解析过程中因分配给它的内存太小而无法展示全部内容
+  set optimizer_trace="enabled=on",end_markers_in_json=on;
+  set optimizer_trace_max_mem_size=1000000;
+~~~
+
++ 该选项开启后，可以分析SELECT、INSERT、REPLACE、UPDATE、DELETE、EXPLAIN、SET、DECLARE、CASE、IF、RETURN、CALL等语句
++ 如果我们想查看相关的执行过程，我们可以在对应操作执行后执行`select * from information_schema.optimizer_trace\G`（在终端看）来查看
+
+~~~json
+*************************** 1. row ***************************
+// 第一部分:执行的SQL语句
+QUERY: SELECT explain_sample1.key1, explain_sample2.key1 FROM explain_sample1 LEFT JOIN explain_sample2 ON explain_sample1.key1 = explain_sample2.key1 WHERE explain_sample2.common_field IS NOT NULL
+  // 第二部分:进行跟踪的步骤
+  TRACE: {
+  "steps": [
+    {
+      // 预备工作
+      "join_preparation": {
+        "select#": 1,
+        "steps": [
+          {
+            "expanded_query": "/* select#1 */ select `explain_sample1`.`key1` AS `key1`,`explain_sample2`.`key1` AS `key1` from (`explain_sample1` left join `explain_sample2` on((`explain_sample1`.`key1` = `explain_sample2`.`key1`))) where (`explain_sample2`.`common_field` is not null)"
+          },
+          {
+            "transformations_to_nested_joins": {
+              "transformations": [
+                "outer_join_to_inner_join",
+                "JOIN_condition_to_WHERE",
+                "parenthesis_removal"
+              ] /* transformations */,
+              "expanded_query": "/* select#1 */ select `explain_sample1`.`key1` AS `key1`,`explain_sample2`.`key1` AS `key1` from `explain_sample1` join `explain_sample2` where ((`explain_sample2`.`common_field` is not null) and (`explain_sample1`.`key1` = `explain_sample2`.`key1`))"
+            } /* transformations_to_nested_joins */
+          }
+        ] /* steps */
+      } /* join_preparation */
+    },
+    {
+      // 执行优化
+      "join_optimization": {
+        "select#": 1,
+        "steps": [
+          {
+            // 条件处理
+            "condition_processing": {
+              "condition": "WHERE",
+              "original_condition": "((`explain_sample2`.`common_field` is not null) and (`explain_sample1`.`key1` = `explain_sample2`.`key1`))",
+              "steps": [
+                {
+                  "transformation": "equality_propagation",
+                  "resulting_condition": "((`explain_sample2`.`common_field` is not null) and multiple equal(`explain_sample1`.`key1`, `explain_sample2`.`key1`))"
+                },
+                {
+                  "transformation": "constant_propagation",
+                  "resulting_condition": "((`explain_sample2`.`common_field` is not null) and multiple equal(`explain_sample1`.`key1`, `explain_sample2`.`key1`))"
+                },
+                {
+                  "transformation": "trivial_condition_removal",
+                  "resulting_condition": "((`explain_sample2`.`common_field` is not null) and multiple equal(`explain_sample1`.`key1`, `explain_sample2`.`key1`))"
+                }
+              ] /* steps */
+            } /* condition_processing */
+          },
+          {
+            //替换生成的列
+            "substitute_generated_columns": {
+            } /* substitute_generated_columns */
+          },
+          {
+            //表的依赖关系
+            "table_dependencies": [
+              {
+                "table": "`explain_sample1`",
+                "row_may_be_null": false,
+                "map_bit": 0,
+                "depends_on_map_bits": [
+                ] /* depends_on_map_bits */
+              },
+              {
+                "table": "`explain_sample2`",
+                "row_may_be_null": true,
+                "map_bit": 1,
+                "depends_on_map_bits": [
+                ] /* depends_on_map_bits */
+              }
+            ] /* table_dependencies */
+          },
+          {
+            //使用键
+            "ref_optimizer_key_uses": [
+              {
+                "table": "`explain_sample1`",
+                "field": "key1",
+                "equals": "`explain_sample2`.`key1`",
+                "null_rejecting": true
+              },
+              {
+                "table": "`explain_sample2`",
+                "field": "key1",
+                "equals": "`explain_sample1`.`key1`",
+                "null_rejecting": true
+              }
+            ] /* ref_optimizer_key_uses */
+          },
+          {
+            //行判断
+            "rows_estimation": [
+              {
+                "table": "`explain_sample1`",
+                "table_scan": {
+                  "rows": 10152,
+                  "cost": 24.25
+                } /* table_scan */
+              },
+              {
+                "table": "`explain_sample2`",
+                "table_scan": {
+                  "rows": 9895,
+                  "cost": 24.25
+                } /* table_scan */  //扫描表
+              }
+            ] /* rows_estimation */
+          },
+          {
+            //考虑执行计划
+            "considered_execution_plans": [
+              {
+                "plan_prefix": [
+                ] /* plan_prefix */,
+                "table": "`explain_sample2`",
+                //最佳访问路径
+                "best_access_path": {
+                  "considered_access_paths": [
+                    {
+                      "access_type": "ref",
+                      "index": "idx_key1",
+                      "usable": false,
+                      "chosen": false
+                    },
+                    {
+                      "rows_to_scan": 9895,
+                      "filtering_effect": [
+                      ] /* filtering_effect */,
+                      "final_filtering_effect": 0.9,
+                      "access_type": "scan",
+                      "resulting_rows": 8905.5,
+                      "cost": 1013.75,
+                      "chosen": true
+                    }
+                  ] /* considered_access_paths */
+                } /* best_access_path */,
+                //行过滤百分比
+                "condition_filtering_pct": 100,
+                "rows_for_plan": 8905.5,
+                "cost_for_plan": 1013.75,
+                "rest_of_plan": [
+                  {
+                    "plan_prefix": [
+                      "`explain_sample2`"
+                    ] /* plan_prefix */,
+                    "table": "`explain_sample1`",
+                    "best_access_path": {
+                      "considered_access_paths": [
+                        {
+                          "access_type": "ref",
+                          "index": "idx_key1",
+                          "rows": 1.02308,
+                          "cost": 3139.38,
+                          "chosen": true
+                        },
+                        {
+                          "access_type": "scan",
+                          "chosen": false,
+                          "cause": "covering_index_better_than_full_scan"
+                        }
+                      ] /* considered_access_paths */
+                    } /* best_access_path */,
+                    "condition_filtering_pct": 100,
+                    "rows_for_plan": 9111.02,
+                    "cost_for_plan": 4153.13,
+                    "chosen": true
+                  }
+                ] /* rest_of_plan */
+              },
+              {
+                "plan_prefix": [
+                ] /* plan_prefix */,
+                "table": "`explain_sample1`",
+                "best_access_path": {
+                  "considered_access_paths": [
+                    {
+                      "access_type": "ref",
+                      "index": "idx_key1",
+                      "usable": false,
+                      "chosen": false
+                    },
+                    {
+                      "rows_to_scan": 10152,
+                      "filtering_effect": [
+                      ] /* filtering_effect */,
+                      "final_filtering_effect": 1,
+                      "access_type": "scan",
+                      "resulting_rows": 10152,
+                      "cost": 1039.45,
+                      "chosen": true
+                    }
+                  ] /* considered_access_paths */
+                } /* best_access_path */,
+                "condition_filtering_pct": 100,
+                "rows_for_plan": 10152,
+                "cost_for_plan": 1039.45,
+                "rest_of_plan": [
+                  {
+                    "plan_prefix": [
+                      "`explain_sample1`"
+                    ] /* plan_prefix */,
+                    "table": "`explain_sample2`",
+                    "best_access_path": {
+                      "considered_access_paths": [
+                        {
+                          "access_type": "ref",
+                          "index": "idx_key1",
+                          "rows": 1,
+                          "cost": 3553.2,
+                          "chosen": true
+                        },
+                        {
+                          "rows_to_scan": 9895,
+                          "filtering_effect": [
+                          ] /* filtering_effect */,
+                          "final_filtering_effect": 0.9,
+                          "access_type": "scan",
+                          "using_join_cache": true,
+                          "buffers_needed": 12,
+                          "resulting_rows": 8905.5,
+                          "cost": 9.04243e+06,
+                          "chosen": false
+                        }
+                      ] /* considered_access_paths */
+                    } /* best_access_path */,
+                    "condition_filtering_pct": 100,
+                    "rows_for_plan": 10152,
+                    "cost_for_plan": 4592.65,
+                    "pruned_by_cost": true
+                  }
+                ] /* rest_of_plan */
+              }
+            ] /* considered_execution_plans */
+          },
+          {
+            //将条件附加到表上
+            "attaching_conditions_to_tables": {
+              "original_condition": "((`explain_sample1`.`key1` = `explain_sample2`.`key1`) and (`explain_sample2`.`common_field` is not null))",
+              "attached_conditions_computation": [
+              ] /* attached_conditions_computation */,
+              //附加条件概要
+              "attached_conditions_summary": [
+                {
+                  "table": "`explain_sample2`",
+                  "attached": "((`explain_sample2`.`common_field` is not null) and (`explain_sample2`.`key1` is not null))"
+                },
+                {
+                  "table": "`explain_sample1`",
+                  "attached": "(`explain_sample1`.`key1` = `explain_sample2`.`key1`)"
+                }
+              ] /* attached_conditions_summary */
+            } /* attaching_conditions_to_tables */
+          },
+          {
+            "finalizing_table_conditions": [
+              {
+                "table": "`explain_sample2`",
+                "original_table_condition": "((`explain_sample2`.`common_field` is not null) and (`explain_sample2`.`key1` is not null))",
+                "final_table_condition   ": "((`explain_sample2`.`common_field` is not null) and (`explain_sample2`.`key1` is not null))"
+              },
+              {
+                "table": "`explain_sample1`",
+                "original_table_condition": "(`explain_sample1`.`key1` = `explain_sample2`.`key1`)",
+                "final_table_condition   ": null
+              }
+            ] /* finalizing_table_conditions */
+          },
+          {
+            //精简计划
+            "refine_plan": [
+              {
+                "table": "`explain_sample2`"
+              },
+              {
+                "table": "`explain_sample1`"
+              }
+            ] /* refine_plan */
+          }
+        ] /* steps */
+      } /* join_optimization */
+    },
+    {
+      //执行
+      "join_execution": {
+        "select#": 1,
+        "steps": [
+        ] /* steps */
+      } /* join_execution */
+    }
+  ] /* steps */
+}
+//第3部分：跟踪信息过长时，被截断的跟踪信息的字节数。
+MISSING_BYTES_BEYOND_MAX_MEM_SIZE: 0  //丢失的超出最大容量的字节
+//第4部分：执行跟踪语句的用户是否有查看对象的权限。当不具有权限时，该列信息为1且TRACE字段为空，一般在调用带有SQL SECURITY DEFINER的视图或者是存储过程的情况下，会出现此问题。
+          INSUFFICIENT_PRIVILEGES: 0  //缺失权限
+1 row in set (0.00 sec)
+
+~~~
+
++ 另外，MySQL还提供了监控分析视图sys schema表
+  + 关于MySQL的性能监控和问题诊断，我们一般都从performance_schema表中获取数据
+  + sys schema是MySQL5.7.7版本新增的表，它将performance_schema和information_schema中的数据以更容易理解的方式总结归纳为视图，目的就是为了降低查询performance_schema的复杂度，使得DBA能够快速地定位到问题
+  + 它包含如下字段:
+
+|分类|对应字段|
+|:---:|:---:|
+|主机相关|以host_summary开头，主要汇总了IO延迟的信息|
+|Innodb相关|以innodb开头，汇总了innodb buffer信息和事务等待innodb锁的信息。|
+|I/o相关|以io开头，汇总了等待I/O、I/O使用量情况。|
+|内存使用情况|以memory开头，从主机、线程、事件等角度展示内存的使用情况|
+|连接与会话信息|processlist和session相关视图，总结了会话相关信息|
+|表相关|以schema_table开头的视图，展示了表的统计信息|
+|索引信息|统计了索引的使用情况，包含冗余索引和未使用的索引情况|
+|语句相关|以statement开头，包含执行全表扫描、使用临时表、排序等的语句信息|
+|用户相关|以user开头的视图，统计了用户使用的文件I/O、执行语句统计信息|
+|等待事件相关信息|以wait开头，展示等待事件的延迟情况|
+
++ [sys_schema样例](../源码/MySQL/sys_schema样例.sql)
+
+---
+
+### （二）
 
 # 小问题
 
@@ -3477,7 +4295,7 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
 6. B+树的存储能力如何？为何说一般查找行记录，最多只需1~3次磁盘IO
 
 > + InnoDB存储引擎中的页大小为16kb，一般表的主键类型是INT，或BIGINT，指针类型一般也为4或者8个字节，也就是说，一个页中大概存放了16Kb/(8b+8b)≈1K个键值，那么一个深度为3的B+树索引已经可以维护10^3^3=10^9=10亿条记录了
-> + 实际情况中，大部分情况下不会有这么多数据，B+树的高度一般在2~4层，MySQL的InnoDB在设计时是将根节点常驻在内存中的，也就是说，根节点无需进行IO操作即可读取到，那么我们实际进行查找某一键值的行记录时仅需要进行1~3次IO操作
+> + 实际情况中，大部分情况下不会有这么多数据，B+树的高度一般在2-4层，MySQL的InnoDB在设计时是将根节点常驻在内存中的，也就是说，根节点无需进行IO操作即可读取到，那么我们实际进行查找某一键值的行记录时仅需要进行1-3次IO操作
 
 7. 为什么说B+树比B-树更适合实际应用中操作系统的文件索引和数据库索引？
 
@@ -3543,6 +4361,20 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
 |^|`show variables like 'innodb_buffer_pool_instances';`|查看当前的数据库缓冲池实例数量|无|
 |^|`show engines;`|查看MySQL的所有引擎|无|
 |^|`show variables like '%storage_engine%';`、`SELECT @@default_storage_engine;`|查看当前的默认存储引擎|无|
+|^|`show variables like 'innodb_file_per_table';`|查看表空间类型，如果出现innodb_file_per_table对应的Value是on，那么说明开启了独立表空间，且说明每张表都会单独创建一个idb文件|无|
+|索引|`show index from 表名;`|查看指定表的索引|无|
+|^|`select @@optimizer_switch \G;`|查看查询优化器的开关设置，其中use_invisible_indexes项表示的是查询优化器的开关，如果改成ON，那么就说明隐藏索引对查询优化器可见，为OFF说明不可见|无|
+|性能分析与调优|`SHOW [GLOBAL\|SESSION] STATUS LIKE '参数';`|展示性能参数|无|
+|^|`show variables like '%slow_query_log%';`|查看慢查询日志信息|无|
+|^|`SHOW VARIABLES LIKE '%slow%';`|查询慢查询日志所在目录|无|
+|^|`SHOW VARIABLES LIKE '%long_query_time%';`|查询超时时长|无|
+|^|`show variables like '%long_query_time%';`|查看慢查询时间阈值，超过该值时，该查询会被记录为慢查询|无|
+|^|`SHOW GLOBAL STATUS LIKE '%Slow_queries%';`|查询当前的慢查询数量|无|
+|^|`select @@profiling;`、`show variables like 'profiling';`|查看是否开启profiling|无|
+|^|`show profiles;`|显示最近的几次查询|无|
+|^|`show profile;`|显示上一次查询的详细步骤|无|
+|^|`show profile for query id;`|使用profiles显示的查询的id来展示对应查询的详细步骤|无|
+|^|`show profile cpu,block io for query id;`|展示更详细的字段|无|
 
 
 ---
