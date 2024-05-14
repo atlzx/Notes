@@ -3,9 +3,9 @@
 
 #反范式化的举例：
 
-CREATE DATABASE atguigudb3;
+CREATE DATABASE atguigudb;
 
-USE atguigudb3;
+USE atguigudb;
 
 #学生表
 CREATE TABLE student(
