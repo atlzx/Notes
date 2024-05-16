@@ -5324,6 +5324,63 @@ query_cache_size=32M
 
 #### ②undo日志
 
++ **undo日志的作用**:
+  + undo log是事务持久性的保证，而undo log是事务原子性的保证。undo log保证了在事务执行过程中，如果出现意外，可以进行对应的回滚操作以避免出现中间状态的问题。但**回滚仅仅是逻辑回滚，数据是可以回滚到事务开始之前的状态的，但是数据的物理位置可能发生了变化**，因为在并发的情况下，可能有多个事务一起执行，将指定事务回滚到事务开始之前的物理状态，可能会导致其它事务执行出现异常。另外是undo日志是通过执行一条语句就记录该语句的相反语句的方式进行记录的，而不是记录该语句执行前的物理状态，因此根据undo日志仅能够在逻辑上回滚到事务开始前的状态
+  + 另外,undo log也可以进行MVCC操作，在InnoDB引擎中MVCC的实现是通过undo来完成的，当用户读取一行记录时，若该纪录已被其它事务占用，当前事务可以根据undo日志来得到对应的数据
++ **undo存储结构**:
+  + InnoDB针对undo log采取段管理的方式，也就是` 回滚段（rollback segment）`每个回滚段记录了1024个undo log segment，而在每个undo log segment段中进行 undo页的申请
+  + 在InnoDB1.1版本之前（不包括1.1版本），只有一个rollback segment，因此支持同时在线的事务限制为1024。虽然对绝大多数的应用来说都已经够用
+  + 从1.1版本开始InnoDB支持最大128个rollback segment，故其支持同时在线的事务限制提高到了128*1024。但此时这些rollback segment都存放在共享表空间ibdata中
+  + 从1.2版本开始，可以对参数rollback segment进行进一步的设置了:
+
+~~~sql
+  -- 这玩意好像已经被弃用了
+  show variables like 'innodb_undo_logs';
+  -- 可以通过下面的东西查看对应的undo log配置
+    -- innodb_max_undo_log_size表示最大的日志大小
+    -- innodb_undo_directory表示undo日志的保存位置
+    -- innodb_undo_log_encrypt用于指定InnoDB存储引擎是否对undo日志进行加密(来自GPT)
+    -- innodb_undo_log_truncate用于指定在数据库重启时是否要截断（删除）undo日志
+    -- innodb_undo_tablespaces表示占用的表空间有几个，默认为两个
+  show variables like '%undo%';
+
+~~~
+  + 我们的事务执行完毕后，并不会立刻清除对应的undo log，因为该undo log可能还夹杂着其它事务的相关信息。事务在执行完毕后，undo log就可以被重用了，在事务commit后，undo log会被放到一个链表内，然后判断undo页的使用空间是否小于3/4，**如果小于该值，则表示可以重用，其它事务的undo日志可以写在其后面并不会删除**。由于undo log是离散的，因此清理对应的磁盘空间时，效率不高
++ **回滚段与事务**:
+  + 每个事务只会使用一个回滚段，一个回滚段在同一时刻可能会服务于多个事务
+  + 当一个事务开始的时候，会制定一个回滚段，在事务进行的过程中，当数据被修改时，原始的数据会被复制到回滚段
+  + 在回滚段中，事务会不断填充盘区，直到事务结束或所有的空间被用完。如果当前的盘区不够用，事务会在段中请求扩展下一个盘区，如果所有已分配的盘区都被用完，事务会覆盖最初的盘区或者在回滚段允许的情况下扩展新的盘区来使用
+  + 回滚段存在于undo表空间中，在数据库中可以存在多个undo表空间，但同一时刻只能使用一个undo表空间
+  + 当事务提交时，InnoDB存储引擎会做以下两件事情
+    + 将undo log放入列表中，以供之后的purge操作
+    + 判断undo log所在的页是否可以重用，若可以分配给下个事务使用
++ **回滚段的数据分类**:
+  + 未提交的回滚数据(uncommitted undo information):该数据所关联的事务还未提交，因此该数据无法被其他事务的数据所覆盖
+  + 已经提交但未过期的回滚数据(committed undo information):该数据关联的事务已经提交，但是仍受到undo retention参数的保持时间的影响
+  + 事务已经提交并过期的数据(expired undo information):即已经过期的数据，当回滚段满时，会优先覆盖该数据
++ **undo类型**:
+  + insert undo log:指在insert操作中产生的undo日志，其仅对当前事务可见，对其它事务不可见（事务的隔离性）。因此该**类型的undo日志在事务提交之后就可以直接删除**。不需要进行purge操作
+  + update undo log:指在update操作中产生的undo日志，该类型的undo日志可能需要提供MVCC机制，因此不能在事务提交时就进行删除。**提交时需要进行purge操作，等待purge操作进行最后的删除**
++ **undo log的生命周期**:
+  + 假设有两个数值，分别为A=1和B=2,我们想将A修改为3，将B修改为4:
+    + 在1-8任意步骤出现问题，都需要进行undo操作
+    + 在8-9之间宕机，可以选择回滚，也可以继续提交，因为持久化已经完成了
+    + 在9之后宕机，内存映射中的数据还来不及刷回磁盘，但是持久化已经完成了，因此还是可以通过redo继续提交
+
+~~~sql
+  1. BEGIN;
+  2. 记录A=1到undo log
+  3. update A=3;
+  4. 记录A=3到redo log
+  5. 记录B=2到undo log
+  6. update B=4;
+  7. 记录B=4到redo log
+  8. 将redo log写到磁盘
+  9. commit
+~~~
+
+![只有bufferPool](../文件/图片/mySql/只有bufferPool.png)
+
 
 
 
