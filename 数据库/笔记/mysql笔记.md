@@ -5380,7 +5380,27 @@ query_cache_size=32M
 ~~~
 
 ![只有bufferPool](../文件/图片/mySql/只有bufferPool.png)
+![增加了log之后](../文件/图片/mySql/增加了log之后.png)
 
++ **日志详细生成过程**:
+  + 对于InnoDB引擎来说，每个行记录除了记录本身的数据之外，还有几个隐藏的列:
+    + DB_ROW_ID:没有显式的提供主键时，该字段会被自动添加作为主键
+    + DB_TRX_ID:事务的ID号，当该行记录被对应事务修改时，其事务id就会被该字段记录
+    + DB_ROLL_PTR:回滚指针，指向undo log的指针
+
+![undoLog隐藏字段图例](../文件/图片/mySql/undoLog隐藏字段图例.png)
+![执行insert时的undo日志图例](../文件/图片/mySql/执行insert时的undo日志图例.png)
+  + 执行insert时，插入的数据会生成一条insert undo log,且数据的回滚指针会指向它。undo log会记录其序号、插入主键的列和值。因此在回滚时，通过主键直接删除即可
+![执行update时的redo日志图例](../文件/图片/mySql/执行update时的redo日志图例.png)
+  + 执行update时，undo log又被区分为更新主键的和不更新主键的
+    + 如果不更新主键，那么会把老的记录写入新的undo log,并让回滚指针指向新的undo log
+    + 如果更新主键，需要先修改原来数据的delete_mask，置为0，但此时并未真正删除，真正的删除需要交给清理线程去判断。然后再插入一条新的数据，然后生成新的undo log
+
+---
+
+## 九、锁
+
+### （一）概述
 
 
 
