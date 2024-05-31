@@ -345,11 +345,11 @@ flush privileges;
 
 |分类|关键字|描述|备注|
 |:---:|:---:|:---:|:---:|
-|查询|`DUAL`|伪表|无|
+|**查询**|`DUAL`|伪表|无|
 |^|`DISTINCT`|去重|1.作用于多个列时，表示对每个列属性组成的集合去重，因此**作用于多个列时可能会出现单列重复现象**<br>2.该关键字**必须写在列名前面**|
 |^|`AS`|1.给查询的列取别名<br>2.依据查询结果创建表或视图|无|
 |^|`INTO`|1.将查询结果赋值给指定变量<br>2.向表内插入数据|无|
-|过滤|`WHERE`|过滤|无|
+|**过滤**|`WHERE`|过滤|无|
 |^|`IS`|一般使用`IS NULL`来判断值是否为空|无|
 |^|`IN`|判断字段是否属于某个集合|无|
 |^|`BETWEEN`|与`AND`配合使用可以判断字段的值是否处于某个区间内|无|
@@ -361,18 +361,18 @@ flush privileges;
 |^|`DESC`|降序排序|无|
 |^|`LIMIT`|对查询结果切片|无|
 |^|`OFFSET`|指定切片起始偏移量|`MySQL8.0`新增|
-|多表查询|`LEFT/RIGHT/INNER [OUTER] JOIN`|左/右/内连接|无|
+|**多表查询**|`LEFT/RIGHT/INNER [OUTER] JOIN`|左/右/内连接|无|
 |^|`ON`|指定连接条件|无|
 |^|`UNION [ALL]`|将多个查询结果合并,如果有`ALL`那么去重|无|
 |^|`USING`|指定表连接时匹配的字段，**必须保证字段名是一致的**|无|
 |^|`NATURAL JOIN`|自动查询两个表内相同的属性名下的字段是否相等，然后做等值连接|无|
 |^|`GROUP BY`|按照指定字段或集合分组|无|
 |^|`HAVING`|指定过滤条件，**支持使用聚合函数**|无|
-|其它DML语句|`DELETE`|删除|无|
+|**其它DML语句**|`DELETE`|删除|无|
 |^|`INSERT`|插入|无|
 |^|`UPDATE`|更新|无|
 |^|`SET`|设置表字段/变量的值|无|
-|数据库管理|`CREATE`|创建数据库对象|无|
+|**数据库管理**|`CREATE`|创建数据库对象|无|
 |^|`TABLE/PROCEDURE/VIEW/FUNCTION/TRIGGER`|指定数据库对象类型为表/存储过程/视图/函数/触发器|无|
 |^|`EXISTS`|判断数据库对象或查询结果是否存在|无|
 |^|`SHOW`|呈现数据库对象结构|无|
@@ -387,7 +387,7 @@ flush privileges;
 |^|`CHANGE`|修改表内字段名|无|
 |^|`FIRST`|使指定字段在表内排第一|无|
 |^|`AFTER`|使指定字段在某一字段次序之后|无|
-|约束|`NOT NULL`|非空约束|无|
+|**约束**|`NOT NULL`|非空约束|无|
 |^|`UNIQUE`|唯一性约束|无|
 |^|`PRIMARY KEY`|主键约束|无|
 |^|`AUTO_INCREMENT`|自增|无|
@@ -395,16 +395,16 @@ flush privileges;
 |^|`CHECK`|检查约束|无|
 |^|`DEFAULT`|默认值约束|无|
 |^|`CONSTRAINT`|指定约束名|无|
-|约束等级|`CASCADE`|主表执行更新/删除操作时，从表同步进行更新/删除|无|
+|**约束等级**|`CASCADE`|主表执行更新/删除操作时，从表同步进行更新/删除|无|
 |^|`SET NULL`|主表执行更新/删除操作时，从表对应的外键项被更改为`NULL`|需要外键项没有`NOT NULL`约束|
 |^|`NO ACTION`|如果从表中存在匹配项，不允许主表的更新/删除操作|如果不指定约束等级，默认为该等级|
 |^|`RESTRICT`|同`NO ACTION`|无|
 |^|`SET DEFAULT`|主表执行更新/删除操作时，从表对应外键项被设置为`DEFAULT`值|`InnoDB`无法识别|
-|变量与流程控制|`SET`|定义系统变量或会话用户变量|无|
+|**变量与流程控制**|`SET`|定义系统变量或会话用户变量|无|
 |^|`DECLARE`|声明局部变量或错误|无|
 |^|`GLOBAL`|指定全局标识|无|
 |^|`SESSION`|指定会话标识|无|
-|流程控制|`IF`|判断表达式是否成立|无|
+|**流程控制**|`IF`|判断表达式是否成立|无|
 |^|`ELSEIF`|上面对应的判断式不满足时判断自己的表达式是否满足|无|
 |^|`ELSE`|判断表达式全不满足时，执行其后面的语句|无|
 |^|`THEN`|执行后面的语句|无|
@@ -417,16 +417,16 @@ flush privileges;
 |^|`UTIL`|指定`REPEAT`循环结束的条件|无|
 |^|`LEAVE`|跳出循环或`BEGIN-END`块|无|
 |^|`ITERATE`|立刻执行下一轮循环|无|
-|游标|`CURSOR FOR`|指定游标对应的查询结果|无|
+|**游标**|`CURSOR FOR`|指定游标对应的查询结果|无|
 |^|`OPEN`|打开游标|无|
 |^|`CLOSE`|关闭游标|无|
-|错误处理|`CONDITION FOR`|指定错误码|无|
+|**错误处理**|`CONDITION FOR`|指定错误码|无|
 |^|`HANDLER FOR`|指定待处理的错误类型|无|
-|触发器|`NEW`|更改后的数据|无|
+|**触发器**|`NEW`|更改后的数据|无|
 |^|`OLD`|更改前的数据|无|
 |^|`FOLLOWS`|指定在某一触发器执行后执行|无|
 |^|`PRECEDES`|指定在某一触发器执行前执行|无|
-|DCL操作|`COMMIT`|提交|无|
+|**事务**|`COMMIT`|提交|无|
 |^|`ROLLBACK`|回滚至最近的提交操作|DML语句无法回滚|
 
 
@@ -787,9 +787,24 @@ INSERT INTO temp_mul VALUES('男','睡觉,写代码,吃饭'); -- 成功
 
 + `DDL（Data Definition Languages、数据定义语言）`定义了不同的数据库、表、视图、索引等数据库对象，还可以用来**创建、删除、修改数据库和数据表的结构**
 + **所有DDL语句执行后就会生效，不需要进行刷新**
++ DDL语句是专门用来管理数据库对象的，它的主要关键字有`CREATE`、`ALTER`、`DROP`、`RENAME`、`TRUNCATE`等
 
+### （一）数据库对象
 
-### （一）数据库管理
+|对象|作用|备注|
+|:---:|:---:|:---:|
+|表(Table)|表是存储数据的逻辑单元，以行和列的形式存在，列就是字段，行就是记录|无|
+|数据字典|系统表，由数据库自行维护|无法修改|
+|约束(constraint)|执行数据校验的规则，用于保证数据完整性的规则|无|
+|视图(View)|一个或多个表的数据的逻辑显示，并不存储数据|无|
+|索引(Index)|一种用于提高查询性能的数据结构|无|
+|存储过程(Procedure)|用于完成一次完整的业务处理，无返回值|无|
+|存储函数(Function)|用于完成一次特定的计算|无|
+|触发器(Trigger)|相当于一个事件监听器|无|
+
+---
+
+### （二）数据库管理
 
 |分类|操作|描述|备注|样例|
 |:---:|:---:|:---:|:---:|:---:|
@@ -817,7 +832,7 @@ INSERT INTO temp_mul VALUES('男','睡觉,写代码,吃饭'); -- 成功
 
 ---
 
-### （二）表管理
+### （三）表管理
 
 #### ①创建表
 
@@ -885,7 +900,7 @@ INSERT INTO temp_mul VALUES('男','睡觉,写代码,吃饭'); -- 成功
 
 ---
 
-### （三）回滚与原子化
+### （四）回滚与原子化
 
 + 针对`DDL`操作，`MySQL`会在`DDL`执行后自动提交(`COMMIT`)一次，且该次提交不会被`SET autocommit = FALSE`影响。因此**全部的`DDL`操作都无法被回滚**
   + `COMMIT`用来进行提交，相当于存档
@@ -917,6 +932,9 @@ INSERT INTO temp_mul VALUES('男','睡觉,写代码,吃饭'); -- 成功
 ---
 
 ## 七、DML语句
+
++ `DML（Data Manipulation Language、数据操作语言）`:用于**添加、删除、更新和查询数据库记录**，并检查数据完整性。
++ 该类语句主要针对表进行操作，主要的关键字有`SELECT`、`INSERT`、`UPDATE`、`DELETE`等
 
 ### （一）查询
 
@@ -1335,7 +1353,7 @@ INSERT INTO temp_mul VALUES('男','睡觉,写代码,吃饭'); -- 成功
       -- MySQL8.0及以后，新增的行的值是6，因为它可以实现持久化存储了
 ~~~
 
-+ [索引样例]()
++ [索引样例](../源码/MySQL/索引.sql)
 
 ### （六）外键约束
 
@@ -3345,7 +3363,7 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
 
 ---
 
-## 五、InnoDB
+## 五、InnoDB引擎
 
 + 由于MySQL默认的存储引擎是InnoDB引擎，因此这里着重描述InnoDB的数据存储结构
 
@@ -5818,8 +5836,8 @@ show variables like '%general%';  -- 查看与通用查询日志相关的变量�
   + 监测gap锁的存在:
 
 ~~~sql
-  select * from performance_schema.data_locks\G;
-  select * from performance_schema.data_lock_wait\G;
+  select * from performance_schema.data_locks\G;  -- 查看事务的锁情况
+  select * from performance_schema.data_lock_wait\G;  -- 查看正在等待的事务的锁情况
 ~~~
   + 间隙锁的引入，使死锁出现的概率提高了，示例
 
@@ -5957,6 +5975,7 @@ show variables like '%general%';  -- 查看与通用查询日志相关的变量�
         ![死锁检测示例2](../文件/图片/mySql/死锁检测示例2.png)
       + 死锁检测就是构建一个以事务为顶点，锁为边的有向图，如果该有向图存在环，那就说明有死锁
       + 但是当被阻塞的线程越来越多时，检测的线程数就会变多，从而导致监测占用的资源和时间大幅提升。解决方式就是**关闭死锁检测**，或者**控制并发访问的数量**，可以考虑将一行改为多行来减少锁冲突
+      + 通过设置`innodb_print_all_deadlocks=1`参数来开启死锁检测
 + **避免死锁**:
   + 合理设计索引，使业务SQL尽可能通过索引定位到更少的行，减少锁竞争
   + 调整业务逻辑SQL执行顺序，避免update/delete长时间持有锁的SQL在事务前面
@@ -6044,6 +6063,7 @@ show variables like '%general%';  -- 查看与通用查询日志相关的变量�
 
 + **MVCC（Multiversion Concurrency Control）**，多版本并发控制。顾名思义，MVCC是通过数据行的多个版本管理来实现数据库的并发控制。这项技术使得在InnoDB的事务隔离级别下执行一致性读操作有了保证。换言之，就是**为了查询一些正在被另一个事务更新的行，并且可以看到它们被更新之前的值，这样在做查询的时候就不用等待另一个事务释放锁**
 + MVCC主要解决的是读写或者写读问题
++ InnoDB引擎默认是开启MVCC功能的
 
 #### ①快照读与当前读
 
@@ -7017,40 +7037,40 @@ no_field_options。|
 
 |分类|代码|描述|备注|
 |:---:|:---:|:---:|:---:|
-|字符集|`show variables like 'character_%';`、`show variables like '%char%';`|查看数据库所用的默认字符集|无|
+|**字符集**|`show variables like 'character_%';`、`show variables like '%char%';`|查看数据库所用的默认字符集|无|
 |^|`show charset;`|查看MySQL所有可用的字符集|无|
 |^|`SHOW VARIABLES LIKE '%_server';`、`SHOW VARIABLES LIKE '%_database';`|查看服务器、数据库的字符集|无|
 |^|`SHOW COLLATION LIKE '[{gbk\|utf8}]%';`|查看GBK或UTF-8字符集的比较规则|无|
-|查看变量|`SHOW GLOBAL VARIABLES [like 'xxx'];`|查看满足条件的全局变量|不写`like`语句相当于查看全部的全局系统变量|
+|**查看变量**|`SHOW GLOBAL VARIABLES [like 'xxx'];`|查看满足条件的全局变量|不写`like`语句相当于查看全部的全局系统变量|
 |^|`SHOW [SESSION] VARIABLES [like 'xxx'];`|查看满足条件的当前会话变量|**不写修饰符默认为会话系统变量**，不写`like`语句相当于查看全部的会话系统变量|
 |^|`SELECT @@global.变量名;`|查看指定的全局系统变量|无|
 |^|`SELECT @@session.变量名;`|查看指定的会话系统变量|无|
 |^|`SELECT @@变量名;`|查找某一系统变量|无|
 |^|`SELECT 变量名;`|查看局部变量|无|
 |^|`SELECT @变量名`|查看会话用户变量|无|
-|数据库|`SHOW DATABASE1,DATABASE2,....;`|查看指定数据库内的内容|无|
+|**数据库**|`SHOW DATABASE1,DATABASE2,....;`|查看指定数据库内的内容|无|
 |^|`SHOW TABLES FROM 数据库名;`|展示指定数据库的所有表|无|
 |^|`SHOW CREATE DATABASE 数据库名;`|查看数据库的创建信息|可用于查看当前数据库字符集|
 |^|`SELECT DATABASE();`|查看当前正在使用的数据库|无|
-|表或视图|`DESC/DESCRIPTION 表名;`|查看表结构|无|
+|**表或视图**|`DESC/DESCRIPTION 表名;`|查看表结构|无|
 |^|`SHOW CREATE TABLE 表名\G;`|查看表结构|可以用来查看表的字符集、引擎等|
 |^|`SHOW INDEX FROM 表名称;`|查看索引|无|
 |^|`SHOW TABLES`|查看数据库内的表与视图|无|
 |^|`SHOW TABLE STATUS LIKE '表名'`|查看表或视图的属性信息|也可以用它来查看表的比较规则|
 |^|`DESC/DESCRIPTION 表名`|查看表结构|无|
-|约束|`SELECT * FROM information_schema.表名 WHERE table_name = '表名称';`|查看指定表的约束|无|
-|存储过程和函数|`SHOW CREATE PROCEDURE/FUNCTION 存储过程名或函数名`|查看指定的存储过程或函数的结构|无|
+|**约束**|`SELECT * FROM information_schema.表名 WHERE table_name = '表名称';`|查看指定表的约束|无|
+|**存储过程和函数**|`SHOW CREATE PROCEDURE/FUNCTION 存储过程名或函数名`|查看指定的存储过程或函数的结构|无|
 |^|`SHOW CREATE FUNCTION test_db.CountProc \G`|查看函数|无|
 |^|`SHOW PROCEDURE/FUNCTION STATUS [LIKE 'pattern']`|查看存储过程或函数的状态信息|无|
 |^|`SELECT * FROM information_schema.Routines WHERE ROUTINE_NAME='存储过程或函数的名' [AND ROUTINE_TYPE = 'PROCEDURE/FUNCTION'];`|
-|触发器|`SELECT * FROM information_schema.TRIGGERS;`|查看触发器信息|无|
+|**触发器**|`SELECT * FROM information_schema.TRIGGERS;`|查看触发器信息|无|
 |^|`SHOW TRIGGERS\G`|查看触发器详情|无|
-|用户与权限管理|`select * from mysql.user;`|查询当前数据库内存在的用户信息|使用*号会得到很多字段，一般取host和user字段就够了|
+|**用户与权限管理**|`select * from mysql.user;`|查询当前数据库内存在的用户信息|使用*号会得到很多字段，一般取host和user字段就够了|
 |^|`SHOW GRANTS;`、`SHOW GRANTS FOR CURRENT_USER;`、`SHOW GRANTS FOR CURRENT_USER();`|查看当前用户的权限|无|
 |^|`SHOW GRANTS FOR 'user'@'主机地址';`|查看某用户的全局权限|无|
 |^|`SHOW GRANTS FOR 'role_name'[@'host_name'];`|查看指定角色的权限|无|
 |^|`select current_role();`|查看当前被激活的角色|无|
-|逻辑架构|`select @@profiling;`、`show variables like 'profiling';`|查询是否开启了profiling|无|
+|**逻辑架构**|`select @@profiling;`、`show variables like 'profiling';`|查询是否开启了profiling|无|
 |^|`show profiles;`|展示最近几次的查询操作|无|
 |^|`show profile [cpu,block io ][for query 7];`|查看指定的某一次查询的详细步骤|如果没有写查询id，那么默认查看最近一次查询操作的信息|
 |^|`show variables like 'innodb_buffer_pool_size';`|查看缓冲池大小|无|
@@ -7058,9 +7078,9 @@ no_field_options。|
 |^|`show engines;`|查看MySQL的所有引擎|无|
 |^|`show variables like '%storage_engine%';`、`SELECT @@default_storage_engine;`|查看当前的默认存储引擎|无|
 |^|`show variables like 'innodb_file_per_table';`|查看表空间类型，如果出现innodb_file_per_table对应的Value是on，那么说明开启了独立表空间，且说明每张表都会单独创建一个idb文件|无|
-|索引|`show index from 表名;`|查看指定表的索引|无|
+|**索引**|`show index from 表名;`|查看指定表的索引|无|
 |^|`select @@optimizer_switch \G;`、`show variables like '%join_buffer_size%';`|查看优化器的行为配置<br>其中use_invisible_indexes项表示的是查询优化器的开关，如果改成ON，那么就说明隐藏索引对查询优化器可见，为OFF说明不可见<br>block_nested_loop状态表示是否支持MySQL为表连接开辟内存块|无|
-|性能分析与调优|`SHOW [GLOBAL\|SESSION] STATUS LIKE '参数';`|展示性能参数|无|
+|**性能分析与调优**|`SHOW [GLOBAL\|SESSION] STATUS LIKE '参数';`|展示性能参数|无|
 |^|`show variables like '%slow_query_log%';`|查看慢查询日志信息|无|
 |^|`SHOW VARIABLES LIKE '%slow%';`|查询慢查询日志所在目录|无|
 |^|`SHOW VARIABLES LIKE '%long_query_time%';`|查询超时时长|无|
@@ -7072,15 +7092,15 @@ no_field_options。|
 |^|`show profile for query id;`|使用profiles显示的查询的id来展示对应查询的详细步骤|无|
 |^|`show profile cpu,block io for query id;`|展示更详细的字段|无|
 |^|`show variables like '%join_buffer_size%';`|查看当前MySQL能够为多表连接开辟多大的内存块大小|无|
-|事务|`BEGIN;`、`START TRANSACTION{READ ONLY\|READ WRITE\|WITH CONSISTENT SNAPSHOT}`|开始一个事务|无|
+|**事务**|`BEGIN;`、`START TRANSACTION{READ ONLY\|READ WRITE\|WITH CONSISTENT SNAPSHOT}`|开始一个事务|无|
 |^|`COMMIT`|事务提交|无|
 |^|`ROLLBACK`|事务回滚|无|
 |^|`SAVEPOINT 名称`|事务执行时，在指定位置“存档”|无|
 |^|`ROLLBACK TO 保存点名称;`|“读档”|无|
 |^|`SHOW VARIABLES LIKE 'tx_isolation';`|查看当前的隔离级别|MySQL5.7.20版本前使用该命令查询|
-|隔离级别|`SHOW VARIABLES LIKE 'transaction_isolation';`|^|MySQL5.7.20版本后使用该命令查询|
+|**隔离级别**|`SHOW VARIABLES LIKE 'transaction_isolation';`|^|MySQL5.7.20版本后使用该命令查询|
 |^|`SELECT @@transaction_isolation;`|^|任意版本都能使用|
-|日志|`show variables like 'innodb_undo_logs';`|查看关于undo log的配置|这玩意好像已经被弃用了|
+|**日志**|`show variables like 'innodb_undo_logs';`|查看关于undo log的配置|这玩意好像已经被弃用了|
 |^|`show variables like '%undo%';`|^|无|
 |^|`show variables like '%general%';`|查看与通用查询日志相关的配置|无|
 |^|`show variables like '%log_err%';`|查看与错误日志相关的配置|无|
@@ -7088,12 +7108,28 @@ no_field_options。|
 |^|`show binary logs;`|列出所有的二进制文件|无|
 |^|`show binlog events [in '二进制日志路径'] [from 查询起始行数] [limit [offset,] row_count]`|查看指定的二进制文件内容，并可以进行筛选（可选）|无|
 |^|`show variables like 'binlog_format';`|查看当前的二进制日志格式|无|
-|
+|**锁**|`select * from performance_schema.data_locks\G`|查看当前的锁|无|
+|^|`select * from performance_schema.data_lock_wait\G;`|查看当前正在等待的事务的锁情况|无|
+|^|`Flush tables with read lock;`|上全局锁，只允许读|无|
+|^|`unlock tables;`|解全局锁|无|
+|^|`show status like '%innodb_row_lock%';`|查看MySQL当前的行锁情况|无|
+|**主从复制**|`SHOW SLAVE STATUS\G;`|查看同步状态|无|
 
 ---
 
 ### （二）修改汇总
 
++ 这里的修改包括修改与添加
+
+|分类|代码|描述|备注|
+|:---:|:---:|:---:|:---:|
+|**锁**|`LOCK TABLES 表名 READ`|给表上读锁|无|
+|^|`LOCK TABLES 表名 WRITE`|给表上写锁|无|
+|^|`查询语句 IN SHARE MODE`、`查询语句 FOR SHARE`|查询操作上读锁|无|
+|^|`查询语句 FOR UPDATE`|查询语句上写锁|无|
+|^|`查询语句 FOR UPDATE [{NOWAIT\|SKIP LOCKED}]`|查询语句上写锁,可选项是跳过锁等待|无|
+|**主从复制**|`START SLAVE;`|开启同步|无|
+|^|`stop slave;`|停止主从复制|无|
 
 ---
 
@@ -7101,13 +7137,10 @@ no_field_options。|
 
 |分类|代码|描述|备注|
 |:---:|:---:|:---:|:---:|
-|日志|`purge {master\|binary} logs to '指定日志文件名';`|删除指定的二进制日志|无|
+|**日志**|`purge {master\|binary} logs to '指定日志文件名';`|删除指定的二进制日志|无|
 |^|`purge {master\|binary} logs before '指定日期';`|删除在指定日期之前的二进制日志|无|
 |^|`reset master;`|删除所有二进制文件|无|
-
----
-
-### （四）添加汇总
+|**主从复制**|`reset slave;`|删除SLAVE数据库的relaylog日志文件，并重新启用新的relaylog文件|无|
 
 ---
 
@@ -7137,7 +7170,17 @@ no_field_options。|
 |^|^|log-bin|指定binlog日志的基本文件名|无|
 |^|^|binlog_expire_logs_seconds|指定一个二进制日志文件最多存在多少秒，超过指定时间就会被删除|无|
 |^|^|max_binlog_size|控制单个二进制文件的最大大小|并不能严格控制|
-|
+|^|^|relay-log|是否启用中继日志|无|
+|^|**锁**|innodb_lock_wait_timeout|锁等待最大时间|无|
+|^|^|innodb_autoinc_lock_mode|指定自增锁相关的不同处理机制|无|
+|^|^|innodb_print_all_deadlocks|指定是否开启等待图来识别死锁|无|
+|^|**主从复制**|server-id|指定主服务器id|无|
+|^|read-only|指定是否对数据只读|无|
+|^|binlog_expire_logs_seconds|设置日志文件保留的时长，单位是秒|无|
+|^|max_binlog_size|控制单个二进制日志大小|无|
+|^|binlog-ignore-db|设置不要复制的数据库|无|
+|^|binlog-do-db|设置需要复制的数据库|无|
+|^|binlog_format|设置binlog格式|无|
 |[server]|innodb_buffer_pool_size|设置数据库缓冲池总大小|无|
 |^|innodb_buffer_pool_instances|设置数据库缓冲池数量|如果总大小未超1Gb，那么MySQL会强制将此字段设置为1|
 
@@ -7146,8 +7189,8 @@ no_field_options。|
 |事务|`autocommit`|设置是否自动提交|无|
 |隔离级别|`TRANSACTION ISOLATION LEVEL`|设置隔离级别|无|
 |^|`TRANSACTION_ISOLATION`|设置隔离级别|无|
-|日志|general_log|是否开启通用日志|无|
-|^|general_log_file|指定日志文件所在目录路径|无|
+|日志|`general_log`|是否开启通用日志|无|
+|^|`general_log_file`|指定日志文件所在目录路径|无|
 
 ---
 
@@ -7530,3 +7573,5 @@ BY、GROUP BY、DISTINCT 这些语句较为耗费CPU，数据库的CPU资源是�
     -i # 显示指定数据库或者指定表的状态信息
 
 ~~~
+
+---
