@@ -637,9 +637,6 @@
 
 ---
 
-## 十一、SpringBoot整合Redis
-
-
 # 汇总
 
 ## 一、常用命令汇总
@@ -659,6 +656,7 @@
 |^|`flushdb`|^|清空当前库|无|
 |^|`flushall`|^|清空全部库|无|
 |^|`config get x`|x:想查看的配置项|得到配置文件的对应配置值|无|
+|**redis终端命令**|`redis-server [configpath]`|configpath:配置文件相对于当前终端所在目录的路径|根据指定配置文件的内容启动redis服务|无|
+|^|`redis-cli -a password [-p port] [--raw\|--charset code]`|password:密码<br>port:指定端口，默认为6379，如果没改端口，可以不用写<br>code:字符集编码|连接redis，可以指定端口，且可以指定是否显示原始字节码(可以查看中文)或者指定字符集编码|无|
 |**帮助命令**|`help {@string\|@list\|@hash...}`|>|列出对应数据类型的语法|无|
 |^|[文档](https://redis.io/commands/)|
-|

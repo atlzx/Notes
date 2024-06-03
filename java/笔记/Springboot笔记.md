@@ -2403,6 +2403,101 @@ public @interface EnableAutoConfiguration {
 
 ---
 
+## 五、整合
+
+### （一）整合Redis
+
+#### ①Jedis
+
++ Jedis是Redis官方提供的类似JDBC的与Redis数据库进行交互的库
++ 首先记得导包:
+
+~~~xml
+  <dependency>
+      <groupId>redis.clients</groupId>
+      <artifactId>jedis</artifactId>
+      <version>5.1.0</version>
+  </dependency>
+~~~
+
++ [Jedis样例](../源码/Redis/Redis/src/main/java/com/springboot/example/redis/redisdemo/JedisSample.java)
+
+---
+
+#### ②lettuce
+
++ Lettuce是一个Redis的Java驱动包，Lettuce翻译为生菜，没错，就是吃的那种生菜，所以它的Logo就是生菜
++ Jedis的相关操作在使用Redis客户端的时候，每个线程都要拿自己创建的Redis实例去连接Redis客户端，当存在很多线程的时候，不仅开销大需要反复创建关闭一个Redis连接，而且还线程不安全，一个线程通过Jedis实例更改Redis服务器中的数据之后会影响另一个线程
++ Lettuce底层使用的是Netty,当有多个线程需要连接Redis服务器时，它可以保证只创建一个Redis连接，使所有线程都共享该连接。这样既减少了资源开销，也是线程安全的(不会出现一个线程通过Jedis实例更改Redis服务器中的数据之后会影响另一个线程的情况)
++ 导包时，如果使用的是SpringBoot,那么直接把`Spring Data Redis`勾上就行，它内部已经导入了Lettuce依赖
++ 也可以手动导入:
+
+~~~xml
+  <!--lettuce-->
+   <dependency>
+       <groupId>io.lettuce</groupId>
+       <artifactId>lettuce-core</artifactId>
+       <version>6.2.1.RELEASE</version>
+   </dependency>
+~~~
+
+#### ③RedisTemplate
+
++ RedisTemplate是Spring官方整合的与Redis进行交互的封装类
++ 首先配置config类，我们**需要在配置类中手动提供RedisTemplate对象并设置其数据的序列化器**，因为自动注入的对象，其序列化方式会导致Redis中文乱码:
+  + 自动注入的对象无法序列化中文的原因是它默认使用JDK的序列化方式，没办法序列化中文
+  + 另外，**也可以通过使用RedisTemplate的子类StringRedisTemplate类来避免中文的无法序列化**，因为其子类采用的序列化方式与父类不同。这一点在其无参构造器源码中就有显著体现
+
+~~~java
+    public class RedisConfig {
+
+        @Bean
+        public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory lettuceConnectionFactory) {
+            // 手动创建RedisTemplate对象
+            RedisTemplate<String,Object> redisTemplate = new RedisTemplate<>();
+
+            redisTemplate.setConnectionFactory(lettuceConnectionFactory);
+            //设置key序列化方式string，防止key乱码
+            redisTemplate.setKeySerializer(new StringRedisSerializer());
+            //设置value的序列化方式json，使用GenericJackson2JsonRedisSerializer替换默认序列化，防止value乱码
+            redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+
+            redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+            redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+
+            redisTemplate.afterPropertiesSet();
+
+            return redisTemplate;
+        }
+
+    }
+~~~
+
++ 接下来是RedisTemplate的使用方法:
+  + 先调用`opsXxx`方法来确定要操作的数据类型，再进行相关的操作
+
+~~~java
+    @Service
+    @Slf4j
+    public class RedisService {
+        @Resource
+        // 这个玩意也可以直接注入StringRedisTemplate类，因为它是RedisTemplate的子类，功能更丰富，也支持中文序列化。缺点是操作对象只能是字符串类型
+        RedisTemplate<String,Object> redisTemplate;  
+        public String setData(String key,String value){
+            redisTemplate.opsForValue().set(key,value);
+            log.info(key);
+            return getData(key);
+        }
+
+        public String getData(String key){
+            return (String)redisTemplate.opsForValue().get(key);
+        }
+    }
+~~~
+
+---
+
+
 ## 配置汇总
 
 ### （一）日志配置
@@ -2728,8 +2823,8 @@ public class People {
 
 |分组|配置|作用|值|备注|
 |:---:|:---:|:---:|:---:|:---:|
-|调试|debug|开启调试模式，终端会打印开启了哪些自动配置|布尔值，默认为false|无|
-|日志|logging.level.{root\|sql\|web\|类的全类名\|自定义组名}|指定全局/sql组/web组/类/自定义组的日志级别|字符串值|无|
+|**调试**|debug|开启调试模式，终端会打印开启了哪些自动配置|布尔值，默认为false|无|
+|**日志**|logging.level.{root\|sql\|web\|类的全类名\|自定义组名}|指定全局/sql组/web组/类/自定义组的日志级别|字符串值|无|
 |^|logging.group.自定义组名|将多个类划分为一个组|全类名|无|
 |^|logging.file.name|指定日志输出的文件|文件路径|也可以写路径，如果是相对路径，那么是相对于项目所在目录的|
 |^|loggging.file.path|指定日志输出的路径|文件路径|优先级没有logging.file.name高|
@@ -2738,7 +2833,7 @@ public class People {
 |^|logging.logback.rollingpolicy.max-file-size|指定每个日志文件的最大大小|数值|^|
 |^|logging.logback.rollingpolicy.total-size-cap|指定日志文件总大小超过指定大小后，就删除旧的日志文件|大小，默认为0B|^|
 |^|logging.logback.rollingpolicy.max-history|日志文件保存的最大天数|数值，默认7，单位天|^|
-|静态资源|spring.mvc.static-path-pattern|用来**设置匹配的前端请求静态资源的路径**|字符串值|无|
+|**静态资源**|spring.mvc.static-path-pattern|用来**设置匹配的前端请求静态资源的路径**|字符串值|无|
 |^|spring.mvc.webjars-path-pattern|用来**设置匹配的前端请求webjars资源的路径**|字符串值|无|
 |^|spring.web.resources.static-locations|配置用来设置后端处理静态资源要寻找的目录，**它会覆盖掉SpringBoot默认配置的四个路径**|字符串值|**针对webjars的路径匹配依然有效，因为根据源码，webjars相关的路径匹配被单独配置了，而该项配置与webjars的路径匹配没有关系**|
 |^|spring.web.resources.add-mappings|开启静态资源映射|默认为true|无|
@@ -2746,9 +2841,9 @@ public class People {
 |^|spring.web.resources.cache.use-last-modified|配置是否在浏览器找服务器请求资源前，先发送请求确认资源是否发生了更改|布尔值|无|
 |^|spring.web.resources.cache.cachecontrol.max-age|配置浏览器使用缓存的最大时间，在此期间，浏览器会使用缓存加载资源|数值，单位秒|无|
 |^|spring.web.resources.cache.cachecontrol.cache-public|设置是否共享缓存|布尔值|无|
-|路径匹配|spring.mvc.pathmatch.matching-strategy|设置路径匹配原则|无|
+|**路径匹配**|spring.mvc.pathmatch.matching-strategy|设置路径匹配原则|无|
 |^|server.servlet.context-path|设置项目的上下文路径|路径字符串|详见[问题汇总](问题汇总.md)|
-|内容协商|spring.mvc.contentnegotiation.favor-parameter|设置SpringBoot开启基于路径参数的内容协商|布尔值，默认false|无|
+|**内容协商**|spring.mvc.contentnegotiation.favor-parameter|设置SpringBoot开启基于路径参数的内容协商|布尔值，默认false|无|
 |^|spring.mvc.contentnegotiation.parameter-name|指定通过参数内容协商传递返回类型的参数名|字符串值|无|
 |^|spring.mvc.contentnegotiation.media-types.{type}=aaa/bbb|type是我们给这个媒体类型起的名字，这个名字是用来路径传参的时候携带的值，比如`spring.mvc.contentnegotiation.media-types.yaml=text/yaml`,那么路径传参的时候请求参数就是`type=yaml`|媒体类型|无|
 |Thymeleaf|spring.thymeleaf.prefix|指定thymeleaf的匹配前缀|默认是`classpath:/templates/`|无|
@@ -2756,26 +2851,29 @@ public class People {
 |^|spring.thymeleaf.check-template|在响应前确认对应模板是否存在，不存在会报错|布尔值，默认为true|无|
 |^|spring.thymeleaf.check-template-location|在响应前确认模板所在路径是否存在，不存在会报错|布尔值，默认为true|无|
 |^|spring.thymeleaf.cache|如果浏览器已经缓存了该模板，那么就让浏览器用缓存|布尔值，默认为true|无|
-|国际化|spring.messages.basename|指定国际化默认的配置文件路径|路径|不仅要指定路径，还要指定文件的前缀|
+|**国际化**|spring.messages.basename|指定国际化默认的配置文件路径|路径|不仅要指定路径，还要指定文件的前缀|
 |^|spring.messages.encoding|指定国际化默认的配置文件的解码方式|编码格式|无|
-|错误处理|server.error.path|设定默认的错误视图寻找路径|默认值为`/error`|无|
+|**错误处理**|server.error.path|设定默认的错误视图寻找路径|默认值为`/error`|无|
 |^|server.error.include-stacktrace|是否允许报错信息携带异常堆栈信息|always:总是携带<br>on_param:不知道干嘛的<br>never:默认值，从不携带|无|
 |^|server.error.include-binding-errors|是否允许携带errors属性|always:总是携带<br>on_param:不知道干嘛的<br>never:默认值，从不携带|无|
 |^|server.error.include-exception|是否允许携带异常全类名|true/false，默认为false|无|
 |^|server.error.include-message|是否允许携带异常描述|always:总是携带<br>on_param:不知道干嘛的<br>never:默认值，从不携带|无|
-|Mybatis|spring.datasource.url|指定连接的数据库地址|地址值|无|
+|**Mybatis**|spring.datasource.url|指定连接的数据库地址|地址值|无|
 |^|spring.datasource.username|指定数据库用户名|字符串|无|
 |^|spring.datasource.password|指定数据库密码|字符串|无|
 |^|spring.datasource.driver-class-name|指定数据库驱动全类名|全类名|无|
 |^|spring.datasource.type|指定连接池全类名|全类名|无|
 |^|mybatis.configuration.map-underscore-to-camel-case|开启Mybatis驼峰命名映射|布尔值，默认为true(不开启)|无|
 |^|mybatis.mapper-locations|指定mapper对应的xml文件路径映射|路径映射|无|
-|banner|spring.banner.location|指定读取的banner文件|路径|无|
+|**banner**|spring.banner.location|指定读取的banner文件|路径|无|
 |^|spring.main.banner-mode|指定banner的显示模式|off:不显示<br>log:使用日志显示<br>console:控制台输出|无|
-|配置隔离|spring.profiles.active|指定要开启的环境|一个或多个环境名|需要动态切换的环境使用它指定|
+|**配置隔离**|spring.profiles.active|指定要开启的环境|一个或多个环境名|需要动态切换的环境使用它指定|
 |^|spring.profiles.default|指定默认的环境|环境名|默认是default|
 |^|spring.profiles.include|指定包含的环境|一个或多个环境名|一般把基础的环境，也就是无论什么情况都用到的环境加入到这里面|
 |^|spring.profiles.group.{groupName}|配置环境组,groupName是组的名称|一个或多个环境名|无|
+|**Redis**|spring.data.redis.host|配置redis所在的服务器ip|ip号|无|
+|^|spring.data.redis.port|配置redis所使用的端口号|端口号|无|
+|^|spring.data.redis.password|配置连接redis需要的密码|字符串|无|
 
 ---
 

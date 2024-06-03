@@ -1186,8 +1186,8 @@ private static final String METHOD_TRACE = "TRACE";
 |`npm install`|下载项目的`package.json`文件中`dependencies`属性对应的所有包|无|
 |`npm install -g jquery`|将指定包的最新版本下载到全局依赖目录中去|无|
 |`npm install -g jquery@3.7.1`|将指定名称和版本的包下载到全局依赖目录中去|无|
-|`npm uninstall jquery@3.7.1`|将指定名称和版本的包下载到全局依赖目录中去|无|
-|`npm uninstall -g jquery@3.7.1`|将指定名称和版本的包下载到全局依赖目录中去|无|
+|`npm uninstall jquery@3.7.1`|将指定名称和版本的包下载到直接依赖目录中去|无|
+|`npm uninstall -g jquery@3.7.1`|删除直接依赖中的指定包|无|
 |`npm ls`|查看项目依赖|无|
 |`npm ls -g`|查看全局依赖|无|
 |`npm run test`|执行`npm`脚本|只有在`package.json`文件中的`scripts`属性对应的对象中存在的脚本才能运行|
