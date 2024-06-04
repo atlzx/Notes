@@ -1177,7 +1177,7 @@ private static final String METHOD_TRACE = "TRACE";
 |`npm config set profix`|设置`npm`的全局依赖存储目录路径|无|
 |`npm version`|查看`npm`版本详细信息|无|
 |`npm -v`|查看当前`npm`版本|无|
-|`npm install -g npm@9.6.6`|更新`nom`到指定版本|无|
+|`npm install -g npm@9.6.6`|更新`npm`到指定版本|无|
 |`npm update`|更新`npm`到最新版本|无|
 |`npm init`|初始化当前项目，需要逐一确认，可以进行基本信息的配置|会生成`json`文件，存储项目配置|
 |`npm init -y`|初始化当前项目，所有信息使用默认值，无需逐一确认|^|

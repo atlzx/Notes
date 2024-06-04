@@ -2,6 +2,7 @@
 <project version="4">
   <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
     <file url="file://$PROJECT_DIR$/EventAndListener/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/FileUpload/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/HelloSpringBoot/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/HelloSpringBoot/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBoot-SSM/src/main/java" charset="UTF-8" />
