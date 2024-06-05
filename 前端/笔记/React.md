@@ -1278,3 +1278,46 @@ return (
   + `hooks`:承载自定义钩子的文件夹
   + `assets`:承载一些图片、视频之类的资源
 + 这里是比较综合的[样例](../笔记代码/源码/React/DemoProject/23用户登录小练习/App.jsx)
+
+---
+
+## 九、新增内容
+
+### （一）文件上传
+
++ 此处演示使用axios进行文件上传:
+
+~~~jsx
+    import axios from 'axios';
+
+    const Test = () => {
+
+        const changeHandler=(e)=>{
+            const file=e.target.files[0];
+            // 发起一个post请求
+            axios(
+                {
+                    method: 'post',
+                    url: 'http://localhost:8080/fileUpload',
+                    data: {
+                        file:file  // key是后端接收到的请求体的key,值不需要使用FormData装，直接把对应的file文件传进去就行
+                        // files:e.target.files  如果想传多个文件，可以这么传
+                    },
+                    headers:{
+                        "Content-Type":'multipart/form-data' // 设置类型为multipart/form-data
+                    }
+                }
+            );
+        };
+        return (
+            <form>
+                <input type="file" onChange={changeHandler}/>
+            </form>
+        );
+    };
+    export default Test;
+~~~
+
+
+
+

@@ -2497,6 +2497,78 @@ public @interface EnableAutoConfiguration {
 
 ---
 
+### （二）文件上传
+
+#### ①文件保存本地
+
++ 后端在接收文件时，如果是单文件，可以这样接收:
+
+~~~java
+    @PostMapping(value = "xxx")
+    public String fileUpload(@RequestParam(name = "xxx")MultipartFile file) throws Exception{
+        // fileUploadService是业务处理的service层类
+        fileUploadService.fileUpload(file);
+        return "OK";
+    }
+~~~
+
++ 如果是多文件，可以这样接收:
+
+~~~java
+    @PostMapping(value = "xxx")
+    // 使用实体类接收，实体类的属性为 public List<MultipartFile> files 。该属性需要与前端传来的多文件数组保持一致
+    // 如果使用List<MultipartFile>直接来接收，会报错
+    public String fileUpload( FileEntity files) throws Exception{
+        List<MultipartFile> multipartFiles = files.getFiles();
+        for(MultipartFile file:multipartFiles){
+            System.out.println(file);
+            fileUploadService.fileUpload(file);
+        }
+        return "OK";
+    }
+~~~
+
++ 接收到文件以后，为了防止多个用户同时上传同名的文件导致保存的文件出现冲突，可以使用UUID给文件进行重命名再保存:
+
+~~~java
+    public boolean fileUpload(MultipartFile file) throws Exception{
+        String fileName = file.getOriginalFilename();  // 
+        fileName=fileName.substring(fileName.lastIndexOf('.'));
+        file.transferTo(new File("E:"+ File.separator+"testImg"+File.separator+ UUID.randomUUID().toString()+fileName));
+        return true;
+    }
+~~~
+
++ 相关API
+
+|归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|MultipartFile|getOriginalFilename()|无参|得到文件名称|>|字符串|无异常|无|[样例](../源码/SpringBoot/FileUpload/src/main/java/com/springboot/example/fileupload/service/FileUploadService.java)|
+|^|getInputStream()|无参|获得文件的输入流对象|>|输入流对象|无异常|无|^|
+|^|getSize()|无参|得到文件大小|>|long类型数值|无异常|无|^|
+
+---
+
+#### ②文件上传OSS
+
++ 这里以上传阿里云为例，详情参见[官方文档](https://help.aliyun.com/zh/oss/getting-started/sdk-quick-start?spm=a2c4g.11186623.0.0.47422b4cPAOzJK)
++ 使用阿里云的OSS需要先创建一个bucket，另外再申请一个acesskey
+  + bucket直接在控制台创建就行
+  + accesskey需要在右上角点击AccessKey管理，然后创建一个。**创建以后需要记住我们的AccessKey和KeySecret，否则将无法再查询到**
+   
+  ![AccessKey管理](../文件/图片/SpringBoot图片/文件上传图例1.png)
+
++ 接下来写一下上传逻辑
+  + 首先不应该把一些配置信息，如endPoint、acessKey等信息写在代码里面，应该写在配置文件中:[配置文件](../源码/SpringBoot/FileUpload/src/main/resources/application.properties)
+  + 之后创建一个Properties类，通过SpringBoot的自动装配，把这些配置加载进来:[类样例](../源码/SpringBoot/FileUpload/src/main/java/com/springboot/example/fileupload/components/FileUploadConfig.java)
+  + 把该配置类导入到Service类中，通过getter方法得到对象，然后进行文件上传的业务:[service类](../源码/SpringBoot/FileUpload/src/main/java/com/springboot/example/fileupload/service/impl/FileUploadServiceImpl.java)
+
+---
+
+
+
+
+
 
 ## 配置汇总
 

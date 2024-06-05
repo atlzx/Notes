@@ -75,7 +75,7 @@
 
 #### ①param参数
 
-+ 可以使用@RequestParam注解param参数的接收
++ 可以使用@RequestParam注解进行**get参数和请求体参数的接收**
   + @RequestParam注解是专门接收param参数的
     + 如果传来的参数名与方法对应的参数名不同，可以使用value属性**指定传来的前端参数名**，并将该注解作用于其对应的方法参数上
     + required可以**指定该参数是否必须**，默认是true，改为false为不必须，**此时参数可以不传，不传不会报错**
@@ -1062,7 +1062,7 @@
 |@RequestMapping|指定映射路径与支持的请求类型等|无|
 |@ResponseBody|使方法返回值受对应转换器处理并不通过视图解析器解析|无|
 |@{Get\|Post\|Put\|Delete\|Patch}Mapping|指定不同请求类型的映射路径|无|
-|@RequestParam|接收param参数|无|
+|@RequestParam|接收get参数和请求体参数|无|
 |@PathVariable|接收路径参数|无|
 |@RequestBody|接收JSON参数|**它无法接收同名的param参数**|
 |@Cookie|得到Cookie携带的指定值|无|
