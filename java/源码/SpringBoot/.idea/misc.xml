@@ -3,6 +3,7 @@
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="web" url="file://$PROJECT_DIR$/SpringBootMessageConverter" />
+    <file type="web" url="file://$PROJECT_DIR$/SpringJwt" />
   </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
@@ -22,11 +23,20 @@
         <option value="$PROJECT_DIR$/SpringBoot-use-robot/pom.xml" />
         <option value="$PROJECT_DIR$/SpringBootTest/pom.xml" />
         <option value="$PROJECT_DIR$/FileUpload/pom.xml" />
+        <option value="$PROJECT_DIR$/SpringJpa/pom.xml" />
+        <option value="$PROJECT_DIR$/SpringBootJWT/pom.xml" />
+        <option value="$PROJECT_DIR$/SpringBoot-Jwt/pom.xml" />
+        <option value="$PROJECT_DIR$/SpringBoot-WebSocket/pom.xml" />
+        <option value="$PROJECT_DIR$/untitled/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/Spring-SSM/pom.xml" />
+        <option value="$PROJECT_DIR$/SpringBoot-JWT/pom.xml" />
+        <option value="$PROJECT_DIR$/SpringJpa/pom.xml" />
+        <option value="$PROJECT_DIR$/aaaa/pom.xml" />
+        <option value="$PROJECT_DIR$/untitled/pom.xml" />
       </set>
     </option>
   </component>

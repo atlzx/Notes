@@ -1,4 +1,4 @@
-package com.springboot.example.springbootwebsocket.entity;
+package com.springboot.example.springbootwebsocket.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

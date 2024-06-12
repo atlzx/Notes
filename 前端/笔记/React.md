@@ -547,7 +547,7 @@ return (
   <>
     <div>我是组件1</div>
     <div>我是组件2</div>
-    <div>我是组件3</div> 
+    <div>我是组件3</div>
   </>
 );
 
@@ -564,6 +564,7 @@ return (
   + **中途的组件可能不会使用该参数，仅作为传递的桥梁继续向下传递**
 + 因此，`React`提供了`Context`来解决这一问题
   + `Context`可以使子组件或后代组件不需要接收`props`，而使用`Context`就能直接接收到祖先组件的参数
+  + 然而，Context无法持久化保存数据，这意味着**页面一旦刷新，Context就会恢复原始值**
 + 使用:
   1. 首先，需要定义好一个`Context`,并使其暴露，一般我们都会新创建一个文件用以定义该`Context`:
      + `Context`**名称必须大写，因为它要作为`React`组件使用**
@@ -1263,7 +1264,48 @@ return (
 + `NavLink`组件在`React-Router6`版本在设置其`CSS`样式时，取消了`activeClassName`属性，取而代之的是`style`属性支持接受一个回调函数，**函数的返回值对象将能够使该组件在不同状态时启用不同的CSS样式**
   + 该回调函数会得到一个对象，对象内有三个属性:`isActive`、`isPending`、`isTransitioning`
   + 一般常用的是`isActive`
-+ [样例](../笔记代码/源码/React/DemoProject/)
++ [样例](../笔记代码/源码/React/DemoProject/22React-Router6的组件嵌套、Outlet与NavLink/App.jsx)
+
+---
+
+### （五）nvm与npm
+
+|nvm指令|描述|备注|
+|:---:|:---:|:---:|
+|`nvm ls/list`|查看当前已有的`node`|无|
+|`nvm ls/list available`|查看可以下载的`node`版本|无|
+|`nvm install 20.10.0`|下载指定版本的`node`|无|
+|`nvm use 20.10.0`|选择指定版本的`node`来进行使用|无|
+|`nvm uninstall 20.10.0`|卸载指定版本的`node`|无|
+|`nvm node_mirror`|配置`nvm`下载`node`的镜像源|无|
+|`nvm npm_mirror`|配置`npm`默认的下载镜像源|无|
+|`nvm on`|解除对当前`nvm`的禁用状态|无|
+|`nvm off`|禁用当前`nvm`|无|
+
+
+|npm指令|描述|备注|
+|:---:|:---:|:---:|
+|`npm config get registry`|得到`npm`当前下载包的镜像源|无|
+|`npm config set registry`|设置`npm`下载包的镜像源,一般设置国内的`https://registry.npmmirror.com`|设置的路径不对会报错|
+|`npm config get profix`|得到`npm`的全局依赖存储目录路径,一般在`C`盘|无|
+|`npm config set profix`|设置`npm`的全局依赖存储目录路径|无|
+|`npm version`|查看`npm`版本详细信息|无|
+|`npm -v`|查看当前`npm`版本|无|
+|`npm install -g npm@9.6.6`|更新`npm`到指定版本|无|
+|`npm update`|更新`npm`到最新版本|无|
+|`npm init`|初始化当前项目，需要逐一确认，可以进行基本信息的配置|会生成`json`文件，存储项目配置|
+|`npm init -y`|初始化当前项目，所有信息使用默认值，无需逐一确认|^|
+|`npm install jquery`|下载指定名称的包的最新版本到当前项目|无|
+|`npm install jquery@3.7.1`|下载指定名称和版本的包到当前项目|无|
+|`npm install`|下载项目的`package.json`文件中`dependencies`属性对应的所有包|无|
+|`npm install -g jquery`|将指定包的最新版本下载到全局依赖目录中去|无|
+|`npm install -g jquery@3.7.1`|将指定名称和版本的包下载到全局依赖目录中去|无|
+|`npm uninstall jquery@3.7.1`|将指定名称和版本的包下载到直接依赖目录中去|无|
+|`npm uninstall -g jquery@3.7.1`|删除直接依赖中的指定包|无|
+|`npm ls`|查看项目依赖|无|
+|`npm ls -g`|查看全局依赖，并查看全局依赖的目录地址|无|
+|`npm run test`|执行`npm`脚本|只有在`package.json`文件中的`scripts`属性对应的对象中存在的脚本才能运行|
+|`npm create vite`|在当前目录下创建一个`vite`项目|如果没有安装`vite`会被先提示安装`vite`|
 
 ---
 

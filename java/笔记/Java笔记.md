@@ -3198,17 +3198,17 @@
 |^|`public Type getGenericSuperclass()`|无参|获得父类的泛型类型|`Type`对象|`Type`|无|^|
 |^|`public Package getPackage()`|无参|得到所在包的对象|包的对象|`Package`|无|^|
 |^|`public InputStream getResourceAsStream(String name)`|`name`:相对路径|得到相对于当前类所在目录下的文件的输入流对象|输入流对象|`InputStream`|无|^|
-|^|isArray()|无参|判断是否为数组|布尔值|boolean|无|^|
-|^|isAnnotation()|无参|判断是否为注解|^|^|无|^|
-|^|isInterface()|无参|判断是否为接口|^|^|无|^|
-|^|isEnum()|无参|判断是否为枚举类|^|^|无|^|
+|^|`isArray()`|无参|判断是否为数组|布尔值|boolean|无|^|
+|^|`isAnnotation()`|无参|判断是否为注解|^|^|无|^|
+|^|`isInterface()`|无参|判断是否为接口|^|^|无|^|
+|^|`isEnum()`|无参|判断是否为枚举类|^|^|无|^|
 |java.lang.ClassLoader|getResource(String name)|name:相对路径|得到相对于类加载器所在根路径的资源的URL对象|对应资源的URL对象|URL|**不同的类加载器作用路径是不同的，它们的根路径都是他们负责加载的类所在的公共路径**，参见[类加载器](#classLoader)。一般都使用应用程序类加载器对象来调用该方法，因为其根路径是classpath，后面就是`com.xx.xxxx`|^|
 |`java.lang.reflect.Method`|`public Class<?> getReturnType()`|无参|得到方法的返回值类型|返回值类型对应的`Class`对象|`Class`|无|^|
 |^|`public Class<?>[] getParameterTypes()`|无参|得到方法的参数类型数组|>|`Class`类型数组|无|^|
 |^|`public int getModifiers()`|无参|得到方法的修饰符|数值|`int`|每个修饰符都有自己对应的`int`值，详情看[下表](#ModifierValue)|^|
 |^|`public Class<?>[] getExceptionTypes()`|无参|得到|>|`Class`类型数组|无|^|
 |^|`public void setAccessible(boolean flag)`|`flag`:布尔值|设置`true`可以取消权限修饰符的限制|无返回值|`void`|无|^|
-|^|`public Object invoke(Object obj, Object... args)`|`obj`:方法所在的类对象<br>`args`:向方法传入的实参，没有就不写|调用该指定方法|取决于调用方法的返回值|取决于调用方法的返回值类型|无|^|
+|^|`public Object invoke(Object obj, Object... args)`|`obj`:方法所在的类对象，**如果想调用静态方法，传入null**<br>`args`:向方法传入的实参，没有就不写|调用该指定方法|取决于调用方法的返回值|取决于调用方法的返回值类型|无|^|
 |`java.lang.reflect.Field`|`public int getModifiers()`|无参|得到参数的修饰符|数值|`int`|每个修饰符都有自己对应的`int`值，详情看[下表](#ModifierValue)|^|
 |^|`public Class<?> getType()`|无参|得到属性的类型|类型对应的`Class`对象|`Class`|无|^|
 |^|`public String getName()`|无参|得到属性名|名称|`String`|无|^|
@@ -3853,14 +3853,14 @@ GC是Java主要优势之一。 然而，当GC停顿太长，就会开始影响�
 
 |分类|快捷键|作用|
 |:---:|:---:|:---:|
-|复制粘贴|ctrl + c|复制代码|
+|**复制粘贴**|ctrl + c|复制代码|
 |^|ctrl + v|粘贴|
 |^|ctrl + x|剪切|
 |^|ctrl + z|撤销|
 |^|ctrl + shift + z|反撤销|
 |^|ctrl + s|保存|
 |^|ctrl + a|全选|
-|查找与替换|ctlr+f|查找指定的结构|
+|**查找与替换**|ctlr+f|查找指定的结构|
 |^|ctrl+l|快速查找：选中的Word快速定位到下一个|
 |^|ctrl+r|查找与替换|
 |^|home|直接定位到当前行的首位|
@@ -3868,12 +3868,12 @@ GC是Java主要优势之一。 然而，当GC停顿太长，就会开始影响�
 |^|ctrl+f7|查询当前元素在当前文件中的引用，然后按 F3 可以选择|
 |^|ctrl+shift+f|全项目搜索文本|
 |^|ctrl+f4|关闭当前窗口|
-|格式调整|ctrl+alt+l|格式化代码|
+|**格式调整**|ctrl+alt+l|格式化代码|
 |^|ctrl + /|使用单行注释|
 |^|ctrl + shift + /|使用/取消多行注释|
 |^|tab|选中数行，整体往后移动|
 |^|shift + tab|选中数行，整体往前移动|
-|代码编辑|alt + enter|智能提示|
+|**代码编辑**|alt + enter|智能提示|
 |^|ctrl+j|提示代码模板|
 |^|ctrl+alt+t|使用xx块环绕|
 |^|alt+insert|调出生成|
@@ -3893,7 +3893,7 @@ GC是Java主要优势之一。 然而，当GC停顿太长，就会开始影响�
 |^|ctrl+i|实现接口的方法|
 |^|ctrl+shift+u|选中的结构的大小写的切换|
 |^|ctrl+alt+o|批量导包|
-|查看类结构与源码|ctrl + 选中指定的结构 或 ctrl+n|查看源码|
+|**查看类结构与源码**|ctrl + 选中指定的结构 或 ctrl+n|查看源码|
 |^|ctrl+f12|显示当前类结构，支持搜索指定的方法、属性等|
 |^|ctrl+alt+←|退回到前一个编辑的页面|
 |^|ctrl+alt+→|进入到下一个编辑的页面|
@@ -3905,7 +3905,7 @@ GC是Java主要优势之一。 然而，当GC停顿太长，就会开始影响�
 |^|ctrl+alt+b|回溯变量或方法的来源|
 |^|ctrl+shift+减号|折叠方法实现|
 |^|ctrl+shift+加号|展开方法实现|
-|调试|F8|单步调试（不进入函数内部）|
+|**调试**|F8|单步调试（不进入函数内部）|
 |^|单步调试（进入函数内部）|F7|
 |^|强制单步调试（进入函数内部）|alt+shift+f7|
 |^|选择要进入的函数|shift + F7|

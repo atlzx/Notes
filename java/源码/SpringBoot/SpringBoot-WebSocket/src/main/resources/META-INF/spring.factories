@@ -1,5 +1,2 @@
 org.springframework.boot.SpringApplicationRunListener=\
-  com.springboot.example.eventandlistener.listener.MyListener
-
-org.springframework.context.ApplicationListener=\
-  com.springboot.example.eventandlistener.listener.EventListener
+  com.springboot.example.springbootwebsocket.listener.CommonListener

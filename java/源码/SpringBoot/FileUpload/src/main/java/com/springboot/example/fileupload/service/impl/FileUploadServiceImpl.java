@@ -40,7 +40,7 @@ public class FileUploadServiceImpl implements FileUploadService{
         String filePath="testDir/"+ UUID.randomUUID()+fileSuffix;
         StringBuffer result=new StringBuffer();
 
-        // 创建OSSClient实例。
+        // 创建OSSClient实例。把endPoint、accessKey和文件的输入流对象传进去
         OSS ossClient = new OSSClientBuilder().build(endPoint, accessKey,keySecret);
 
         try {

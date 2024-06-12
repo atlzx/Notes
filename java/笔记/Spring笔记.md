@@ -443,7 +443,7 @@
 |@Controller|^|作用于Controller层|^|
 |@Repository|^|作用在Dao层|^|
 |@Value|注入基本数据类型对象|无|^|
-|@Autoware|根据byType模式匹配对应的引用数据类型对象并注入|1.该注解无法自动装配JDK自带的数据类型<br>**不能作用于测试类**|^|
+|@Autowared|根据byType模式匹配对应的引用数据类型对象并注入|1.该注解无法自动装配JDK自带的数据类型<br>**不能作用于测试类**|^|
 |@Qualifier|使自动装配按照byName的方式匹配，且依据的是该注解内指定的name值进行匹配|无|^|
 |@Resource|依据 指定的name -> byName -> byType的模式依次匹配对应的引用数据类型对象并注入|1.该注解来源于`jakarta`包<br>2.**不能作用于测试类**|^|
 

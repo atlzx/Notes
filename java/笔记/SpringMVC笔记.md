@@ -327,7 +327,7 @@
         //addPathPatterns("/common/request/one") 添加拦截路径
         //excludePathPatterns("/common/request/tow"); 排除路径,排除应该在拦截的范围内
         registry.addInterceptor(new Process01Interceptor())
-                .addPathPatterns("/common/request/one","/common/request/tow")
+                .addPathPatterns("/common/request/*")
                 .excludePathPatterns("/common/request/tow");
     }
 

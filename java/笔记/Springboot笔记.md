@@ -1,6 +1,6 @@
 # Springboot笔记
 
-## 一、简介
+## 一、简介与特性
 
 + Springboot是Spring官方提供的可以帮我们简单、快速地创建一个独立的、生产级别的 Spring 应用
 + SpringBoot可以:
@@ -11,6 +11,16 @@
   + 提供生产级特性：如 监控指标、健康检查、外部化配置等
   + 无代码生成、无xml
 + 总结：SpringBoot可以简化开发，简化配置，简化整合，简化部署，简化监控，简化运维
+  + **简化整合**:我们想实现什么功能，就导入什么场景。
+    + 官方提供的场景一般叫`spring-boot-starter-*`，而第三方提供的场景一般叫`*-spring-boot-starter`
+    + [默认支持的场景](https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.build-systems.starters)
+  + **简化开发**:无需进行任何配置，直接就可以开始开发
+  + **简化配置**:SpringBoot的约定大于配置
+    + 它提供了许多默认的配置，这样就不用我们在每次开始开发的时候先进行大量的配置工作
+    + 如果想更改配置，可以创建一个`application.properties`文件，所有的配置都写在该文件中修改即可
+    + [可修改的配置](https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties)
+  + **简化部署**:打包为可执行的jar包，只需要linux系统上有java环境即可
+  + **简化运维**:可以快速地修改配置（通过application.properties）、监控、健康检测
 
 ---
 
@@ -107,25 +117,59 @@
 
 ---
 
-## 三、基础知识
+## 三、构建项目
 
-### （一）特性
+### （一）手动构建
 
-+ SpringBoot可以简化多个方面:
-  + **简化整合**:我们想实现什么功能，就导入什么场景。
-    + 官方提供的场景一般叫`spring-boot-starter-*`，而第三方提供的场景一般叫`*-spring-boot-starter`
-    + [默认支持的场景](https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.build-systems.starters)
-  + **简化开发**:无需进行任何配置，直接就可以开始开发
-  + **简化配置**:SpringBoot的约定大于配置
-    + 它提供了许多默认的配置，这样就不用我们在每次开始开发的时候先进行大量的配置工作
-    + 如果想更改配置，可以创建一个`application.properties`文件，所有的配置都写在该文件中修改即可
-    + [可修改的配置](https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties)
-  + **简化部署**:打包为可执行的jar包，只需要linux系统上有java环境即可
-  + **简化运维**:可以快速地修改配置（通过application.properties）、监控、健康检测
++ 这种创建方式可以创建老版本的SpringBoot项目
++ 首先创建一个普通的Java项目:
+![构建项目图例1](../文件/图片/SpringBoot图片/构建项目图例1.png)
++ 然后在pom.xml文件内指定项目的父项目为SpringBoot项目，并指定继承的父项目版本:
+  + 还可以指定子项目的版本
+
+~~~xml
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <version>0.0.1-SNAPSHOT</version>  <!-- 指定子项目版本，可选 -->
+~~~
+
++ 接下来添加依赖:
+  + 一般就添加一个spring-boot-starter-web依赖就行:
+
+~~~xml
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+~~~
+
++ 添加完之后，会发现出现了一个小选项:
+
+![构建项目图例2](../文件/图片/SpringBoot图片/构建项目图例2.png)
+
++ 点击该选项，就可以选择SpringBoot帮我们整合好的依赖了:
+
+![构建项目图例3](../文件/图片/SpringBoot图片/构建项目图例3.png)
+
++ 接下来在resources目录下创建一个application.properties或application.yml配置文件
++ 根据本项目的artifactid在java目录下创建包，再写一个Application启动类，加上@SpringBootApplication注解，尝试启动。如果成功，此时我们的项目就构建完了
++ 但是，会出现两个问题
+  1. 右边的Maven选项中，并未显示我们新创建的项目。**这意味着我们只能通过命令行的方式对项目进行Maven操作，也无法便捷的查看依赖**
+  2. 我们的项目编译之后，放到了父项目的out目录下，而不是放到了自己模块的target目录下。**这会导致一些情况下的ClassNotFound异常**
++ 因此，我们需要解决这两个问题
+  + 问题1:首先打开我们父项目的pom.xml文件，会发现一个modules标签，**我们创建的项目存在于该标签内，删掉它，然后刷新Maven**。该问题的原因是idea认为我们创建的项目是该项目的子项目，因为我们并没有以`Spring Initializr`模块的方式创建，于是它自动就把我们的项目归为了上层项目的子模块了
+  + 问题2:右键项目->Open Module Steeings->Modules->我们新创建的项目->选择target目录->取消右上角的Excluded选项
+
+![构建项目图例4](../文件/图片/SpringBoot图片/构建项目图例5.png)
 
 ---
 
-### （二）SpringInitializr
+### （二）自动构建
 
 + IDEA提供了自动创建SpringBoot项目的模板模块:SpringInitializr，他可以为我们快速创建一个对应的SpringBoot项目
 + 首先new->Module，在左边的目录选择SpringInitializr
@@ -149,10 +193,12 @@
   + 如果想使用Lombok，在Developers Tools下选择Lombok
 + 选择好之后点击创建，IDEA会**自动导入相关依赖**并**创建好相对应的项目启动类**
 + 如果我们想编写业务代码，我们需要把我们的代码及它们所在包写在项目启动类所在包的子包或后代包下，因为**SpringBoot默认只会扫描项目启动类所在包的子包及后代包的类**
++ 我们只需要指定基本的配置就行，它就会自动为我们创建好
++ 该自动构建的方式，由于是依靠`start.spring.io`的项目模型来构建的，因此其版本也会随着该网站的更新而更新。该网站是spring官方提供的自动构建项目的网站，它仅会提供最新的几个SpringBoot项目模板，**如果想使用老版本的SpringBoot，需要自己手动构建**
 
 ---
 
-### （三）依赖管理
+## 四、依赖管理
 
 + SpringBoot容易使用，其中的原因之一就是依靠依赖管理来实现的
   + 根据Maven的依赖传递原则，A依赖了B，且B依赖了C，那么A同时拥有B和C
@@ -164,16 +210,16 @@
 
 ---
 
-### （四）自动配置机制
+## 五、自动配置
 
-#### ①初步认识
+### （一）初步认识
 
 + 一旦我们导入了场景，我们在启动SpringBoot项目启动类的时候，其run方法在执行过程中会自动为我们向IOC容器内装配好该场景的相关组件，便于我们使用
 + 验证:
   + run方法会返回IOC容器对象，我们可以使用IOC容器对象得到其内部所有的bean:
   + [验证样例](../源码/SpringBoot/SpringBootInitializrDemo/src/main/java/com/springboot/example/springbootinitializrdemo/SpringBootInitializrDemoApplication.java)
 
-#### ②主程序类
+### （二）主程序类
 
 + 被@SpringBootApplication注解作用的类就是SpringBoot项目的主程序类
   + 默认SpringBoot项目在扫描包时，只会扫描主程序类所在包及其后代包
@@ -182,7 +228,7 @@
 
 ---
 
-#### ③配置文件
+### （三）配置文件
 
 + 可以使用application.properties配置文件来进行SpringBoot项目的配置修改
   + 我们修改的每一个属性都对应着配置类中的一个属性，如
@@ -195,7 +241,7 @@
 
 ---
 
-#### ④完整流程
+### （四）完整流程
 
 + @SpringBootApplication注解是一个复合注解，从下面的常用注解中我们已经知道:
   + @SpringBootConfiguration用来声明该类是一个SpringBoot配置类
@@ -242,56 +288,7 @@
 
 ---
 
-### （五）常用注解
-
-#### ①组件注册注解
-
-|注解|作用|作用范围|备注|
-|:---:|:---:|:---:|:---:|
-|@Configuration|声明对应类为配置类|类|无|
-|@SpringBootConfiguration|生命对应类为SpringBoot项目的配置类|类|其实跟上面的注解没有区别|
-|@Bean|使方法返回值作为bean加入到IOC容器内|方法|无|
-|@Scope|声明该类型的bean是单实例还是多实例|方法|无|
-|@Controller/@Service/@Repository/@Conponent|声明对应类属于控制层/服务层/DAO层/其它层，并将其纳入IOC容器管理|类|无|
-|@Import|指定对应类受IOC容器管理|类|一般用于将第三方包下的类纳入IOC容器管理|
-|@ComponentScan|开启组件扫描|类|作用于配置类上|
-
-+ [样例](../源码/SpringBoot/SpringBootInitializrDemo/src/main/java/com/springboot/example/springbootinitializrdemo/config/MyConfig.java)
-
----
-
-#### ②条件注解
-
-|注解|作用|作用范围|备注|
-|:---:|:---:|:---:|:---:|
-|@ConditionalOnClass|若类路径下存在该类，那么触发指定行为|类/方法|触发指定行为需要利用其他注解实现，如加入IOC容器需要@Bean注解|
-|@ConditionalOnMissingClass|若类路径下不存在该类，那么触发指定行为|^|^|
-|@ConditionalOnBean|若IOC容器内存在指定的bean,那么触发指定行为|^|^|
-|@ConditionalOnMissingBean|如果容器中不存在这个Bean（组件）,那么触发指定行为|^|^|
-
-+ 例:
-  + 如果存在FastSqlException这个类，给容器中放一个Cat组件，名cat01
-  + 否则，就给容器中放一个Dog组件，名dog01
-  + 如果系统中有dog01这个组件，就给容器中放一个 User组件，名zhangsan
-  + 否则，就放一个User，名叫lisi
-
-+ [样例](../源码/SpringBoot/SpringBootInitializrDemo/src/main/java/com/springboot/example/springbootinitializrdemo/config/MyConfig.java)
-
----
-
-#### ③属性绑定
-
-|注解|作用|作用范围|备注|
-|:---:|:---:|:---:|:---:|
-|@ConfigurationProperties|声明组件的属性和配置文件内key的前缀项以进行项绑定|类|该注解生效必须**使作用类被@Component及相关注解作用或被配置类的@EnableConfigurationProperties指定**，且**对应的实体类需要有getter和setter方法**<br>该注解生效的时机貌似是bean创建时检查|
-|@EnableConfigurationProperties|指定某些类是属性绑定类|类|应作用于配置类|
-
-+ [实体类绑定样例](../源码/SpringBoot/SpringBootInitializrDemo/src/main/java/com/springboot/example/springbootinitializrdemo/pojo/Person.java)
-+ [配置类样例](../源码/SpringBoot/SpringBootInitializrDemo/src/main/java/com/springboot/example/springbootinitializrdemo/config/MyConfig.java)
-
----
-
-## 四、核心
+## 六、核心
 
 ### （一）场景处理
 
@@ -1871,124 +1868,6 @@ public class ServletWebServerFactoryAutoConfiguration {
 
 ---
 
-### （三）数据访问
-
-#### ①整合SSM
-
-+ 由于SpringBoot自动装配的便捷性，我们整合SSM会十分的方便
-  + 首先需要导入相关依赖，在SpringBoot的项目创建页选择Web开发依赖、Lombok、MySQL驱动、Mybatis依赖（这四个都可以选）
-
-![SSM整合](../文件/图片/SpringBoot图片/SSM整合1.png)
-
-  + 如果想导入Druid连接池，由于SpringBoot没有提供，我们需要自己导:
-
-~~~xml
-    <properties>
-        <java.version>17</java.version>
-
-        <druid.version>1.2.22</druid.version>
-    </properties>
-
-    <dependency>
-        <groupId>com.alibaba</groupId>
-        <artifactId>druid</artifactId>
-        <version>${druid.version}</version>
-    </dependency>
-
-~~~
-
-  + 接下来就创建controller、mapper等java文件
-  + 在创建mapper时，我们在创建接口之后，可以依靠MybatisX插件快速的生成对应的xml文件（按Alt+Enter）
-  + 选择Generate mapper of xml
-
-![SSM整合](../文件/图片/SpringBoot图片/SSM整合2.png)
-
-  + 在下面的页面选择我们的xml文件生成位置，一般我们都会选择resources目录下的mapper目录
-
-![SSM整合3](../文件/图片/SpringBoot图片/SSM整合3.png)
-
-  + 在我们创建出对应的方法时，也可以通过MybatisX快速在对应的xml文件内生成标签
-
-![SSM整合4](../文件/图片/SpringBoot图片/SSM整合4.png)
-
-  + 接下来创建对应的实体类对象，**不要忘记提供setter方法**，一般加一个@Data注解就行了
-  + 最后配置配置文件，提供JDBC相关的四个必须配置和Mybatis的xml文件映射路径，以及选择性提供连接池、配置Mybatis的驼峰映射、主键回显等
-
-![SSM整合5](../文件/图片/SpringBoot图片/SSM整合5.png)
-
----
-
-#### ②底层原理
-
-
-+ SpringBoot的自动配置包（org.springframework.boot.spring-boot.autoconfiguration）中META-INF目录下的spring目录里的文件中已经默认导入了一些jdbc相关的配置类:
-
-~~~java
-    // 配置连接池相关
-    org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-    // 不知道干嘛的
-    org.springframework.boot.autoconfigure.jdbc.JdbcClientAutoConfiguration
-    // 配置Spring提供的JdbcTemplate的配置
-    org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
-    // 下面的没什么关联，也不知道干嘛的
-    org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration
-    org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration
-    // 配置事务的相关类
-    org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
-~~~
-
-+ DataSourceAutoConfiguration类默认绑定了DataSourceProperties属性配置类，它的相关前缀是`spring.datasource`
-+ 另外，他还默认导入了一些数据库连接池:
-
-~~~java
-    @Configuration(proxyBeanMethods = false)
-    @Conditional({PooledDataSourceCondition.class})
-    @ConditionalOnMissingBean({DataSource.class, XADataSource.class})
-    // 导入了下面的连接池对象，
-    @Import({DataSourceConfiguration.Hikari.class, DataSourceConfiguration.Tomcat.class, DataSourceConfiguration.Dbcp2.class, DataSourceConfiguration.OracleUcp.class, DataSourceConfiguration.Generic.class, DataSourceJmxConfiguration.class})
-    protected static class PooledDataSourceConfiguration {
-        protected PooledDataSourceConfiguration() {
-
-        }
-
-        @Bean
-        @ConditionalOnMissingBean({JdbcConnectionDetails.class})
-        PropertiesJdbcConnectionDetails jdbcConnectionDetails(DataSourceProperties properties) {
-            return new PropertiesJdbcConnectionDetails(properties);
-        }
-    }
-~~~
-
-+ 另外，在Mybatis的场景启动器中(org.mybatis.spring.boot.mybatis-spring-boot-autoconfiguration)的META-INF目录下的spring目录中也导入了相关配置类:
-
-~~~java
-    // 语言驱动的自动配置
-    org.mybatis.spring.boot.autoconfigure.MybatisLanguageDriverAutoConfiguration
-    // Mybatis的相关自动配置
-    org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration
-~~~
-
-+ 在MybatisAutoConfiguration类中，可以看到它绑定了MybatisProperties属性配置类，可以看到它的配置前缀是`mybatis`
-  + MybatisAutoConfiguration类向IOC容器提供了SqlSessionFactory对象，用来创建数据库会话
-  + 还提供了SqlSessionTemplate对象，用来进行数据库的相关操作
-+ 另外，Mybatis能够自动向IOC容器提供代理对象，是因为@MapperScan注解的原因:
-  + 可以看到它导入了MapperScannerRegistrar类
-
-~~~java
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.TYPE})
-    @Documented
-    @Import({MapperScannerRegistrar.class})
-    @Repeatable(MapperScans.class)
-    public @interface MapperScan {
-        ...
-    }
-~~~
-
-+ 在MapperScannerRegistrar类中，它会利用扫描机制，扫描指定路径下的对应接口，并批量创建这些接口的bean加入IOC容器中。该操作调用的是registerBeanDefinitions方法来实现的
-
----
-
 ### （四）生命周期、事件与监听器
 
 #### ①自定义监听器
@@ -2150,7 +2029,7 @@ public class ServletWebServerFactoryAutoConfiguration {
   + ApplicationRunner:感知特定阶段：感知应用就绪Ready。卡死应用，就不会就绪
   + CommandLineRunner:感知特定阶段：感知应用就绪Ready。卡死应用，就不会就绪
 + 如果我们想使用这些回调监听器，我们需要
-  + 自定义一个类，实现我们想实现的接口，即上面的回调监听器
+  + 自定义一个类，实现我们想实现的接口，即上面列举的各个的事件回调监听器
   + 接下来在`classpath:META-INF/spring.factories`文件内编写`实现的监听器接口全类名=自定义监听器全类名`
 + 总之，如果我们想做一些事情
   + 如果项目启动前做事：使用 BootstrapRegistryInitializer和 ApplicationContextInitializer
@@ -2403,7 +2282,7 @@ public @interface EnableAutoConfiguration {
 
 ---
 
-## 五、整合
+## 七、整合
 
 ### （一）整合Redis
 
@@ -2469,7 +2348,6 @@ public @interface EnableAutoConfiguration {
 
             return redisTemplate;
         }
-
     }
 ~~~
 
@@ -2565,14 +2443,7 @@ public @interface EnableAutoConfiguration {
 
 ---
 
-
-
-
-
-
-## 配置汇总
-
-### （一）日志配置
+### （三）日志配置
 
 #### ①日志简述
 
@@ -2733,7 +2604,230 @@ public @interface EnableAutoConfiguration {
 
 ---
 
-### （二）配置文件
+### （四）整合SSM
+
++ 由于SpringBoot自动装配的便捷性，我们整合SSM会十分的方便
+  + 首先需要导入相关依赖，在SpringBoot的项目创建页选择Web开发依赖、Lombok、MySQL驱动、Mybatis依赖（这四个都可以选）
+
+![SSM整合](../文件/图片/SpringBoot图片/SSM整合1.png)
+
+  + 如果想导入Druid连接池，由于SpringBoot没有提供，我们需要自己导:
+
+~~~xml
+    <properties>
+        <java.version>17</java.version>
+
+        <druid.version>1.2.22</druid.version>
+    </properties>
+
+    <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>druid</artifactId>
+        <version>${druid.version}</version>
+    </dependency>
+
+~~~
+
+  + 接下来就创建controller、mapper等java文件
+  + 在创建mapper时，我们在创建接口之后，可以依靠MybatisX插件快速的生成对应的xml文件（按Alt+Enter）
+  + 选择Generate mapper of xml
+
+![SSM整合](../文件/图片/SpringBoot图片/SSM整合2.png)
+
+  + 在下面的页面选择我们的xml文件生成位置，一般我们都会选择resources目录下的mapper目录
+
+![SSM整合3](../文件/图片/SpringBoot图片/SSM整合3.png)
+
+  + 在我们创建出对应的方法时，也可以通过MybatisX快速在对应的xml文件内生成标签
+
+![SSM整合4](../文件/图片/SpringBoot图片/SSM整合4.png)
+
+  + 接下来创建对应的实体类对象，**不要忘记提供setter方法**，一般加一个@Data注解就行了
+  + 最后配置配置文件，提供JDBC相关的四个必须配置和Mybatis的xml文件映射路径，以及选择性提供连接池、配置Mybatis的驼峰映射、主键回显等
+
+![SSM整合5](../文件/图片/SpringBoot图片/SSM整合5.png)
+
+---
+
+### （五）WebSocket
+
+#### ①简要概述
+
+
+
+#### ②整合流程
+
++ 前置条件:
+  + tomcat7.0.5版本及以上（tomcat在7.0.5版本才开始支持WebSocket）
+
+
+---
+
+### （六）远程连接数据库
+
++ 这里以连接MySQL为例
++ 我们首先需要确定我们能成功连接上数据库，因此服务器需要一些前提条件:
+  + 关闭防火墙，或放行端口
+  + 数据库需要创建对应的用户，host为连接方的ip，不是MySQL所在服务器的ip
+  + 为对应的用户赋予权限
++ 接下来开始:
+  + 首先是前端，前端的部分很简单，就是WebSocket的API，详见[MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/WebSocket)
+  
+  ~~~jsx
+
+    let webSocketLink=new WebSocket(`ws://localhost:8080/chat/${userContext.userName}`);
+    webSocketLink.onopen=(params)=>{
+        console.log('客户端连接成功');
+    };
+    webSocketLink.onmessage=({data})=>{
+        console.log(`收到信息:${data}`);
+    };
+    ...
+
+  ~~~
+
+  + 接下来是后端，需要导入Spring WebSocket依赖，这里Spring官方已经提供了，可以直接导
+  + 我们需要先写一个配置类，提供ServerEndPointExporter对象:
+    + 提供该对象后，如果在测试包下测试方法，可能会出现报错，如果出现报错，在测试类上的@SpringBootTest注解上面指定属性:`@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)`
+
+  ~~~java
+
+    @Configuration
+    @EnableWebSocket
+    public class WebSocketConfig {
+        @Bean
+        public ServerEndpointExporter getServerEndpointExporter(){
+            return new ServerEndpointExporter();
+        }
+    }
+
+
+  ~~~
+
+  + 然后是业务层的代码:
+    + WebSocket主要有三个事件:创建连接、发送信息和关闭连接，我们主要就需要实现这三个方法。除此之外，还可以实现出现错误时的处理代码
+      + 我们可以通过继承类来实现
+      + 也可以通过Jarkarta官方提供的注解来实现，前提是导入Spring WebSocket依赖
+
+|注解|作用|备注|
+|:---:|:---:|:---:|
+|@ServerEndpoint|声明对应类为WebSocket服务类，也就是让Spring知道这个类是处理WebSocket请求的。除此以外，还负责指定该类负责处理的路径|1.**路径必须有`/`作为前缀**<br>2.**该注解使得Spring的依赖注入无法实现**，因为WebSocket是只要有一个连接，就会创建一个对应服务类的实例，而这与Spring默认的单实例冲突，因此无法执行依赖注入|
+|@OnOpen|声明对应方法在WebSocket连接时触发|无|
+|@OnMessage|声明对应方法在收到信息时触发|无|
+|@OnClose|声明对应方法在关闭连接时触发|无|
+|@OnError|声明对应方法在出现异常时触发|无|
+
+  + 接下来是对应的方法:
+
+  ~~~java
+    @ServerEndpoint(value = "/chat/{userName}")  // 这个B玩意会导致依赖注入没法注入
+    @Slf4j
+    @Component
+    public class ChatEndPoint {
+        private static final Map<String, Session> onLineUsers = new ConcurrentHashMap<>();
+
+        @OnOpen
+        public void onOpen(Session session, EndpointConfig config, @PathParam("userName") String userName) {
+            // onOpen要做的有两件事，一件是将连接的该用户加入到在线序列中去，另一件事是向所有用户广播该用户已在线
+            try {
+                // 将session对象加入到在线用户的map集合中
+                onLineUsers.put(userName, session);
+                // 得到向所有在线成员广播的系统信息
+                String message = "测试";
+                // 向所有成员进行广播
+                broadcastAllUserMessage(message);
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error(e.toString());
+            }
+        }
+
+        @OnMessage
+        public void onMessage(String msg) throws Exception{
+            Session session = onLineUsers.get("test");
+            session.getBasicRemote().sendText(msg);
+        }
+
+        @OnClose
+        public void onClose(CloseReason reason,Session session){
+            log.info(reason.toString());
+        }
+
+        @OnError
+        public void onError(Throwable e){
+            log.info(e.toString());
+        }
+
+        private void broadcastAllUserMessage(String msg) throws Exception{
+            // 遍历每个在线用户，向它们的客户端发送消息
+            for (Map.Entry<String, Session> entry : onLineUsers.entrySet()) {
+                Session userSession = entry.getValue();
+                userSession.getBasicRemote().sendText(msg);
+            }
+        }
+    }
+
+  ~~~
+
+---
+
+
+
+
+
+---
+
+## 八、部署
+
+### （一）部署SpringBoot项目
+
++ 下面展示使用阿里云进行部署的步骤:
+  + 首先在确定无误后，运行`mvn package`得到项目jar包
+  + 使用Xftp将对应文件放到对应的阿里云服务器中
+  + 接下来安装Java环境，直接在本地下下来，然后用Xftp传过去，注意需要下载linux版本的JDK，不是Windows版本的JDK
+  + 使用`tar -zxvf xxx.gz`解压
+  + `vim /etc/profile`打开配置文件，在文件下面配置:
+
+    ~~~profile
+        export JAVA_HOME=/home/study/java/jdk-17.0.11  # 这个JAVA_HOME要写自己的linux服务器上面的java的实际地址
+        export CLASSPATH=$JAVA_HOME/lib/
+        export PATH=$PATH:$JAVA_HOME/bin
+        export PATH JAVA_HOME CLASSPATH
+    ~~~
+
+  + 执行`source /etc/profile`来进行配置文件的重新加载，然后运行`java -version`来查看是否配置好了
+  + 接下来使用`java -jar xxx.jar`来使项目启动，但是**该种部署方式会导致终端被java进程占用，无法进行后续操作，因此不推荐**。如果使用该方式，那么`Ctrl+C`回到终端时，服务也会同步停止运行
+  + 如果想使用其他方式启动，可以使用:
+    + `nohup java -jar xxxx.jar >/dev/null 2>&1 &`来使其在后台进行运行。如果想停止，先使用`ps -ef | grep java`获取Java项目的pid,接下来`kill -9 pid`来杀死进程
+    + [参考](https://blog.csdn.net/Jason_We/article/details/113663318)
+  + 如果在本地测试无误，但是部署上去之后请求报错`net::ERR_CONNECTION_REFUSED`，考虑是不是阿里云的安全组未开放端口
+
+---
+
+### （二）部署MySQL数据库
+
++ 关于MySQL数据库在linux上的安装详见[MySQL笔记](../../数据库/笔记/MySQL笔记.md)
++ 我们首先需要保证MySQL数据库是能被连接到的，因此需要:
+  + 关闭防火墙，或者防火墙放行端口，以及允许外部访问
+  + 如果是云服务器，还需要设置安全组，也要放行端口
+  + 数据库需要创建出能够建立连接的对应用户，也就是**host为连接方ip(是连接方ip，不是本服务器ip)**的用户，且拥有能够满足业务的权限
++ 实际上就这么点，但是我们需要保证我们的Java程序能够访问到，因此这里摆提供一些SpringBoot的配置:
+  + 数据库连接的url格式为:`jdbc:{mysql\|oracle}://{ip地址\|主机名}:端口号/数据库名[?key1=value1&key2=value2&....(可选信息)]`
+
+~~~properties
+    # 配置数据库
+    spring.datasource.username=root
+    spring.datasource.url=jdbc:mysql://8.130.44.112:3306/chat
+    spring.datasource.password=123456
+    spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+    spring.datasource.type=com.alibaba.druid.pool.DruidDataSource
+~~~
+
+---
+
+## 配置汇总
+
+### （一）配置文件
 
 #### ①yaml文件
 
@@ -2891,7 +2985,7 @@ public class People {
 
 --
 
-### （三）配置项汇总
+### （二）配置项汇总
 
 |分组|配置|作用|值|备注|
 |:---:|:---:|:---:|:---:|:---:|
@@ -2930,13 +3024,14 @@ public class People {
 |^|server.error.include-binding-errors|是否允许携带errors属性|always:总是携带<br>on_param:不知道干嘛的<br>never:默认值，从不携带|无|
 |^|server.error.include-exception|是否允许携带异常全类名|true/false，默认为false|无|
 |^|server.error.include-message|是否允许携带异常描述|always:总是携带<br>on_param:不知道干嘛的<br>never:默认值，从不携带|无|
-|**Mybatis**|spring.datasource.url|指定连接的数据库地址|地址值|无|
+|**Mybatis与数据库**|spring.datasource.url|指定连接的数据库地址|地址值|无|
 |^|spring.datasource.username|指定数据库用户名|字符串|无|
 |^|spring.datasource.password|指定数据库密码|字符串|无|
 |^|spring.datasource.driver-class-name|指定数据库驱动全类名|全类名|无|
 |^|spring.datasource.type|指定连接池全类名|全类名|无|
 |^|mybatis.configuration.map-underscore-to-camel-case|开启Mybatis驼峰命名映射|布尔值，默认为true(不开启)|无|
-|^|mybatis.mapper-locations|指定mapper对应的xml文件路径映射|路径映射|无|
+|^|mybatis.mapper-locations|指定mapper对应的xml文件路径映射|路径映射，一般为`classpath:mapper/*.xml`|无|
+|^|mybatis.type-aliases-package|指定实体类别名的包类路径|路径，一般为`com.example.xxx.pojo`|无|
 |**banner**|spring.banner.location|指定读取的banner文件|路径|无|
 |^|spring.main.banner-mode|指定banner的显示模式|off:不显示<br>log:使用日志显示<br>console:控制台输出|无|
 |**配置隔离**|spring.profiles.active|指定要开启的环境|一个或多个环境名|需要动态切换的环境使用它指定|
@@ -2949,31 +3044,65 @@ public class People {
 
 ---
 
-### （四）注解汇总
+### （三）注解汇总
 
-|分组|注解|作用|作用范围|备注|
+|分组|注解|作用|主要作用范围|备注|
 |:---:|:---:|:---:|:---:|:---:|
-|项目启动|@SSpringBootApplication|声明对应类为配置类并自动配置|类|无|
-|组件注册|@Configuration|声明对应类为配置类|类|无|
+|**项目启动**|@SSpringBootApplication|声明对应类为配置类并自动配置|类|无|
+|**组件注册**|@Configuration|声明对应类为配置类|类|无|
 |^|@SpringBootConfiguration|声明对应类为SpringBoot项目的配置类|类|其实跟上面的注解没有区别|
+|^|@Service|^|作用于Service层|无|
+|^|@Controller|^|作用于Controller层|无|
+|^|@Repository|^|作用在Dao层|无|
 |^|@Bean|使方法返回值作为bean加入到IOC容器内|方法|无|
 |^|@Scope|声明该类型的bean是单实例还是多实例|方法|无|
 |^|@Controller/@Service/@Repository/@Conponent|声明对应类属于控制层/服务层/DAO层/其它层，并将其纳入IOC容器管理|类|无|
 |^|@Import|指定对应类受IOC容器管理|类|一般用于将第三方包下的类纳入IOC容器管理|
 |^|@ComponentScan|开启组件扫描|类|作用于配置类上|
-|条件注解|@ConditionalOnClass|若类路径下存在该类，那么触发指定行为|类/方法|触发指定行为需要利用其他注解实现，如加入IOC容器需要@Bean注解|
+|^|@Lazy|指定组件懒加载|配置类中的bean方法|^|
+|^|@DependOn|指定依赖加载对象|无|^|
+|^|@PreDestroy|指定销毁方法|^|该注解来源于`jakarta`包|
+|^|@PostConstruct|指定初始化方法|^|^|
+|^|@Value|注入基本数据类型对象|类属性、方法属性|无|
+|^|@Autowared|根据byType模式匹配对应的引用数据类型对象并注入|^|1.该注解无法自动装配JDK自带的数据类型<br>**不能作用于测试类**|
+|^|@Qualifier|使自动装配按照byName的方式匹配，且依据的是该注解内指定的name值进行匹配|^|无|
+|^|@Resource|依据 指定的name -> byName -> byType的模式依次匹配对应的引用数据类型对象并注入|^|1.该注解来源于`jakarta`包<br>2.**不能作用于测试类**|
+|**请求处理**|@RequestMapping|指定映射路径与支持的请求类型等|类、方法|无|
+|^||@{Get\|Post\|Put\|Delete\|Patch}Mapping|指定不同请求类型的映射路径|^|无|
+|^|@ControllerAdvice|声明异常处理类|类|无|
+|^|@RestControllerAdvice|@ControllerAdvice+@ResponseBody|^|无|
+|^|@CrossOrigin|解决跨域问题|类与方法|无|
+|^|@RequestParam|接收get参数和请求体参数|方法属性|无|
+|^|@PathVariable|接收路径参数|^|无|
+|^|@RequestBody|接收请求体参数，并将其中的属性映射为方法中接收前端请求参数的属性对应的引用数据类型对象|^|**它无法接收同名的param参数**|
+|^|@Cookie|得到Cookie携带的指定值|^|无|
+|^|@SessionAttribute|得到session内的指定值|^|无|
+|^|@RequestHeader|读取请求头内的指定字段的值|^|无|
+|^|@Validated|针对实体类对象进行校验|^|无|
+|^|@ResponseBody|使方法返回值受对应转换器处理并不通过视图解析器解析|方法|无|
+|**异常处理**|@ControllerAdvice|声明异常处理类|类|无|
+|^|@RestControllerAdvice|@ControllerAdvice+@ResponseBody|类|无|
+|**条件注解**|@ConditionalOnClass|若类路径下存在该类，那么触发指定行为|类/方法|触发指定行为需要利用其他注解实现，如加入IOC容器需要@Bean注解|
 |^|@ConditionalOnMissingClass|若类路径下不存在该类，那么触发指定行为|^|^|
 |^|@ConditionalOnBean|若IOC容器内存在指定的bean,那么触发指定行为|^|^|
 |^|@ConditionalOnMissingBean|如果容器中不存在这个Bean（组件）,那么触发指定行为|^|^|
-|@ConfigurationProperties|声明组件的属性和配置文件内key的前缀项以进行项绑定|类|该注解生效必须**使作用类被@Component及相关注解作用或被配置类的@EnableConfigurationProperties指定**，且**对应的实体类需要有getter和setter方法**<br>该注解生效的时机貌似是bean创建时检查|
-|@EnableConfigurationProperties|指定某些类是属性绑定类|类|应作用于配置类|
-|Jackson|@JacksonXmlRootElement|声明对应类可被转换为xml格式|类|无|
-|日志|@Slf4j|被该注解作用的类中的方法内，都默认可以得到一个实现了SLF4J日志门面的日志对象|类|该注解来自于Lombok|
-|Mybatis|@MapperScan|指定mapper接口所在的包，用于创建mapper的代理对象|类|无|
-|配置隔离|@Profile|在开启指定环境后，类或方法上的注解才生效|类或方法|无|
-|junit|@SpringBootTest|执行测试时会启动SpringBoot项目进行测试|类|无|
-|^|其它详见[其它依赖笔记](其它依赖笔记.md)|
-|自定义starter|@ConfigurationProperties|设置Properties配置类的一些常见配置，如对应的配置文件前缀|类|无|
+|**属性绑定**|@ConfigurationProperties|声明组件的属性和配置文件内key的前缀项以进行项绑定|类|该注解生效必须**使作用类被@Component及相关注解作用或被配置类的@EnableConfigurationProperties指定**，且**对应的实体类需要有getter和setter方法**<br>该注解生效的时机貌似是bean创建时检查|
+|^|@EnableConfigurationProperties|指定某些类是属性绑定类|类|应作用于配置类|
+|^|@PropertySource|读取外部指定路径的properties文件内容|类|无|
+|**Jackson**|@JacksonXmlRootElement|声明对应类可被转换为xml格式|类|无|
+|**日志**|@Slf4j|被该注解作用的类中的方法内，都默认可以得到一个实现了SLF4J日志门面的日志对象|类|该注解来自于Lombok|
+|**Mybatis**|@MapperScan|指定mapper接口所在的包，用于创建mapper的代理对象|类|无|
+|^|@Param|指定mapper最终能看到的参数名称|方法参数|无|
+|^|@Alias|指定类在mapper文件中的别名|数据库对应实体类|无|
+|**配置隔离**|@Profile|在开启指定环境后，类或方法上的注解才生效|类或方法|无|
+|**junit**|@SpringBootTest|执行测试时会启动SpringBoot项目进行测试|类|无|
+|^|其它相关Junit注解详见[其它依赖笔记](其它依赖笔记.md)|
+|**自定义starter**|@ConfigurationProperties|设置Properties配置类的一些常见配置，如对应的配置文件前缀|类|无|
+
++ [组件注册注解样例](../源码/SpringBoot/SpringBootInitializrDemo/src/main/java/com/springboot/example/springbootinitializrdemo/config/MyConfig.java)
++ [条件注解样例](../源码/SpringBoot/SpringBootInitializrDemo/src/main/java/com/springboot/example/springbootinitializrdemo/config/MyConfig.java)
++ [实体类属性绑定样例](../源码/SpringBoot/SpringBootInitializrDemo/src/main/java/com/springboot/example/springbootinitializrdemo/pojo/Person.java)
++ [配置类属性绑定样例](../源码/SpringBoot/SpringBootInitializrDemo/src/main/java/com/springboot/example/springbootinitializrdemo/config/MyConfig.java)
 
 ---
 
@@ -3689,3 +3818,75 @@ public class People {
 		return null;
 	}
 ~~~
+
+---
+
+### （二）JDBC配置底层原理
+
++ SpringBoot的自动配置包（org.springframework.boot.spring-boot.autoconfiguration）中META-INF目录下的spring目录里的文件中已经默认导入了一些jdbc相关的配置类:
+
+~~~java
+    // 配置连接池相关
+    org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+    // 不知道干嘛的
+    org.springframework.boot.autoconfigure.jdbc.JdbcClientAutoConfiguration
+    // 配置Spring提供的JdbcTemplate的配置
+    org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
+    // 下面的没什么关联，也不知道干嘛的
+    org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration
+    org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration
+    // 配置事务的相关类
+    org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
+~~~
+
++ DataSourceAutoConfiguration类默认绑定了DataSourceProperties属性配置类，它的相关前缀是`spring.datasource`
++ 另外，他还默认导入了一些数据库连接池:
+
+~~~java
+    @Configuration(proxyBeanMethods = false)
+    @Conditional({PooledDataSourceCondition.class})
+    @ConditionalOnMissingBean({DataSource.class, XADataSource.class})
+    // 导入了下面的连接池对象，
+    @Import({DataSourceConfiguration.Hikari.class, DataSourceConfiguration.Tomcat.class, DataSourceConfiguration.Dbcp2.class, DataSourceConfiguration.OracleUcp.class, DataSourceConfiguration.Generic.class, DataSourceJmxConfiguration.class})
+    protected static class PooledDataSourceConfiguration {
+        protected PooledDataSourceConfiguration() {
+
+        }
+
+        @Bean
+        @ConditionalOnMissingBean({JdbcConnectionDetails.class})
+        PropertiesJdbcConnectionDetails jdbcConnectionDetails(DataSourceProperties properties) {
+            return new PropertiesJdbcConnectionDetails(properties);
+        }
+    }
+~~~
+
++ 另外，在Mybatis的场景启动器中(org.mybatis.spring.boot.mybatis-spring-boot-autoconfiguration)的META-INF目录下的spring目录中也导入了相关配置类:
+
+~~~java
+    // 语言驱动的自动配置
+    org.mybatis.spring.boot.autoconfigure.MybatisLanguageDriverAutoConfiguration
+    // Mybatis的相关自动配置
+    org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration
+~~~
+
++ 在MybatisAutoConfiguration类中，可以看到它绑定了MybatisProperties属性配置类，可以看到它的配置前缀是`mybatis`
+  + MybatisAutoConfiguration类向IOC容器提供了SqlSessionFactory对象，用来创建数据库会话
+  + 还提供了SqlSessionTemplate对象，用来进行数据库的相关操作
++ 另外，Mybatis能够自动向IOC容器提供代理对象，是因为@MapperScan注解的原因:
+  + 可以看到它导入了MapperScannerRegistrar类
+
+~~~java
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.TYPE})
+    @Documented
+    @Import({MapperScannerRegistrar.class})
+    @Repeatable(MapperScans.class)
+    public @interface MapperScan {
+        ...
+    }
+~~~
+
++ 在MapperScannerRegistrar类中，它会利用扫描机制，扫描指定路径下的对应接口，并批量创建这些接口的bean加入IOC容器中。该操作调用的是registerBeanDefinitions方法来实现的
+
+---

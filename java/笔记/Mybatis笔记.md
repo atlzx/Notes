@@ -619,7 +619,36 @@
 
 ~~~
 
+---
+
+#### ⑥别名规则
+
++ resultType属性用来指定sql语句的返回值，它专门作用于select标签。他需要**指定类的全类名**
+  + Mybatis已经为我们**提供了常用的JDK类型的别名**，我们也可以**使用这些别名来代指类的全类名**
+    + 基本数据类型,如`int`对应的全类名是`_int`，即**在基本数据类型名前加上下划线**
+    + 引用数据类型，采用小写:如HashMap->hashmap、Integer->int/integer
+    + 除此以外，我们还可以自行指定类的别名。指定别名的操作需要在mybatis-config.xml文件内进行
+      + 在typeAliases标签内指定typeAlias标签可以为一个类指定别名
+      + 在typeAliases标签内指定package标签可以为指定包下的所有类都起别名，且**别名默认是首字母小写的类名**
+      + 如果使用了package标签且类名上有@Alias(value)注解，那么别名将是注解指定的名称
++ 如果返回值类型是JDK数据类型，那么直接写别名或全类名即可
++ 如果返回值类型是Map类型，那么直接写map，该情况适用于我们没有实体类可以接收的情况
++ 如果返回值类型是List类型，那么**需要写的类型是List内元素对应的泛型类型**
++ [mapper.xml样例](../源码/Mybatis/src/main/resources/hellomybatis/mappers/employeeMapper.xml)
++ [config.xml样例](../源码/Mybatis/src/main/resources/hellomybatis/mybatis-config.xml)
++ [接口](../源码/Mybatis/src/main/java/com/mybatis/example/hellomybatis/mapper/EmployeeMapper.java)
++ [实现类](../源码/Mybatis/src/main/java/com/mybatis/example/hellomybatis/pojo/Employee.java)
++ [测试样例](../源码/Mybatis/src/test/java/hellomybatis/TypeInjectTest.java)
 
 
+
+### （三）注解汇总
+
+|注解|作用|备注|
+|:---:|:---:|:---:|
+|@Param|指定mapper最终能看到的参数名称|无|
+|@Alias|指定类在mapper文件中的别名|无|
+
+---
 
 

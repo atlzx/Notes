@@ -2500,6 +2500,8 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
 
 ## 一、Linux安装MySQL
 
+### （一）Ubuntu安装
+
 + 这里以Ubuntu24版本为例，进行linux安装mysql的教程:
   + 首先我们需要有一个Ubuntu24
   + 接下来打开终端，输入`su`并输入密码进入root用户状态
@@ -2525,6 +2527,70 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
   + mysql安装完成
 
 ---
+
+### （二）CentOS安装
+
++ CentOS安装MySQL有三种方式:通过yum、使用rpm命令、编译源码安装
+  + 通过yum需要联网，配置从互联网获取的mysql官方提供的yum源，然后直接使用yum进行安装
+  + 通过rpm安装就是使用rpm命令安装拓展名为".rpm"的安装包
+  + 编译安装源码需要获取tar.gz形式的源码，然后编译安装
+
+|安装方式|特点|
+|:---:|:---:|
+|rpm|安装简单，灵活性差，无法灵活选择版本、升级|
+|rpm respository|安装包极小，版本安装简单灵活，升级方便，需要联网安装|
+|通用二进制包|安装比较复杂，灵活性高，平台通用性好|
+|源码包|安装最复杂，时间长，参数设置灵活，性能好|
+
++ 这里选择rpm安装，因为最简单:
+  + 先去MySQL的[官网](https://dev.mysql.com/downloads/)
+  + 选择`MySQL Community Server`
+
+  ![CentOS安装图例1](../文件/图片/mySql/CentOS安装mysql图例1.png)
+
+  + 如果想下载老版本的，还需要点击Archives选项卡:
+
+  ![CentOS安装mysql图例2](../文件/图片/mySql/CentOS安装mysql图例2.png)
+
+  + 选择以后，需要选择Operating System为`Red Hat Enterprise Linux / Oracle Linux`
+
+  ![CentOS安装mysql图例3](../文件/图片/mySql/CentOS安装mysql图例3.png)
+
+  + 选择以后，在OS Version选择自己的linux版本和架构，如果不知道，`cat /etc/redhat-release`和`uname -m`查看一下版本号和架构，然后选择对应版本
+  + 选择完成后，下载带Bundle的文件（文件大小是最大的，一般在最上面，以tar做后缀）。它包含了我们安装mysql需要的所有组件
+  + 完成后把文件上传到linux上
+  + 运行`tar -xvf 文件名`来解压，注意该文件后缀是`.tar`，**不需要使用`-z`参数，使用了会报错**
+  + 解压后(以mysql8.0.36版本为例)会出来这么一堆玩意:
+
+  ![CentOS安装mysql图例4](../文件/图片/mySql/CentOS安装mysql图例4.png)
+
+  + 我们需要的有(MySQL8.0.36版本):
+    + mysql-community-common-8.0.36-1.el7.x86_64.rpm
+    + mysql-community-client-plugins-8.0.36-1.el7.x86_64.rpm
+    + mysql-community-libs-8.0.36-1.el7.x86_64.rpm
+    + mysql-community-client-8.0.36-1.el7.x86_64.rpm
+    + mysql-community-icu-data-files-8.0.36-1.el7.x86_64.rpm
+    + mysql-community-server-8.0.36-1.el7.x86_64.rpm
+  + 接下来按照从上至下的顺序，以`rpm -ivh xxx.rpm`命令依次将上面六个东西安装
+    + 安装时，可能会出现`xxx is needed by yyy`的情况，这是缺少安装需要的依赖，可以尝试`yum install xxx`来安装再运行，一般可能会缺少libaio，那么就`yum install libaio`一下
+  + 全部安装好以后，运行`mysql --version`，如果显示出版本，那么表示安装成功了
+  + 接下来`mysqld --initialize --user=mysql`初始化mysql，初始化时，他会生成root用户和一个自动密码，运行`cat /var/log/mysqld.log`来查看该密码（在root@localhost后面的是密码，是一串看起来很奇怪的串）:
+
+  ![CentOS安装mysql图例5](../文件/图片/mySql/CentOS安装mysql图例5.png)
+
+  + 接下来启动mysql:
+
+  ~~~bash
+    systemctl start mysqld  # 启动服务
+    systemctl stop mysqld  # 停止服务
+    systemctl restart mysqld  # 重启服务
+    systemctl status mysqld  # 查看当前状态
+  ~~~
+
+  + 接下来的步骤就和Ubuntu的步骤一致了，就是登陆一下，然后修改一下密码
+
+---
+
 
 ## 二、用户与权限管理
 
@@ -2558,7 +2624,7 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
 
   -- 创建用户，可以一次性创建多个用户，每个用户间使用逗号隔开，也可以指定用户的密码过期天数
     -- 如果没有指定密码，用户直接就可以进行登录
-    -- host作用域可以通过
+    -- host作用域是指定连接方的ip的，比如这个MySQL数据库所在的服务器ip为123.15.6.75，而想连接该MySQL的主机ip为5.68.3.48，那么想成功连接，需要将host指定为5.68.3.48而不是123.15.6.75
     -- 后面的password选项，expire interval用来设置该用户的密码什么时候过期，可以指定指定天数、从不过期或继承全局配置
     -- 接下来的history是重置密码的时候指定新密码不能与过去的前n个密码一致，如指定3，那么指定的新密码就不能与在其之前设置的前3个密码中的一个一致
     -- reuse interval ... 用来配置新密码不能与之前多少天配置的密码一致，如指定365,那么新密码就不能与过去一年设置的全部密码中的一个一致

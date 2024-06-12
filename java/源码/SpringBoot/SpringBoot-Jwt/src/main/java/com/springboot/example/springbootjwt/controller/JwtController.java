@@ -3,8 +3,6 @@ package com.springboot.example.springbootjwt.controller;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,11 +21,13 @@ public class JwtController {
     public String getJWT() {
         Map<String, String> claim = new HashMap<>();
         claim.put("loginStatus", "yes");
-        return Jwts.builder()
+        String Jwt=Jwts.builder()
             .signWith(SignatureAlgorithm.HS256, "sfrbhsdftjxfdgnfgujfsdxgnfgusdfbhsdysbhdshjfd")
             .setClaims(claim)
             .setExpiration(new Date(System.currentTimeMillis() + 3600 * 1000))
             .compact();
+        log.info(Jwt);
+        return Jwt;
     }
 
     @RequestMapping("/parseJwt")

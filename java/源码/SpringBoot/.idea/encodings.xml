@@ -5,18 +5,30 @@
     <file url="file://$PROJECT_DIR$/FileUpload/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/HelloSpringBoot/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/HelloSpringBoot/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringBoot-Jwt/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringBoot-Jwt/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBoot-SSM/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringBoot-WebSocket/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringBoot-WebSocket/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBoot-starter-robot/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBoot-use-robot/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBootConfiguration/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBootInitializrDemo/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringBootJWT/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringBootJWT/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBootLogging/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBootMessageConverter/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBootTest/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBootThymeleaf/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBootWebStaticResource/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringJpa/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringJpa/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/aaaa/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/aaaa/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/untitled/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/untitled/src/main/resources" charset="UTF-8" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

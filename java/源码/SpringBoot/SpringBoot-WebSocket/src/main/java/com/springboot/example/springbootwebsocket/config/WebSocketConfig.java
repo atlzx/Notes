@@ -1,2 +1,16 @@
-package com.springboot.example.springbootwebsocket.config;public class WebSocketConfig {
+package com.springboot.example.springbootwebsocket.config;
+
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.server.standard.ServerEndpointExporter;
+
+@Configuration
+@EnableWebSocket
+public class WebSocketConfig {
+    @Bean
+    public ServerEndpointExporter getServerEndpointExporter(){
+        return new ServerEndpointExporter();
+    }
 }
