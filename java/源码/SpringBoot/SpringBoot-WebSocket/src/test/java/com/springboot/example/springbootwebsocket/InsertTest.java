@@ -2,6 +2,7 @@ package com.springboot.example.springbootwebsocket;
 
 import com.springboot.example.springbootwebsocket.pojo.User;
 import com.springboot.example.springbootwebsocket.mapper.UserDao;
+import com.springboot.example.springbootwebsocket.utils.SpringUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -17,4 +18,5 @@ public class InsertTest {
 
     @Resource
     private UserDao userDao;
+
 }

@@ -43,40 +43,36 @@
         // 设置表格的列，包括列名、列的对齐方式、列的key值
         const columns=[
             {
-                dataIndex:'bookID',
-                key:'bookID',
-                title:'书籍ID',
-                align:'center'
+                // 表的列数据的索引，在得到数据时，组件会依据该字段的值去数据中寻找对应的值渲染，如dataIndex设置为bookID,那么他就会去寻找数据行中的bookID字段，然后把数据行中的该字段的值拿过来进行渲染
+                dataIndex:'bookID',  
+                key:'bookID',  // 每个表的列字段都需要一个key
+                title:'书籍ID',  // 用户最终能看到的列名
+                align:'center'  // 数据的对齐方式
             },
-            {
-                dataIndex:'bookName',
-                key:'bookName',
-                title:'书籍名称',
-                align:'center'
-            },
-            {
-                dataIndex:'bookAuthor',
-                key:'bookAuthor',
-                title:'书籍作者',
-                align:'center'
-            },
-            {
-                dataIndex:'bookCount',
-                key:'bookCount',
-                title:'书籍数量',
-                align:'center'
-            },
-            {
-                dataIndex:'bookDesc',
-                key:'bookDesc',
-                title:'书籍描述',
-                align:'center'
-            },
+            ...
             {
                 dataIndex:'operation',
                 key:'operation',
                 title:'操作',
-                align:'center'
+                align:'center',
+                render:(text,record,index)=>{
+                    // text是后面的data追加的对应本列dataIndex的内容
+                    // record是本行数据
+                    // index是本行索引
+                    console.log(text,record,index);
+                    return (
+                        <>
+                            <Button>修改</Button>
+                            <Popconfirm
+                                title={'删除提示'}
+                                description={'确定删除吗'}
+                                onConfirm={onConfirm}
+                            >
+                                <Button danger onClick={()=>{console.log('aaaa')}}>删除</Button>
+                            </Popconfirm>
+                        </>
+                    );
+                }  // 通过render进行渲染，其返回值将成为对应行的该列该列所展示的内容，同时它可以读取到这一行的值
             }
         ];
         // 设置表格的数据，包括key以及每组数据对应的列的各项dataIndex的值
@@ -88,53 +84,43 @@
                 bookAuthor:'用户1',
                 bookCount:10,
                 bookDesc:'第一本测试的书',
-                operation:(<><Button>点我</Button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<Button>点我2</Button></>)
+                operation:'hahaha'  // operation对应着表格的render属性回调函数的第一个参数
             },
-            {
-                key:'data2',
-                bookID:'book2',
-                bookName:'测试2',
-                bookAuthor:'用户2',
-                bookCount:8,
-                bookDesc:'第二本测试的书',
-                operation:(<><Button>点我</Button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<Button>点我2</Button></>)
-            },
-            {
-                key:'data3',
-                bookID:'book3',
-                bookName:'测试3',
-                bookAuthor:'用户3',
-                bookCount:12,
-                bookDesc:'第三本测试的书',
-                operation:(<><Button>点我</Button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<Button>点我2</Button></>)
-            },
-            {
-                key:'data4',
-                bookID:'book4',
-                bookName:'测试4',
-                bookAuthor:'用户4',
-                bookCount:14,
-                bookDesc:'第四本测试的书',
-                operation:(<><Button>点我</Button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<Button>点我2</Button></>)
-            },
+            ...
         ];
 
-        // 设置多选框
+        // 设置多选框的State，需要是一个数组
         const [selectState,setSelectState]=useState([]);
 
         // 每次点击选择按钮时，都对多选框数组进行重新赋值
-        const onSelectionChange=(e)=>{
-            console.log(e);
-            setSelectState(e);
+        // 接收的参数就是用户多选后，新的多选数组
+        const onSelectionChange=(newSelectedRowKeys)=>{
+            console.log(newSelectedRowKeys);
+            setSelectState(newSelectedRowKeys); // 一般都拿它直接更新我们的多选状态数组
         };
         // 将多选框数组和其对应的事件加入对象，该对象将会作为整合好的对象成为表格的 rowSelection 对应的值
         const selectRow={
-            selectedRowKeys:selectState,
-            onChange:onSelectionChange
+            selectedRowKeys:selectState,  // selectedRowKeys字段需要我们自己提供，它是我们选择的行的数据id所组成的数组
+            onChange:onSelectionChange  // 在多选数据变化时的回调函数，用来更新上面的多选数组
+        };
+        // 分页配置
+        const pagination={
+            position:['bottomCenter'],  // 指定表格的分页位置
+            showQuickJumper:true,  // 展示快速跳转，即 跳转到
+            defaultCurrent:1,  // 默认的当前页码
+            defaultPageSize:10,  // 默认的一页的数据量
+            pageSize:current.pageInfo.size,  // 当前的页的数据量
+            current:current.pageInfo.current,  // 当前的页的页码
+            total:current.pageInfo.total,  // 当前的页的数据总量
+            onChange:pageOnChange  // 数据发生变化时的回调函数
         };
 
         return (
-            <Table dataSource={data} columns={columns} rowSelection={selectRow}></Table>
+            // dataSource即数据源，在这里插入我们处理完的数据
+            // columns是列配置，用来指定列的标题、列中对应数据的索引等
+            // rowSelection表示支持多选，它接收一个Object对象，详情见官网API介绍
+            // pagination是分页配置，详情见上
+            <Table dataSource={data} columns={columns} rowSelection={selectRow} pagination={pagination}></Table>
         );
     };
 
@@ -154,6 +140,55 @@
 
 
 ## 六、表单
+
++ 简单使用:
+
+~~~jsx
+    ...
+
+
+    const [form]=Form.useForm();  // 使用Form表单生成一个form实例，注意必须要用数组进行解构，否则没用
+    // 表单实例有许多API，其中我们可以通过一些API来得到表单内的组件当前的值:
+    form.getFieldsValue(true)  // 得到表单组件全部的值，返回一个Object对象
+    form.getFieldsValue([['userName',...]])  // 得到表单组件的指定的值，这里就是写两层数组
+    form.getFieldValue('userName')  // 得到表单组件单个的值
+
+
+    <Form
+        // onFinish就是提交的回调函数，如果设置了校验，那么校验通过才会执行该回调函数。如果校验不通过，也有一个相关的回调函数
+        onFinish={addUserSubmitHandler}  
+        labelCol={{span: 5}}  // 设置全体Form.Item的label（就是输入框前面的提示文字）尺寸
+        wrapperCol={{span: 14}}  // 设置全体Form.Item的输入组件尺寸
+        form={form}  // 关联我们创建的form实例
+        
+    >
+        <Form.Item
+            label={'姓名'}  // 设置输入组件前面的提示文字
+            name={'userName'}  // 设置表单组件提交时的name
+            rules={
+                [
+                    {
+                        required: true,
+                        message: '姓名不能为空!',  // 设置校验的提示性文字
+                    },
+                ]
+            }
+        >
+            <Input />
+        </Form.Item>
+        <Form.Item
+            wrapperCol={
+                {
+                    offset: 8,
+                    span: 16,
+                }
+            }
+        >
+            <Button type="primary" htmlType="submit" loading={addUserLoading}>添加</Button>
+        </Form.Item>
+    </Form>
+
+~~~
 
 # 导航
 

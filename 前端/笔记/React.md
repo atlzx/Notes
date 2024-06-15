@@ -152,7 +152,7 @@
 
 ### （二）自动创建项目
 
-+ `npm create react-app 项目名称`或`npx create-react-app react-app`可以在当前目录下创建一个`React`项目，它会为我们配好所有基本配置
++ `npm create react-app 项目名称`、`npx create-react-app react-app`或`npm create vite`(需要选择React)可以在当前目录下创建一个`React`项目，它会为我们配好所有基本配置
 + 其目录结构如下
 
 ~~~
