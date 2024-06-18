@@ -681,7 +681,7 @@ flush privileges;
 
 ~~~sql
   CREATE TABLE test_enum(
-  season ENUM('春','夏','秋','冬','unknow')
+  season ENUM('春','夏','秋','冬','unknow')  -- 枚举类声明时，其值只能为字符串
   );
   INSERT INTO test_enum
   VALUES('春'),('秋');

@@ -1,14 +1,16 @@
 package com.springboot.example.mybatisplus.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.springboot.example.mybatisplus.enums.SexEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class User {
+@AllArgsConstructor
+@TableName("user")
+public class MasterUser {
     private Long id;
     private String name;
     private Integer age;

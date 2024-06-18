@@ -24,7 +24,9 @@
 
 ---
 
-## 二、HelloSpringBoot
+## 二、使用
+
+### （一）HelloWorld
 
 + 首先需要创建一个项目，在项目内指定该项目继承自spring-boot-starter-parent
 
@@ -117,9 +119,9 @@
 
 ---
 
-## 三、构建项目
+### （二）构建项目
 
-### （一）手动构建
+#### ①手动构建
 
 + 这种创建方式可以创建老版本的SpringBoot项目
 + 首先创建一个普通的Java项目:
@@ -170,7 +172,7 @@
 
 ---
 
-### （二）自动构建
+#### ②自动构建
 
 + IDEA提供了自动创建SpringBoot项目的模板模块:SpringInitializr，他可以为我们快速创建一个对应的SpringBoot项目
 + 首先new->Module，在左边的目录选择SpringInitializr
@@ -199,7 +201,7 @@
 
 ---
 
-## 四、依赖管理
+### （三）依赖管理
 
 + SpringBoot容易使用，其中的原因之一就是依靠依赖管理来实现的
   + 根据Maven的依赖传递原则，A依赖了B，且B依赖了C，那么A同时拥有B和C
@@ -211,19 +213,9 @@
 
 ---
 
-## 五、自动配置
+### （四）核心
 
-+ SpringBoot的自动配置让我们能够享受如下的便利:
-  + 编写SpringBoot项目时，只需要在application.properties或yaml文件中编写配置就可以对项目进行配置了，非常的方便
-  + SpringBoot项目在扫描包时，会**扫描主程序类(就是被@SpringBootApplication注解作用的类)所在包及其后代包**，就不需要我们在配置类中手动指定@ComponentScan注解了
-  + 一旦我们导入了场景，启动时运行的run方法在执行过程中会自动将场景的相关组件加入到IOC容器内并配置好，便于我们使用
-  + run方法返回ioc容器对象，方便我们使用
-
----
-
-## 六、核心
-
-### （一）场景处理
+#### ①场景处理
 
 + 在了解完成SpringBoot的自动配置机制后，我们就可以进行基本的场景定制化处理了
   + 首先我们需要导入对应的场景启动器
@@ -238,7 +230,446 @@
 
 ---
 
-### （二）Web开发
+#### ②生命周期、事件与监听器
+
+##### Ⅰ自定义监听器
+
++ 这里以实现全生命周期监听器为例来示范:
++ 在应用运行的各个生命周期下，我们可以自定义监听器来对事件的生命周期进行监听，并针对其事件做出不同的响应
+  + 我们需要自定义一个类**实现SpringApplicationRunListener接口**
+  + 在META-INF/spring.factories文件内配置`org.springframework.boot.SpringApplicationRunListener=自定义Listener全类名`
+  + 除了我们自定义的监听器，SpringBoot还配置了默认的Listener，因为在org.springframework.boot包下的META-INF目录中的spring.factories文件内就配置了对应的监听器:`sorg.springframework.boot.SpringApplicationRunListener=org.springframework.boot.context.event.EventPublishingRunListener`
++ [监听器示例](../源码/SpringBoot/EventAndListener/src/main/java/com/springboot/example/eventandlistener/listener/MyListener.java)
+
+---
+
+##### Ⅱ事件与探针
+
++ SpringBoot提供了九大事件，其中包括两个探针:
+  + ApplicationStartingEvent:应用启动但未做任何事情, 除过注册listeners and initializers
+  + ApplicationEnvironmentPreparedEvent: 环境变量已经准备好了，但IOC容器还未创建
+  + ApplicationContextInitializedEvent:IOC容器创建完毕，但还没有任何bean加载
+  + ApplicationPreparedEvent:容器刷新之前，bean定义信息加载
+  + ApplicationStartedEvent:容器刷新完成， runner未调用
+  + AvailabilityChangeEvent:**存活探针**，它表示项目启动到现在，项目依然在运行，但**它不意味着项目能对外界的请求做出响应**
+  + ApplicationReadyEvent:任何runner被调用，该事件就会触发
+  + AvailabilityChangeEvent:ReadinessState.ACCEPTING_TRAFFIC**就绪探针**，可以接请求，它表示runners都执行成功了，项目现在可以接受请求并响应了
+  + ApplicationFailedEvent:启动出错事件
++ 另外，SpringBoot还提供了多个事件回调监听器:
+  + BootstrapRegistryInitializer:感知引导初始化阶段的事件
+  + ApplicationContextInitializer:感知ioc容器初始化的相关事件
+  + ApplicationListener:**感知全阶段事件**。 一旦到了哪个阶段可以做别的事
+  + SpringApplicationRunListener:**感知全阶段生命周期** + 各种阶段都能自定义操作；功能更完善。
+  + ApplicationRunner:感知特定阶段：感知应用就绪Ready。卡死应用，就不会就绪
+  + CommandLineRunner:感知特定阶段：感知应用就绪Ready。卡死应用，就不会就绪
++ 如果我们想使用这些回调监听器，我们需要
+  + 自定义一个类，实现我们想实现的接口，即上面列举的各个的事件回调监听器
+  + 接下来在`classpath:META-INF/spring.factories`文件内编写`实现的监听器接口全类名=自定义监听器全类名`
++ 总之，如果我们想做一些事情
+  + 如果项目启动前做事：使用 BootstrapRegistryInitializer和 ApplicationContextInitializer
+  + 如果想要在项目启动完成后做事： 使用ApplicationRunner和 CommandLineRunner
+  + 如果要干涉生命周期做事：SpringApplicationRunListener
+  + 如果想要用事件机制：ApplicationListener
+![事件触发流程1](../文件/图片/SpringBoot图片/事件触发流程1.png)
+![事件触发流程2](../文件/图片/SpringBoot图片/事件触发流程2.png)
+![生命周期流程](../文件/图片/SpringBoot图片/生命周期流程.png)
+
+---
+
+##### Ⅲ生命周期启动加载机制
+
++ 如下图所示:
+
+![生命周期启动加载机制](../文件/图片/SpringBoot图片/生命周期启动加载机制.png)
+
++ 项目启动先进行生命周期的加载，具体就是上面的监听器能够监听到的生命周期，其中掺杂者一些事件
++ 在加载到一半时，即在contextLoaded完成，但started之前会进行IOC容器的刷新操作
++ 刷新操作会将所有的bean加载进IOC容器，就是Spring容器刷新的经典12大步，这12大步可以划分成两部分
+  + 创建工厂
+  + 使用工厂创建bean
++ 其中，自动配置相关的加载会在创建工厂的最后一步，即invokeBeanFactoryPostProcessors（执行bean工厂后置处理器）的方法调用时执行
+
+---
+
+#### ③自动配置
+
++ SpringBoot提供了自动配置的服务，让我们能够享受如下的便利:
+  + 编写SpringBoot项目时，只需要在application.properties或yaml文件中编写配置就可以对项目进行配置了，非常的方便
+  + SpringBoot项目在扫描包时，会**扫描主程序类(就是被@SpringBootApplication注解作用的类)所在包及其后代包**，就不需要我们在配置类中手动指定@ComponentScan注解了
+  + 一旦我们导入了场景，启动时运行的run方法在执行过程中会自动将场景的相关组件加入到IOC容器内并配置好，便于我们使用
+  + run方法返回ioc容器对象，方便我们使用
++ 它的流程如下:
+
+![自动配置流程](../文件/图片/SpringBoot图片/自动配置流程.png)
+
++ 我们实现自动配置的流程如下:
+  + 首先我们想实现什么功能，就需要导入什么场景
+  + SpringBoot自动进行依赖导入
+  + 寻找类路径下 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports文件
+  + 项目启动时，就加载自动配置类，但**并不是所有自动配置都会生效，因为每个自动配置类生效都有其先决条件**
++ SPI机制
+  + Java中的SPI（Service Provider Interface）是一种软件设计模式，用于在应用程序中动态地发现和加载组件。SPI的思想是，定义一个接口或抽象类，然后通过在classpath中定义实现该接口的类来实现对组件的动态发现和加载。
+  + 在Java中，SPI的实现方式是通过在META-INF/services目录下创建一个以服务接口全限定名为名字的文件，文件中包含实现该服务接口的类的全限定名。当应用程序启动时，Java的SPI机制会自动扫描classpath中的这些文件，并根据文件中指定的类名来加载实现类。
+  + SpringBoot也提供了SPI的实现，就是寻找META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports文件来达到自动配置
++ SpringBoot可以通过@EnableXxx注解手动开启某些功能的开关
+  + 这些注解生效的原理都是利用@Import把此功能要用的组件导入进去
+
+---
+
+#### ④自定义starter
+
++ 如果我们想自定义starter，需要首先写好业务类:
+  + [controller层](../源码/SpringBoot/SpringBoot-starter-robot/src/main/java/com/springboot/example/springbootstarterrobot/controller/RobotController.java)
+  + [service层](../源码/SpringBoot/SpringBoot-starter-robot/src/main/java/com/springboot/example/springbootstarterrobot/service/RobotService.java)
++ 之后要可以写Properties配置类，使用@ConfigurationProperties注解可以指定配置文件的前缀:
+  + [Properties配置类](../源码/SpringBoot/SpringBoot-starter-robot/src/main/java/com/springboot/example/springbootstarterrobot/properties/RobotProperties.java)
++ 之后编写AutoConfiguration类，**可以使用@Import注解或者@Bean注解向IOC容器提供bean**
+  + 我们在此之前，即在controller、service和properties类中写的@Component、@Service和@Controller注解实际上是不会生效的，只是为了防止IDEA报错才写。因为导入时这些类不会被直接导入，而是通过AutoConfiguration类导入，因此**只有在AutoConfiguration类中提供了它们的bean,他们才会加入到IOC容器中**
+  + [AutoConfiguration类](../源码/SpringBoot/SpringBoot-starter-robot/src/main/java/com/springboot/example/springbootstarterrobot/autoconfiguration/RobotAutoConfiguration.java)
++ 接下来我们要使用`mvn install`命令将我们的自定义starter放入本地仓库，因为不放的话Maven就会去别的仓库找，别的仓库那肯定是没有的
+  + 放入本地仓库时，我们需要提供至少一个主类，可以随便写一个然后提供一个main方法，但是main方法里面什么都不写
+  + 这个主类在未来其他人导入本依赖时它不会起作用，因为我们只能使用通过AutoConfiguration类提供的bean，我们只需要让AutoConfiguration类不导入主类，我们就使不了这个主类了
++ 之后就是在pom.xml文件内使用dependency标签导入依赖，注意要**加上版本号（version），要不然Maven依旧认为本地仓库没有这个依赖而去别的仓库寻找**
++ 之后就是使用了，但是仅导入依赖是使用不了的，因为**SpringBoot默认只能扫描项目启动类所在目录内的包，而我们导入的依赖不在这个包下**。我们有三种方式解决该问题
+  + 可以在项目启动类上直接使用@Import导入依赖的自动配置类，然后由自动配置类导入bean
+  + 可以自定义Enable注解，[样例](../源码/SpringBoot/SpringBoot-use-robot/src/main/java/com/springboot/example/springbootuserobot/customannotation/EnableRobot.java)
+  + 依靠SpringBoot的SPI机制，在META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports文件内提供自动配置类的全类名，[样例](../源码/SpringBoot/SpringBoot-use-robot/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports)
++ 最后，我们自定义的Properties内的属性与properties或yaml文件的映射是没有提示的，如果想让IDEA提供提示，需要导入一个依赖:
+  + 这个依赖就在SpringBoot创建模板时，选择依赖一栏中Developer Tools下的Lombok下面，勾一下就行
+
+~~~xml
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-configuration-processor</artifactId>
+        <optional>true</optional>
+    </dependency>
+~~~
+
+---
+
+## 三、整合
+
+### （一）整合Redis
+
+#### ①Jedis
+
++ Jedis是Redis官方提供的类似JDBC的与Redis数据库进行交互的库
++ 首先记得导包:
+
+~~~xml
+  <dependency>
+      <groupId>redis.clients</groupId>
+      <artifactId>jedis</artifactId>
+      <version>5.1.0</version>
+  </dependency>
+~~~
+
++ [Jedis样例](../源码/Redis/Redis/src/main/java/com/springboot/example/redis/redisdemo/JedisSample.java)
+
+---
+
+#### ②lettuce
+
++ Lettuce是一个Redis的Java驱动包，Lettuce翻译为生菜，没错，就是吃的那种生菜，所以它的Logo就是生菜
++ Jedis的相关操作在使用Redis客户端的时候，每个线程都要拿自己创建的Redis实例去连接Redis客户端，当存在很多线程的时候，不仅开销大需要反复创建关闭一个Redis连接，而且还线程不安全，一个线程通过Jedis实例更改Redis服务器中的数据之后会影响另一个线程
++ Lettuce底层使用的是Netty,当有多个线程需要连接Redis服务器时，它可以保证只创建一个Redis连接，使所有线程都共享该连接。这样既减少了资源开销，也是线程安全的(不会出现一个线程通过Jedis实例更改Redis服务器中的数据之后会影响另一个线程的情况)
++ 导包时，如果使用的是SpringBoot,那么直接把`Spring Data Redis`勾上就行，它内部已经导入了Lettuce依赖
++ 也可以手动导入:
+
+~~~xml
+  <!--lettuce-->
+   <dependency>
+       <groupId>io.lettuce</groupId>
+       <artifactId>lettuce-core</artifactId>
+       <version>6.2.1.RELEASE</version>
+   </dependency>
+~~~
+
+#### ③RedisTemplate
+
++ RedisTemplate是Spring官方整合的与Redis进行交互的封装类
++ 首先配置config类，我们**需要在配置类中手动提供RedisTemplate对象并设置其数据的序列化器**，因为自动注入的对象，其序列化方式会导致Redis中文乱码:
+  + 自动注入的对象无法序列化中文的原因是它默认使用JDK的序列化方式，没办法序列化中文
+  + 另外，**也可以通过使用RedisTemplate的子类StringRedisTemplate类来避免中文的无法序列化**，因为其子类采用的序列化方式与父类不同。这一点在其无参构造器源码中就有显著体现
+
+~~~java
+    public class RedisConfig {
+
+        @Bean
+        public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory lettuceConnectionFactory) {
+            // 手动创建RedisTemplate对象
+            RedisTemplate<String,Object> redisTemplate = new RedisTemplate<>();
+
+            redisTemplate.setConnectionFactory(lettuceConnectionFactory);
+            //设置key序列化方式string，防止key乱码
+            redisTemplate.setKeySerializer(new StringRedisSerializer());
+            //设置value的序列化方式json，使用GenericJackson2JsonRedisSerializer替换默认序列化，防止value乱码
+            redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+
+            redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+            redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+
+            redisTemplate.afterPropertiesSet();
+
+            return redisTemplate;
+        }
+    }
+~~~
+
++ 接下来是RedisTemplate的使用方法:
+  + 先调用`opsXxx`方法来确定要操作的数据类型，再进行相关的操作
+
+~~~java
+    @Service
+    @Slf4j
+    public class RedisService {
+        @Resource
+        // 这个玩意也可以直接注入StringRedisTemplate类，因为它是RedisTemplate的子类，功能更丰富，也支持中文序列化。缺点是操作对象只能是字符串类型
+        RedisTemplate<String,Object> redisTemplate;  
+        public String setData(String key,String value){
+            redisTemplate.opsForValue().set(key,value);
+            log.info(key);
+            return getData(key);
+        }
+
+        public String getData(String key){
+            return (String)redisTemplate.opsForValue().get(key);
+        }
+    }
+~~~
+
+---
+
+### （二）文件上传
+
+#### ①文件保存本地
+
++ 后端在接收文件时，如果是单文件，可以这样接收:
+
+~~~java
+    @PostMapping(value = "xxx")
+    public String fileUpload(@RequestParam(name = "xxx")MultipartFile file) throws Exception{
+        // fileUploadService是业务处理的service层类
+        fileUploadService.fileUpload(file);
+        return "OK";
+    }
+~~~
+
++ 如果是多文件，可以这样接收:
+
+~~~java
+    @PostMapping(value = "xxx")
+    // 使用实体类接收，实体类的属性为 public List<MultipartFile> files 。该属性需要与前端传来的多文件数组保持一致
+    // 如果使用List<MultipartFile>直接来接收，会报错
+    public String fileUpload( FileEntity files) throws Exception{
+        List<MultipartFile> multipartFiles = files.getFiles();
+        for(MultipartFile file:multipartFiles){
+            System.out.println(file);
+            fileUploadService.fileUpload(file);
+        }
+        return "OK";
+    }
+~~~
+
++ 接收到文件以后，为了防止多个用户同时上传同名的文件导致保存的文件出现冲突，可以使用UUID给文件进行重命名再保存:
+
+~~~java
+    public boolean fileUpload(MultipartFile file) throws Exception{
+        String fileName = file.getOriginalFilename();  // 
+        fileName=fileName.substring(fileName.lastIndexOf('.'));
+        file.transferTo(new File("E:"+ File.separator+"testImg"+File.separator+ UUID.randomUUID().toString()+fileName));
+        return true;
+    }
+~~~
+
++ 相关API
+
+|归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|MultipartFile|getOriginalFilename()|无参|得到文件名称|>|字符串|无异常|无|[样例](../源码/SpringBoot/FileUpload/src/main/java/com/springboot/example/fileupload/service/FileUploadService.java)|
+|^|getInputStream()|无参|获得文件的输入流对象|>|输入流对象|无异常|无|^|
+|^|getSize()|无参|得到文件大小|>|long类型数值|无异常|无|^|
+
+---
+
+#### ②文件上传OSS
+
++ 这里以上传阿里云为例，详情参见[官方文档](https://help.aliyun.com/zh/oss/getting-started/sdk-quick-start?spm=a2c4g.11186623.0.0.47422b4cPAOzJK)
++ 使用阿里云的OSS需要先创建一个bucket，另外再申请一个acesskey
+  + bucket直接在控制台创建就行
+  + accesskey需要在右上角点击AccessKey管理，然后创建一个。**创建以后需要记住我们的AccessKey和KeySecret，否则将无法再查询到**
+   
+  ![AccessKey管理](../文件/图片/SpringBoot图片/文件上传图例1.png)
+
++ 接下来写一下上传逻辑
+  + 首先不应该把一些配置信息，如endPoint、acessKey等信息写在代码里面，应该写在配置文件中:[配置文件](../源码/SpringBoot/FileUpload/src/main/resources/application.properties)
+  + 之后创建一个Properties类，通过SpringBoot的自动装配，把这些配置加载进来:[类样例](../源码/SpringBoot/FileUpload/src/main/java/com/springboot/example/fileupload/components/FileUploadConfig.java)
+  + 把该配置类导入到Service类中，通过getter方法得到对象，然后进行文件上传的业务:[service类](../源码/SpringBoot/FileUpload/src/main/java/com/springboot/example/fileupload/service/impl/FileUploadServiceImpl.java)
+
+---
+
+### （三）日志配置
+
+#### ①日志简述
+
++ 在开发中，我们应该使用日志来记录信息
+
+|日志门面|日志实现|
+|:---:|:---:|
+|JCL(Jakarta Commons Logging)|Log4J<br>JUL(java.util.logging)<br>Log4j2<br>Logback|
+|SLF4J(Simple Logging Facade for Java)|^|
+|jboss-logging|^|
+
++ SpringBoot的默认日志配置是`SLF4J+Logback`，但我们可以自定义想实现的日志，不过SpringBoot的默认日志配置已经够用了
++ 在Spring5版本后，commons-logging被spring直接自己封装了
+
+---
+
+#### ②实现原理
+
++ 核心场景`spring-boot-starter`内引入了`spring-boot-starter-logging`
++ 一般情况下，对应的依赖都会有一个自动配置类，叫XxxAutoConfiguration
++ 但是日志比较特殊，它需要在程序启动时就执行，因此不能在程序启动时再加载器配置项
++ 因此**日志利用的是监听器机制配置**好的
++ 不过，我们依然能够通过配置文件来修改日志的配置
+
+---
+
+#### ③输出格式
+
++ SpringBoot的默认输出格式为（从左到右）:
+  + 时间和日期:精确到毫秒
+  + 日志级别:根据情况，会打印**ERROR**、**WARN**、**INFO**、**DEBUG**或**TRACE**
+  + 进程ID
+  + ---:消息分隔符
+  + 线程名:当前执行操作的方法所在的线程，使用[]包含
+  + Logger名:通常是产生日志的类名
+  + 消息:打印的日志信息
++ **Logback并没有FATAL级别的日志，取而代之的是ERROR**
++ 其默认的输出格式参数参照spring-boot包下的additional-spring-configuration-metadata.json文件
++ 默认输出值为:`%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}`
++ 可以修改为`%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} ===> %msg%n`
+
++ [配置类样例](../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
+
+---
+
+#### ④日志级别与分组
+
++ 日志级别一般分为如下类别（由高到低）:
+  + ALL:打印所有日志
+  + TRACE:追踪框架的详细流程日志并打印
+  + DEBUG:开发调试细节日志
+  + INFO:关键的、感兴趣的日志
+  + WARN:警告但不是错误的日志，如版本过时的信息
+  + ERROR:业务错误日志，如出现各种异常
+  + FATAL:致命错误日志，如JVM虚拟机系统崩溃
+  + OFF:关闭所有日志记录
++ 在以上的日志级别中，**我们可以主动输出日志信息的有TRACE、DEBUG、INFO、WARN、ERROR这五个**
++ **在指定某一日志级别后，系统只会打印该级别或该级别以下的日志信息**，如指定了INFO作为日志级别，那么系统仅会打印INFO、WARN、ERROR、FATAL等日志信息，而级别高的DEBUG和TRACE不会打印
++ **SpringBoot默认使用Logback作为日志实现依赖，且默认指定的日志级别为INFO**
++ SpringBoot支持我们自定义全局的日志级别，或自定义某一类的日志级别
+  + 我们可以通过[下表]查阅如何指定，或者查看[样例]()
+  + 但是，当我们想手动指定的类的日志级别变多时，配置会非常繁琐，因此SpringBoot又提供了分组功能来简化配置
+    + 我们可以将多个类组成一个组，然后将这一个组看成一个整体，进行日志级别的指定
+    + SpringBoot已经为我们提供了两个默认的组:
+      + web组:包含org.springframework.core.codec、org.springframework.http、org.springframework.web、org.springframework.boot.actuate.endpoint.web、org.springframework.boot.web.servlet.ServletContextInitializerBeans类
+      + sql组:包含org.springframework.jdbc.core、org.hibernate.SQL、org.jooq.tools.LoggerListener类
+
++ [配置类样例](../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
+
+---
+
+#### ⑤文件输出、归档与滚动切割
+
++ **文件输出**
+  + 通过`logging.file.name`可以指定输出的文件的名字，如果文件不存在，会在当前项目所在目录内创建一个，然后输出日志
+    + 可以为其指定路径，使得日志文件保存在指定路径下，且名称也可以自定义，因此**推荐使用该方式**
+  + 通过`logging.file.path`可以指定输出的文件的路径，使用该方式输出文件，spring会自动创建一个Spring.log文件。当`logging.file.name`配置存在时，后者优先级更高
++ **归档**
+  + 通过某种区分方式来将日志划分到指定目录叫做归档（一般按时间，如一天对应一个目录）
+  + 该方式主要是为了防止一直将日志输出到一个文件导致文件过大的问题
+  + 归档是只有当一整天结束时，SpringBoot才会进行本日的日志归档，因此我们如果想看到效果，需要向后调一天
++ **滚动切割**
+  + 即使使用了归档，可能也会出现日志文件过大的情况，因此我们可以按某些标准（如限制单文件最大大小）来将文件切片
+  + 该方式进一步解决了文件过大的问题
+  + 这玩意貌似只能识别整数，比如设置的是1MB大小的限制，它会等到日志文件到2MB以上才会进行切割
+
++ [配置类样例](../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
+
+---
+
+#### ⑥自定义配置
+
++ 如果我们认为SpringBoot的配置文件用着不爽，我们也可以使用传统的xml文件的方式来自定义日志
+  + xml文件的命名需要严格遵守SpringBoot的对应规范:
+    + 建议名称都以`xxx-spring.xml`的规范命名，因为这样SpringBoot可以完全控制该配置文件
+
+|日志系统|文件命名规范|
+|:---:|:---:|
+|Logback|logback-spring.xml(**推荐**), logback-spring.groovy, logback.xml, or logback.groovy|
+|Log4j2|log4j2-spring.xml（**推荐**） or log4j2.xml|
+|JDK (Java Util Logging)|logging.properties|
+
++ 另外，当我们想切换日志组合时，我们需要先排除掉SpringBoot所指定的默认日志组合
+  + 我们可以利用Maven的就近原则，在我们的项目内直接引入spring-boot-starter依赖，然后在下面排除掉spring-boot-starter-logging依赖
+
+~~~xml
+
+  <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>
+      <exclusions>
+          <exclusion>
+              <groupId>org.springframework.boot</groupId>
+              <artifactId>spring-boot-starter-logging</artifactId>
+          </exclusion>
+      </exclusions>
+  </dependency>
+
+~~~
+
++ 接下来导入我们对应的场景，比如我们想导入log4j2的场景，导入前需要确认[官方](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.logging)是否支持
+
+~~~xml
+  <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-log4j2</artifactId>
+  </dependency>
+~~~
+
++ 然后就可以使用了
++ log4j2的性能相较于Logback有很大提升，推荐使用log4j2
++ 如果想使用log4j2,**Spring官方推荐其配置文件写log4j2-spring.xml**
++ **log4j2支持yaml和json格式的配置文件**:
+
+|文件格式|实现支持需要导入的依赖|规范文件名|
+|YAML|**com.fasterxml.jackson.core:jackson-databind**和**com.fasterxml.jackson.dataformat:jackson-dataformat-yaml**|log4j2.yaml或log4j2.yml|
+|JSON|com.fasterxml.jackson.core:jackson-databind|log4j2.json或log4j2.jsn|
+
++ [项目pom.xml文件](../源码/SpringBoot/SpringBootLogging/pom.xml)
++ [配置类样例](../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
++ [log4j2-spring.xml样例](../源码/SpringBoot/SpringBootLogging/src/main/resources/log4j2-spring.xml)
+
+---
+
+#### ⑦配置总览
+
+|配置|作用|备注|
+|:---:|:---:|:---:|
+|logging.level.{root\|sql\|web\|类的全类名\|自定义组名}|指定全局/sql组/web组/类/自定义组的日志级别|无|
+|logging.group.自定义组名|将多个类划分为一个组|无|
+|logging.file.name|指定日志输出的文件|也可以写路径，如果是相对路径，那么是相对于项目所在目录的|
+|loggging.file.path|指定日志输出的路径|优先级没有logging.file.name高|
+|logging.logback.rollingpolicy.file-name-pattern|指定日志归档的命名格式，默认值是`${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz`|从配置项可以看出，只有使用Logback才能使用该配置|
+|logging.logback.rollingpolicy.clean-history-on-start|应用启动前是否清除以前日志文件（默认为false）|^|
+|logging.logback.rollingpolicy.max-file-size|指定每个日志文件的最大大小|^|
+|logging.logback.rollingpolicy.total-size-cap|指定日志文件总大小超过指定大小后，就删除旧的日志文件（默认0B）|^|
+|logging.logback.rollingpolicy.max-history|日志文件保存的最大天数（默认7，单位天）|^|
+
+---
+
+### （四）整合SSM
 
 #### ①RequestContextHolder
 
@@ -597,7 +1028,7 @@
 
 ---
 
-#### ⑨WebMvcConfigurer接口
+#### ⑧WebMvcConfigurer接口
 
 + 另外，实现WebMvcConfigurer接口可以配置SpringMVC底层的运作规则:
 
@@ -630,9 +1061,351 @@
 
 ---
 
-#### ⑩新特性
+#### ⑨整合Mybatis
 
-##### ⅠProblemdetails
++ 由于SpringBoot自动装配的便捷性，我们整合SSM会十分的方便
+  + 首先需要导入相关依赖，在SpringBoot的项目创建页选择Web开发依赖、Lombok、MySQL驱动、Mybatis依赖（这四个都可以选）
+  + 说是整合SSM，实际上SpringBoot把Spring跟SpringMVC都整合好了，我们需要做的就是配置Mybatis以及一些数据库相关配置
+
+![SSM整合](../文件/图片/SpringBoot图片/SSM整合1.png)
+
+  + 如果想导入Druid连接池，由于SpringBoot没有提供，我们需要自己导:
+
+~~~xml
+    <properties>
+        <java.version>17</java.version>
+
+        <druid.version>1.2.22</druid.version>
+    </properties>
+
+    <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>druid</artifactId>
+        <version>${druid.version}</version>
+    </dependency>
+
+~~~
+
+  + 接下来就创建controller、mapper等java文件
+  + 在创建mapper时，我们在创建接口之后，可以依靠MybatisX插件快速的生成对应的xml文件（按Alt+Enter）
+  + 选择Generate mapper of xml
+
+![SSM整合](../文件/图片/SpringBoot图片/SSM整合2.png)
+
+  + 在下面的页面选择我们的xml文件生成位置，一般我们都会选择resources目录下的mapper目录
+
+![SSM整合3](../文件/图片/SpringBoot图片/SSM整合3.png)
+
+  + 在我们创建出对应的方法时，也可以通过MybatisX快速在对应的xml文件内生成标签
+
+![SSM整合4](../文件/图片/SpringBoot图片/SSM整合4.png)
+
+  + 接下来创建对应的实体类对象，**不要忘记提供setter方法**，一般加一个@Data注解就行了
+  + 最后配置配置文件，提供JDBC相关的四个必须配置和Mybatis的xml文件映射路径，以及选择性提供连接池、配置Mybatis的驼峰映射、主键回显等
+
+![SSM整合5](../文件/图片/SpringBoot图片/SSM整合5.png)
+
+---
+
+### （五）WebSocket
+
+#### ①简要概述
+
++ WebSocket可以实现服务端向客户端发送信息
+
+#### ②整合流程
+
++ 前置条件:
+  + tomcat7.0.5版本及以上（tomcat在7.0.5版本才开始支持WebSocket）
++ 接下来开始:
+  + 首先是前端，前端的部分很简单，就是WebSocket的API，详见[MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/WebSocket)
+  
+  ~~~jsx
+
+    let webSocketLink=new WebSocket(`ws://localhost:8080/chat/${userContext.userName}`);
+    webSocketLink.onopen=(params)=>{
+        console.log('客户端连接成功');
+    };
+    webSocketLink.onmessage=({data})=>{
+        console.log(`收到信息:${data}`);
+    };
+    ...
+
+  ~~~
+
+  + 接下来是后端，需要导入Spring WebSocket依赖，这里Spring官方已经提供了，可以直接导
+  + 我们需要先写一个配置类，提供ServerEndPointExporter对象:
+    + 提供该对象后，如果在测试包下测试方法，可能会出现报错，如果出现报错，在测试类上的@SpringBootTest注解上面指定属性:`@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)`
+
+  ~~~java
+
+    @Configuration
+    @EnableWebSocket
+    public class WebSocketConfig {
+        @Bean
+        public ServerEndpointExporter getServerEndpointExporter(){
+            return new ServerEndpointExporter();
+        }
+    }
+
+
+  ~~~
+
+  + 然后是业务层的代码:
+    + WebSocket主要有三个事件:创建连接、发送信息和关闭连接，我们主要就需要实现这三个方法。除此之外，还可以实现出现错误时的处理代码
+      + 我们可以通过继承类来实现
+      + 也可以通过Jarkarta官方提供的注解来实现，前提是导入Spring WebSocket依赖
+
+|注解|作用|备注|
+|:---:|:---:|:---:|
+|@ServerEndpoint|声明对应类为WebSocket服务类，也就是让Spring知道这个类是处理WebSocket请求的。除此以外，还负责指定该类负责处理的路径|1.**路径必须有`/`作为前缀**<br>2.**该注解使得Spring的依赖注入无法实现**，因为WebSocket是只要有一个连接，就会创建一个对应服务类的实例，而这与Spring默认的单实例冲突，因此无法执行依赖注入|
+|@OnOpen|声明对应方法在WebSocket连接时触发|无|
+|@OnMessage|声明对应方法在收到信息时触发|无|
+|@OnClose|声明对应方法在关闭连接时触发|无|
+|@OnError|声明对应方法在出现异常时触发|无|
+
+  + 接下来是对应的方法:
+
+  ~~~java
+    @ServerEndpoint(value = "/chat/{userName}")  // 这个B玩意会导致依赖注入没法注入
+    @Slf4j
+    @Component
+    public class ChatEndPoint {
+        private static final Map<String, Session> onLineUsers = new ConcurrentHashMap<>();
+
+        @OnOpen
+        public void onOpen(Session session, EndpointConfig config, @PathParam("userName") String userName) {
+            // onOpen要做的有两件事，一件是将连接的该用户加入到在线序列中去，另一件事是向所有用户广播该用户已在线
+            try {
+                // 将session对象加入到在线用户的map集合中
+                onLineUsers.put(userName, session);
+                // 得到向所有在线成员广播的系统信息
+                String message = "测试";
+                // 向所有成员进行广播
+                broadcastAllUserMessage(message);
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error(e.toString());
+            }
+        }
+
+        @OnMessage
+        public void onMessage(String msg) throws Exception{
+            Session session = onLineUsers.get("test");
+            session.getBasicRemote().sendText(msg);
+        }
+
+        @OnClose
+        public void onClose(CloseReason reason,Session session){
+            log.info(reason.toString());
+        }
+
+        @OnError
+        public void onError(Throwable e){
+            log.info(e.toString());
+        }
+
+        private void broadcastAllUserMessage(String msg) throws Exception{
+            // 遍历每个在线用户，向它们的客户端发送消息
+            for (Map.Entry<String, Session> entry : onLineUsers.entrySet()) {
+                Session userSession = entry.getValue();
+                userSession.getBasicRemote().sendText(msg);
+            }
+        }
+    }
+
+  ~~~
+
+---
+
+### （六）Mybatis-Plus
+
++ [官网](https://baomidou.com)
++ MyBatis-Plus 是一个MyBatis的增强工具，在MyBatis的基础上只做增强不做改变，为简化开发、提高效率而生。
+
+#### ①依赖
+
++ **引入MyBatis-Plus之后不要再次引入Mybatis相关依赖。以避免因版本差异导致的问题**。如果引了，那么大概率会报错
++ 从3.5.4开始，在没有使用mybatis-plus-boot-starter或mybatis-plus-spring-boot3-starter情况下，请自行根据项目情况引入mybatis-spring
+
+~~~xml
+    <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>mybatis-plus-boot-starter</artifactId>
+    </dependency>
+~~~
+
+---
+
+#### ②BaseMapper
+
++ [参考](https://baomidou.com/guides/data-interface/#mapper-interface)
++ BaseMapper是Mybatis-Plus提供的一个通用Mapper接口，它封装了一系列常用的数据库操作方法，包括增、删、改、查等。通过继承BaseMapper，开发者可以快速地对数据库进行操作，而无需编写繁琐的SQL语句
++ 我们的mapper接口通过继承BaseMapper接口来实现对该基础接口的继承，继承时需要制定接口的泛型，需要指定要操作的数据库表对应的实体类:
+
+~~~java
+    // User即数据库user表对应的实体类
+    public interface UserMapper extends BaseMapper<User>{ ... }
+~~~
+
++ BaseMapper提供了一系列的操作方法，参见[官网](https://baomidou.com/guides/data-interface/#mapper-interface)
++ [BaseMapper测试样例](../源码/SpringBoot/SpringBoot-Mybatis-Plus/src/test/java/com/springboot/example/mybatisplus/MapperTest.java)
+
+---
+
+#### ③IService
+
++ IService 是MyBatis-Plus提供的一个通用Service层接口，它封装了常见的CRUD操作，包括插入、删除、查询和分页等。通过继承IService接口，可以快速实现对数据库的基本操作，同时保持代码的简洁性和可维护性
++ 我们可以让我们的Service接口继承该接口，来得到该接口定义的方法，再让接口实现类继承ServiceImpl类实现对IService内定义方法的实现，同时实现我们的Service接口来进行拓展:
+
+~~~java
+
+// IService的泛型指定数据库表对应的实体类对象
+public interface UserService extends IService<User> {...}
+
+// ServiceImpl的第一个泛型指定继承了BaseMapper的自定义Mapper类接口
+// 第二个泛型指定数据库表对应的实体类对象
+@Service
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {...}
+~~~
+
++ [IService测试样例](../源码/SpringBoot/SpringBoot-Mybatis-Plus/src/test/java/com/springboot/example/mybatisplus/ServiceTest.java)
+
+---
+
+#### ④常用注解
+
++ [参考](https://baomidou.com/reference/annotation/)
+
+|注解|作用|属性|属性作用|备注|
+|:---:|:---:|:---:|:---:|:---:|
+|@TableName|指定实体类对应的数据库表名|value|指定实体类对应的数据库表名|无|
+|^|^|keepGlobalPrefix|是否保持使用全局的表前缀|无|
+|^|^|excludeProperty|指定在映射时需要排除的属性名|无|
+|@TableId|标记实体类中的主键字段|value|指定实体类主键属性对应的数据库主键名，如果不设置，Mybatis-Plus将使用属性名作为主键名|无|
+|^|^|type|指定主键的生成策略|无|
+|@TableField|标记实体类中的非主键属性|value|指定实体类非主键属性对应的数据库字段名|无|
+|@TableLogic|标记实体类中的属性作为逻辑删除字段|value|指定实体类属性对应的数据库逻辑删除字段名|无|
+|@Version|标记实体类中的字段作为乐观锁版本号字段|>|略|无|
+|@EnumValue|标记枚举类中的字段，指定在数据库中存储的枚举值|>|略|无|
+
+---
+
+#### ⑤常用配置
+
++ [参考](https://baomidou.com/reference/)
+
+|配置|作用|值|备注|
+|:---:|:---:|:---:|:---:|
+|mybatis-plus.mapper-locations|指定mapper接口对应的mapper.xml文件的位置，默认为`classpath:/mapper/**/*.xml`|classpath:xxxx|无|
+|mybatis-plus.configuration.map-underscore-to-camel-case|是否开启小驼峰命名映射，默认开启|布尔值|无|
+|mybatis-plus.configuration.log-impl|指定对应日志在SQL执行时进行输出，默认没有配置|日志类全路径|无|
+|mybatis-plus.type-aliases-package|指定实体类别名的包类路径|路径，一般为`com.example.xxx.pojo`|无|
+
+---
+
+#### ⑥插件
+
++ Mybatis_plus支持一些好用的插件，可以通过配置类来进行导入:
+
+~~~java
+
+    @Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor(){
+        MybatisPlusInterceptor mybatisPlusInterceptor=new MybatisPlusInterceptor();
+        mybatisPlusInterceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));  // 添加分页插件
+        mybatisPlusInterceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());  // 添加乐观锁插件
+        return mybatisPlusInterceptor;
+    }
+~~~
+
++ 其他插件见[官网](https://baomidou.com/plugins/)
+
+---
+
+#### ⑦多数据源
+
++ [官网介绍](https://baomidou.com/guides/dynamic-datasource/)
++ [github官方](https://github.com/baomidou/dynamic-datasource)
++ 顾名思义，就是对多个数据源的支持
++ 首先要导入新的依赖:
+
+~~~xml
+    <!-- SpringBoot1和SpringBoot2用这个 -->
+    <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+        <version>${version}</version>
+    </dependency>
+
+    <!-- SpringBoot3用这个，用上面的会报错 -->
+    
+    <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+        <version>${version}</version>
+    </dependency>
+
+~~~
+
++ 在[配置文件](../源码/SpringBoot/SpringBoot-Mybatis-Plus/src/main/resources/application.properties)中进行相关配置
++ 在[Service类](../源码/SpringBoot/SpringBoot-Mybatis-Plus/src/main/java/com/springboot/example/mybatisplus/service/impl/MasterUserServiceImpl.java)中写上@DS注解，**该注解用于指定所使用的数据源**
++ 进行[测试](../源码/SpringBoot/SpringBoot-Mybatis-Plus/src/test/java/com/springboot/example/mybatisplus/DynamicDatasourceTest.java)
+
+---
+
+## 四、部署
+
+### （一）部署SpringBoot项目
+
++ 下面展示使用阿里云进行部署的步骤:
+  + 首先在确定无误后，运行`mvn package`得到项目jar包
+  + 使用Xftp将对应文件放到对应的阿里云服务器中
+  + 接下来安装Java环境，直接在本地下下来，然后用Xftp传过去，注意需要下载linux版本的JDK，不是Windows版本的JDK
+  + 使用`tar -zxvf xxx.gz`解压
+  + `vim /etc/profile`打开配置文件，在文件下面配置:
+
+    ~~~profile
+        export JAVA_HOME=/home/study/java/jdk-17.0.11  # 这个JAVA_HOME要写自己的linux服务器上面的java的实际地址
+        export CLASSPATH=$JAVA_HOME/lib/
+        export PATH=$PATH:$JAVA_HOME/bin
+        export PATH JAVA_HOME CLASSPATH
+    ~~~
+
+  + 执行`source /etc/profile`来进行配置文件的重新加载，然后运行`java -version`来查看是否配置好了
+  + 接下来使用`java -jar xxx.jar`来使项目启动，但是**该种部署方式会导致终端被java进程占用，无法进行后续操作，因此不推荐**。如果使用该方式，那么`Ctrl+C`回到终端时，服务也会同步停止运行
+  + 如果想使用其他方式启动，可以使用:
+    + `nohup java -jar xxxx.jar >/dev/null 2>&1 &`来使其在后台进行运行。如果想停止，先使用`ps -ef | grep java`获取Java项目的pid,接下来`kill -9 pid`来杀死进程
+    + [参考](https://blog.csdn.net/Jason_We/article/details/113663318)
+  + 如果在本地测试无误，但是部署上去之后请求报错`net::ERR_CONNECTION_REFUSED`，考虑是不是阿里云的安全组未开放端口
+
+---
+
+### （二）部署MySQL数据库
+
++ 关于MySQL数据库在linux上的安装详见[MySQL笔记](../../数据库/笔记/MySQL笔记.md)
++ 我们首先需要保证MySQL数据库是能被连接到的，因此需要:
+  + 关闭防火墙，或者防火墙放行端口，以及允许外部访问
+  + 如果是云服务器，还需要设置安全组，也要放行端口
+  + 数据库需要创建出能够建立连接的对应用户，也就是**host为连接方ip(是连接方ip，不是本服务器ip)**的用户，且拥有能够满足业务的权限
++ 实际上就这么点，但是我们需要保证我们的Java程序能够访问到，因此这里摆提供一些SpringBoot的配置:
+  + 数据库连接的url格式为:`jdbc:{mysql\|oracle}://{ip地址\|主机名}:端口号/数据库名[?key1=value1&key2=value2&....(可选信息)]`
+
+~~~properties
+    # 配置数据库
+    spring.datasource.username=root
+    spring.datasource.url=jdbc:mysql://8.130.44.112:3306/chat
+    spring.datasource.password=123456
+    spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+    spring.datasource.type=com.alibaba.druid.pool.DruidDataSource
+~~~
+
+---
+
+
+## 五、新特性
+
+### （一）Problemdetails
 
 + Spring官方根据[RFC7807](https://www.rfc-editor.org/rfc/rfc7807)的规范，添加了对媒体类型`application/problem+json`返回的支持:
 + 为此，SpringBoot特地在WebMvcAutoConfiguration中加入了ProblemDetailsExceptionHandler对象
@@ -739,7 +1512,7 @@
 
 ---
 
-##### Ⅱ函数式Web
+### （二）函数式Web
 
 + Spring官方认为控制层与路由映射耦合在一起不是很好，企图降低耦合
 + 于是Spring在5.2以后推出了新的请求处理流程:
@@ -749,1041 +1522,7 @@
 
 ---
 
-### （四）生命周期、事件与监听器
 
-#### ①自定义监听器
-
-+ 在应用运行的各个生命周期下，我们可以自定义监听器来对事件的生命周期进行监听，并针对其事件做出不同的响应
-  + 我们需要自定义一个类**实现SpringApplicationRunListener接口**
-  + 在META-INF/spring.factories文件内配置`org.springframework.boot.SpringApplicationRunListener=自定义Listener全类名`
-  + 除了我们自定义的监听器，SpringBoot还配置了默认的Listener，因为在org.springframework.boot包下的META-INF目录中的spring.factories文件内就配置了对应的监听器:`sorg.springframework.boot.SpringApplicationRunListener=org.springframework.boot.context.event.EventPublishingRunListener`
-+ [监听器示例](../源码/SpringBoot/EventAndListener/src/main/java/com/springboot/example/eventandlistener/listener/MyListener.java)
-
----
-
-#### ②底层监听器的调用
-
-+ 底层监听器的调用都在SpringApplication类中的run方法内有所体现:
-
-~~~java
-
-    // 这里是我们调的run方法
-    public static ConfigurableApplicationContext run(Class<?> primarySource, String... args) {
-        // 调用下面的run方法
-        return run(new Class[]{primarySource}, args);
-    }
-
-    
-    public static ConfigurableApplicationContext run(Class<?>[] primarySources, String[] args) {
-        // 该run方法又调用下面的run方法
-        return (new SpringApplication(primarySources)).run(args);
-    }
-
-    public ConfigurableApplicationContext run(String... args) {
-        Startup startup = SpringApplication.Startup.create();
-        if (this.registerShutdownHook) {
-            shutdownHook.enableShutdownHookAddition();
-        }
-
-        // 创建一个引导项目启动的对象
-        DefaultBootstrapContext bootstrapContext = this.createBootstrapContext();
-        ConfigurableApplicationContext context = null;
-        this.configureHeadlessProperty();
-        // 得到监听器对象组成的集合
-        SpringApplicationRunListeners listeners = this.getRunListeners(args);
-        ...
-    }
-~~~
-
-+ 从上面的片段可以看出，run方法几乎一开始执行，就要获得监听器对象
-+ 接下来分析监听器对象怎么获得的
-
-~~~java
-
-    private SpringApplicationRunListeners getRunListeners(String[] args) {
-        // 这里是参数解析器的相关操作
-        SpringFactoriesLoader.ArgumentResolver argumentResolver = ArgumentResolver.of(SpringApplication.class, this);
-        argumentResolver = argumentResolver.and(String[].class, args);
-        // 这里调用了getSpringFactoriesInstances方法来从各个spring.factories的配置中得到listener对象集合
-        List<SpringApplicationRunListener> listeners = this.getSpringFactoriesInstances(SpringApplicationRunListener.class, argumentResolver);
-        SpringApplicationHook hook = (SpringApplicationHook)applicationHook.get();
-        SpringApplicationRunListener hookListener = hook != null ? hook.getRunListener(this) : null;
-        if (hookListener != null) {
-            // 这里把listeners转成ArrayList集合
-            listeners = new ArrayList((Collection)listeners);
-            ((List)listeners).add(hookListener);
-        }
-        // 封装一下，返回
-        return new SpringApplicationRunListeners(logger, (List)listeners, this.applicationStartup);
-    }
-
-    // 调用的getSpringFactoriesInstances方法又调用了forDefaultResourceLocation方法
-    private <T> List<T> getSpringFactoriesInstances(Class<T> type, SpringFactoriesLoader.ArgumentResolver argumentResolver) {
-        return SpringFactoriesLoader.forDefaultResourceLocation(this.getClassLoader()).load(type, argumentResolver);
-    }
-
-~~~
-
-+ 现在我们查看一下forDefaultResourceLocation是什么玩意
-+ 这里就可以知道为什么文件需要是META-INF/spring.factories这样的路径
-
-~~~java
-    // 可以看到它从META-INF/spring.factories中用类加载器去加载东西
-    public static SpringFactoriesLoader forDefaultResourceLocation(@Nullable ClassLoader classLoader) {
-        return forResourceLocation("META-INF/spring.factories", classLoader);
-    }
-~~~
-
-+ 接下来继续回到run方法
-
-~~~java
-
-        ...
-        // 这里得到listeners之后直接就调用了各Listeners的starting方法
-        // 因此starting方法几乎在项目开始执行之后就被调用
-        // 此时IOC容器未创建，环境变量也未准备
-        listeners.starting(bootstrapContext, this.mainApplicationClass);
-
-        try {
-            ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
-            // 这里配置相关的环境变量
-            // 如果点开该方法，就会发现listeners的environmentPrepared方法被调用了
-            // environmentPrepared方法在环境准备好后，但IOC容器创建前被调用
-            ConfigurableEnvironment environment = this.prepareEnvironment(listeners, bootstrapContext, applicationArguments);
-            Banner printedBanner = this.printBanner(environment);
-            // 这里创建IOC容器对象
-            context = this.createApplicationContext();
-            context.setApplicationStartup(this.applicationStartup);
-            // 在该方法内部，listeners的contextPrepared方法和contextLoaded相继被调用
-            // contextPrepared方法在IOC容器创建与准备完成之后，加载之前执行
-            // contextLoaded方法在IOC容器加载完毕，刷新之前执行
-            this.prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
-            this.refreshContext(context);
-            this.afterRefresh(context, applicationArguments);
-            
-            startup.started();
-            if (this.logStartupInfo) {
-                (new StartupInfoLogger(this.mainApplicationClass)).logStarted(this.getApplicationLog(), startup);
-            }
-            // 在IOC容器refresh之后，调用started方法
-            listeners.started(context, startup.timeTakenToStarted());
-            this.callRunners(context, applicationArguments);
-        } catch (Throwable var10) {
-            // 如果出现问题，在该方法内调用了listeners的failed方法
-            throw this.handleRunFailure(context, var10, listeners);
-        }
-
-        try {
-            if (context.isRunning()) {
-                // 在项目启动完成以后，调用ready方法
-                listeners.ready(context, startup.ready());
-            }
-
-            return context;
-        } catch (Throwable var9) {
-            throw this.handleRunFailure(context, var9, (SpringApplicationRunListeners)null);
-        }
-
-~~~
-
-![生命周期流程](../文件/图片/SpringBoot图片/生命周期流程.png)
-
----
-
-#### ③事件触发时机
-
-+ SpringBoot提供了九大事件，其中包括两个探针:
-  + ApplicationStartingEvent:应用启动但未做任何事情, 除过注册listeners and initializers
-  + ApplicationEnvironmentPreparedEvent: 环境变量已经准备好了，但IOC容器还未创建
-  + ApplicationContextInitializedEvent:IOC容器创建完毕，但还没有任何bean加载
-  + ApplicationPreparedEvent:容器刷新之前，bean定义信息加载
-  + ApplicationStartedEvent:容器刷新完成， runner未调用
-  + AvailabilityChangeEvent:**存活探针**，它表示项目启动到现在，项目依然在运行，但**它不意味着项目能对外界的请求做出响应**
-  + ApplicationReadyEvent:任何runner被调用，该事件就会触发
-  + AvailabilityChangeEvent:ReadinessState.ACCEPTING_TRAFFIC**就绪探针**，可以接请求，它表示runners都执行成功了，项目现在可以接受请求并响应了
-  + ApplicationFailedEvent:启动出错事件
-+ 另外，SpringBoot还提供了多个事件回调监听器:
-  + BootstrapRegistryInitializer:感知引导初始化阶段的事件
-  + ApplicationContextInitializer:感知ioc容器初始化的相关事件
-  + ApplicationListener:**感知全阶段事件**。 一旦到了哪个阶段可以做别的事
-  + SpringApplicationRunListener:**感知全阶段生命周期** + 各种阶段都能自定义操作；功能更完善。
-  + ApplicationRunner:感知特定阶段：感知应用就绪Ready。卡死应用，就不会就绪
-  + CommandLineRunner:感知特定阶段：感知应用就绪Ready。卡死应用，就不会就绪
-+ 如果我们想使用这些回调监听器，我们需要
-  + 自定义一个类，实现我们想实现的接口，即上面列举的各个的事件回调监听器
-  + 接下来在`classpath:META-INF/spring.factories`文件内编写`实现的监听器接口全类名=自定义监听器全类名`
-+ 总之，如果我们想做一些事情
-  + 如果项目启动前做事：使用 BootstrapRegistryInitializer和 ApplicationContextInitializer
-  + 如果想要在项目启动完成后做事： 使用ApplicationRunner和 CommandLineRunner
-  + 如果要干涉生命周期做事：SpringApplicationRunListener
-  + 如果想要用事件机制：ApplicationListener
-![事件触发流程1](../文件/图片/SpringBoot图片/事件触发流程1.png)
-![事件触发流程2](../文件/图片/SpringBoot图片/事件触发流程2.png)
-
----
-
-#### ④生命周期启动加载机制
-
-+ 如下图所示:
-
-![生命周期启动加载机制](../文件/图片/SpringBoot图片/生命周期启动加载机制.png)
-
-+ 项目启动先进行生命周期的加载，具体就是上面的监听器能够监听到的生命周期，其中掺杂者一些事件
-+ 在加载到一半时，即在contextLoaded完成，但started之前会进行IOC容器的刷新操作
-+ 刷新操作会将所有的bean加载进IOC容器，就是Spring容器刷新的经典12大步，这12大步可以划分成两部分
-  + 创建工厂
-  + 使用工厂创建bean
-+ 其中，自动配置相关的加载会在创建工厂的最后一步，即invokeBeanFactoryPostProcessors（执行bean工厂后置处理器）的方法调用时执行
-
----
-
-### （五）自动配置
-
-#### ①自动配置流程
-
-+ SpringBoot提供了自动配置的服务，它的流程如下:
-
-![自动配置流程](../文件/图片/SpringBoot图片/自动配置流程.png)
-
-+ 我们实现自动配置的流程如下:
-  + 首先我们想实现什么功能，就需要导入什么场景
-  + SpringBoot自动进行依赖导入
-  + 寻找类路径下 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports文件
-  + 项目启动时，就加载自动配置类，但**并不是所有自动配置都会生效，因为每个自动配置类生效都有其先决条件**
-+ SPI机制
-  + Java中的SPI（Service Provider Interface）是一种软件设计模式，用于在应用程序中动态地发现和加载组件。SPI的思想是，定义一个接口或抽象类，然后通过在classpath中定义实现该接口的类来实现对组件的动态发现和加载。
-  + 在Java中，SPI的实现方式是通过在META-INF/services目录下创建一个以服务接口全限定名为名字的文件，文件中包含实现该服务接口的类的全限定名。当应用程序启动时，Java的SPI机制会自动扫描classpath中的这些文件，并根据文件中指定的类名来加载实现类。
-  + SpringBoot也提供了SPI的实现，就是寻找META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports文件来达到自动配置
-+ SpringBoot可以通过@EnableXxx注解手动开启某些功能的开关
-  + 这些注解生效的原理都是利用@Import把此功能要用的组件导入进去
-
----
-
-#### ②底层原理
-
-+ 项目的主程序类上的@SpringBootApplication注解可以进行项目的自动配置
-  + 在该注解内部，它被三个注解作用
-    + @SpringBootConfiguration:这就是个配置类，用来声明作用类是个配置类，其它没什么用
-    + @EnableAutoConfiguration
-    + @ComponentScan(...)
-
-~~~java
-...
-@SpringBootConfiguration
-@EnableAutoConfiguration
-@ComponentScan(
-    excludeFilters = {@Filter(
-    type = FilterType.CUSTOM,
-    classes = {TypeExcludeFilter.class}
-), @Filter(
-    type = FilterType.CUSTOM,
-    classes = {AutoConfigurationExcludeFilter.class}
-)}
-)
-public @interface SpringBootApplication {
-    ...
-}
-~~~
-
-##### Ⅰ@EnableAutoConfiguration
-
-+ @EnableAutoConfiguration内又有两个注解作用:
-  + @AutoConfigurationPackage
-  + @Import({AutoConfigurationImportSelector.class})
-
-~~~java
-...
-@AutoConfigurationPackage
-@Import({AutoConfigurationImportSelector.class})
-public @interface EnableAutoConfiguration {
-    ....
-}
-~~~
-
-+ 我们先看@AutoConfigurationPackage注解，发现它使用@Import注解导入了一个类`@Import({AutoConfigurationPackages.Registrar.class})`
-+ 在该类下有一个方法:
-
-~~~java
-    @Override
-	public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
-		register(registry, new PackageImports(metadata).getPackageNames().toArray(new String[0]));
-	}
-~~~
-
-+ 在该方法中调用了PackageImports对象的getPackageNames方法:
-
-~~~java
-    // 在该类的构造器中，我们可以发现这个packageNames是个什么玩意
-    PackageImports(AnnotationMetadata metadata) {
-        // 在该语句的最里面，可以看到调用了AutoConfigurationPackage.class.getName()
-        // 这个在该语句的最里面，可以看到调用了AutoConfigurationPackage注解就是聚合注解@EnableAutoConfiguration注解的两个注解之一
-        // 也就是说，它通过反射得到的class得到的名称是项目启动类所在包的路径
-		AnnotationAttributes attributes = AnnotationAttributes
-			.fromMap(metadata.getAnnotationAttributes(AutoConfigurationPackage.class.getName(), false));
-            // 给packageNames属性赋值
-		List<String> packageNames = new ArrayList<>(Arrays.asList(attributes.getStringArray("basePackages")));
-		for (Class<?> basePackageClass : attributes.getClassArray("basePackageClasses")) {
-			packageNames.add(basePackageClass.getPackage().getName());
-		}
-		if (packageNames.isEmpty()) {
-			packageNames.add(ClassUtils.getPackageName(metadata.getClassName()));
-		}
-		this.packageNames = Collections.unmodifiableList(packageNames);
-	}
-    // 得到packageNames属性
-	List<String> getPackageNames() {
-		return this.packageNames;
-	}
-~~~
-
-+ 因此，@AutoConfigurationPackage注解用来将我们自定义的包进行自动配置
-+ 现在来讨论@Import({AutoConfigurationImportSelector.class})注解导入的AutoConfigurationImportSelector类:
-  + 在该类中可以找到getAutoConfigurationEntry方法
-
-~~~java
-    protected AutoConfigurationEntry getAutoConfigurationEntry(AnnotationMetadata annotationMetadata) {
-		if (!isEnabled(annotationMetadata)) {
-			return EMPTY_ENTRY;
-		}
-		AnnotationAttributes attributes = getAttributes(annotationMetadata);
-        // 在getCandidateConfigurations中来获得配置类对象
-		List<String> configurations = getCandidateConfigurations(annotationMetadata, attributes);
-		configurations = removeDuplicates(configurations);
-		Set<String> exclusions = getExclusions(annotationMetadata, attributes);
-		checkExcludedClasses(configurations, exclusions);
-		configurations.removeAll(exclusions);
-		configurations = getConfigurationClassFilter().filter(configurations);
-		fireAutoConfigurationImportEvents(configurations, exclusions);
-		return new AutoConfigurationEntry(configurations, exclusions);
-	}
-~~~
-
-+ 接下来来看getCandidateConfigurations方法，可以看到它又调用了ImportCandidates.load方法
-
-~~~java
-    protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) {
-		List<String> configurations = ImportCandidates.load(AutoConfiguration.class, getBeanClassLoader())
-			.getCandidates();
-		Assert.notEmpty(configurations,
-				"No auto configuration classes found in "
-						+ "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports. If you "
-						+ "are using a custom packaging, make sure that file is correct.");
-		return configurations;
-	}
-~~~
-
-+ 去看load方法:
-
-~~~java
-    public static ImportCandidates load(Class<?> annotation, ClassLoader classLoader) {
-		Assert.notNull(annotation, "'annotation' must not be null");
-		ClassLoader classLoaderToUse = decideClassloader(classLoader);
-        // LOCATION是"META-INF/spring/%s.imports"，调用annotation.getName()，与扫描我们自定义的那个包下的所有文件一样的方式，得到包名
-        // 由于AutoConfiguration在org.springframework.boot.autoconfigure包下，得到的是这个包
-		String location = String.format(LOCATION, annotation.getName());
-		Enumeration<URL> urls = findUrlsInClasspath(classLoaderToUse, location);
-		List<String> importCandidates = new ArrayList<>();
-		while (urls.hasMoreElements()) {
-			URL url = urls.nextElement();
-            // 在这里又调用readCandidateConfigurations方法，将自动配置类放入一个List集合中
-			importCandidates.addAll(readCandidateConfigurations(url));
-		}
-		return new ImportCandidates(importCandidates);
-	}
-~~~
-
-+ 接下来看readCandidateConfigurations是什么玩意:
-
-~~~java
-    private static List<String> readCandidateConfigurations(URL url) {
-		try (
-            // 得到对应文件的缓冲字符输入流对象
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new UrlResource(url).getInputStream(), StandardCharsets.UTF_8))
-            ) {
-			List<String> candidates = new ArrayList<>();
-			String line;
-			while ((line = reader.readLine()) != null) {
-                // 经过一些处理，把这些自动配置类依次加入一个List中
-				line = stripComment(line);
-				line = line.trim();
-				if (line.isEmpty()) {
-					continue;
-				}
-				candidates.add(line);
-			}
-            // 返回List
-			return candidates;
-		}
-		catch (IOException ex) {
-			throw new IllegalArgumentException("Unable to load configurations from location [" + url + "]", ex);
-		}
-	}
-~~~
-
-+ 至此，我们看到了@Application的@EnableAutoConfiguration可以自动加载项目所在包以及各个自动配置类的组件，从而实现自动装配功能
-
-##### Ⅱ@ComponentScan(...)
-
-+ 这玩意在学Spring的时候就见过了，他用来进行组件的扫描
-  + @SpringBootApplication上的这个注解并不是干这个的，因为@EnableAutoConfiguration已经能够扫描指定包下的东西了
-  + 它的全部代码是:`@ComponentScan(excludeFilters = { @Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),@Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) })`
-  + 我们可以明显的看到@Filter这个注解，它是用来进行过滤的
-  + 该注解的作用主要是为了防止配置类重复的问题，我们的项目启动类已经是一个配置类了，如果我们还设置了别的自动配置类，SpringBoot会自动过滤掉
-
----
-
-### （六）自定义starter
-
-+ 如果我们想自定义starter，需要首先写好业务类:
-  + [controller层](../源码/SpringBoot/SpringBoot-starter-robot/src/main/java/com/springboot/example/springbootstarterrobot/controller/RobotController.java)
-  + [service层](../源码/SpringBoot/SpringBoot-starter-robot/src/main/java/com/springboot/example/springbootstarterrobot/service/RobotService.java)
-+ 之后要可以写Properties配置类，使用@ConfigurationProperties注解可以指定配置文件的前缀:
-  + [Properties配置类](../源码/SpringBoot/SpringBoot-starter-robot/src/main/java/com/springboot/example/springbootstarterrobot/properties/RobotProperties.java)
-+ 之后编写AutoConfiguration类，**可以使用@Import注解或者@Bean注解向IOC容器提供bean**
-  + 我们在此之前，即在controller、service和properties类中写的@Component、@Service和@Controller注解实际上是不会生效的，只是为了防止IDEA报错才写。因为导入时这些类不会被直接导入，而是通过AutoConfiguration类导入，因此**只有在AutoConfiguration类中提供了它们的bean,他们才会加入到IOC容器中**
-  + [AutoConfiguration类](../源码/SpringBoot/SpringBoot-starter-robot/src/main/java/com/springboot/example/springbootstarterrobot/autoconfiguration/RobotAutoConfiguration.java)
-+ 接下来我们要使用`mvn install`命令将我们的自定义starter放入本地仓库，因为不放的话Maven就会去别的仓库找，别的仓库那肯定是没有的
-  + 放入本地仓库时，我们需要提供至少一个主类，可以随便写一个然后提供一个main方法，但是main方法里面什么都不写
-  + 这个主类在未来其他人导入本依赖时它不会起作用，因为我们只能使用通过AutoConfiguration类提供的bean，我们只需要让AutoConfiguration类不导入主类，我们就使不了这个主类了
-+ 之后就是在pom.xml文件内使用dependency标签导入依赖，注意要**加上版本号（version），要不然Maven依旧认为本地仓库没有这个依赖而去别的仓库寻找**
-+ 之后就是使用了，但是仅导入依赖是使用不了的，因为**SpringBoot默认只能扫描项目启动类所在目录内的包，而我们导入的依赖不在这个包下**。我们有三种方式解决该问题
-  + 可以在项目启动类上直接使用@Import导入依赖的自动配置类，然后由自动配置类导入bean
-  + 可以自定义Enable注解，[样例](../源码/SpringBoot/SpringBoot-use-robot/src/main/java/com/springboot/example/springbootuserobot/customannotation/EnableRobot.java)
-  + 依靠SpringBoot的SPI机制，在META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports文件内提供自动配置类的全类名，[样例](../源码/SpringBoot/SpringBoot-use-robot/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports)
-+ 最后，我们自定义的Properties内的属性与properties或yaml文件的映射是没有提示的，如果想让IDEA提供提示，需要导入一个依赖:
-  + 这个依赖就在SpringBoot创建模板时，选择依赖一栏中Developer Tools下的Lombok下面，勾一下就行
-
-~~~xml
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-configuration-processor</artifactId>
-        <optional>true</optional>
-    </dependency>
-~~~
-
----
-
-## 七、整合
-
-### （一）整合Redis
-
-#### ①Jedis
-
-+ Jedis是Redis官方提供的类似JDBC的与Redis数据库进行交互的库
-+ 首先记得导包:
-
-~~~xml
-  <dependency>
-      <groupId>redis.clients</groupId>
-      <artifactId>jedis</artifactId>
-      <version>5.1.0</version>
-  </dependency>
-~~~
-
-+ [Jedis样例](../源码/Redis/Redis/src/main/java/com/springboot/example/redis/redisdemo/JedisSample.java)
-
----
-
-#### ②lettuce
-
-+ Lettuce是一个Redis的Java驱动包，Lettuce翻译为生菜，没错，就是吃的那种生菜，所以它的Logo就是生菜
-+ Jedis的相关操作在使用Redis客户端的时候，每个线程都要拿自己创建的Redis实例去连接Redis客户端，当存在很多线程的时候，不仅开销大需要反复创建关闭一个Redis连接，而且还线程不安全，一个线程通过Jedis实例更改Redis服务器中的数据之后会影响另一个线程
-+ Lettuce底层使用的是Netty,当有多个线程需要连接Redis服务器时，它可以保证只创建一个Redis连接，使所有线程都共享该连接。这样既减少了资源开销，也是线程安全的(不会出现一个线程通过Jedis实例更改Redis服务器中的数据之后会影响另一个线程的情况)
-+ 导包时，如果使用的是SpringBoot,那么直接把`Spring Data Redis`勾上就行，它内部已经导入了Lettuce依赖
-+ 也可以手动导入:
-
-~~~xml
-  <!--lettuce-->
-   <dependency>
-       <groupId>io.lettuce</groupId>
-       <artifactId>lettuce-core</artifactId>
-       <version>6.2.1.RELEASE</version>
-   </dependency>
-~~~
-
-#### ③RedisTemplate
-
-+ RedisTemplate是Spring官方整合的与Redis进行交互的封装类
-+ 首先配置config类，我们**需要在配置类中手动提供RedisTemplate对象并设置其数据的序列化器**，因为自动注入的对象，其序列化方式会导致Redis中文乱码:
-  + 自动注入的对象无法序列化中文的原因是它默认使用JDK的序列化方式，没办法序列化中文
-  + 另外，**也可以通过使用RedisTemplate的子类StringRedisTemplate类来避免中文的无法序列化**，因为其子类采用的序列化方式与父类不同。这一点在其无参构造器源码中就有显著体现
-
-~~~java
-    public class RedisConfig {
-
-        @Bean
-        public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory lettuceConnectionFactory) {
-            // 手动创建RedisTemplate对象
-            RedisTemplate<String,Object> redisTemplate = new RedisTemplate<>();
-
-            redisTemplate.setConnectionFactory(lettuceConnectionFactory);
-            //设置key序列化方式string，防止key乱码
-            redisTemplate.setKeySerializer(new StringRedisSerializer());
-            //设置value的序列化方式json，使用GenericJackson2JsonRedisSerializer替换默认序列化，防止value乱码
-            redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-
-            redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-            redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
-
-            redisTemplate.afterPropertiesSet();
-
-            return redisTemplate;
-        }
-    }
-~~~
-
-+ 接下来是RedisTemplate的使用方法:
-  + 先调用`opsXxx`方法来确定要操作的数据类型，再进行相关的操作
-
-~~~java
-    @Service
-    @Slf4j
-    public class RedisService {
-        @Resource
-        // 这个玩意也可以直接注入StringRedisTemplate类，因为它是RedisTemplate的子类，功能更丰富，也支持中文序列化。缺点是操作对象只能是字符串类型
-        RedisTemplate<String,Object> redisTemplate;  
-        public String setData(String key,String value){
-            redisTemplate.opsForValue().set(key,value);
-            log.info(key);
-            return getData(key);
-        }
-
-        public String getData(String key){
-            return (String)redisTemplate.opsForValue().get(key);
-        }
-    }
-~~~
-
----
-
-### （二）文件上传
-
-#### ①文件保存本地
-
-+ 后端在接收文件时，如果是单文件，可以这样接收:
-
-~~~java
-    @PostMapping(value = "xxx")
-    public String fileUpload(@RequestParam(name = "xxx")MultipartFile file) throws Exception{
-        // fileUploadService是业务处理的service层类
-        fileUploadService.fileUpload(file);
-        return "OK";
-    }
-~~~
-
-+ 如果是多文件，可以这样接收:
-
-~~~java
-    @PostMapping(value = "xxx")
-    // 使用实体类接收，实体类的属性为 public List<MultipartFile> files 。该属性需要与前端传来的多文件数组保持一致
-    // 如果使用List<MultipartFile>直接来接收，会报错
-    public String fileUpload( FileEntity files) throws Exception{
-        List<MultipartFile> multipartFiles = files.getFiles();
-        for(MultipartFile file:multipartFiles){
-            System.out.println(file);
-            fileUploadService.fileUpload(file);
-        }
-        return "OK";
-    }
-~~~
-
-+ 接收到文件以后，为了防止多个用户同时上传同名的文件导致保存的文件出现冲突，可以使用UUID给文件进行重命名再保存:
-
-~~~java
-    public boolean fileUpload(MultipartFile file) throws Exception{
-        String fileName = file.getOriginalFilename();  // 
-        fileName=fileName.substring(fileName.lastIndexOf('.'));
-        file.transferTo(new File("E:"+ File.separator+"testImg"+File.separator+ UUID.randomUUID().toString()+fileName));
-        return true;
-    }
-~~~
-
-+ 相关API
-
-|归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|MultipartFile|getOriginalFilename()|无参|得到文件名称|>|字符串|无异常|无|[样例](../源码/SpringBoot/FileUpload/src/main/java/com/springboot/example/fileupload/service/FileUploadService.java)|
-|^|getInputStream()|无参|获得文件的输入流对象|>|输入流对象|无异常|无|^|
-|^|getSize()|无参|得到文件大小|>|long类型数值|无异常|无|^|
-
----
-
-#### ②文件上传OSS
-
-+ 这里以上传阿里云为例，详情参见[官方文档](https://help.aliyun.com/zh/oss/getting-started/sdk-quick-start?spm=a2c4g.11186623.0.0.47422b4cPAOzJK)
-+ 使用阿里云的OSS需要先创建一个bucket，另外再申请一个acesskey
-  + bucket直接在控制台创建就行
-  + accesskey需要在右上角点击AccessKey管理，然后创建一个。**创建以后需要记住我们的AccessKey和KeySecret，否则将无法再查询到**
-   
-  ![AccessKey管理](../文件/图片/SpringBoot图片/文件上传图例1.png)
-
-+ 接下来写一下上传逻辑
-  + 首先不应该把一些配置信息，如endPoint、acessKey等信息写在代码里面，应该写在配置文件中:[配置文件](../源码/SpringBoot/FileUpload/src/main/resources/application.properties)
-  + 之后创建一个Properties类，通过SpringBoot的自动装配，把这些配置加载进来:[类样例](../源码/SpringBoot/FileUpload/src/main/java/com/springboot/example/fileupload/components/FileUploadConfig.java)
-  + 把该配置类导入到Service类中，通过getter方法得到对象，然后进行文件上传的业务:[service类](../源码/SpringBoot/FileUpload/src/main/java/com/springboot/example/fileupload/service/impl/FileUploadServiceImpl.java)
-
----
-
-### （三）日志配置
-
-#### ①日志简述
-
-+ 在开发中，我们应该使用日志来记录信息
-
-|日志门面|日志实现|
-|:---:|:---:|
-|JCL(Jakarta Commons Logging)|Log4J<br>JUL(java.util.logging)<br>Log4j2<br>Logback|
-|SLF4J(Simple Logging Facade for Java)|^|
-|jboss-logging|^|
-
-+ SpringBoot的默认日志配置是`SLF4J+Logback`，但我们可以自定义想实现的日志，不过SpringBoot的默认日志配置已经够用了
-+ 在Spring5版本后，commons-logging被spring直接自己封装了
-
----
-
-#### ②实现原理
-
-+ 核心场景`spring-boot-starter`内引入了`spring-boot-starter-logging`
-+ 一般情况下，对应的依赖都会有一个自动配置类，叫XxxAutoConfiguration
-+ 但是日志比较特殊，它需要在程序启动时就执行，因此不能在程序启动时再加载器配置项
-+ 因此**日志利用的是监听器机制配置**好的
-+ 不过，我们依然能够通过配置文件来修改日志的配置
-
----
-
-#### ③输出格式
-
-+ SpringBoot的默认输出格式为（从左到右）:
-  + 时间和日期:精确到毫秒
-  + 日志级别:根据情况，会打印**ERROR**、**WARN**、**INFO**、**DEBUG**或**TRACE**
-  + 进程ID
-  + ---:消息分隔符
-  + 线程名:当前执行操作的方法所在的线程，使用[]包含
-  + Logger名:通常是产生日志的类名
-  + 消息:打印的日志信息
-+ **Logback并没有FATAL级别的日志，取而代之的是ERROR**
-+ 其默认的输出格式参数参照spring-boot包下的additional-spring-configuration-metadata.json文件
-+ 默认输出值为:`%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}`
-+ 可以修改为`%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} ===> %msg%n`
-
-+ [配置类样例](../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
-
----
-
-#### ④日志级别与分组
-
-+ 日志级别一般分为如下类别（由高到低）:
-  + ALL:打印所有日志
-  + TRACE:追踪框架的详细流程日志并打印
-  + DEBUG:开发调试细节日志
-  + INFO:关键的、感兴趣的日志
-  + WARN:警告但不是错误的日志，如版本过时的信息
-  + ERROR:业务错误日志，如出现各种异常
-  + FATAL:致命错误日志，如JVM虚拟机系统崩溃
-  + OFF:关闭所有日志记录
-+ 在以上的日志级别中，**我们可以主动输出日志信息的有TRACE、DEBUG、INFO、WARN、ERROR这五个**
-+ **在指定某一日志级别后，系统只会打印该级别或该级别以下的日志信息**，如指定了INFO作为日志级别，那么系统仅会打印INFO、WARN、ERROR、FATAL等日志信息，而级别高的DEBUG和TRACE不会打印
-+ **SpringBoot默认使用Logback作为日志实现依赖，且默认指定的日志级别为INFO**
-+ SpringBoot支持我们自定义全局的日志级别，或自定义某一类的日志级别
-  + 我们可以通过[下表]查阅如何指定，或者查看[样例]()
-  + 但是，当我们想手动指定的类的日志级别变多时，配置会非常繁琐，因此SpringBoot又提供了分组功能来简化配置
-    + 我们可以将多个类组成一个组，然后将这一个组看成一个整体，进行日志级别的指定
-    + SpringBoot已经为我们提供了两个默认的组:
-      + web组:包含org.springframework.core.codec、org.springframework.http、org.springframework.web、org.springframework.boot.actuate.endpoint.web、org.springframework.boot.web.servlet.ServletContextInitializerBeans类
-      + sql组:包含org.springframework.jdbc.core、org.hibernate.SQL、org.jooq.tools.LoggerListener类
-
-+ [配置类样例](../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
-
----
-
-#### ⑤文件输出、归档与滚动切割
-
-+ **文件输出**
-  + 通过`logging.file.name`可以指定输出的文件的名字，如果文件不存在，会在当前项目所在目录内创建一个，然后输出日志
-    + 可以为其指定路径，使得日志文件保存在指定路径下，且名称也可以自定义，因此**推荐使用该方式**
-  + 通过`logging.file.path`可以指定输出的文件的路径，使用该方式输出文件，spring会自动创建一个Spring.log文件。当`logging.file.name`配置存在时，后者优先级更高
-+ **归档**
-  + 通过某种区分方式来将日志划分到指定目录叫做归档（一般按时间，如一天对应一个目录）
-  + 该方式主要是为了防止一直将日志输出到一个文件导致文件过大的问题
-  + 归档是只有当一整天结束时，SpringBoot才会进行本日的日志归档，因此我们如果想看到效果，需要向后调一天
-+ **滚动切割**
-  + 即使使用了归档，可能也会出现日志文件过大的情况，因此我们可以按某些标准（如限制单文件最大大小）来将文件切片
-  + 该方式进一步解决了文件过大的问题
-  + 这玩意貌似只能识别整数，比如设置的是1MB大小的限制，它会等到日志文件到2MB以上才会进行切割
-
-+ [配置类样例](../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
-
----
-
-#### ⑥自定义配置
-
-+ 如果我们认为SpringBoot的配置文件用着不爽，我们也可以使用传统的xml文件的方式来自定义日志
-  + xml文件的命名需要严格遵守SpringBoot的对应规范:
-    + 建议名称都以`xxx-spring.xml`的规范命名，因为这样SpringBoot可以完全控制该配置文件
-
-|日志系统|文件命名规范|
-|:---:|:---:|
-|Logback|logback-spring.xml(**推荐**), logback-spring.groovy, logback.xml, or logback.groovy|
-|Log4j2|log4j2-spring.xml（**推荐**） or log4j2.xml|
-|JDK (Java Util Logging)|logging.properties|
-
-+ 另外，当我们想切换日志组合时，我们需要先排除掉SpringBoot所指定的默认日志组合
-  + 我们可以利用Maven的就近原则，在我们的项目内直接引入spring-boot-starter依赖，然后在下面排除掉spring-boot-starter-logging依赖
-
-~~~xml
-
-  <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
-      <exclusions>
-          <exclusion>
-              <groupId>org.springframework.boot</groupId>
-              <artifactId>spring-boot-starter-logging</artifactId>
-          </exclusion>
-      </exclusions>
-  </dependency>
-
-~~~
-
-+ 接下来导入我们对应的场景，比如我们想导入log4j2的场景，导入前需要确认[官方](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.logging)是否支持
-
-~~~xml
-  <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-log4j2</artifactId>
-  </dependency>
-~~~
-
-+ 然后就可以使用了
-+ log4j2的性能相较于Logback有很大提升，推荐使用log4j2
-+ 如果想使用log4j2,**Spring官方推荐其配置文件写log4j2-spring.xml**
-+ **log4j2支持yaml和json格式的配置文件**:
-
-|文件格式|实现支持需要导入的依赖|规范文件名|
-|YAML|**com.fasterxml.jackson.core:jackson-databind**和**com.fasterxml.jackson.dataformat:jackson-dataformat-yaml**|log4j2.yaml或log4j2.yml|
-|JSON|com.fasterxml.jackson.core:jackson-databind|log4j2.json或log4j2.jsn|
-
-+ [项目pom.xml文件](../源码/SpringBoot/SpringBootLogging/pom.xml)
-+ [配置类样例](../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
-+ [log4j2-spring.xml样例](../源码/SpringBoot/SpringBootLogging/src/main/resources/log4j2-spring.xml)
-
----
-
-#### ⑦配置总览
-
-|配置|作用|备注|
-|:---:|:---:|:---:|
-|logging.level.{root\|sql\|web\|类的全类名\|自定义组名}|指定全局/sql组/web组/类/自定义组的日志级别|无|
-|logging.group.自定义组名|将多个类划分为一个组|无|
-|logging.file.name|指定日志输出的文件|也可以写路径，如果是相对路径，那么是相对于项目所在目录的|
-|loggging.file.path|指定日志输出的路径|优先级没有logging.file.name高|
-|logging.logback.rollingpolicy.file-name-pattern|指定日志归档的命名格式，默认值是`${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz`|从配置项可以看出，只有使用Logback才能使用该配置|
-|logging.logback.rollingpolicy.clean-history-on-start|应用启动前是否清除以前日志文件（默认为false）|^|
-|logging.logback.rollingpolicy.max-file-size|指定每个日志文件的最大大小|^|
-|logging.logback.rollingpolicy.total-size-cap|指定日志文件总大小超过指定大小后，就删除旧的日志文件（默认0B）|^|
-|logging.logback.rollingpolicy.max-history|日志文件保存的最大天数（默认7，单位天）|^|
-
----
-
-### （四）整合SSM
-
-+ 由于SpringBoot自动装配的便捷性，我们整合SSM会十分的方便
-  + 首先需要导入相关依赖，在SpringBoot的项目创建页选择Web开发依赖、Lombok、MySQL驱动、Mybatis依赖（这四个都可以选）
-  + 说是整合SSM，实际上SpringBoot把Spring跟SpringMVC都整合好了，我们需要做的就是配置Mybatis以及一些数据库相关配置
-
-![SSM整合](../文件/图片/SpringBoot图片/SSM整合1.png)
-
-  + 如果想导入Druid连接池，由于SpringBoot没有提供，我们需要自己导:
-
-~~~xml
-    <properties>
-        <java.version>17</java.version>
-
-        <druid.version>1.2.22</druid.version>
-    </properties>
-
-    <dependency>
-        <groupId>com.alibaba</groupId>
-        <artifactId>druid</artifactId>
-        <version>${druid.version}</version>
-    </dependency>
-
-~~~
-
-  + 接下来就创建controller、mapper等java文件
-  + 在创建mapper时，我们在创建接口之后，可以依靠MybatisX插件快速的生成对应的xml文件（按Alt+Enter）
-  + 选择Generate mapper of xml
-
-![SSM整合](../文件/图片/SpringBoot图片/SSM整合2.png)
-
-  + 在下面的页面选择我们的xml文件生成位置，一般我们都会选择resources目录下的mapper目录
-
-![SSM整合3](../文件/图片/SpringBoot图片/SSM整合3.png)
-
-  + 在我们创建出对应的方法时，也可以通过MybatisX快速在对应的xml文件内生成标签
-
-![SSM整合4](../文件/图片/SpringBoot图片/SSM整合4.png)
-
-  + 接下来创建对应的实体类对象，**不要忘记提供setter方法**，一般加一个@Data注解就行了
-  + 最后配置配置文件，提供JDBC相关的四个必须配置和Mybatis的xml文件映射路径，以及选择性提供连接池、配置Mybatis的驼峰映射、主键回显等
-
-![SSM整合5](../文件/图片/SpringBoot图片/SSM整合5.png)
-
----
-
-### （五）WebSocket
-
-#### ①简要概述
-
-
-
-#### ②整合流程
-
-+ 前置条件:
-  + tomcat7.0.5版本及以上（tomcat在7.0.5版本才开始支持WebSocket）
-
-
----
-
-### （六）远程连接数据库
-
-+ 这里以连接MySQL为例
-+ 我们首先需要确定我们能成功连接上数据库，因此服务器需要一些前提条件:
-  + 关闭防火墙，或放行端口
-  + 数据库需要创建对应的用户，host为连接方的ip，不是MySQL所在服务器的ip
-  + 为对应的用户赋予权限
-+ 接下来开始:
-  + 首先是前端，前端的部分很简单，就是WebSocket的API，详见[MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/WebSocket)
-  
-  ~~~jsx
-
-    let webSocketLink=new WebSocket(`ws://localhost:8080/chat/${userContext.userName}`);
-    webSocketLink.onopen=(params)=>{
-        console.log('客户端连接成功');
-    };
-    webSocketLink.onmessage=({data})=>{
-        console.log(`收到信息:${data}`);
-    };
-    ...
-
-  ~~~
-
-  + 接下来是后端，需要导入Spring WebSocket依赖，这里Spring官方已经提供了，可以直接导
-  + 我们需要先写一个配置类，提供ServerEndPointExporter对象:
-    + 提供该对象后，如果在测试包下测试方法，可能会出现报错，如果出现报错，在测试类上的@SpringBootTest注解上面指定属性:`@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)`
-
-  ~~~java
-
-    @Configuration
-    @EnableWebSocket
-    public class WebSocketConfig {
-        @Bean
-        public ServerEndpointExporter getServerEndpointExporter(){
-            return new ServerEndpointExporter();
-        }
-    }
-
-
-  ~~~
-
-  + 然后是业务层的代码:
-    + WebSocket主要有三个事件:创建连接、发送信息和关闭连接，我们主要就需要实现这三个方法。除此之外，还可以实现出现错误时的处理代码
-      + 我们可以通过继承类来实现
-      + 也可以通过Jarkarta官方提供的注解来实现，前提是导入Spring WebSocket依赖
-
-|注解|作用|备注|
-|:---:|:---:|:---:|
-|@ServerEndpoint|声明对应类为WebSocket服务类，也就是让Spring知道这个类是处理WebSocket请求的。除此以外，还负责指定该类负责处理的路径|1.**路径必须有`/`作为前缀**<br>2.**该注解使得Spring的依赖注入无法实现**，因为WebSocket是只要有一个连接，就会创建一个对应服务类的实例，而这与Spring默认的单实例冲突，因此无法执行依赖注入|
-|@OnOpen|声明对应方法在WebSocket连接时触发|无|
-|@OnMessage|声明对应方法在收到信息时触发|无|
-|@OnClose|声明对应方法在关闭连接时触发|无|
-|@OnError|声明对应方法在出现异常时触发|无|
-
-  + 接下来是对应的方法:
-
-  ~~~java
-    @ServerEndpoint(value = "/chat/{userName}")  // 这个B玩意会导致依赖注入没法注入
-    @Slf4j
-    @Component
-    public class ChatEndPoint {
-        private static final Map<String, Session> onLineUsers = new ConcurrentHashMap<>();
-
-        @OnOpen
-        public void onOpen(Session session, EndpointConfig config, @PathParam("userName") String userName) {
-            // onOpen要做的有两件事，一件是将连接的该用户加入到在线序列中去，另一件事是向所有用户广播该用户已在线
-            try {
-                // 将session对象加入到在线用户的map集合中
-                onLineUsers.put(userName, session);
-                // 得到向所有在线成员广播的系统信息
-                String message = "测试";
-                // 向所有成员进行广播
-                broadcastAllUserMessage(message);
-            } catch (Exception e) {
-                e.printStackTrace();
-                log.error(e.toString());
-            }
-        }
-
-        @OnMessage
-        public void onMessage(String msg) throws Exception{
-            Session session = onLineUsers.get("test");
-            session.getBasicRemote().sendText(msg);
-        }
-
-        @OnClose
-        public void onClose(CloseReason reason,Session session){
-            log.info(reason.toString());
-        }
-
-        @OnError
-        public void onError(Throwable e){
-            log.info(e.toString());
-        }
-
-        private void broadcastAllUserMessage(String msg) throws Exception{
-            // 遍历每个在线用户，向它们的客户端发送消息
-            for (Map.Entry<String, Session> entry : onLineUsers.entrySet()) {
-                Session userSession = entry.getValue();
-                userSession.getBasicRemote().sendText(msg);
-            }
-        }
-    }
-
-  ~~~
-
----
-
-### （七）Mybatis-Plus
-
-+ [官网](https://baomidou.com)
-+ MyBatis-Plus 是一个MyBatis的增强工具，在MyBatis的基础上只做增强不做改变，为简化开发、提高效率而生。
-
-#### ①依赖
-
-+ **引入MyBatis-Plus之后不要再次引入Mybatis相关依赖。以避免因版本差异导致的问题**。如果引了，那么大概率会报错
-+ 从3.5.4开始，在没有使用mybatis-plus-boot-starter或mybatis-plus-spring-boot3-starter情况下，请自行根据项目情况引入mybatis-spring
-
-~~~xml
-    <dependency>
-        <groupId>com.baomidou</groupId>
-        <artifactId>mybatis-plus-boot-starter</artifactId>
-    </dependency>
-~~~
-
----
-
-#### ②BaseMapper
-
-+ [参考](https://baomidou.com/guides/data-interface/#mapper-interface)
-+ BaseMapper是Mybatis-Plus提供的一个通用Mapper接口，它封装了一系列常用的数据库操作方法，包括增、删、改、查等。通过继承BaseMapper，开发者可以快速地对数据库进行操作，而无需编写繁琐的SQL语句
-+ 我们的mapper接口通过继承BaseMapper接口来实现对该基础接口的继承，继承时需要制定接口的泛型，需要指定要操作的数据库表对应的实体类:
-
-~~~java
-    // User即数据库user表对应的实体类
-    public interface UserMapper extends BaseMapper<User>{ ... }
-~~~
-
-+ BaseMapper提供了一系列的操作方法，参见[官网](https://baomidou.com/guides/data-interface/#mapper-interface)
-+ [BaseMapper测试样例](../源码/SpringBoot/SpringBoot-Mybatis-Plus/src/test/java/com/springboot/example/mybatisplus/MapperTest.java)
-
----
-
-#### ③IService
-
-+ IService 是MyBatis-Plus提供的一个通用Service层接口，它封装了常见的CRUD操作，包括插入、删除、查询和分页等。通过继承IService接口，可以快速实现对数据库的基本操作，同时保持代码的简洁性和可维护性
-+ 我们可以让我们的Service接口继承该接口，来得到该接口定义的方法，再让接口实现类继承ServiceImpl类实现对IService内定义方法的实现，同时实现我们的Service接口来进行拓展:
-
-~~~java
-
-// IService的泛型指定数据库表对应的实体类对象
-public interface UserService extends IService<User> {...}
-
-// ServiceImpl的第一个泛型指定继承了BaseMapper的自定义Mapper类接口
-// 第二个泛型指定数据库表对应的实体类对象
-@Service
-public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {...}
-~~~
-
-+ [IService测试样例](../源码/SpringBoot/SpringBoot-Mybatis-Plus/src/test/java/com/springboot/example/mybatisplus/ServiceTest.java)
-
----
-
-#### ④常用注解
-
-+ [参考](https://baomidou.com/reference/annotation/)
-
-|注解|作用|属性|属性作用|备注|
-|:---:|:---:|:---:|:---:|:---:|
-|@TableName|指定实体类对应的数据库表名|value|指定实体类对应的数据库表名|无|
-|^|^|keepGlobalPrefix|是否保持使用全局的表前缀|无|
-|^|^|excludeProperty|指定在映射时需要排除的属性名|无|
-|@TableId|标记实体类中的主键字段|value|指定实体类主键属性对应的数据库主键名，如果不设置，Mybatis-Plus将使用属性名作为主键名|无|
-|^|^|type|指定主键的生成策略|无|
-|@TableField|标记实体类中的非主键属性|value|指定实体类非主键属性对应的数据库字段名|无|
-|@TableLogic|标记实体类中的属性作为逻辑删除字段|value|指定实体类属性对应的数据库逻辑删除字段名|无|
-
----
-
-#### ⑤常用配置
-
-+ [参考](https://baomidou.com/reference/)
-
-|配置|作用|值|备注|
-|:---:|:---:|:---:|:---:|
-|mybatis-plus.mapper-locations|指定mapper接口对应的mapper.xml文件的位置，默认为`classpath:/mapper/**/*.xml`|classpath:xxxx|无|
-|mybatis-plus.configuration.map-underscore-to-camel-case|是否开启小驼峰命名映射，默认开启|布尔值|无|
-|mybatis-plus.configuration.log-impl|指定对应日志在SQL执行时进行输出，默认没有配置|日志类全路径|无|
-|mybatis-plus.type-aliases-package|指定实体类别名的包类路径|路径，一般为`com.example.xxx.pojo`|无|
-
----
-
-## 八、部署
-
-### （一）部署SpringBoot项目
-
-+ 下面展示使用阿里云进行部署的步骤:
-  + 首先在确定无误后，运行`mvn package`得到项目jar包
-  + 使用Xftp将对应文件放到对应的阿里云服务器中
-  + 接下来安装Java环境，直接在本地下下来，然后用Xftp传过去，注意需要下载linux版本的JDK，不是Windows版本的JDK
-  + 使用`tar -zxvf xxx.gz`解压
-  + `vim /etc/profile`打开配置文件，在文件下面配置:
-
-    ~~~profile
-        export JAVA_HOME=/home/study/java/jdk-17.0.11  # 这个JAVA_HOME要写自己的linux服务器上面的java的实际地址
-        export CLASSPATH=$JAVA_HOME/lib/
-        export PATH=$PATH:$JAVA_HOME/bin
-        export PATH JAVA_HOME CLASSPATH
-    ~~~
-
-  + 执行`source /etc/profile`来进行配置文件的重新加载，然后运行`java -version`来查看是否配置好了
-  + 接下来使用`java -jar xxx.jar`来使项目启动，但是**该种部署方式会导致终端被java进程占用，无法进行后续操作，因此不推荐**。如果使用该方式，那么`Ctrl+C`回到终端时，服务也会同步停止运行
-  + 如果想使用其他方式启动，可以使用:
-    + `nohup java -jar xxxx.jar >/dev/null 2>&1 &`来使其在后台进行运行。如果想停止，先使用`ps -ef | grep java`获取Java项目的pid,接下来`kill -9 pid`来杀死进程
-    + [参考](https://blog.csdn.net/Jason_We/article/details/113663318)
-  + 如果在本地测试无误，但是部署上去之后请求报错`net::ERR_CONNECTION_REFUSED`，考虑是不是阿里云的安全组未开放端口
-
----
-
-### （二）部署MySQL数据库
-
-+ 关于MySQL数据库在linux上的安装详见[MySQL笔记](../../数据库/笔记/MySQL笔记.md)
-+ 我们首先需要保证MySQL数据库是能被连接到的，因此需要:
-  + 关闭防火墙，或者防火墙放行端口，以及允许外部访问
-  + 如果是云服务器，还需要设置安全组，也要放行端口
-  + 数据库需要创建出能够建立连接的对应用户，也就是**host为连接方ip(是连接方ip，不是本服务器ip)**的用户，且拥有能够满足业务的权限
-+ 实际上就这么点，但是我们需要保证我们的Java程序能够访问到，因此这里摆提供一些SpringBoot的配置:
-  + 数据库连接的url格式为:`jdbc:{mysql\|oracle}://{ip地址\|主机名}:端口号/数据库名[?key1=value1&key2=value2&....(可选信息)]`
-
-~~~properties
-    # 配置数据库
-    spring.datasource.username=root
-    spring.datasource.url=jdbc:mysql://8.130.44.112:3306/chat
-    spring.datasource.password=123456
-    spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-    spring.datasource.type=com.alibaba.druid.pool.DruidDataSource
-~~~
-
----
 
 ## 配置汇总
 
@@ -2786,7 +2525,227 @@ public class People {
 
 ---
 
-### （二）JDBC配置底层原理
+### （二）自动配置原理
+
+#### ①简要概述
+
++ @SpringBootApplication注解是一个复合注解，从下面的常用注解中我们已经知道:
+  + @SpringBootConfiguration用来声明该类是一个SpringBoot配置类
+  + @omponentScan注解用来扫描指定包
++ 只剩下一个@EnableAutoConfiguration注解，点开该注解，可以看到:
+
+~~~java
+
+  import java.lang.annotation.Documented;
+  import java.lang.annotation.ElementType;
+  import java.lang.annotation.Inherited;
+  import java.lang.annotation.Retention;
+  import java.lang.annotation.RetentionPolicy;
+  import java.lang.annotation.Target;
+  import org.springframework.context.annotation.Import;
+
+  @Target({ElementType.TYPE})
+  @Retention(RetentionPolicy.RUNTIME)
+  @Documented
+  @Inherited
+  @AutoConfigurationPackage
+  @Import({AutoConfigurationImportSelector.class})  // 导入AutoConfigurationImportSelector类
+  public @interface EnableAutoConfiguration {
+      String ENABLED_OVERRIDE_PROPERTY = "spring.boot.enableautoconfiguration";
+
+      Class<?>[] exclude() default {};
+
+      String[] excludeName() default {};
+  }
+
+~~~
+
++ 该注解也是一个复合注解，其中它的作用之一就是导入AutoConfigurationImportSelector类的bean
+  + AutoConfigurationImportSelector类就是SpringBoot自动装配的关键
+  + 之所以要导入该类，是因为**默认的@ComponentScan注解扫描不到我们的自动配置类（spring-boot-autoconfigure依赖）所在的包**，而该类正好是spring-boot-autoconfigure依赖包下的类,**只要加载它，他就可以加载它所在包下的我们导入的场景对应的自动配置类**
+  + AutoConfigurationImportSelector类作用就是**将对应的IOC容器所需的自动配置类加载进IOC，从而达到自动配置的目的**
+  + 该类会自动从其所在包下的`META-INF\spring\org.springframework.boot.autoconfigure.AutoConfiguration.imports`加载对应的自动配置类
+    + 每个配置类下一般都有**被@Bean注解作用的方法，用来将对应类的对象放入IOC容器中**，也就是说，该自动配置类会给容器中导入一堆相关组件
+    + 同时，对应方法还有可能会存在@EnableConfigurationProperties类，并在方法参数列表内接收了指定的类对象，用来配置放入IOC容器对象内的bean的基本配置，而**该注解所指定的类就是我们的application.properties内所声明属性对应的指定Peoperties配置类**
+  + 加载时会经过getAutoConfigurationEntry方法，在该方法内调用getCandidateConfigurations方法，再调用ImportCandidates.load方法来加载上面的imports文件中的对应值来放入待加载配置类列表，最后经由一系列操作实现自动配置
+  + 但是，**并不是加载的全部的配置类都会生效**，对应的配置类也需要指定条件才会生效。因为**每一个配置类都有条件注解约束**
+
+![自动配置流程](../文件/图片/SpringBoot图片/自动配置流程.png)
+
+#### ②详情
+
++ 项目的主程序类上的@SpringBootApplication注解可以进行项目的自动配置
+  + 在该注解内部，它被三个注解作用
+    + @SpringBootConfiguration:这就是个配置类，用来声明作用类是个配置类，其它没什么用
+    + @EnableAutoConfiguration
+    + @ComponentScan(...)
+
+~~~java
+...
+@SpringBootConfiguration
+@EnableAutoConfiguration
+@ComponentScan(
+    excludeFilters = {@Filter(
+    type = FilterType.CUSTOM,
+    classes = {TypeExcludeFilter.class}
+), @Filter(
+    type = FilterType.CUSTOM,
+    classes = {AutoConfigurationExcludeFilter.class}
+)}
+)
+public @interface SpringBootApplication {
+    ...
+}
+~~~
+
+##### Ⅰ@EnableAutoConfiguration
+
++ @EnableAutoConfiguration内又有两个注解作用:
+  + @AutoConfigurationPackage
+  + @Import({AutoConfigurationImportSelector.class})
+
+~~~java
+...
+@AutoConfigurationPackage
+@Import({AutoConfigurationImportSelector.class})
+public @interface EnableAutoConfiguration {
+    ....
+}
+~~~
+
++ 我们先看@AutoConfigurationPackage注解，发现它使用@Import注解导入了一个类`@Import({AutoConfigurationPackages.Registrar.class})`
++ 在该类下有一个方法:
+
+~~~java
+    @Override
+	public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
+		register(registry, new PackageImports(metadata).getPackageNames().toArray(new String[0]));
+	}
+~~~
+
++ 在该方法中调用了PackageImports对象的getPackageNames方法:
+
+~~~java
+    // 在该类的构造器中，我们可以发现这个packageNames是个什么玩意
+    PackageImports(AnnotationMetadata metadata) {
+        // 在该语句的最里面，可以看到调用了AutoConfigurationPackage.class.getName()
+        // 这个在该语句的最里面，可以看到调用了AutoConfigurationPackage注解就是聚合注解@EnableAutoConfiguration注解的两个注解之一
+        // 也就是说，它通过反射得到的class得到的名称是项目启动类所在包的路径
+		AnnotationAttributes attributes = AnnotationAttributes
+			.fromMap(metadata.getAnnotationAttributes(AutoConfigurationPackage.class.getName(), false));
+            // 给packageNames属性赋值
+		List<String> packageNames = new ArrayList<>(Arrays.asList(attributes.getStringArray("basePackages")));
+		for (Class<?> basePackageClass : attributes.getClassArray("basePackageClasses")) {
+			packageNames.add(basePackageClass.getPackage().getName());
+		}
+		if (packageNames.isEmpty()) {
+			packageNames.add(ClassUtils.getPackageName(metadata.getClassName()));
+		}
+		this.packageNames = Collections.unmodifiableList(packageNames);
+	}
+    // 得到packageNames属性
+	List<String> getPackageNames() {
+		return this.packageNames;
+	}
+~~~
+
++ 因此，@AutoConfigurationPackage注解用来将我们自定义的包进行自动配置
++ 现在来讨论@Import({AutoConfigurationImportSelector.class})注解导入的AutoConfigurationImportSelector类:
+  + 在该类中可以找到getAutoConfigurationEntry方法
+
+~~~java
+    protected AutoConfigurationEntry getAutoConfigurationEntry(AnnotationMetadata annotationMetadata) {
+		if (!isEnabled(annotationMetadata)) {
+			return EMPTY_ENTRY;
+		}
+		AnnotationAttributes attributes = getAttributes(annotationMetadata);
+        // 在getCandidateConfigurations中来获得配置类对象
+		List<String> configurations = getCandidateConfigurations(annotationMetadata, attributes);
+		configurations = removeDuplicates(configurations);
+		Set<String> exclusions = getExclusions(annotationMetadata, attributes);
+		checkExcludedClasses(configurations, exclusions);
+		configurations.removeAll(exclusions);
+		configurations = getConfigurationClassFilter().filter(configurations);
+		fireAutoConfigurationImportEvents(configurations, exclusions);
+		return new AutoConfigurationEntry(configurations, exclusions);
+	}
+~~~
+
++ 接下来来看getCandidateConfigurations方法，可以看到它又调用了ImportCandidates.load方法
+
+~~~java
+    protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) {
+		List<String> configurations = ImportCandidates.load(AutoConfiguration.class, getBeanClassLoader())
+			.getCandidates();
+		Assert.notEmpty(configurations,
+				"No auto configuration classes found in "
+						+ "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports. If you "
+						+ "are using a custom packaging, make sure that file is correct.");
+		return configurations;
+	}
+~~~
+
++ 去看load方法:
+
+~~~java
+    public static ImportCandidates load(Class<?> annotation, ClassLoader classLoader) {
+		Assert.notNull(annotation, "'annotation' must not be null");
+		ClassLoader classLoaderToUse = decideClassloader(classLoader);
+        // LOCATION是"META-INF/spring/%s.imports"，调用annotation.getName()，与扫描我们自定义的那个包下的所有文件一样的方式，得到包名
+        // 由于AutoConfiguration在org.springframework.boot.autoconfigure包下，得到的是这个包
+		String location = String.format(LOCATION, annotation.getName());
+		Enumeration<URL> urls = findUrlsInClasspath(classLoaderToUse, location);
+		List<String> importCandidates = new ArrayList<>();
+		while (urls.hasMoreElements()) {
+			URL url = urls.nextElement();
+            // 在这里又调用readCandidateConfigurations方法，将自动配置类放入一个List集合中
+			importCandidates.addAll(readCandidateConfigurations(url));
+		}
+		return new ImportCandidates(importCandidates);
+	}
+~~~
+
++ 接下来看readCandidateConfigurations是什么玩意:
+
+~~~java
+    private static List<String> readCandidateConfigurations(URL url) {
+		try (
+            // 得到对应文件的缓冲字符输入流对象
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new UrlResource(url).getInputStream(), StandardCharsets.UTF_8))
+            ) {
+			List<String> candidates = new ArrayList<>();
+			String line;
+			while ((line = reader.readLine()) != null) {
+                // 经过一些处理，把这些自动配置类依次加入一个List中
+				line = stripComment(line);
+				line = line.trim();
+				if (line.isEmpty()) {
+					continue;
+				}
+				candidates.add(line);
+			}
+            // 返回List
+			return candidates;
+		}
+		catch (IOException ex) {
+			throw new IllegalArgumentException("Unable to load configurations from location [" + url + "]", ex);
+		}
+	}
+~~~
+
++ 至此，我们看到了@Application的@EnableAutoConfiguration可以自动加载项目所在包以及各个自动配置类的组件，从而实现自动装配功能
+
+##### Ⅱ@ComponentScan(...)
+
++ 这玩意在学Spring的时候就见过了，他用来进行组件的扫描
+  + @SpringBootApplication上的这个注解并不是干这个的，因为@EnableAutoConfiguration已经能够扫描指定包下的东西了
+  + 它的全部代码是:`@ComponentScan(excludeFilters = { @Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),@Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) })`
+  + 我们可以明显的看到@Filter这个注解，它是用来进行过滤的
+  + 该注解的作用主要是为了防止配置类重复的问题，我们的项目启动类已经是一个配置类了，如果我们还设置了别的自动配置类，SpringBoot会自动过滤掉
+
+---
+
+### （三）JDBC配置底层原理
 
 + SpringBoot的自动配置包（org.springframework.boot.spring-boot.autoconfiguration）中META-INF目录下的spring目录里的文件中已经默认导入了一些jdbc相关的配置类:
 
@@ -2856,50 +2815,6 @@ public class People {
 
 ---
 
-### （三）自动配置原理
-
-+ @SpringBootApplication注解是一个复合注解，从下面的常用注解中我们已经知道:
-  + @SpringBootConfiguration用来声明该类是一个SpringBoot配置类
-  + @omponentScan注解用来扫描指定包
-+ 只剩下一个@EnableAutoConfiguration注解，点开该注解，可以看到:
-
-~~~java
-
-  import java.lang.annotation.Documented;
-  import java.lang.annotation.ElementType;
-  import java.lang.annotation.Inherited;
-  import java.lang.annotation.Retention;
-  import java.lang.annotation.RetentionPolicy;
-  import java.lang.annotation.Target;
-  import org.springframework.context.annotation.Import;
-
-  @Target({ElementType.TYPE})
-  @Retention(RetentionPolicy.RUNTIME)
-  @Documented
-  @Inherited
-  @AutoConfigurationPackage
-  @Import({AutoConfigurationImportSelector.class})  // 导入AutoConfigurationImportSelector类
-  public @interface EnableAutoConfiguration {
-      String ENABLED_OVERRIDE_PROPERTY = "spring.boot.enableautoconfiguration";
-
-      Class<?>[] exclude() default {};
-
-      String[] excludeName() default {};
-  }
-
-~~~
-
-+ 该注解也是一个复合注解，其中它的作用之一就是导入AutoConfigurationImportSelector类的bean
-  + AutoConfigurationImportSelector类就是SpringBoot自动装配的关键
-  + 之所以要导入该类，是因为**默认的@ComponentScan注解扫描不到我们的自动配置类（spring-boot-autoconfigure依赖）所在的包**，而该类正好是spring-boot-autoconfigure依赖包下的类,**只要加载它，他就可以加载它所在包下的我们导入的场景对应的自动配置类**
-  + AutoConfigurationImportSelector类作用就是**将对应的IOC容器所需的自动配置类加载进IOC，从而达到自动配置的目的**
-  + 该类会自动从其所在包下的`META-INF\spring\org.springframework.boot.autoconfigure.AutoConfiguration.imports`加载对应的自动配置类
-    + 每个配置类下一般都有**被@Bean注解作用的方法，用来将对应类的对象放入IOC容器中**，也就是说，该自动配置类会给容器中导入一堆相关组件
-    + 同时，对应方法还有可能会存在@EnableConfigurationProperties类，并在方法参数列表内接收了指定的类对象，用来配置放入IOC容器对象内的bean的基本配置，而**该注解所指定的类就是我们的application.properties内所声明属性对应的指定Peoperties配置类**
-  + 加载时会经过getAutoConfigurationEntry方法，在该方法内调用getCandidateConfigurations方法，再调用ImportCandidates.load方法来加载上面的imports文件中的对应值来放入待加载配置类列表，最后经由一系列操作实现自动配置
-  + 但是，**并不是加载的全部的配置类都会生效**，对应的配置类也需要指定条件才会生效。因为**每一个配置类都有条件注解约束**
-
-![自动配置流程](../文件/图片/SpringBoot图片/自动配置流程.png)
 
 ---
 
@@ -3980,3 +3895,132 @@ public class ServletWebServerFactoryAutoConfiguration {
 ~~~
 
 + [任意位置获取请求样例](../源码/SpringBoot/SpringBootThymeleaf/src/main/java/com/springboot/example/springbootthymeleaf/service/MyService.java)
+
+---
+
+### （五）监听器原理
+
++ 底层监听器的调用都在SpringApplication类中的run方法内有所体现:
+
+~~~java
+
+    // 这里是我们调的run方法
+    public static ConfigurableApplicationContext run(Class<?> primarySource, String... args) {
+        // 调用下面的run方法
+        return run(new Class[]{primarySource}, args);
+    }
+
+    
+    public static ConfigurableApplicationContext run(Class<?>[] primarySources, String[] args) {
+        // 该run方法又调用下面的run方法
+        return (new SpringApplication(primarySources)).run(args);
+    }
+
+    public ConfigurableApplicationContext run(String... args) {
+        Startup startup = SpringApplication.Startup.create();
+        if (this.registerShutdownHook) {
+            shutdownHook.enableShutdownHookAddition();
+        }
+
+        // 创建一个引导项目启动的对象
+        DefaultBootstrapContext bootstrapContext = this.createBootstrapContext();
+        ConfigurableApplicationContext context = null;
+        this.configureHeadlessProperty();
+        // 得到监听器对象组成的集合
+        SpringApplicationRunListeners listeners = this.getRunListeners(args);
+        ...
+    }
+~~~
+
++ 从上面的片段可以看出，run方法几乎一开始执行，就要获得监听器对象
++ 接下来分析监听器对象怎么获得的
+
+~~~java
+
+    private SpringApplicationRunListeners getRunListeners(String[] args) {
+        // 这里是参数解析器的相关操作
+        SpringFactoriesLoader.ArgumentResolver argumentResolver = ArgumentResolver.of(SpringApplication.class, this);
+        argumentResolver = argumentResolver.and(String[].class, args);
+        // 这里调用了getSpringFactoriesInstances方法来从各个spring.factories的配置中得到listener对象集合
+        List<SpringApplicationRunListener> listeners = this.getSpringFactoriesInstances(SpringApplicationRunListener.class, argumentResolver);
+        SpringApplicationHook hook = (SpringApplicationHook)applicationHook.get();
+        SpringApplicationRunListener hookListener = hook != null ? hook.getRunListener(this) : null;
+        if (hookListener != null) {
+            // 这里把listeners转成ArrayList集合
+            listeners = new ArrayList((Collection)listeners);
+            ((List)listeners).add(hookListener);
+        }
+        // 封装一下，返回
+        return new SpringApplicationRunListeners(logger, (List)listeners, this.applicationStartup);
+    }
+
+    // 调用的getSpringFactoriesInstances方法又调用了forDefaultResourceLocation方法
+    private <T> List<T> getSpringFactoriesInstances(Class<T> type, SpringFactoriesLoader.ArgumentResolver argumentResolver) {
+        return SpringFactoriesLoader.forDefaultResourceLocation(this.getClassLoader()).load(type, argumentResolver);
+    }
+
+~~~
+
++ 现在我们查看一下forDefaultResourceLocation是什么玩意
++ 这里就可以知道为什么文件需要是META-INF/spring.factories这样的路径
+
+~~~java
+    // 可以看到它从META-INF/spring.factories中用类加载器去加载东西
+    public static SpringFactoriesLoader forDefaultResourceLocation(@Nullable ClassLoader classLoader) {
+        return forResourceLocation("META-INF/spring.factories", classLoader);
+    }
+~~~
+
++ 接下来继续回到run方法
+
+~~~java
+
+        ...
+        // 这里得到listeners之后直接就调用了各Listeners的starting方法
+        // 因此starting方法几乎在项目开始执行之后就被调用
+        // 此时IOC容器未创建，环境变量也未准备
+        listeners.starting(bootstrapContext, this.mainApplicationClass);
+
+        try {
+            ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+            // 这里配置相关的环境变量
+            // 如果点开该方法，就会发现listeners的environmentPrepared方法被调用了
+            // environmentPrepared方法在环境准备好后，但IOC容器创建前被调用
+            ConfigurableEnvironment environment = this.prepareEnvironment(listeners, bootstrapContext, applicationArguments);
+            Banner printedBanner = this.printBanner(environment);
+            // 这里创建IOC容器对象
+            context = this.createApplicationContext();
+            context.setApplicationStartup(this.applicationStartup);
+            // 在该方法内部，listeners的contextPrepared方法和contextLoaded相继被调用
+            // contextPrepared方法在IOC容器创建与准备完成之后，加载之前执行
+            // contextLoaded方法在IOC容器加载完毕，刷新之前执行
+            this.prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
+            this.refreshContext(context);
+            this.afterRefresh(context, applicationArguments);
+            
+            startup.started();
+            if (this.logStartupInfo) {
+                (new StartupInfoLogger(this.mainApplicationClass)).logStarted(this.getApplicationLog(), startup);
+            }
+            // 在IOC容器refresh之后，调用started方法
+            listeners.started(context, startup.timeTakenToStarted());
+            this.callRunners(context, applicationArguments);
+        } catch (Throwable var10) {
+            // 如果出现问题，在该方法内调用了listeners的failed方法
+            throw this.handleRunFailure(context, var10, listeners);
+        }
+
+        try {
+            if (context.isRunning()) {
+                // 在项目启动完成以后，调用ready方法
+                listeners.ready(context, startup.ready());
+            }
+
+            return context;
+        } catch (Throwable var9) {
+            throw this.handleRunFailure(context, var9, (SpringApplicationRunListeners)null);
+        }
+
+~~~
+
+---
