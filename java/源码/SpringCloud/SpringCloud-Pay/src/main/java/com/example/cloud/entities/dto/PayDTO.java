@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PatDTO {
+public class PayDTO {
     private Integer id;
     //支付流水号
     private String payNo;

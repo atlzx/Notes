@@ -35,6 +35,7 @@
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$USER_HOME$/OneDrive/桌面/Hotel/pom.xml" />
         <option value="$PROJECT_DIR$/Spring-SSM/pom.xml" />
         <option value="$PROJECT_DIR$/SpringBoot-JWT/pom.xml" />
         <option value="$PROJECT_DIR$/SpringJpa/pom.xml" />
