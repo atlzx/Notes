@@ -71,7 +71,7 @@
     + 默认`daemonize no`改为`daemonize yes`
     + 默认`protected-mode yes`改为`protected-mode no`，将保护模式关闭以让外界可以连接到Redis
     + 默认`bind 127.0.0.1`改为直接注释掉(默认bind 127.0.0.1只能本机访问)或改成本机IP，否则影响远程IP连接
-    + 默认requirepass后面加上自己设置的密码，**这个密码就是之后Redis连接要用到的密码**
+    + 默认`requirepass`后面加上自己设置的密码，**这个密码就是之后Redis连接要用到的密码**
   + 接下来就可以启动了:
     + `redis-server 我们自己写的配置文件路径`来启动Redis服务。我们可以输入`ps -ef|grep redis|grep -v grep`来查看redis服务的详情
     + `redis-cli -a 密码 -p [端口号]`来连接Redis。端口号可以不写，不写默认是6379。因为Redis默认占用6379端口号
@@ -376,16 +376,16 @@
 
 |配置项|参数|作用|备注|
 |:---:|:---:|:---:|:---:|
-|`save seconds frequency [seconds frequency]`|seconds frequency:**在seconds秒内修改key达frequency次及以上**，或者**两次修改key的时间间隔大于seconds秒**，那么就进行一次持久化|设置持久化策略|Redis6.0.16版本前，使用该方式配置|
-|`dir filepath`|filepath:设置rdb文件的存放路径，默认存放在`./`文件夹下|设置rdb文件的存放路径|无|
-|`dbfilename filename`|filename:rdb文件的名称|设置rdb文件的名称|无|
+|`save <seconds> <frequency> [<seconds> <frequency>]`|seconds frequency:**在seconds秒内修改key达frequency次及以上**，或者**两次修改key的时间间隔大于seconds秒**，那么就进行一次持久化|设置持久化策略|Redis6.0.16版本前，使用该方式配置|
+|`dir <filepath>`|filepath:设置rdb文件的存放路径，默认存放在`./`文件夹下（相对于配置文件）|设置rdb文件的存放路径|无|
+|`dbfilename <filename>`|filename:rdb文件的名称，相对路径是相对于dir的路径|设置rdb文件的名称|无|
 |`save`|无参|以阻塞的方式进行持久化|无|
 |`bgsave`|无参|以非阻塞的方式进行持久化|**推荐**|
 |`lastsave`|无参|获得最后一次执行持久化的时间戳|无|
-|`stop-writes-on-bgsave-error`|无参|默认yes，如果配置成no，表示不在乎数据不一致或者有其他的手段发现和控制这种不一致，那么在快照写入失败时，也能确保redis继续接受新的请求|无|
-|`rdbcompression`|无参|默认yes，对于存储到磁盘中的快照，可以设置是否进行压缩存储。如果是的话，Redis会采用LZF算法进行压缩。如果你不想消耗CPU来进行压缩的话，可以设置为关闭此功能|无|
-|`rdbchecksum`|无参|默认yes，在存储快照后，还可以让redis使用CRC64算法来进行数据校验，但是这样做会增加大约10%的性能消耗，如果希望获取到最大的性能提升，可以关闭此功能|
-|`rdb-del-sync-files`|无参|在没有持久化的情况下删除复制中使用的RDB文件。默认情况下no，此选项是禁用的。|无|
+|`stop-writes-on-bgsave-error {yes\|no}`|无参|默认yes，如果配置成no，表示不在乎数据不一致或者有其他的手段发现和控制这种不一致，那么在快照写入失败时，也能确保redis继续接受新的请求|无|
+|`rdbcompression {yes\|no}`|无参|默认yes，对于存储到磁盘中的快照，可以设置是否进行压缩存储。如果是的话，Redis会采用LZF算法进行压缩。如果你不想消耗CPU来进行压缩的话，可以设置为关闭此功能|无|
+|`rdbchecksum {yes\|no}`|无参|默认yes，在存储快照后，还可以让redis使用CRC64算法来进行数据校验，但是这样做会增加大约10%的性能消耗，如果希望获取到最大的性能提升，可以关闭此功能|
+|`rdb-del-sync-files {yes\|no}`|无参|在没有持久化的情况下删除复制中使用的RDB文件。默认情况下no，此选项是禁用的。|无|
 
 + 除save所指定的持久化策略，Redis在**执行shutdown或flush时也会自动进行持久化**，执行flush时，会产生一个空的rdb文件，无意义
 + 我们也可以通过`save`或`bgsave`手动进行持久化处理，推荐使用`bgsave`，因为它不会导致阻塞，它的实现原理是Redis会调用LinuxAPI让它产生一个和父进程相同的子进程，让该进程专门负责进行持久化处理
@@ -427,6 +427,8 @@
 
 ---
 
+<a id="AOF"></a>
+
 ### （二）AOF
 
 #### ①概述
@@ -449,10 +451,10 @@
 |:---:|:---:|:---:|:---:|
 |`appendfsync {always\|everysec\|no}`|always:每次写操作时，都直接进行同步<br>everysec:每秒同步一次<br>no:把同步时机丢给操作系统处理|设置AOF同步文件的策略|无|
 |`appendonly {yes\|no}`|略|设置AOF是否开启|无|
-|`appenddirname dirname`|dirname:装AOF文件的文件夹名称|指定装AOF文件的文件夹名称|该配置项在Redis7才有，在Redis7之前，AOF文件都是与RDB文件放在一起的。该配置使得AOF的保存路径变成了dir+appenddirname|
-|`appendfilename filename`|filename:AOF文件名称，默认为appendonly.aof|设置AOF文件名称|无|
-|`auto-aof-rewrite-percentage`|无参|指定当前的AOF文件是上一个AOF文件的百分之多少时，执行重写|auto-aof-rewrite-percentage和auto-aof-rewrite-min-size**同时满足限制条件时，才会触发重写**|
-|`auto-aof-rewrite-min-size`|无参|指定当前AOF大小超过该值时，执行重写|^|
+|`appenddirname <dirname>`|dirname:装AOF文件的文件夹名称|指定装AOF文件的文件夹名称|该配置项在Redis7才有，在Redis7之前，AOF文件都是与RDB文件放在一起的。该配置使得AOF的保存路径变成了dir+appenddirname|
+|`appendfilename <filename>`|filename:AOF文件名称，默认为appendonly.aof|设置AOF文件名称|无|
+|`auto-aof-rewrite-percentage <number>`|number:百分比的数值，想80%就写80|指定当前的AOF文件是上一个AOF文件的百分之多少时，执行重写|auto-aof-rewrite-percentage和auto-aof-rewrite-min-size**同时满足限制条件时，才会触发重写**|
+|`auto-aof-rewrite-min-size <number>`|number:设定上限|指定当前AOF大小超过指定值时，执行重写|^|
 
 ![AOF的三种同步策略](../文件/图片/Redis/AOF三种同步策略.jpg)
 
@@ -622,11 +624,76 @@
 
 ## 八、主从复制
 
+### （一）一主二从
 
++ 就是多个Redis服务器一起处理业务，一般有一台负责写，多台负责读。负责写的当主机，负责读的当从机
++ 实现主从复制需要修改如下配置:
+  + daemonize yes
+  + 注释 bind 127.0.0.1
+  + protected-mode no
+  + requirepass设置密码
+  + port指定端口（可选）
+  + dir指定当前工作目录（可选）
+  + pidfile指定pid文件名称（可选）
+  + logfile指定日志文件名称（可选）
+  + dbfilename指定rdb文件名称（可选）
+  + [AOF相关配置](#AOF)（可选）
+  + masterauth配置连接主机时需要的密码（**从机配置项，必须**）
+  + replicaof配置连接的主机和主机的redis服务器所占用的端口（**从机配置项，必须**）。或者该项我们可以不配置，在我们的从服务器（如果不配置启动后是主服务器，因为它还没有指定一个主服务器当主机）启动后，使用`slaveof 主机IP 主机redis端口号`来找一个主机当主服务器
++ 接下来启动服务器，**先启动主机，再启动从机**
+  + 从机启动以后，我们可以在主机的日志中找到主从配置是否成功的信息:
+  ![主从复制日志输出](../文件/图片/Redis/主从复制日志输出.png)
++ 运行`info replication`命令可以得到主从复制的相关信息
++ 在使用配置文件配置的情况下（也就是在配置文件中配置了replicaof）
+  + 主服务器既能读又能写，从服务器只能写
+  + 主服务器的写入操作会被从服务器同步
+  + 如果从服务器挂掉，而主服务器继续写入，那么从服务器在恢复以后会同步之前的数据，也就是从主服务器中拿到它不工作的这段时间内主服务器修改的数据
+  + 如果主服务器挂掉，那么从服务器会等待主服务器恢复
++ 在使用`slaveof`命令配置主从的前提下
+  + 主服务器既能读又能写，从服务器只能写
+  + 主服务器的写入操作会被从服务器同步
+  + 如果主服务器挂掉，那么从服务器会等待主服务器恢复
+  + 如果从服务器挂掉再启动，那么它不会再作为之前主机的从服务器了，而是又变成自己做主了，因为它的配置文件中并没有配置相关的主从复制内容
+
+### （二）薪火相传
+
++ 就是主机的从机能当别的从机的主机
++ 这样做可以减轻master的负担，但是会增加延迟，因为树的叉减少了，深度就会增加
+
+![薪火相传示例](../文件/图片/Redis/薪火相传示例.png)
+
++ 这个可以直接用`slaveof`直接实现
+
+---
+
+### （三）反客为主
+
++ 即从机自己独立出去成为主机
++ 使用`slaveof no one`命令实现
+
+---
+
+### （四）主从复制流程
+
+1. slave启动成功（假设通过配置连接）并连接到master后，会向master发送一个sync命令，且slave第一次全新连接master时，将执行一次完全同步，slave自身的全部数据将被master传来的同步数据覆盖
+2. master节点收到sync命令后，会在后台保存快照，同时在保存快照期间将收到的修改命令缓存起来，等快照保存完毕将快照数据和所有缓存的命令一并发送给slave
+3. slave收到数据和缓存命令后，将数据存盘并加载到内存，完成复制初始化
+4. master通过向slave定时发送ping包，以确认slave是否存活,该配置可以通过`repl-ping-replica-period`配置项修改
+5. 稳定下来以后，master继续将收集到的修改命令自动依次传送给slave,完成同步
+6. slave下线再上线时，master会检查backlog日志文件中的offset字段（master和slave都会保存一个复制要用的offset，保存于backlog,类似于进度条，还有一个masterId。），master会从slave下线的offset字段开始，把后面的数据传送给slave,类似断点续传
+
+---
+
+### （五）主从复制缺点
+
++ 所有的写操作在master上进行，然后同步到slave中，如果系统非常繁忙，延迟问题会变得严重，而slave机器数量的增加会使该问题更加严重
++ 另外，如果master出现了故障导致崩溃，那么slave就只能在那里干等着，因为它们不会默认自动再选出一个master
 
 ---
 
 ## 九、哨兵监控
+
++ 
 
 
 ---
@@ -656,7 +723,41 @@
 |^|`flushdb`|^|清空当前库|无|
 |^|`flushall`|^|清空全部库|无|
 |^|`config get x`|x:想查看的配置项|得到配置文件的对应配置值|无|
+|^|`config set <key> <value>`|key:配置项，参考下面的配置项汇总<br>value:配置项的值|设置配置项的值|它仅会在本次服务启动时生效，下次就会失效|
 |**redis终端命令**|`redis-server [configpath]`|configpath:配置文件相对于当前终端所在目录的路径|根据指定配置文件的内容启动redis服务|无|
 |^|`redis-cli -a password [-p port] [--raw\|--charset code]`|password:密码<br>port:指定端口，默认为6379，如果没改端口，可以不用写<br>code:字符集编码|连接redis，可以指定端口，且可以指定是否显示原始字节码(可以查看中文)或者指定字符集编码|无|
 |**帮助命令**|`help {@string\|@list\|@hash...}`|>|列出对应数据类型的语法|无|
+|**RDB持久化**|`save`|无参|以阻塞的方式进行持久化|无|
+|^|`bgsave`|无参|以非阻塞的方式进行持久化|**推荐**|
+|^|`lastsave`|无参|获得最后一次执行持久化的时间戳|无|
+|^|`redis-check-rdb <filepath>`|filepath:RDB文件路径|检查并修复RDB文件|无|
+|**AOF持久化**|bgrewriteaof|无参|手动执行AOF持久化|无|
+|^|`redis-check-aof --fix <filepath>`|filepath:文件路径|检查并修复AOF文件|无|
 |^|[文档](https://redis.io/commands/)|
+
+---
+
+## 二、配置项汇总
+
+|分类|配置项|参数|作用|备注|
+|:---:|:---:|:---:|:---:|
+|**初始化**|`requirepass <password>`|password:密码|设置redis密码|无|
+|^|`daemonize {yes\|no}`|无参|不知道，但是要设成yes|无|
+|^|`protected-mode {yes\|no}`|无参|不知道，但是要设成no|无|
+|^|`bind`|不知道|不知道，但是要注掉|无|
+|**RDB数据持久化**|`save <seconds> <frequency> [<seconds> <frequency>]`|seconds frequency:**在seconds秒内修改key达frequency次及以上**，或者**两次修改key的时间间隔大于seconds秒**，那么就进行一次持久化|设置持久化策略|Redis6.0.16版本前，使用该方式配置|
+|^|`dir <filepath>`|filepath:设置rdb文件的存放路径，默认存放在`./`文件夹下（相对于配置文件）|设置rdb文件的存放路径|无|
+|^|`dbfilename <filename>`|filename:rdb文件的名称，相对路径是相对于dir的路径|设置rdb文件的名称|无|
+|^|`stop-writes-on-bgsave-error {yes\|no}`|无参|默认yes，如果配置成no，表示不在乎数据不一致或者有其他的手段发现和控制这种不一致，那么在快照写入失败时，也能确保redis继续接受新的请求|无|
+|^|`rdbcompression {yes\|no}`|无参|默认yes，对于存储到磁盘中的快照，可以设置是否进行压缩存储。如果是的话，Redis会采用LZF算法进行压缩。如果你不想消耗CPU来进行压缩的话，可以设置为关闭此功能|无|
+|^|`rdbchecksum {yes\|no}`|无参|默认yes，在存储快照后，还可以让redis使用CRC64算法来进行数据校验，但是这样做会增加大约10%的性能消耗，如果希望获取到最大的性能提升，可以关闭此功能|
+|**AOF数据持久化**|`appendfsync {always\|everysec\|no}`|always:每次写操作时，都直接进行同步<br>everysec:每秒同步一次<br>no:把同步时机丢给操作系统处理|设置AOF同步文件的策略|无|
+|^|`appendonly {yes\|no}`|略|设置AOF是否开启|无|
+|^|`appenddirname <dirname>`|dirname:装AOF文件的文件夹名称|指定装AOF文件的文件夹名称|该配置项在Redis7才有，在Redis7之前，AOF文件都是与RDB文件放在一起的。该配置使得AOF的保存路径变成了dir+appenddirname|
+|^|`appendfilename <filename>`|filename:AOF文件名称，默认为appendonly.aof|设置AOF文件名称|无|
+|^|`auto-aof-rewrite-percentage <number>`|number:百分比的数值，想80%就写80|指定当前的AOF文件是上一个AOF文件的百分之多少时，执行重写|auto-aof-rewrite-percentage和auto-aof-rewrite-min-size**同时满足限制条件时，才会触发重写**|
+|^|`auto-aof-rewrite-min-size <number>`|number:设定上限|指定当前AOF大小超过指定值时，执行重写|^|
+|^|`rdb-del-sync-files {yes\|no}`|无参|在没有持久化的情况下删除复制中使用的RDB文件。默认情况下no，此选项是禁用的。|无|
+|**主从复制**|`masterauth <password>`|password:密码|设置slave连接master时的密码|无|
+|^|`replicaof <host> <port>`|host:主机ip<br>port:端口号|设置本服务器的master所在的主机IP和占用的端口号|无|
+|^|`repl-ping-replica-period {yes\|no}`|无|设置master每次向slave发送ping包进行心跳检测的频率，单位秒|无|
