@@ -1550,12 +1550,53 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ### （七）Swagger
 
-#### ①常用注解
+#### ①快速入门
+
++ 导入依赖
+
+~~~xml
+  <!-- Swagger3 调用方式 http://你的主机IP地址:5555/swagger-ui/index.html -->
+  <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+  </dependency>
+~~~
+
++ 添加配置类:
+
+~~~java
+    @Configuration
+    public class SwaggerConfig {
+        @Bean
+        public GroupedOpenApi PayApi() {
+            // 这个group里面指定的描述信息需要与@Tag的name属性指定的描述信息一致，其controller中的方法才会被加入该组内的测试中去
+            return GroupedOpenApi.builder().group("支付微服务模块").pathsToMatch("/pay/**").build();
+        }
+        @Bean
+        public GroupedOpenApi OtherApi() {
+            return GroupedOpenApi.builder().group("其它微服务模块").pathsToMatch("/other/**", "/others").build();
+        }
+    }
+
+~~~
+
++ 根据注解在Controller类、Controller方法和实体类的类和属性上添加注解
++ 访问`http://localhost:<port>/swagger-ui/index.html`进行测试
+
+---
+
+#### ②常用注解
 
 |注解|作用|主要作用范围|备注|
 |:---:|:---:|:---:|:---:|
-|
+|@Tag|声明Controller类的作用，与配置类内的配置相对应|类|无|
+|@Operation|描述方法作用|方法|无|
+|@Schema|描述实体类作用，以及它各个属性的作用|类、属性|name属性会修改swagger初始发送的json的key,用title才是描述作用|
+|@Parameter|描述参数作用|方法|无|
+|@Parameters|描述参数作用|方法|无|
+|@ApiResponse|描述响应状态码等|方法|无|
 
+---
 
 ## 四、部署
 
@@ -1795,6 +1836,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 |^|spring.data.redis.lettuce.pool.min-idle|连接池中的最小空闲连接|数值|
 |^|spring.data.redis.cluster.nodes|要连接的集群节点|以`<host>:<port>`的方式提供，如果有多个，用逗号隔开，例:`8.130.44.112:6381,8.130.44.112:6382`|无|
 
+
 ---
 
 ### （二）注解汇总
@@ -1851,6 +1893,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 |**junit**|@SpringBootTest|执行测试时会启动SpringBoot项目进行测试|类|无|
 |^|其它相关Junit注解详见[其它依赖笔记](其它依赖笔记.md)|
 |**自定义starter**|@ConfigurationProperties|设置Properties配置类的一些常见配置，如对应的配置文件前缀|类|无|
+|**Swagger**|@Tag|声明Controller类的作用，与配置类内的配置相对应|类|无|
+|^|@Operation|描述方法作用|方法|无|
+|^|@Schema|描述实体类作用，以及它各个属性的作用|类、属性|name属性会修改swagger初始发送的json的key,用title才是描述作用|
+|^|@Parameter|描述参数作用|方法|无|
+|^|@Parameters|描述参数作用|方法|无|
+|^|@ApiResponse|描述响应状态码等|方法|无|
 
 + [组件注册注解样例](../../源码/SpringBoot/SpringBootInitializrDemo/src/main/java/com/springboot/example/springbootinitializrdemo/config/MyConfig.java)
 + [条件注解样例](../../源码/SpringBoot/SpringBootInitializrDemo/src/main/java/com/springboot/example/springbootinitializrdemo/config/MyConfig.java)
