@@ -3,6 +3,7 @@ package com.example.cloud.controller;
 import com.example.cloud.entities.Pay;
 import com.example.cloud.entities.dto.PayDTO;
 import com.example.cloud.service.PayService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/pay")
+@Tag(name = "支付微服务模块",description = )
 public class PayController {
     @Resource
     private PayService payService;
@@ -23,7 +25,7 @@ public class PayController {
         return "成功插入记录，返回值"+i;
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public String updatePay(@RequestBody PayDTO payDTO){
         Pay pay=new Pay();
         BeanUtils.copyProperties(payDTO,pay);

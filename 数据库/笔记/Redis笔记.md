@@ -1032,3 +1032,4 @@
 |^|`cluster-node-timeout <time>`|time:超时时间|节点互连超时时间，单位:毫秒|无|
 |^|`cluster failover`|无参|使原master在变成slave之后再恢复成master|无|
 |^|`cluster-require-full-coverage {yes\|no}`|默认是yes|集群是否完整才对外服务，即如果集群中的主节点有的失效了，那么集群将不对外提供服务|无|
+|^|`cluster-announce-ip <host>`|host:redis服务器所在的公网IP|使在云服务器上运行的redis服务器暴露在公网IP下|**如果不配置可能会报`Unable to connect to xxx:yyy .... connection timed out after zzzzms`的错误**|

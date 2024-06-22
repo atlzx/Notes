@@ -521,7 +521,7 @@ public class People {
   </dependency>
 ~~~
 
-+ [Jedis样例](../../源码/Redis/Redis/src/main/java/com/springboot/example/redis/redisdemo/JedisSample.java)
++ [Jedis样例](../../源码/Redis/src/main/java/com/springboot/example/redis/redisdemo/JedisSample.java)
 
 ---
 
@@ -542,6 +542,8 @@ public class People {
    </dependency>
 ~~~
 
++ [lettuce样例](../../源码/Redis/src/main/java/com/springboot/example/redis/redisdemo/LettuceSample.java)
+
 #### ③RedisTemplate
 
 + RedisTemplate是Spring官方整合的与Redis进行交互的封装类
@@ -550,6 +552,7 @@ public class People {
   + 另外，**也可以通过使用RedisTemplate的子类StringRedisTemplate类来避免中文的无法序列化**，因为其子类采用的序列化方式与父类不同。这一点在其无参构造器源码中就有显著体现
 
 ~~~java
+    @Configuration
     public class RedisConfig {
 
         @Bean
@@ -594,6 +597,40 @@ public class People {
         }
     }
 ~~~
+
+---
+
+#### ④连接Redis集群
+
++ 配置项:
+
+~~~properties
+
+    spring.application.name=Redis
+
+    spring.data.redis.password=123456
+    # 设置最大重定向次数
+    spring.data.redis.cluster.max-redirects=3
+    # 设置最大连接池最大数量
+    spring.data.redis.lettuce.pool.max-active=8
+    # 连接池阻塞的最大等待时间
+    spring.data.redis.lettuce.pool.max-wait=-1ms
+    # 连接池中的最大空闲连接
+    spring.data.redis.lettuce.pool.max-idle=8
+    # 连接池中的最小空闲连接
+    spring.data.redis.lettuce.pool.min-idle=0
+    # 连接的集群节点
+    spring.data.redis.cluster.nodes=8.130.44.112:6381,8.130.44.112:6382,\
+      8.130.66.96:6383,8.130.66.96:6384,\
+      8.130.87.94:6385,8.130.87.94:6386
+    # 开启集群拓扑动态感应刷新
+    spring.data.redis.lettuce.cluster.refresh.adaptive=true
+    # 设置定时刷新频率
+    spring.data.redis.lettuce.cluster.refresh.period=2000
+
+~~~
+
++ 接下来直接操作即可
 
 ---
 
@@ -1511,6 +1548,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
+### （七）Swagger
+
+#### ①常用注解
+
+|注解|作用|主要作用范围|备注|
+|:---:|:---:|:---:|:---:|
+|
+
+
 ## 四、部署
 
 ### （一）部署SpringBoot项目
@@ -1681,7 +1727,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ## 配置汇总
 
-### （二）配置项汇总
+### （一）配置项汇总
 
 |分组|配置|作用|值|备注|
 |:---:|:---:|:---:|:---:|:---:|
@@ -1742,10 +1788,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 |**Redis**|spring.data.redis.host|配置redis所在的服务器ip|ip号|无|
 |^|spring.data.redis.port|配置redis所使用的端口号|端口号|无|
 |^|spring.data.redis.password|配置连接redis需要的密码|字符串|无|
+|^|spring.data.redis.cluster.max-redirects|设置最大重定向次数|数值|无|
+|^|spring.data.redis.lettuce.pool.max-active|设置最大连接池最大数量|数值|
+|^|spring.data.redis.lettuce.pool.max-wait|连接池阻塞的最大等待时间|`xxxms`，如:`-1ms`|
+|^|spring.data.redis.lettuce.pool.max-idle|连接池中的最大空闲连接|数值|
+|^|spring.data.redis.lettuce.pool.min-idle|连接池中的最小空闲连接|数值|
+|^|spring.data.redis.cluster.nodes|要连接的集群节点|以`<host>:<port>`的方式提供，如果有多个，用逗号隔开，例:`8.130.44.112:6381,8.130.44.112:6382`|无|
 
 ---
 
-### （三）注解汇总
+### （二）注解汇总
 
 |分组|注解|作用|主要作用范围|备注|
 |:---:|:---:|:---:|:---:|:---:|
