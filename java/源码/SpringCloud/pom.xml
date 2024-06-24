@@ -12,6 +12,8 @@
     <modules>
         <module>SpringCloud-Pay</module>
         <module>SpringCloud-Generator</module>
+        <module>SpringCloud-Order</module>
+        <module>SpringCloud-Common-API</module>
     </modules>
 
     <properties>

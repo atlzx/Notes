@@ -23,14 +23,14 @@ public class SwaggerConfig {
         return GroupedOpenApi.builder().group("客户微服务模块").pathsToMatch("/customer/**", "/customers").build();
     }*/
 
-//    @Bean
-//    public OpenAPI docsOpenApi() {
-//        return new OpenAPI()
-//            .info(new Info().title("cloud2024")
-//                .description("通用设计rest")
-//                .version("v1.0"))
-//            .externalDocs(new ExternalDocumentation()
-//                .description("www.atguigu.com")
-//                .url("https://yiyan.baidu.com/"));
-//    }
+    @Bean
+    public OpenAPI docsOpenApi() {
+        return new OpenAPI()
+            .info(new Info().title("cloud2024")
+                .description("通用设计rest")
+                .version("v1.0"))
+            .externalDocs(new ExternalDocumentation()
+                .description("www.atguigu.com")
+                .url("https://yiyan.baidu.com/"));
+    }
 }

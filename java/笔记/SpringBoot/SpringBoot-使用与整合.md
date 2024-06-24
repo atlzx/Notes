@@ -504,6 +504,34 @@ public class People {
 
 ---
 
+### （五）项目规范
+
+#### ①返回格式
+
++ 我们给前端的返回值应该有一个统一的返回格式:
+  + 表示请求状态的code状态码
+    + 该状态码一般使用枚举类来呈现
+    + [枚举类样例](../../源码/SpringCloud/SpringCloud-Pay/src/main/java/com/example/cloud/resp/ReturnCodeEnum.java)
+  + 本次请求所返回的数据data
+    + 如果数据内包含日期时间相关的属性或对象，可以参考下面的日期时间格式自定义规范表来自定义时间样式
+      + 可以通过`spring.jackson.date-format`来自定义时间样式，一般使用`yyyy-MM-dd HH:mm:ss`就行。另外可以通过`spring.jackson.time-zone`指定时区，`GMT+8`为东八区
+      + 也可以使用@JsonFormat，将其作用在时间属性上，通过pattern和timezone属性来指定自定义时间格式与时区
+      + ![日期时间格式自定义规范表](../文件/图片/Java图片/自定义日期格式规范表.png)
+  + 描述本次请求的结果message
+  + 处理请求的时间戳timeStamp,用来**判断是否使用了缓存**
+  + [返回类样例](../../源码/SpringCloud/SpringCloud-Pay/src/main/java/com/example/cloud/resp/ReturnData.java)
+
+---
+
+#### ②全局异常处理
+
++ 使用全局异常处理处理异常
+  + 使用HttpStatus枚举类来得到对应的状态码对象
+  + 使用`log.error`方法来进行日志的记录
+  + 利用通用的返回类将异常返回给前端，或者处理异常
+
+---
+
 ## 三、整合
 
 ### （一）整合Redis
@@ -630,7 +658,7 @@ public class People {
 
 ~~~
 
-+ 接下来直接操作即可
++ 接下来直接操作即可，操作方式与redisTemplate一致
 
 ---
 
@@ -1772,6 +1800,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 |分组|配置|作用|值|备注|
 |:---:|:---:|:---:|:---:|:---:|
+|**常用**|server.port|指定端口|默认8080|无|
+|^|spring.application.name|指定项目名称|字符串|不知道有什么用，**它和前端进行请求时需要带的上下文路径是不一样的**|
 |**调试**|debug|开启调试模式，终端会打印开启了哪些自动配置|布尔值，默认为false|无|
 |**日志**|logging.level.{root\|sql\|web\|类的全类名\|自定义组名}|指定全局/sql组/web组/类/自定义组的日志级别|字符串值|无|
 |^|logging.group.自定义组名|将多个类划分为一个组|全类名|无|
@@ -1835,6 +1865,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 |^|spring.data.redis.lettuce.pool.max-idle|连接池中的最大空闲连接|数值|
 |^|spring.data.redis.lettuce.pool.min-idle|连接池中的最小空闲连接|数值|
 |^|spring.data.redis.cluster.nodes|要连接的集群节点|以`<host>:<port>`的方式提供，如果有多个，用逗号隔开，例:`8.130.44.112:6381,8.130.44.112:6382`|无|
+|**jackson**|spring.jackson.date-formate|指定自定义的时间格式|[参考](../文件/图片/Java图片/自定义日期格式规范表.png)|无|
+|^|spring.jackson.time-zone|指定时区|格式:`GMT+<number>`,number就是时区的具体值|无|
+|**Consul**|spring.cloud.consul.host|指定consul服务所在的host|默认为localhost|无|
+|^|spring.cloud.consul.port|指定consul服务所占用的端口|默认为8500|无|
+|^|spring.cloud.consul.discovery.service-name|指定对应微服务模块服务发现的名称|一般与spring.application.name保持一致|无|
 
 
 ---
@@ -1899,6 +1934,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 |^|@Parameter|描述参数作用|方法|无|
 |^|@Parameters|描述参数作用|方法|无|
 |^|@ApiResponse|描述响应状态码等|方法|无|
+
++ 改进版汇总表
+
+|分组|注解|作用|参数|参数作用|参数值|注解作用范围|备注|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|**jackson**|@JsonFormat|指定该属性返回给前端时要转换的格式|pattern|自定义格式|字符串|属性|无|
+|^|^|^|timezone|指定时间的时区|格式:`GMT+<number>`|属性|无|
+|**SpringCloud**|@EnableDiscoveryClient|开启微服务模块的服务发现|>|>|无|类|无|
+|^|@LoadBalanced|使RestTemplate对象支持负载均衡|>|>|无|方法、参数、属性|无|
+
+
 
 + [组件注册注解样例](../../源码/SpringBoot/SpringBootInitializrDemo/src/main/java/com/springboot/example/springbootinitializrdemo/config/MyConfig.java)
 + [条件注解样例](../../源码/SpringBoot/SpringBootInitializrDemo/src/main/java/com/springboot/example/springbootinitializrdemo/config/MyConfig.java)
