@@ -46,4 +46,10 @@ public class OrderController {
         ReturnData returnData = restTemplate.getForObject(PAY_URL + "/pay/getAll", ReturnData.class);
         return returnData;
     }
+
+    @GetMapping("/pay/get/info")
+    public ReturnData getInfo(){
+        ReturnData returnData = restTemplate.getForObject(PAY_URL+"/pay/get/info", ReturnData.class);
+        return returnData;
+    }
 }

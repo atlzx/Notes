@@ -10,6 +10,8 @@
         <module name="SpringCloud-Common-API" />
         <module name="SpringCloud-Order" />
         <module name="SpringCloud-Generator" />
+        <module name="SpringCloud-Feign-80" />
+        <module name="SpringCloud-Pay-8002" />
         <module name="SpringCloud-Pay" />
       </profile>
     </annotationProcessing>

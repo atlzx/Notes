@@ -1867,9 +1867,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 |^|spring.data.redis.cluster.nodes|要连接的集群节点|以`<host>:<port>`的方式提供，如果有多个，用逗号隔开，例:`8.130.44.112:6381,8.130.44.112:6382`|无|
 |**jackson**|spring.jackson.date-formate|指定自定义的时间格式|[参考](../文件/图片/Java图片/自定义日期格式规范表.png)|无|
 |^|spring.jackson.time-zone|指定时区|格式:`GMT+<number>`,number就是时区的具体值|无|
-|**Consul**|spring.cloud.consul.host|指定consul服务所在的host|默认为localhost|无|
+|**SpringCloud-Consul**|spring.cloud.consul.host|指定consul服务所在的host|默认为localhost|无|
 |^|spring.cloud.consul.port|指定consul服务所占用的端口|默认为8500|无|
 |^|spring.cloud.consul.discovery.service-name|指定对应微服务模块服务发现的名称|一般与spring.application.name保持一致|无|
+|**SpringCloud-OpenFeign**|spring.cloud.openfeign.client.config.default.connect-timeout|设置连接的超时时间，单位毫秒|默认为2s|无|
+|^|spring.cloud.openfeign.client.config.default.read-timeout|设置连接完成后，等待服务的超时时间，单位毫秒|默认60s|无|
+|^|spring.cloud.openfeign.client.config.<serviceName>.read-timeout|设置更细粒度的相关配置，serviceName表示对应的服务模块在Consul上注册的注册名|单位毫秒|无|
+|^|spring.cloud.openfeign.httpclient.hc5.enabled|启用httpclient5配置，用以替代OpenFeign默认使用的没有连接池、性能和效率比较低的JDK自带的HttpURLConnection|布尔值|无|
+|^|spring.cloud.openfeign.compression.request.enabled|开启请求压缩|布尔值|无|
+|^|spring.cloud.openfeign.compression.request.mime-types|设置要进行压缩的请求参数类型|mime类型，如果有多个用逗号隔开|无|
+|^|spring.cloud.openfeign.compression.request.min-request-size|请求大小超过该值时，进行压缩|数值|无|
+|^|spring.cloud.openfeign.compression.response.enabled|开启响应压缩|布尔值|无|
+|^|logging.level.<refrence>|设置日志级别（这个是SpringBoot的日志输出的日志级别，不是OpenFeign的日志级别）|只能设置为`debug`|无|
 
 
 ---
@@ -1941,8 +1950,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 |**jackson**|@JsonFormat|指定该属性返回给前端时要转换的格式|pattern|自定义格式|字符串|属性|无|
 |^|^|^|timezone|指定时间的时区|格式:`GMT+<number>`|属性|无|
-|**SpringCloud**|@EnableDiscoveryClient|开启微服务模块的服务发现|>|>|无|类|无|
-|^|@LoadBalanced|使RestTemplate对象支持负载均衡|>|>|无|方法、参数、属性|无|
+|**SpringCloud-Consul**|@EnableDiscoveryClient|开启微服务模块的服务发现|>|>|无|类|无|
+|**SpringCloud-LoadBalancer**|@LoadBalanced|使RestTemplate对象支持负载均衡|>|>|无|方法、参数、属性|无|
+|**SpringCloud-OpenFeign**|@FeignClient|声明接口为OpenFeign接口API|value|指定该接口API对应的微服务模块在Consul上面的注册名，从而指向该模块|注册名|类|无|
+|^|@EnableFeignClients|开启OpenFeign功能|>|>|无|类|无|
 
 
 
