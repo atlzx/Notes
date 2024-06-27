@@ -19,6 +19,9 @@
     </properties>
 
     <dependencies>
+
+
+
         <!-- spring-cloud-consul组件 -->
         <dependency>
         <groupId>org.springframework.cloud</groupId>

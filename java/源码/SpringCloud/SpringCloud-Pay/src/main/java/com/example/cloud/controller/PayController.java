@@ -1,6 +1,7 @@
 package com.example.cloud.controller;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.lang.UUID;
 import com.example.cloud.entities.Pay;
 import com.example.cloud.entities.dto.PayDTO;
 import com.example.cloud.resp.ReturnData;
@@ -57,13 +58,13 @@ public class PayController {
     @Operation(method = "根据id得到账单")
     public ReturnData<Pay> getPayById(@PathVariable("id") Integer id){
         // 在这里让进程休眠
-        try{
-            log.info("休眠开始时间:{}", DateUtil.now());
-            TimeUnit.SECONDS.sleep(62);
-            log.info("休眠结束时间:{}", DateUtil.now());
-        }catch(Exception e){
-            log.error("{}",e,e);
-        }
+//        try{
+//            log.info("休眠开始时间:{}", DateUtil.now());
+//            TimeUnit.SECONDS.sleep(62);
+//            log.info("休眠结束时间:{}", DateUtil.now());
+//        }catch(Exception e){
+//            log.error("{}",e,e);
+//        }
         Pay pay = payService.getById(id);
         return ReturnData.ok(pay);
     }

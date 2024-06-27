@@ -301,7 +301,7 @@
 + 如果请求出现了问题，OpenFeign默认是不进行重试的，但我们可以手动配置
 + 我们需要在配置类上提供一个Retryer对象，一般都提供Retryer.Default内部类对象
 + [配置类样例](../../源码/SpringCloud/SpringCloud-Feign-80/src/main/java/com/example/cloud/config/FeignConfig.java)
-+ 虽然我们重试了三次，但是只报了一次错，这是正常的
++ 如果重试了多次，但是只报了一次错，这是正常的
 
 ---
 
@@ -377,5 +377,99 @@
 
 ---
 
-### （四）Resilienence4j
+### （四）Resilience4j
 
++ [官方](https://github.com/resilience4j/resilience4j)
++ [resilience4j中文手册(非官方)](https://github.com/lmhmhl/Resilience4j-Guides-Chinese/blob/main/index.md)
+
+#### ①概述
+
++ Resilience4j是实现了Spring官方提供的Spring Cloud Circuit Breaker规范，用于替代Netflix已不再更新的Hystrix，它可以进行如下服务:
+  + 服务熔断:用于避免服务雪崩
+  + 服务降级:服务出现问题时，如果对应服务无法相应的话，需要返回一个友好提示
+  + 服务限流:高并发的情况下，限制单位时间内请求的数量
+  + 服务限时
+  + 服务预热
+  + 接近实时的监控
+  + 兜底的处理工作
++ **服务雪崩**
+  + 多个微服务之间调用的时候，假设微服务A调用微服务B和微服务C，微服务B和微服务C又调用其它的微服务，这就是所谓的“扇出”。如果扇出的链路上某个微服务的调用响应时间过长或者不可用，对微服务A的调用就会占用越来越多的系统资源，进而引起系统崩溃，所谓的“雪崩效应”。
+  + 通常当你发现一个模块下的某个实例失败后，这时候这个模块依然还会接收流量，然后这个有问题的模块还调用了其他的模块，这样就会发生级联故障，或者叫雪崩
+  + 服务雪崩会导致服务之间的延迟增加、系统资源紧张，并可能导致系统发生更多的级联故障
+
+---
+
+#### ②服务熔断
+
+##### Ⅰ理论概述
+
++ 服务熔断是通过断路器来实现的，断路器类似于家里的电器保险丝，当请求量过大导致服务模块崩溃时，熔断器会主动阻断继续向服务模块发送的请求，以减轻服务模块的压力，期望它能从崩溃状态恢复过来
++ 断路器有三个普通状态，以及两个特殊状态
+  + 三大普通状态:
+    + CLOSED（关闭）:服务模块没有问题，服务正常运作，断路器不会进行干涉。该状态下断路器会按一定策略监控请求与响应结果，当请求的错误率到达或超过阈值线时，进入OPEN状态
+    + OPEN（开启）:服务模块出现问题，断路器阻断后续请求。
+    + HALF_OPEN（半开状态）:断路器总不能一直处于OPEN状态，因此断路器会根据一定的策略，在OPEN一段时间后将状态转为HALF_OPEN状态，并放一小部分请求过去计算错误率，如果错误率低于阈值，那么说明服务已经恢复了，则断路器进入CLOSED状态。如果错误率高于阈值，那么继续转到OPEN态
+  + 特殊状态:
+    + DISABLED:无论出现什么问题，都始终允许访问，相当于断路器不存在
+    + FORCED_OPEN:无论出什么问题，都拒绝访问，相当于该服务模块实际上已经不对外开放
+    + 这是两个极端，除状态转换外，不会生成熔断器事件，也不会记录事件的成功或失败，推出这两个状态的方法是触发状态转换或重置熔断器。因此这两个状态仅存在于官网理论中
+![断路器状态转换示意图](../../文件/图片/SpringCloud图片/断路器状态转换示意图.png)
+![服务熔断示意图2](../../文件/图片/SpringCloud图片/服务熔断示例图2.png)
+
+---
+
+##### Ⅱ使用
+
++ 导入依赖:
+
+~~~xml
+  <!--resilience4j-circuitbreaker-->
+  <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+  </dependency>
+  <!-- 由于断路保护等需要AOP实现，所以必须导入AOP包 -->
+  <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-aop</artifactId>
+  </dependency>
+~~~
+
++ 为了测试服务熔断，我们需要手动在对应的服务模块添加测试方法，同时添加OpenFeign的相关API接口方法
++ 服务模块可能会被多个业务模块调用，如果我们把断路器放在服务模块上，那么当它处理一个业务模块的调用出现异常时，所有的业务模块就都不能调用它了，这显然会降低服务效率。因此，我们的断路器是需要放在调用方上的，而不是放在被调用方（服务模块）上
++ 所以在调用模块的配置文件中进行如下配置:
+
+~~~yml
+
+spring:
+  cloud:
+    openfeign:
+      circuitbreaker:
+        group:
+          enabled: true  
+        enabled: true  # 使断路器能够干涉OpenFeign的操作
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        failure-rate-threshold: 50  # 只要请求有50%处理失败，就进行熔断
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 6  # 表示每个时间间隔中基本的请求数量为6
+        minimum-number-of-calls: 6 # 表示一个时间间隔内请求数量超过该值时，才会进行熔断的判断，否则即使在该值以下的请求数量全部处理失败的情况下，也不会进行服务熔断。通常该值与上一项的值保持一致
+        automatic-transition-from-open-to-half-open-enabled: true  # 是否启用让断路器在开启后，自动过渡到半开状态。如果设置为false，那么就是在该服务收到调用才尝试过渡
+        wait-duration-in-open-state: 5s
+        record-exceptions:
+          - java.lang.Exception  # 需要记录的异常类型
+    instances:  # 设置遵循上面配置规则的实例
+      cloud-pay-service:  # 这里写要调用的微服务模块在Consul上面的注册名
+        base-config: default  # 默认的配置遵循default配置
+~~~
+
++ 在调用模块的对应controller类中的调用方法上添加@CircuitBreaker注解，该注解用来使resilience4j在方法调用对应服务模块时，如果出现服务故障，那么进行服务降级将保底的返回值返回回去，同时触发断路器效果
++ [配置文件](../../源码/SpringCloud/SpringCloud-Feign-80/src/main/resources/application.yml)
++ [API接口](../../源码/SpringCloud/SpringCloud-Common-API/src/main/java/com/example/cloud/apis/PayFeignApi.java)
++ [服务模块的测试服务熔断的controller类](../../源码/SpringCloud/SpringCloud-Pay/src/main/java/com/example/cloud/controller/ResilienceController.java)
++ [调用模块的测试服务熔断的controller类](../../源码/SpringCloud/SpringCloud-Feign-80/src/main/java/com/example/cloud/controller/OrderResilienceController.java)
+
+---

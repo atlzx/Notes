@@ -15,3 +15,11 @@ spring:
       port: 8500
       discovery:
         service-name: ${spring.application.name}
+    openfeign:
+      circuitbreaker:
+        enabled: true
+        group:
+          enabled: true
+
+
+

@@ -11,30 +11,49 @@ spring:
     url: jdbc:mysql://localhost:3306/spring_cloud?characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
   cloud:
     consul:
-      host: localhost
-      port: 8500
+      host: localhost  #  告知服务Consul的所在host
+      port: 8500  # 告知服务Consul的端口
       discovery:
-        service-name: ${spring.application.name}
+        service-name: ${spring.application.name}  # 指定该微服务模块在Consul上面的注册名，一般与服务模块名是一致的
         prefer-ip-address: true
     openfeign:
       client:
         config:
-          default:
-            connect-timeout: 2000
-            read-timeout: 1000
+          default:  # default表示默认的全局配置
+            connect-timeout: 2000  # 连接超时时间
+            read-timeout: 1000  # 等待操作的超时时间
+      circuitbreaker:
+        group:
+          enabled: true
+        enabled: true  # 使断路器能够干涉OpenFeign的操作
       httpclient:
         hc5:
-          enabled: true
+          enabled: true  # 使用hc5替代原生的HttpURLConnection
       compression:
         request:
-          enabled: true
-          mime-types: text/xml,application/xml,application/json
-          min-request-size: 2048
+          enabled: true # 开启请求压缩
+          mime-types: text/xml,application/xml,application/json  # 设定需要进行压缩的请求格式
+          min-request-size: 2048  # 设定压缩需要的最小压缩大小阈值
         response:
-          enabled: true
+          enabled: true  # 开启响应压缩
   jackson:
-    date-format: yyyy-MM-dd HH:mm:ss
-    time-zone: GMT+8
-logging:
-  level:
-    com.example.cloud.apis.PayFeignApi: debug
+    date-format: yyyy-MM-dd HH:mm:ss  # 返回JSON时自定义时间格式
+    time-zone: GMT+8  # 指定时间格式的时区
+resilience4j:
+  circuitbreaker:
+    configs:
+      default: # default表示默认的全局配置
+        failure-rate-threshold: 50  # 只要请求有50%处理失败，就进行熔断
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 6  # 表示每个时间间隔中基本的请求数量为6
+        minimum-number-of-calls: 6 # 表示一个时间间隔内请求数量超过该值时，才会进行熔断的判断，否则即使在该值以下的请求数量全部处理失败的情况下，也不会进行服务熔断。通常该值与上一项的值保持一致
+        automatic-transition-from-open-to-half-open-enabled: true  # 是否启用让断路器在开启后，自动过渡到半开状态。如果设置为false，那么就是在该服务收到调用才尝试过渡
+        wait-duration-in-open-state: 5s  # 设置断路器到达OPEN状态时间隔多长时间转为HALF_OPEN状态
+        record-exceptions:
+          - java.lang.Exception  # 需要记录的异常类型
+    instances:  # 设置遵循上面配置规则的实例
+      cloud-pay-service:  # 这里写要调用的微服务模块在Consul上面的注册名
+        base-config: default  # 默认的配置遵循default配置
+#logging:
+#  level:
+#    com.example.cloud.apis.PayFeignApi: debug

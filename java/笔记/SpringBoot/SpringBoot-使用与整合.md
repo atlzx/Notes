@@ -712,6 +712,11 @@ public class People {
 |^|getInputStream()|无参|获得文件的输入流对象|>|输入流对象|无异常|无|^|
 |^|getSize()|无参|得到文件大小|>|long类型数值|无异常|无|^|
 
++ 相关配置:
+  + `spring.servlet.multipart.enabled`:开启文件上传功能，默认就是开启的
+  + `spring.servlet.multipart.max-file-size`:限制单文件上传的最大大小
+  + `spring.servlet.multipart.max-request-size`:限制单次请求上传的文件总量大小
+
 ---
 
 #### ②文件上传OSS
@@ -1856,6 +1861,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 |^|spring.profiles.default|指定默认的环境|环境名|默认是default|
 |^|spring.profiles.include|指定包含的环境|一个或多个环境名|一般把基础的环境，也就是无论什么情况都用到的环境加入到这里面|
 |^|spring.profiles.group.{groupName}|配置环境组,groupName是组的名称|一个或多个环境名|无|
+|**文件上传**|spring.servlet.multipart.enabled|开启文件上传功能，默认就是开启的|布尔值|无|
+|^|spring.servlet.multipart.max-file-size|限制单文件上传的最大大小|格式:`xxMb`|无|
+|^|spring.servlet.multipart.max-request-size|限制单次请求上传的文件总量大小|格式:`xxMb`|无|
 |**Redis**|spring.data.redis.host|配置redis所在的服务器ip|ip号|无|
 |^|spring.data.redis.port|配置redis所使用的端口号|端口号|无|
 |^|spring.data.redis.password|配置连接redis需要的密码|字符串|无|
@@ -1890,6 +1898,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 |**项目启动**|@SSpringBootApplication|声明对应类为配置类并自动配置|类|无|
 |**组件注册**|@Configuration|声明对应类为配置类|类|无|
 |^|@SpringBootConfiguration|声明对应类为SpringBoot项目的配置类|类|其实跟上面的注解没有区别|
+|^|@ServletComponentScan|配置扫描的包，使配置的包路径下的被@WebServlet、@WebFilter注解作用的类在IOC容器初始化时生成一个实例并加入IOC容器对象|类|无|
 |^|@Service|^|作用于Service层|无|
 |^|@Controller|^|作用于Controller层|无|
 |^|@Repository|^|作用在Dao层|无|
