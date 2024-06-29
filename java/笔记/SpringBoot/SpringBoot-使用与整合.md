@@ -961,8 +961,17 @@ public class People {
 + 可以通过查看状态码来确认是否有缓存，**出现304状态码或网络栏中的履行者显示为`disk cache`即为使用了缓存**
   + 刷新网页不会使用缓存，详情见下图:
     + 其中Etag 是 HTTP 响应头部的一部分，用于标识资源的版本。它通常由服务器生成，并在响应中发送给客户端
-
 ![缓存机制](../../文件/图片/SpringBoot图片/HTTP缓存机制.png)
++ 另外，配置的寻找路径可以有两个头符号:
+  + `classpath:`:即表示类路径下，也就是从target目录中classes目录开始的东西，或者java目录或resources目录下的东西
+  + `file:`:表示文件系统路径，它支持相对路径（相对于本项目的跟路径）和绝对路径。
++ 最后，静态资源是这样匹配的
+  + 如果前端请求`localhost:8080/context-path/haha/upload/aaa.png`，上下文路径是`context-path`
+  + 我们匹配的是`/haha/**`
+  + 那么我们截取的就是`/upload/aaa.png`这一段，然后我们重新配置静态资源的路径，比如我们配置了一个`classpath:/xxx/`
+  + 那么最后服务器要去寻找的对应静态资源路径就是`classpath:/xxx/upload/aaa.png`这一路径，也就是说，如果前端的请求路径成功与们设置的匹配路径匹配到了，那么我们服务器就会把我们配置的静态资源路径+`**`后面的路径拼接起来，作为它最后会去寻找的路径
+
+
 
 + [配置文件](../../源码/SpringBoot/SpringBootWebStaticResource/src/main/resources/application.properties)
 + [配置类](../../源码/SpringBoot/SpringBootWebStaticResource/src/main/java/com/springboot/example/springbootwebstaticresource/config/MyConfig.java)

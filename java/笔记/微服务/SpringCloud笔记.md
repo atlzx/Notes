@@ -440,7 +440,7 @@
 + 所以在调用模块的配置文件中进行如下配置:
 
 ~~~yml
-
+# 这是两个模式的通用配置
 spring:
   cloud:
     openfeign:
@@ -448,7 +448,7 @@ spring:
         group:
           enabled: true  
         enabled: true  # 使断路器能够干涉OpenFeign的操作
-
+# 下面是计数模式
 resilience4j:
   circuitbreaker:
     configs:
@@ -464,12 +464,115 @@ resilience4j:
     instances:  # 设置遵循上面配置规则的实例
       cloud-pay-service:  # 这里写要调用的微服务模块在Consul上面的注册名
         base-config: default  # 默认的配置遵循default配置
+
+
+# 如果想按时间进行配置，请参考如下配置:
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        failure-rate-threshold: 50  # 当请求有50%处理失败，就进行熔断
+        sliding-window-type: TIME_BASED  # 设置断路的匹配模式
+        slow-call-duration-threshold: 2s  # 表示调用多长时间是慢调用，即满调用的评判标准，这个慢调用是调用慢，但是它还是成功响应了
+        slow-call-rate-threshold: 30  # 表示慢调用占用百分比阈值，当单位时间内满调用请求占总请求比例到达该时，断路器进入OPEN状态
+        sliding-window-size: 2  # 设置滑动窗口大小，在该模式下表示2s
+        minimum-number-of-calls: 2  # 设置断路器计算失败率或慢调用率之前所需的最小样本
+        permitted-number-of-calls-in-half-open-state: 2  # 断路器转换到半开状态时放行的请求数
+        automatic-transition-from-open-to-half-open-enabled: true  # 是否启用让断路器在开启后，自动过渡到半开状态。如果设置为false，那么就是在该服务收到调用才尝试过渡
+        wait-duration-in-open-state: 5s  # 设置断路器到达OPEN状态时间隔多长时间转为HALF_OPEN状态
+        record-exceptions:
+          - java.lang.Exception # 需要记录的异常类型，该类型的异常会被认为是调用失败
+    instances:
+      cloud-pay-service:  # 这里写要调用的微服务模块在Consul上面的注册名
+        base-config: default  # 默认的配置遵循default配置
+timelimiter:
+  configs:
+    default:
+      timeout-duration: 10s  # 该配置表示调用超过该秒数就进行服务降级，不再进行短路判断，因此需要把值设置的长一点 
+
+
 ~~~
 
 + 在调用模块的对应controller类中的调用方法上添加@CircuitBreaker注解，该注解用来使resilience4j在方法调用对应服务模块时，如果出现服务故障，那么进行服务降级将保底的返回值返回回去，同时触发断路器效果
++ 在调用模块的controller类中增加对应的fallback方法，该方法是进行服务降级所调用的方法，它的格式如下
+  + 返回值与处理请求的handler方法返回值一致
+  + 方法参数包含handler方法的全部参数列表，同时最后一个参数是异常类型的参数，表示此次进行服务降级的异常信息
++ **全局异常处理的存在会干扰断路器的判断，在测试时将全局异常管理关掉**
 + [配置文件](../../源码/SpringCloud/SpringCloud-Feign-80/src/main/resources/application.yml)
 + [API接口](../../源码/SpringCloud/SpringCloud-Common-API/src/main/java/com/example/cloud/apis/PayFeignApi.java)
 + [服务模块的测试服务熔断的controller类](../../源码/SpringCloud/SpringCloud-Pay/src/main/java/com/example/cloud/controller/ResilienceController.java)
 + [调用模块的测试服务熔断的controller类](../../源码/SpringCloud/SpringCloud-Feign-80/src/main/java/com/example/cloud/controller/OrderResilienceController.java)
 
 ---
+
+#### ②舱壁隔离
+
+##### Ⅰ理论概述
+
++ 舱壁隔离可以限制并发执行的数量
++ 舱壁隔离有两种基本的实现方式
+  + 通过信号量进行隔离，这是默认的方式
+    + 它通过指定最大服务调用的并发数量和等待时长来达到限制目的
+  + 通过线程池进行隔离
+    + 它通过指定线程池的最大大小、核心大小和请求队列长度来达到限制目的
+
+---
+
+##### Ⅱ使用
+
++ 导入依赖:
+
+~~~xml
+        <!--resilience4j-circuitbreaker-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+        </dependency>
+~~~
+
++ 编写配置
+
+~~~yml
+
+resilience4j:
+  timelimiter:
+    configs:
+      default:
+        timeout-duration: 10s  # 该配置表示调用超过该秒数就进行服务降级，不再进行断路判断，因此需要把值设置的长一点
+  # 通过线程池进行限制，推荐，主要是因为这个我测试着没什么问题
+  thread-pool-bulkhead:
+    configs:
+      default:
+        core-thread-pool-size: 1  # 线程池的核心线程数量
+        max-thread-pool-size: 1 # 线程池的最大线程数量
+        queue-capacity: 1  # 线程到达线程池最大数量时，多余的请求会加入队列，这里声明队列容量
+  # ------------ 通过信号量进行并发限制---------------
+  bulkhead:
+    configs:
+      default:
+        max-concurrent-calls: 2  # 允许并发执行的最大数量，但是实际的测试结果貌似在说明一次请求会占用两个并发量，默认值是25
+        max-wait-duration: 1s  # 并发量（即上面声明的值）全部被占用时，再有请求来，如果等待的数值超过该值，那么进行服务降级处理.默认值是0s
+    instances:
+      cloud-pay-service:
+        base-config: default
+~~~
+
++ 编写相关服务模块的方法和Feign接口对应方法
++ 在调用模块中进行调用
++ 为调用模块中的方法添加@Bulkhead注解
+  + name属性填写调用的服务模块在Consul上面的注册名
+  + fallbackMethod写服务降级的处理方法
+  + type指明隔离方式，点开该注解就能看到，默认的隔离方式是SEMAPHORE
++ 如果是使用的线程池的方式，那么返回值有一些不同，需要这样调用:
+  + 且返回值类型声明为CompletableFuture<泛型为lambda表达式返回类型>
+  + 如果不这样写的话，@Bulkhead注解上面的type属性如果写THREADPOOL，那么不管配置文件配置的线程池容量和请求队列容量有多大，请求必降级
+  + **注意，handler方法的返回值变了，fallback方法的返回值也需要跟着变化**
+  + 或者也可以不这样写，也使用传统的调用FeignAPI的方式，但是@Bulkhead注解上面的type属性需要写SEMAPHORE，**这个是我自己瞎捣鼓试出来的**
+~~~java
+  return CompletableFuture.supplyAsync(() -> payFeignApi.getBulkheadInfo(id) + "\t" + " Bulkhead.Type.THREADPOOL");
+~~~ 
++ 进行测试
+  + 本人测试时，经过浏览器和Postman的共同测试，结果都是**一次请求占用了两个并发单位**，即max-concurrent-calls填4的话，2个并发请求就能占满这4个并发量，第三个请求来的时候，等待超时直接降级，**不是很明白这是为什么**
+  + 进行线程池的测试时，
+  + 总结:使用**线程池+@Bulkhead注解的type属性为SEMAPHORE+通过FeignAPI进行请求调用**是正常的，虽然很奇怪，但是确实是正常的
+  + 总之，测试的运行结果与本人实际理解的，想要的结果不一致

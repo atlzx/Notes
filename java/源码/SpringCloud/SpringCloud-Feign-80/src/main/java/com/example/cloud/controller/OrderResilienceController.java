@@ -2,15 +2,20 @@ package com.example.cloud.controller;
 
 import com.example.cloud.apis.PayFeignApi;
 import com.example.cloud.resp.ReturnData;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.concurrent.CompletableFuture;
+
 @RestController
 @RequestMapping("/order/")
+@Slf4j
 public class OrderResilienceController {
     @Resource
     private PayFeignApi payFeignApi;
@@ -21,7 +26,23 @@ public class OrderResilienceController {
         return payFeignApi.getCircuitInfo(id);
     }
 
-    public ReturnData<String> defaultFallBack(Integer id,Throwable t){
-        return ReturnData.ok("CircuitFallback------>系统繁忙");
+    @GetMapping("pay/resilience/bulkhead/get/info/{id}")
+    @Bulkhead(name="cloud-pay-service",fallbackMethod = "threadPoolFallBack",type = Bulkhead.Type.THREADPOOL)
+    public CompletableFuture<String> getBulkheadInfo(@PathVariable("id") Integer id){
+        log.info(Thread.currentThread().getName());
+//        return payFeignApi.getBulkheadInfo(id);
+        return CompletableFuture.supplyAsync(() -> payFeignApi.getBulkheadInfo(id) + "\t" + " Bulkhead.Type.THREADPOOL");
     }
+
+
+
+    public ReturnData<String> defaultFallBack(Integer id,Throwable t){
+        return ReturnData.ok("Resilience4j:Fallback------>系统繁忙");
+    }
+
+    public CompletableFuture<String> threadPoolFallBack(Integer id,Throwable t){
+        return CompletableFuture.supplyAsync(() -> "Bulkhead.Type.THREADPOOL，系统繁忙，请稍后再试-----/(ㄒoㄒ)/~~");
+    }
+
+
 }

@@ -24,6 +24,11 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
         </dependency>
+        <!--resilience4j-bulkhead-->
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-bulkhead</artifactId>
+        </dependency>
         <!-- 由于断路保护等需要AOP实现，所以必须导入AOP包 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

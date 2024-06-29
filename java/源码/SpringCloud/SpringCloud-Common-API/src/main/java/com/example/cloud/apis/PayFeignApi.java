@@ -31,4 +31,7 @@ public interface PayFeignApi {
 
     @GetMapping("/pay/resilience/circuit/get/info/{id}")
     ReturnData<String> getCircuitInfo(@PathVariable("id") Integer id);
+
+    @GetMapping("/pay/resilience/bulkhead/get/info/{id}")
+    ReturnData<String> getBulkheadInfo(@PathVariable("id") Integer id);
 }
