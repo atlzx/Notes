@@ -27,11 +27,11 @@ public class OrderResilienceController {
     }
 
     @GetMapping("pay/resilience/bulkhead/get/info/{id}")
-    @Bulkhead(name="cloud-pay-service",fallbackMethod = "threadPoolFallBack",type = Bulkhead.Type.THREADPOOL)
-    public CompletableFuture<String> getBulkheadInfo(@PathVariable("id") Integer id){
+    @Bulkhead(name="cloud-pay-service",fallbackMethod = "defaultFallBack",type = Bulkhead.Type.SEMAPHORE)
+    public ReturnData<String> getBulkheadInfo(@PathVariable("id") Integer id){
         log.info(Thread.currentThread().getName());
-//        return payFeignApi.getBulkheadInfo(id);
-        return CompletableFuture.supplyAsync(() -> payFeignApi.getBulkheadInfo(id) + "\t" + " Bulkhead.Type.THREADPOOL");
+        return payFeignApi.getBulkheadInfo(id);
+//        return CompletableFuture.supplyAsync(() -> payFeignApi.getBulkheadInfo(id) + "\t" + " Bulkhead.Type.THREADPOOL");
     }
 
 

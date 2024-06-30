@@ -495,6 +495,7 @@ timelimiter:
 
 + 在调用模块的对应controller类中的调用方法上添加@CircuitBreaker注解，该注解用来使resilience4j在方法调用对应服务模块时，如果出现服务故障，那么进行服务降级将保底的返回值返回回去，同时触发断路器效果
 + 在调用模块的controller类中增加对应的fallback方法，该方法是进行服务降级所调用的方法，它的格式如下
+  + 方法必须与调用方法在同一个类中
   + 返回值与处理请求的handler方法返回值一致
   + 方法参数包含handler方法的全部参数列表，同时最后一个参数是异常类型的参数，表示此次进行服务降级的异常信息
 + **全局异常处理的存在会干扰断路器的判断，在测试时将全局异常管理关掉**
@@ -505,7 +506,7 @@ timelimiter:
 
 ---
 
-#### ②舱壁隔离
+#### ③舱壁隔离
 
 ##### Ⅰ理论概述
 
@@ -567,12 +568,13 @@ resilience4j:
   + 且返回值类型声明为CompletableFuture<泛型为lambda表达式返回类型>
   + 如果不这样写的话，@Bulkhead注解上面的type属性如果写THREADPOOL，那么不管配置文件配置的线程池容量和请求队列容量有多大，请求必降级
   + **注意，handler方法的返回值变了，fallback方法的返回值也需要跟着变化**
-  + 或者也可以不这样写，也使用传统的调用FeignAPI的方式，但是@Bulkhead注解上面的type属性需要写SEMAPHORE，**这个是我自己瞎捣鼓试出来的**
 ~~~java
   return CompletableFuture.supplyAsync(() -> payFeignApi.getBulkheadInfo(id) + "\t" + " Bulkhead.Type.THREADPOOL");
 ~~~ 
-+ 进行测试
-  + 本人测试时，经过浏览器和Postman的共同测试，结果都是**一次请求占用了两个并发单位**，即max-concurrent-calls填4的话，2个并发请求就能占满这4个并发量，第三个请求来的时候，等待超时直接降级，**不是很明白这是为什么**
-  + 进行线程池的测试时，
-  + 总结:使用**线程池+@Bulkhead注解的type属性为SEMAPHORE+通过FeignAPI进行请求调用**是正常的，虽然很奇怪，但是确实是正常的
-  + 总之，测试的运行结果与本人实际理解的，想要的结果不一致
++ 接下来把`spring.cloud.openfeign.circuitbreaker.group.enabled`配置关掉
+  + **该步骤非常重要，不进行配置可能会导致测试出现问题**，如出现设置了最大并发数是2，但是第二个请求就执行了服务降级这种情况
++ 接下来进行测试
+
+---
+
+#### ④

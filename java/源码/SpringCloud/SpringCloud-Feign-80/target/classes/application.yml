@@ -23,8 +23,8 @@ spring:
             connect-timeout: 20000  # 连接超时时间
             read-timeout: 20000  # 等待操作的超时时间
       circuitbreaker:
-        group:
-          enabled: true
+#        group:
+#          enabled: true
         enabled: true  # 使断路器能够干涉OpenFeign的操作
       httpclient:
         hc5:
@@ -88,17 +88,17 @@ resilience4j:
     configs:
       default:
         timeout-duration: 20s  # 该配置表示调用超过该秒数就进行服务降级，不再进行断路判断，因此需要把值设置的长一点
-  thread-pool-bulkhead:
-    configs:
-      default:
-        core-thread-pool-size: 1
-        max-thread-pool-size: 2
-        queue-capacity: 0
-#  bulkhead:
+#  thread-pool-bulkhead:
 #    configs:
 #      default:
-#        max-concurrent-calls: 2  # 允许并发执行的最大数量
-#        max-wait-duration: 1s  # 线程全部被占用时，再有请求来，如果等待的数值超过该值，那么进行服务降级处理
+#        core-thread-pool-size: 1
+#        max-thread-pool-size: 2
+#        queue-capacity: 1
+  bulkhead:
+    configs:
+      default:
+        max-concurrent-calls: 2  # 允许并发执行的最大数量
+        max-wait-duration: 1s  # 线程全部被占用时，再有请求来，如果等待的数值超过该值，那么进行服务降级处理
     instances:
       cloud-pay-service:
         base-config: default
