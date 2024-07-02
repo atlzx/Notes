@@ -883,16 +883,139 @@ spring:
 + 另外，我们也可以自定义断言
   + 自定义断言只需要根据官方的模板照葫芦画瓢就行
   + 大体上需要
+    + 后缀必须为RoutePredicateFactory
     + @Component注解加入IOC容器
     + 继承AbstractRoutePredicateFactory类（或者实现RoutePredicateFactory接口），泛型指定表示校验对象的Config类。一般都是写自己的自定义类内自定义的Config类进去
     + 提供一个无参构造方法，调用父类构造方法，把自定义Config类的Class对象传入
     + 重写shortcutFieldOrder方法，该方法的重写使得shortcut方式的配置可用，否则会报错
     + 重写apply方法，这是进行校验的主方法
     + 自定义Config类，类中的属性即为我们想进行校验的配置文件中指定的值或表达式
+    + 配置文件配置时，写类名的前缀进行配置
   + [自定义Predicate样例](../../源码/SpringCloud/SpringCloud-Gateway-9527/src/main/java/com/example/cloud/components/CustomRoutePredicateFactory.java)
 
 ---
 
 #### ④Filter过滤器
 
-+ 
++ 该过滤器与Servlet的Filter和SpringMVC的interceptor类似，都是在请求执行前后进行一些附加操作
++ 由于配置了网关，所以全部的请求都需要先经过网关，因此网关可以针对这些请求在服务模块过滤之前统一执行过滤操作，Filter的作用有:
+  + 请求鉴权
+  + 异常处理
+  + 可以用来进行接口调用时长统计
+  + ...
++ SpringCloud提供了多种类型的过滤器，详见[官方文档](https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-mvc/gateway-handler-filter-functions.html)，它们可以针对不同的请求进行附加操作，大致上可以分为:
+  + 请求头相关
+  + 请求参数相关
+  + 响应头相关
+  + 前缀与路径相关
+  + 全局过滤
++ 配置详情见[配置文件示例](../../源码/SpringCloud/SpringCloud-Gateway-9527/src/main/resources/application.yml)
++ 自定义Filter基本上与自定义Predicate一致，都是照葫芦画瓢
+  + 自定义全局Filter
+    + 添加@Component注解
+    + 实现GlobalFilter和Ordered接口
+    + 实现它们的方法，其中`getOrder`方法返回值越小，自定义过滤器加载优先级就越高。而`filter`方法是进行过滤的主方法，通过传入的exchange参数可以得到请求对象和响应对象，GatewayFilterChain则是过滤器链，相当于Servlet的过滤器的过滤器链
+    + 全局过滤器可以用于统计各接口的执行时长，[样例](../../源码/SpringCloud/SpringCloud-Gateway-9527/src/main/java/com/example/cloud/components/MyGlobalFilter.java)
+  + 自定义条件Filter
+    + 添加添加@Component注解
+    + 类的后缀必须为GatewayFilterFactory
+    + 继承AbstractGatewayFilterFactory类，泛型指定自定义Config类
+    + 配置类声明为静态，提供getter、setter方法和无参构造器
+    + 重写apply和shortcutFieldOrder方法，前者是进行过滤的主方法，后者是提供shortcut方式的必要配置
+    + 本自定义类的构造器内调用父类构造器，传入自定义Config类的Class对象
+    + 配置文件进行配置时，根据类名的前缀进行配置
+    + [样例](../../源码/SpringCloud/SpringCloud-Gateway-9527/src/main/java/com/example/cloud/components/MyCustomGatewayFilterFactory.java)
+
+---
+
+## 三、SpringCloudAlibaba
+
++ [github官方](https://github.com/alibaba/spring-cloud-alibaba)
++ Spring Cloud Alibaba 致力于提供微服务开发的一站式解决方案
+
+### （一）Nacos
+
++ 作用同Consul
+
+#### ①服务注册与发现
+
++ 主要依赖:
+
+~~~xml
+
+  <!--nacos-discovery-->
+  <dependency>
+      <groupId>com.alibaba.cloud</groupId>
+      <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+  </dependency>
+  <!--loadbalancer-->
+  <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+  </dependency>
+
+~~~
+
++ 编写项目的yml文件:
+  + 与Consul不同的是，Nacos默认就自动的让注册名与spring.application.name保持一致
+  + 同时，Nacos也能够**自动进行持久化**
+
+~~~yml
+  server:
+    port: 9001
+  spring:
+    application:
+      name: nacos-pay-service
+    cloud:
+      nacos:
+        discovery:
+          server-addr: localhost:8848 #配置Nacos地址
+service-url:
+  nacos-user-service: http://nacos-payment-provider # 这个是调用模块需要加的，它的意义就是在配置文件中引入对应的服务地址，以根据服务模块的名称来确定将请求转发的路径，从而避免硬编码的问题。另外，这个玩意是使用RestTemplate需要的配置
+~~~
+
++ 接下来在启动类添加@EnableDiscoveryClient注解
++ 如果是使用了RestTemplate的模块，我们也需要对RestTemplate的Bean方法上面写@LoadBalanced注解
+
+~~~java
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate(){
+        return new RestTemplate();
+    }
+~~~
+
++ 最后启动
++ Nacos支持负载均衡，默认采用轮询算法
+
+---
+
+#### ②分布式配置
+
++ nacos的分布式配置文件的命名格式为`<服务注册名>-<服务active>.<服务匹配的文件后缀>`，如我们的服务注册名为`pay-service`，当前的active为`dev`，要匹配的文件格式为yaml，那么文件就命名为`pay-service-dev.yaml`
++ 同样，我们也需要配置bootstrap.yml
++ Nacos的图形化界面很好理解，因为有中文，直接在配置管理->配置列表中创建即可
+  ![Nacos创建配置](../../文件/图片/SpringCloud图片/nacos创建配置.png)
+  + 根据上图，DataId就是我们要写的配置文件的名，遵循上面的命名格式
+  + 之后选择yaml,在下面的输入框内输入值即可
++ Nacos默认支持自动刷新，不过我们想要后端支持，需要在controller类上面添加@RefreshScope注解
+
+---
+
+#### ③配置三原组
+
++ 如果我们的微服务项目非常大的话，我们的模块就会有很多子模块，这些子模块可能还会进行细分，而每个模块的配置都可能会有多种不同的active，因此Nacos提供了三元组的方式来进行配置文件的区分
+![Nacos服务分级存储服务](../../文件/图片/SpringCloud图片/Nacos服务分级存储模型.png)
+  + 首先区分**NameSpace**，它是第一大的分类，**默认是public**
+  + NameSpace可以有多个**Group**，**默认是DEFAULT_GROUP**
+  + 一个组内可以有多个配置文件
++ 我们的bootstrap.yml文件可以手动指定我们想读取的namespace和group内的配置文件
+  + spring.cloud.nacos.config.group用来指定读取的配置文件所在的组
+  + spring.cloud.nacos.config.namespace用来指定读取的配置文件所在的命名空间，**namespace需要写命名空间的id，不是命名空间的名称**
++ [bootstrap文件示例](../../源码/SpringCloud/SpringCloudAlibaba-Config-1234/src/main/resources/bootstrap.yml)
+
+---
+
+### （二）Sentinel
+
+#### ①

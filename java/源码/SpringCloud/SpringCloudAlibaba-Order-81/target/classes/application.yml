@@ -1,0 +1,11 @@
+server:
+  port: 81
+spring:
+  application:
+    name: nacos-consumer-service
+  cloud:
+    nacos:
+      discovery:
+        service: ${spring.application.name}
+service-url:
+  nacos-user-service: http://nacos-pay-service

@@ -1,6 +1,7 @@
 server:
   port: 9527
-
+  servlet:
+    context-path: gateway
 spring:
   application:
     name: cloud-gateway #以微服务注册进consul
@@ -14,10 +15,11 @@ spring:
     gateway:
       routes:
         - id: pay-get-info  # 该路由项的id，没什么要求，但是必须唯一，一般根据业务来进行命名
-          uri: http://localhost:8001  # 匹配的uri前缀
+          uri: lb://cloud-pay-service  # 匹配的uri前缀
           predicates:
+            # 断言的值的书写规则是，不同的值使用逗号隔开
             - After=2024-07-01T22:15:30.000000000+08:00  # 设置该路由在此时间之后生效，接收的值是ZonedDateTime对象，可以通过其静态方法now()方法得到当前时间
-            - Path=/pay/gateway/get/**  # 指定断言需要匹配的映射路径，可以写多个，请求风格是Ant规则的请求方式
+            - Path=/pay/gateway/get/info  # 指定断言需要匹配的映射路径，可以写多个，请求风格是Ant规则的请求方式。他匹配的是端口以后的全部路径，如果项目写了上下文路径，那么需要把上下文路径也加进来
 #            - Between=2024-07-01T22:15:30.000000000+08:00,2024-07-01T22:21:00.000000000+08:00  # 指定时间区间，也接收ZonedDateTime对象
             - Cookie=username,^lz.*$  # Cookie的方式是以键值对的形式进行判断，因为Cookie本身的数据形式也是键值对类型的，它的键是字符串类型的，但是值只要满足我们写的正则表达式即可，如左边的样例，键为username,值为以lz开头的字符串即可
             - Cookie=password,123456  # 写两个Cookie配置表示当Cookie携带的键值对具有这两个键值对时，才能成功匹配。无法表示或的关系，因为源码中的Config类声明的是单一的键值类型而不是List类型，也就是说一个Cookie配置仅能匹配一个键值对
@@ -27,3 +29,37 @@ spring:
             - RemoteAddr=192.168.0.1/24  # 只有当请求的访问host地址符合该配置时，才进行响应，ipv4地址有32位，后面的24表示前24位已经写死了，后面8位是可以更改的，因此左边的配置可以匹配的ip请求区间是192.168.0.0~192.168.0.255。该配置可以配置多个
             - Host=**.test.com  # 可以写多个，以Ant风格的匹配模式书写
             - Custom=test
+        - id: filter-get-info
+          uri: lb://cloud-pay-service
+          predicates:
+            - Path=/pay/gateway/get/filter/info
+          filters:
+            # 过滤器的书写规则是，不同的值使用逗号隔开
+            - AddRequestHeader=X-Request-id1,value1  # 设置想想在请求头中新增的键值对，如果有多个那么就写多个AddRequestHeader
+            - AddRequestHeader=X-Request-id2,value2  # 一下加俩
+            - RemoveRequestHeader=sec-fetch-site # 删除请求头sec-fetch-site，如果想删除多个就写多个RemoveRequestHeader
+            - SetRequestHeader=sec-fetch-mode, abcdefg # 修改请求头中的指定键对应的值，默认得到的值是null
+            - AddRequestParameter=customerId,9527001  # 添加URL参数，如果已经有了不会覆盖，而是变成数组了
+            - RemoveRequestParameter=customName  # 移除URL参数
+            - AddResponseHeader=X-Response-respId, BlueResponse # 新增响应头参数X-Response-respId并设值为BlueResponse
+            - SetResponseHeader=Date,2099-11-11 # 设置回应头Date值为2099-11-11
+            - RemoveResponseHeader=Content-Type # 将默认自带Content-Type回应属性删除
+        - id: filter-get-info2
+          uri: lb://cloud-pay-service
+          predicates:
+            - Path=/gateway/get/filter/info
+          filters:
+            - PrefixPath=/pay # 为请求路径添加请求路径前缀，它直接在整个路径前面加，如果我们的网关有上下文路径，它会在上下文路径前面加
+        - id: filter-get-info3
+          uri: lb://cloud-pay-service
+          predicates:
+            - Path=/pay/gateway/get/filter/{info}  # 路径匹配的占位符可以被filters使用
+          filters:
+            - SetPath=/pay/gateway/abc/def/{info}  # SetPath除占位符之外的所有路径都会被替换
+            - MyCustom=haha
+#            - RedirectTo=302,https://www.baidu.com/  # RedirectTo过滤器用于进行重定向，第一个值为状态码，即302。后面的值是要重定向到的路径
+      # 这个配置是全局过滤器配置，它和routes配置是同级的
+      default-filters:
+        # 在这里写的格式跟上面的filters书写的格式是相同的，只是在这里写的话，是全局生效的
+#        - Path=/pay/gateway/get/filter/{info}
+#        - RedirectTo=302,https://www.baidu.com/

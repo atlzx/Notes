@@ -17,6 +17,10 @@
         <module>SpringCloud-Pay-8002</module>
         <module>SpringCloud-Feign-80</module>
         <module>SpringCloud-Gateway-9527</module>
+        <module>SpringCloudAlibaba-Pay-9001</module>
+        <module>SpringCloudAlibaba-Order-81</module>
+        <module>SpringCloudAlibaba-Pay-9002</module>
+        <module>SpringCloudAlibaba-Config-1234</module>
     </modules>
 
     <properties>
