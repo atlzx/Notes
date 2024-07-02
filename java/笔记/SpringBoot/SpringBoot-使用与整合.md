@@ -1917,9 +1917,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 |^|resilience4j.thread-pool-bulkhead.configs.<configKey>.core-thread-pool-size|configKey:自定义设置的名称|设置线程池的核心线程的数量|数值|无|
 |^|resilience4j.thread-pool-bulkhead.configs.<configKey>.max-thread-pool-size|^|设置线程池最大的线程数量|数值|无|
 |^|resilience4j.thread-pool-bulkhead.configs.<configKey>.queue-capacity|^|设置线程满了以后，承载后续请求的队列容量|数值|无|
-|^|resilience4j.bulkhead.configs.default.max-concurrent-calls|^|设置该服务模块允许并发执行的最大数量|数值|无|
-|^|resilience4j.bulkhead.configs.default.max-wait-duration|并发数达到上限时，再有请求来，若达到该值，那么自动进行服务降级处理|例:`2s`|无|
+|^|resilience4j.bulkhead.configs.<configKey>.max-concurrent-calls|^|设置该服务模块允许并发执行的最大数量|数值|无|
+|^|resilience4j.bulkhead.configs.<configKey>.max-wait-duration|并发数达到上限时，再有请求来，若达到该值，那么自动进行服务降级处理|例:`2s`|无|
 |^|resilience4j.thread-pool-bulkhead.instances.<serviceName>.base-config|serviceName:服务模块在Consul上面所注册的名字|指定该服务模块所遵循的Resilience设置集|即上面的`configKey`|无|
+|^|resilience4j.ratelimiter.configs.<configKey>.limit-for-period|configKey:自定义设置的名称|在一次刷新周期内，允许执行的最大请求数|数值|无|
+|^|resilience4j.ratelimiter.configs.<configKey>.limit-refresh-period|^|限流器每隔limitRefreshPeriod刷新一次，将允许处理的最大请求数量重置为limitForPeriod|例:`5s`|无|
+|^|resilience4j.ratelimiter.configs.<configKey>.timeout-duration|^|线程等待其执行权限的最大时间，若超过该时间，执行服务降级|例:`5s`|无|
 
 
 ---
@@ -2001,6 +2004,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 |^|@Bulkhead|使对应方法能够经过舱壁隔离处理|name|该值对应的服务模块的调用行为会被断路器监听，并在出现问题时执行服务熔断和服务降级|对应服务模块在Consul上面的注册名|方法|无|
 |^|^|^|fallback|指定服务降级要调用的fallback方法|fallback方法的名称（字符串）|^|^|
 |^|^|^|type|舱壁隔离的方式|信号量(`Bulkhead.Type.SEMAPHORE`)和线程池(`Bulkhead.Type.THREADPOOL`)|^|^|
+|^|@RateLimiter|使对应方法能够经过限流处理|name|该值对应的服务模块的调用行为会被断路器监听，并在出现问题时执行服务熔断和服务降级|对应服务模块在Consul上面的注册名|方法|无|
+|^|^|^|fallback|指定服务降级要调用的fallback方法|fallback方法的名称（字符串）|^|^|
 
 
 

@@ -45,4 +45,17 @@ public class ResilienceController {
     }
 
 
+    @GetMapping("ratelimiter/get/info/{id}")
+    public ReturnData<String> getRateLimiterInfo(@PathVariable("id") Integer id){
+        try{
+            log.info("休眠开始时间:{}", DateUtil.now());
+            TimeUnit.SECONDS.sleep(3);
+            log.info("休眠结束时间:{}", DateUtil.now());
+        }catch(Exception e){
+            log.error("{}",e,e);
+        }
+        return ReturnData.ok("ratelimiter"+UUID.fastUUID());
+    }
+
+
 }

@@ -4,6 +4,7 @@ import com.example.cloud.apis.PayFeignApi;
 import com.example.cloud.resp.ReturnData;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,12 @@ public class OrderResilienceController {
         log.info(Thread.currentThread().getName());
         return payFeignApi.getBulkheadInfo(id);
 //        return CompletableFuture.supplyAsync(() -> payFeignApi.getBulkheadInfo(id) + "\t" + " Bulkhead.Type.THREADPOOL");
+    }
+
+    @GetMapping("pay/resilience/ratelimiter/get/info/{id}")
+    @RateLimiter(name="cloud-pay-service",fallbackMethod = "defaultFallBack")
+    public ReturnData<String> getRateLimiterInfo(@PathVariable("id") Integer id){
+        return payFeignApi.getRateLimiterInfo(id);
     }
 
 

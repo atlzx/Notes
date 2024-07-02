@@ -391,7 +391,7 @@
   + 服务限时
   + 服务预热
   + 接近实时的监控
-  + 兜底的处理工作
+  + 兜底的处理工作:即fallback
 + **服务雪崩**
   + 多个微服务之间调用的时候，假设微服务A调用微服务B和微服务C，微服务B和微服务C又调用其它的微服务，这就是所谓的“扇出”。如果扇出的链路上某个微服务的调用响应时间过长或者不可用，对微服务A的调用就会占用越来越多的系统资源，进而引起系统崩溃，所谓的“雪崩效应”。
   + 通常当你发现一个模块下的某个实例失败后，这时候这个模块依然还会接收流量，然后这个有问题的模块还调用了其他的模块，这样就会发生级联故障，或者叫雪崩
@@ -510,7 +510,7 @@ timelimiter:
 
 ##### Ⅰ理论概述
 
-+ 舱壁隔离可以限制并发执行的数量
++ 舱壁隔离可以限制并发执行的数量，它用于限制对于下游服务的最大并发数量，但是无法限制单位时间内
 + 舱壁隔离有两种基本的实现方式
   + 通过信号量进行隔离，这是默认的方式
     + 它通过指定最大服务调用的并发数量和等待时长来达到限制目的
@@ -577,4 +577,320 @@ resilience4j:
 
 ---
 
-#### ④
+#### ④限流
+
++ 即限制单位时间内服务器可以处理的请求数量，防止服务器过载崩溃
+
+##### Ⅰ常见算法
+
++ **漏桶算法**
+  + 即像漏斗一样，它的大小是一定的，输出的结果也是一定的，无论请求多还是少，它处理请求的速率都是固定的。而当请求总数大于漏斗容量后，多余的请求会被丢弃
+  + 由于漏斗是服务启动时事先配置好的，因此它的处理逻辑（即处理请求的速率和漏斗的大小）在服务器一次运行时是写死了的，因此无论请求频率多少，它都无法随之动态变化，因此在服务器负载能够承受的突发性的流量到来时，请求依旧会匀速被处理，因此，**漏桶算法对于存在突发特性的流量来说缺乏效率**
+  ![限流算法1](../../文件/图片/SpringCloud图片/限流算法1.png)
++ **令牌桶算法**
+  + 该算法是SpringCloud默认所使用的算法
+  + 它类似于食堂买饭，你买了东西，食堂会给你对应的序号牌来等待，饭做好以后，食堂会回收该序号牌，然后把饭给你。如果后面的人到了但是已经没有序号牌了，就只能等待
+  + ![限流算法2](../../文件/图片/SpringCloud图片/限流算法2.png)
++ **计数器(固定窗口)**
+  + 该算法以固定的时间周期对请求数量进行分割，当一个时间周期内的请求数量到达阈值时，触发限流策略。下一个时间周期开始时，将计数清零，重新计算
+  + 但该算法存在缺陷:假设一个时间周期为1min，服务器总负载上限为1min处理100次请求
+    + 某用户在00:00:59发送了100次请求，在此之前没有请求，因此请求在服务器负载范围内，进行处理
+    + 00:01:00计数清零
+    + 同时，又一用户在00:01:00发送了100次请求，由于计数器已经清零，算法认为服务器可以承受，因此放行请求
+    + 因此服务器在2s内收到了200次请求，大大超过了服务器负载上限，因此会导致服务崩溃
+  + 因此它的缺陷就是:**对于周期比较长的限流，存在很大的弊端**
+  ![限流算法3](../../文件/图片/SpringCloud图片/限流算法3.png)
++ **滑动窗口算法**
+  + 该算法是对上面的固定窗口算法的改进
+  + 为了避免出现两个时间周期间隔高请求量导致服务器过量负载的问题，该算法又将一个时间周期分为多个小片段，每次统计小片段的请求数量，并且根据时间滑动删除过期的小周期
+  ![限流算法4](../../文件/图片/SpringCloud图片/限流算法4.png)
+
+---
+
+##### Ⅱ使用
+
++ 引入依赖:
+
+~~~xml
+
+        <!--resilience4j-ratelimiter-->
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-ratelimiter</artifactId>
+        </dependency>       
+~~~
+
++ 在服务模块写对应的方法，同时提供对应的FeignAPI方法
++ 写配置文件:
+
+~~~yml
+resilience4j:
+  timelimiter:
+    configs:
+      default:
+        timeout-duration: 20s  # 该配置表示调用超过该秒数就进行服务降级，不再进行断路判断，因此需要把值设置的长一点
+    instances:
+      cloud-pay-service:
+        base-config: default
+  ratelimiter:
+    configs:
+      default:
+        limit-for-period: 2  # 在一次刷新周期内，允许执行的最大请求数
+        limit-refresh-period: 5s  #限流器每隔limitRefreshPeriod刷新一次，将允许处理的最大请求数量重置为limitForPeriod
+        timeout-duration: 1s  # 线程等待其执行权限的最大时间，若超过该时间，执行服务降级
+~~~
+
++ 说明样例如下:
+  + 现在有四个请求
+  + 前两个请求先到，直接开始执行
+  + 后两个请求到了，此时最大请求数为2，因此其线程开始等待，如果等待时间超过了timeout-duration配置，就会触发服务降级
+  + 如果等待时间没有超过timeout-duration配置，就执行
++ 在调用模块内新增方法，调用FeignAPI的方法，并使用@RateLimiter注解修饰方法，使用方式同@Bulkhead和@CircuitBreaker
++ 测试
+
+---
+
+### （五）Micrometer
+
+#### ①简介
+
++ 在微服务框架中，一个由客户端发起的请求在后端系统中会经过多个不同的的服务节点调用来协同产生最后的请求结果，每一个前段请求都会形成一条复杂的分布式服务调用链路，链路中的任何一环出现高延时或错误都会引起整个请求最后的失败。
+![微服务链路](../../文件/图片/SpringCloud图片/Micrometer图例.png)
++ 为了查出上面存在的问题，我们需要一个工具来记录每个微服务调用环节的详细信息，Micrometer就提供了一套完整的分布式链路追踪解决方案并兼容实现了Zipkin展现
+  + Zipkin是一个能可视化展示分布式链路调用信息的图形工具，它可以让我们直观的看到微服务调用环节的各个信息
+
+#### ②原理
+
++ 对于一条调用链路，它有自己专门的一个id(TraceId)来表示本链路，微服务模块在互相调用时，如果在该链路上，那么id会随之传递
++ 对于每个服务模块，它们都有自己的独特的id(SpanId)，用于唯一标识自身
++ 调用模块转发请求时，请求时间被记录在`Client Sent`中，而服务模块收到请求时，收到请求的时间被记录在`Server Received`中。
++ 服务模块处理完请求后，处理完成的时间被记录在`Server Sent`中，而调用模块收到结果时，收到结果的时间被记录在`Client Received`中
++ 我们可以根据上面的信息来计算出网络传输时间（发送请求）（Server Received - Client Sent）、业务处理时间（Server Sent - Server Received）、远程调用耗时（Client Received - Client Sent）、网络传输时间（收到响应）（Client Received - Server Sent）
+
+![Micrometer原理图](../../文件/图片/SpringCloud图片/Micrometer原理图.jpg)
+
+---
+
+#### ③使用
+
++ 首先我们要下载[Zipkin](https://zipkin.io/pages/quickstart.html)
+  + 直接找到Java，然后点击`latest release`就会下载得到一个jar包
+  + 直接打开终端，运行`java -jar zipkinxxxx.jar`运行，默认占用的端口是[9411端口](http://localhost:9411)
+  + 看到下图说明启动成功了
+  ![zipkin启动成功](../../文件/图片/SpringCloud图片/zipkin启动成功.png)
++ 接下来在父项目导入依赖:
+
+~~~xml
+        <properties>
+          <micrometer-tracing.version>1.2.0</micrometer-tracing.version>
+          <micrometer-observation.version>1.12.0</micrometer-observation.version>
+          <feign-micrometer.version>12.5</feign-micrometer.version>
+          <zipkin-reporter-brave.version>2.17.0</zipkin-reporter-brave.version>
+        </properties>
+
+
+        <!--micrometer-tracing-bom导入链路追踪版本中心  1-->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-tracing-bom</artifactId>
+            <version>${micrometer-tracing.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+        <!--micrometer-tracing指标追踪  2-->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-tracing</artifactId>
+            <version>${micrometer-tracing.version}</version>
+        </dependency>
+        <!--micrometer-tracing-bridge-brave适配zipkin的桥接包 3-->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-tracing-bridge-brave</artifactId>
+            <version>${micrometer-tracing.version}</version>
+        </dependency>
+        <!--micrometer-observation 4-->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-observation</artifactId>
+            <version>${micrometer-observation.version}</version>
+        </dependency>
+        <!--feign-micrometer 5-->
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-micrometer</artifactId>
+            <version>${feign-micrometer.version}</version>
+        </dependency>
+        <!--zipkin-reporter-brave 6-->
+        <dependency>
+            <groupId>io.zipkin.reporter2</groupId>
+            <artifactId>zipkin-reporter-brave</artifactId>
+            <version>${zipkin-reporter-brave.version}</version>
+        </dependency>
+
+~~~
+
++ 之后分别在服务模块和调用模块都导入如下依赖:
+
+~~~xml
+    <!--micrometer-tracing指标追踪  1-->
+    <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-tracing</artifactId>
+    </dependency>
+    <!--micrometer-tracing-bridge-brave适配zipkin的桥接包 2-->
+    <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-tracing-bridge-brave</artifactId>
+    </dependency>
+    <!--micrometer-observation 3-->
+    <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-observation</artifactId>
+    </dependency>
+    <!--feign-micrometer 4-->
+    <dependency>
+        <groupId>io.github.openfeign</groupId>
+        <artifactId>feign-micrometer</artifactId>
+    </dependency>
+    <!--zipkin-reporter-brave 5-->
+    <dependency>
+        <groupId>io.zipkin.reporter2</groupId>
+        <artifactId>zipkin-reporter-brave</artifactId>
+    </dependency>
+~~~
+
++ 在服务模块和调用模块的application.yml文件中都添加如下配置:
+
+~~~yml
+# zipkin图形展现地址和采样率设置
+management:
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1.0 #采样率默认为0.1(0.1就是10次只能有一次被记录下来)，值越大收集越及时。
+~~~
+
++ 接下来在服务模块下新建一个Controller类，添加对应的服务方法，同时添加对应的FeignAPI的方法
++ 在调用模块也添加对应的通过FeignAPI调用的方法
++ 最后启动模块，请求一次
++ 请求完成后，打开刚才的zipkin可视化网页
+  + 点击下图的`运行查询`可以查看到我们的发送的请求的详细信息
+  + 右边可以通过请求时间进行筛选
+  + 下面还可以根据服务模块名称进行筛选
+  ![zipkin使用1](../../文件/图片/SpringCloud图片/zipkin使用1.png)
++ 筛选结果如下
+  + 点击右侧的`SHOW`按钮可以查看各个链路调用之间的时间耗费的详细信息
+  ![zipkin使用2](../../文件/图片/SpringCloud图片/zipkin使用2.png)
++ 详细信息展示:
+  ![zipkin使用3](../../文件/图片/SpringCloud图片/zipkin使用3.png)
++ 点击网页最上面导航栏的`依赖`按钮，可以查看服务的调用链情况，左侧还有专门的Filter过滤按钮，可供筛选与对应服务模块相关的调用链
+  ![zipkin使用4](../../文件/图片/SpringCloud图片/zipkin使用4.png)
+
+---
+
+### （六）GateWay
+
+#### ①简介
+
++ Gateway就是网关，它旨在为微服务架构提供一种简单而有效的统一的API路由管理方式。它不仅提供统一的路由方式，并且基于Filter链的方式提供了网关基本的功能:
+  + 管理授权
+  + 访问控制
+  + 路由映射
+  + 流量限制
+  + 日志监控
+  + 服务熔断
+  + 反向代理
++ Gateway有三大核心
+  + Route(路由):路由是网关的基本构件模块，它由一个ID、一个目标URI、一组断言和一组过滤器定义。如果断言为真，那么路由匹配
+  + Predicate(断言):开发人员可以匹配HTTP请求中的所有内容，如果请求与断言相匹配，那么断言通过，即断言为真
+  + Filter(过滤器):使用过滤器可以在请求被路由放行前或在请求响应之后进行相关操作
++ 请求在到达Gateway后，网关会对该请求进行路由匹配，期间进行断言，如果断言为真，那么执行过滤器操作，然后放行，最后在响应时再经过网关执行过滤器操作
+
+---
+
+#### ②HelloWorld
+
++ 首先新建一个项目，命名为`SpringCloud-Gateway-9527`
++ 导入依赖:
+
+~~~xml
+        <!--gateway-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway</artifactId>
+        </dependency>
+        <!--服务注册发现consul discovery,网关也要注册进服务注册中心统一管控-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-consul-discovery</artifactId>
+        </dependency>
+        <!-- 指标监控健康检查的actuator,网关是响应式编程删除掉spring-boot-starter-web dependency-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+~~~
+
++ 配置文件内编写相关配置，以加入网关:
+
+~~~yml
+server:
+  port: 9527
+
+spring:
+  application:
+    name: cloud-gateway #以微服务注册进consul
+  cloud:
+    consul: #配置consul地址
+      host: localhost
+      port: 8500
+      discovery:
+        prefer-ip-address: true
+        service-name: ${spring.application.name}
+~~~
+
++ 如果想配置网关相关的路由，可以这样写:
+
+~~~yml
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: pay-get-info  # 该路由项的id，没什么要求，但是必须唯一，一般根据业务来进行命名
+          uri: lb://cloud-pay-service  # 匹配的uri前缀，使用 lb://<服务注册名> 的方式来动态的通过注册中心来获得服务模块对应uri
+          predicates:
+            - Path=/pay/gateway/get/**  # 指定断言需要匹配的映射路径
+~~~
+
++ 在服务模块和FeignApi接口上添加新的方法
+  + 注意，**FeignApi接口上的@FeignClient注解的value属性应该配置网关的注册名，而不是服务的注册名**，因为不配置网关的注册名的话，我们的网关无论是否存在，都Feign接口都会直接调用服务模块的方法
+  + 但是我认为网关是需要在Feign调用模块前面发挥作用的，也就是请求先到网关，网关把请求转发到调用模块，调用模块在调用服务模块。不知道为什么课程讲的是请求先到调用模块，调用模块再把请求转发到网关，网关再调服务模块的方法
++ 在对应的调用模块上也添加新的方法
++ 测试，如果网关存在那么请求成功，如果网关不存在那么报错
+  + 如果报错可能会报Fallback相关的错误，这是因为开启了circuitbreaker，关掉相关配置即可
+  + 关掉以后，报的就是`FeignException$ServiceUnavailable`的错误了
+
+
+---
+
+#### ③Predicate断言
+
++ SpringCloud提供了多种断言的PredicateFactory,我们只需要在配置文件中进行一些配置即可
++ 配置参考[配置文件](../../源码/SpringCloud/SpringCloud-Gateway-9527/src/main/resources/application.yml)和[官方文档](https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-mvc/gateway-request-predicates.html)
++ 另外，我们也可以自定义断言
+  + 自定义断言只需要根据官方的模板照葫芦画瓢就行
+  + 大体上需要
+    + @Component注解加入IOC容器
+    + 继承AbstractRoutePredicateFactory类（或者实现RoutePredicateFactory接口），泛型指定表示校验对象的Config类。一般都是写自己的自定义类内自定义的Config类进去
+    + 提供一个无参构造方法，调用父类构造方法，把自定义Config类的Class对象传入
+    + 重写shortcutFieldOrder方法，该方法的重写使得shortcut方式的配置可用，否则会报错
+    + 重写apply方法，这是进行校验的主方法
+    + 自定义Config类，类中的属性即为我们想进行校验的配置文件中指定的值或表达式
+  + [自定义Predicate样例](../../源码/SpringCloud/SpringCloud-Gateway-9527/src/main/java/com/example/cloud/components/CustomRoutePredicateFactory.java)
+
+---
+
+#### ④Filter

@@ -22,10 +22,10 @@ spring:
           default:  # default表示默认的全局配置
             connect-timeout: 20000  # 连接超时时间
             read-timeout: 20000  # 等待操作的超时时间
-      circuitbreaker:
+#      circuitbreaker:
 #        group:
-#          enabled: true
-        enabled: true  # 使断路器能够干涉OpenFeign的操作
+#          enabled: true  # 开启集群断路功能，在此情况下，只要集群中有一个实例满足了熔断条件，那么所有实例都会受到影响
+#        enabled: true  # 使断路器能够干涉OpenFeign的操作
       httpclient:
         hc5:
           enabled: true  # 使用hc5替代原生的HttpURLConnection
@@ -94,11 +94,26 @@ resilience4j:
 #        core-thread-pool-size: 1
 #        max-thread-pool-size: 2
 #        queue-capacity: 1
-  bulkhead:
-    configs:
-      default:
-        max-concurrent-calls: 2  # 允许并发执行的最大数量
-        max-wait-duration: 1s  # 线程全部被占用时，再有请求来，如果等待的数值超过该值，那么进行服务降级处理
+#  bulkhead:
+#    configs:
+#      default:
+#        max-concurrent-calls: 2  # 允许并发执行的最大数量
+#        max-wait-duration: 1s  # 线程全部被占用时，再有请求来，如果等待的数值超过该值，那么进行服务降级处理
     instances:
       cloud-pay-service:
         base-config: default
+  ratelimiter:
+    configs:
+      default:
+        limit-for-period: 2  # 在一次刷新周期内，允许执行的最大请求数
+        limit-refresh-period: 5s  #限流器每隔limitRefreshPeriod刷新一次，将允许处理的最大请求数量重置为limitForPeriod
+        timeout-duration: 1s  # 线程等待其执行权限的最大时间，若超过该时间，执行服务降级
+# zipkin图形展现地址和采样率设置
+# ---------------------------------micrometer---------------------------------------
+#management:
+#  zipkin:
+#    tracing:
+#      endpoint: http://localhost:9411/api/v2/spans
+#  tracing:
+#    sampling:
+#      probability: 1.0 #采样率默认为0.1(0.1就是10次只能有一次被记录下来)，值越大收集越及时。

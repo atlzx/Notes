@@ -1,0 +1,29 @@
+server:
+  port: 9527
+
+spring:
+  application:
+    name: cloud-gateway #以微服务注册进consul
+  cloud:
+    consul: #配置consul地址
+      host: localhost
+      port: 8500
+      discovery:
+        prefer-ip-address: true
+        service-name: ${spring.application.name}
+    gateway:
+      routes:
+        - id: pay-get-info  # 该路由项的id，没什么要求，但是必须唯一，一般根据业务来进行命名
+          uri: http://localhost:8001  # 匹配的uri前缀
+          predicates:
+            - After=2024-07-01T22:15:30.000000000+08:00  # 设置该路由在此时间之后生效，接收的值是ZonedDateTime对象，可以通过其静态方法now()方法得到当前时间
+            - Path=/pay/gateway/get/**  # 指定断言需要匹配的映射路径，可以写多个，请求风格是Ant规则的请求方式
+#            - Between=2024-07-01T22:15:30.000000000+08:00,2024-07-01T22:21:00.000000000+08:00  # 指定时间区间，也接收ZonedDateTime对象
+            - Cookie=username,^lz.*$  # Cookie的方式是以键值对的形式进行判断，因为Cookie本身的数据形式也是键值对类型的，它的键是字符串类型的，但是值只要满足我们写的正则表达式即可，如左边的样例，键为username,值为以lz开头的字符串即可
+            - Cookie=password,123456  # 写两个Cookie配置表示当Cookie携带的键值对具有这两个键值对时，才能成功匹配。无法表示或的关系，因为源码中的Config类声明的是单一的键值类型而不是List类型，也就是说一个Cookie配置仅能匹配一个键值对
+            - Header=X-Request-Id,\d+  # 匹配请求头的配置，同样是键值对形式，值可以通过正则表达式匹配
+            - Method=GET,POST  # 接受的请求类型，类型不满足，直接拒绝。即使网关接受了，服务模块不接受该请求类型也是会报错的
+            - Query=green,haha  # 它匹配的是请求URL额外携带的参数，并不是方法体内的参数，该匹配方式同Cookie，无法进行或匹配，因为源码的声明形式不是List
+            - RemoteAddr=192.168.0.1/24  # 只有当请求的访问host地址符合该配置时，才进行响应，ipv4地址有32位，后面的24表示前24位已经写死了，后面8位是可以更改的，因此左边的配置可以匹配的ip请求区间是192.168.0.0~192.168.0.255。该配置可以配置多个
+            - Host=**.test.com  # 可以写多个，以Ant风格的匹配模式书写
+            - Custom=test

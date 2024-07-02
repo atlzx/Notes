@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="SpringCloud-Common-API" />
         <module name="SpringCloud-Order" />
+        <module name="SpringCloud-Gateway-9527" />
         <module name="SpringCloud-Generator" />
         <module name="SpringCloud-Feign-80" />
         <module name="SpringCloud-Pay-8002" />
