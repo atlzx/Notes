@@ -9,6 +9,7 @@
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/SpringAlibaba-Sentinel-Service9500/pom.xml" />
         <option value="$PROJECT_DIR$/SpringCloud-HelloWorld/pom.xml" />
       </set>
     </option>

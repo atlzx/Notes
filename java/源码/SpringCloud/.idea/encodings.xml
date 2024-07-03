@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/SpringAlibaba-Sentinel-Service9500/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringAlibaba-Sentinel-Service9500/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringCloud-Common-API/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringCloud-Common-API/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringCloud-Feign-80/src/main/java" charset="UTF-8" />
@@ -25,6 +27,8 @@
     <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Pay-9001/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Pay-9002/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Pay-9002/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Sentinel-Service-9500/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Sentinel-Service-9500/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
     <file url="PROJECT" charset="UTF-8" />

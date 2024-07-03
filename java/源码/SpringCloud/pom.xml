@@ -21,6 +21,7 @@
         <module>SpringCloudAlibaba-Order-81</module>
         <module>SpringCloudAlibaba-Pay-9002</module>
         <module>SpringCloudAlibaba-Config-1234</module>
+        <module>SpringCloudAlibaba-Sentinel-Service-9500</module>
     </modules>
 
     <properties>

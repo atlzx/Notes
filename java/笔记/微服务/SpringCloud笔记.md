@@ -937,7 +937,16 @@ spring:
 
 + 作用同Consul
 
-#### ①服务注册与发现
+#### ①安装
+
++ [官网](https://github.com/alibaba/nacos/releases)选择版本下载，注意，**下载的版本需要注意是否与SpringCloud相关的其他组件和SpringBoot版本相容**
++ 下载后缀是`.zip`的
++ 下载完之后，直接打开目录，执行`./startup.cmd -m standalone`来以单机模式运行Nacos（使用cmd不用带`./`，但是PowerShell要加）
+
+![Nacos运行图例](../../文件/图片/SpringCloud图片/Nacos运行图例.png)
+
+
+#### ②服务注册与发现
 
 + 主要依赖:
 
@@ -990,7 +999,7 @@ service-url:
 
 ---
 
-#### ②分布式配置
+#### ③分布式配置
 
 + nacos的分布式配置文件的命名格式为`<服务注册名>-<服务active>.<服务匹配的文件后缀>`，如我们的服务注册名为`pay-service`，当前的active为`dev`，要匹配的文件格式为yaml，那么文件就命名为`pay-service-dev.yaml`
 + 同样，我们也需要配置bootstrap.yml
@@ -1002,7 +1011,7 @@ service-url:
 
 ---
 
-#### ③配置三原组
+#### ④配置三原组
 
 + 如果我们的微服务项目非常大的话，我们的模块就会有很多子模块，这些子模块可能还会进行细分，而每个模块的配置都可能会有多种不同的active，因此Nacos提供了三元组的方式来进行配置文件的区分
 ![Nacos服务分级存储服务](../../文件/图片/SpringCloud图片/Nacos服务分级存储模型.png)
@@ -1018,4 +1027,89 @@ service-url:
 
 ### （二）Sentinel
 
-#### ①
++ [官网](https://sentinelguard.io/zh-cn/)
++ [github地址](https://github.com/alibaba/Sentinel/wiki/%E4%BB%8B%E7%BB%8D)
++ Sentinel主要用于服务熔断与降级、限流等功能，与其对应的是Resilience4j
+
+#### ①安装
+
++ [安装地址](https://github.com/alibaba/Sentinel/releases)
+  + 下载Assets中的jar包即可
++ 下载完以后，在其所在目录内使用cmd打开，直接执行`java -jar xxx.jar`来进行运行
+  + Sentinel默认占用8080端口，确保启动时8080端口未被占用
++ 运行起来以后，在浏览器打开[8080端口](http://localhost:8080)即可访问Sentinel控制台
+  + 账号和密码默认都是`sentinel`
+
+---
+
+#### ②模块整合Sentinel
+
++ 创建模块
++ 导入依赖
+
+~~~xml
+
+        <!--SpringCloud alibaba sentinel -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+
+~~~
+
++ 确保注册中心是打开的
++ 写一个控制类，并提供测试方法
++ 配置配置文件:
+
+~~~yml
+server:
+  port: 9500 # 配置端口号
+spring:
+  application:
+    name: sentinel-service  # Nacos中的注册名（默认与该配置保持一致）
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848         #Nacos服务注册中心地址
+    sentinel:
+      transport:
+        dashboard: localhost:8080 #配置Sentinel dashboard控制台服务地址
+        port: 8719 #默认8719端口，假如被占用会自动从8719开始依次+1扫描,直至找到未被占用的端口，它用来与sentinel控制台进行通信
+~~~
+
++ 启动模块
++ 进行测试，Sentinel采用的是懒加载的策略，只有当服务模块第一次被访问时，才会加载进来
++ 此时刷新Sentinel控制台网页，可以看到下图所示:
+
+![模块整合Sentinel图例](../../文件/图片/SpringCloud图片/模块整合Sentinel图例.png)
+
+---
+
+#### ③流量控制
+
+![Sentinel流控配置](../../文件/图片/SpringCloud图片/Sentinel流控配置.png)
++ 资源名:其实是接口的请求路径
++ 针对来源:具体对那个微服务进行限流，默认default表示全局限流
++ 阈值类型:QPS（每秒处理请求数）表示通过QPS进行限流，并发线程数表示通过并发线程数限流
++ 单机阈值:与阈值类型组合使用。如果阈值类型选择的是QPS，表示当调用接口的QPS达到阈值时，进行限流操作。如果阈值类型选择的是并发线程数，则表示当调用接口的并发线程数达到阈值时，进行限流操作。
++ 是否集群:选中则表示集群环境，不选中则表示非集群环境
+<br>
++ Sentinel的流量控制有三种流控模式和三种流控效果，我们可以自由进行组合
+  + **流控模式**
+    + 直接:单位时间内访问该接口的请求次数到达一定阈值时，进行限流
+    + 关联:单位时间内访问B接口的请求次数到达一定阈值时，对A接口的访问进行限流
+      ![Sentinel关联配置](../../文件/图片/SpringCloud图片/Sentinel配置关联.png)
+    + 链路:单位时间内通过不同的链路来访问同一服务时，如果某一链路对服务的访问流量超过了上限，那么仅对该链路进行限流处理，对其它链路没有影响
+      + 例:用户通过`/sentinel/test5`和`/sentinel/test6`进行接口访问，这两个接口都调用了同一个Service类的同一个方法，它们应该算是同一个链路的
+      + 但是我们可以通过配置文件使它们不属于同一个链路
+      + 此时如果我们配置`/sentinel/test5`的链路限流配置，那么对应的链路请求就会受到限制，但是`/sentinel/test6`不进行管控，因为没有配置关于它的链路限流配置
+      ![Sentinel链路配置](../../文件/图片/SpringCloud图片/Sentinel链路配置.png)
+  + **流控效果**
+    + 快速失败:即限流直接抛出异常
+    + Warm Up:服务预热，即先设置一个较小的阈值，先使服务器承受比预定阈值要小的请求，之后随着时间推移逐渐放行更多请求到预定阈值
+      + 我们需要配置预定阈值和预热时长
+      + 小阈值的默认计算公式为`预定阈值/3`
+      ![Sentinel服务预热配置](../../文件/图片/SpringCloud图片/Sentinel服务预热配置.png)
+    + 排队等待:不管请求有多少个，都排队进行处理，可以配置如果请求到达一定时间还未处理，进行服务降级
+      + 如果使通过QPS配置的阈值，那么每秒最大放行数就是阈值配置的值
+      ![Sentinel排队等待配置](../../文件/图片/SpringCloud图片/Sentinel排队等待配置.png)
