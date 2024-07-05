@@ -870,6 +870,7 @@ spring:
   + 但是我认为网关是需要在Feign调用模块前面发挥作用的，也就是请求先到网关，网关把请求转发到调用模块，调用模块在调用服务模块。不知道为什么课程讲的是请求先到调用模块，调用模块再把请求转发到网关，网关再调服务模块的方法
 + 在对应的调用模块上也添加新的方法
 + 测试，如果网关存在那么请求成功，如果网关不存在那么报错
+  + 测试的时候对着网关所在的端口发请求
   + 如果报错可能会报Fallback相关的错误，这是因为开启了circuitbreaker，关掉相关配置即可
   + 关掉以后，报的就是`FeignException$ServiceUnavailable`的错误了
 
@@ -1048,12 +1049,11 @@ service-url:
 + 导入依赖
 
 ~~~xml
-
-        <!--SpringCloud alibaba sentinel -->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
-        </dependency>
+  <!--SpringCloud alibaba sentinel -->
+  <dependency>
+      <groupId>com.alibaba.cloud</groupId>
+      <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+  </dependency>
 
 ~~~
 
@@ -1101,7 +1101,7 @@ spring:
       ![Sentinel关联配置](../../文件/图片/SpringCloud图片/Sentinel配置关联.png)
     + 链路:单位时间内通过不同的链路来访问同一服务时，如果某一链路对服务的访问流量超过了上限，那么仅对该链路进行限流处理，对其它链路没有影响
       + 例:用户通过`/sentinel/test5`和`/sentinel/test6`进行接口访问，这两个接口都调用了同一个Service类的同一个方法，它们应该算是同一个链路的
-      + 但是我们可以通过配置文件使它们不属于同一个链路
+      + 但是我们可以通过配置文件使它们不属于同一个链路，将`spring.cloud.sentinel.web-context-unify`置为false即可
       + 此时如果我们配置`/sentinel/test5`的链路限流配置，那么对应的链路请求就会受到限制，但是`/sentinel/test6`不进行管控，因为没有配置关于它的链路限流配置
       ![Sentinel链路配置](../../文件/图片/SpringCloud图片/Sentinel链路配置.png)
   + **流控效果**
@@ -1113,3 +1113,436 @@ spring:
     + 排队等待:不管请求有多少个，都排队进行处理，可以配置如果请求到达一定时间还未处理，进行服务降级
       + 如果使通过QPS配置的阈值，那么每秒最大放行数就是阈值配置的值
       ![Sentinel排队等待配置](../../文件/图片/SpringCloud图片/Sentinel排队等待配置.png)
+
+---
+
+#### ④服务熔断
+
++ Sentinel提供了三个熔断策略
+  + 慢调用比例，即当慢调用比例超过一定阈值时，进行服务熔断
+  ![Sentinel熔断图例1](../../文件/图片/SpringCloud图片/Sentinel熔断图例1.png)
+  + 异常比例:即当请求异常比例超过一定阈值时，进行服务熔断
+  ![Sentinel熔断图例2](../../文件/图片/SpringCloud图片/Sentinel熔断图例2.png)
+  + 异常数:即当请求异常数量到达一定阈值时，进行服务熔断
+  ![Sentinel熔断图例3](../../文件/图片/SpringCloud图片/Sentinel熔断图例3.png)
+
+---
+
+#### ⑤SentinelResource注解
+
++ SentinelResource注解专门用来标记Sentinel资源，它可以以另外的方式来表示一个资源
+  + 资源有两种表示方式
+    + 使用方法匹配的请求路径
+    + 使用@SentinelResource注解所指定的value值
++ 它有很多属性:
+
+~~~java
+  public @interface SentinelResource {
+
+      //指定资源的名称
+      String value() default "";
+
+      //entry类型，标记流量的方向，取值IN/OUT，默认是OUT
+      EntryType entryType() default EntryType.OUT;
+      //资源分类
+      int resourceType() default 0;
+
+      //处理BlockException的函数名称,函数要求：
+      //1. 必须是 public
+      //2.返回类型 参数与原方法一致
+      //3. 默认需和原方法在同一个类中。若希望使用其他类的函数，可配置blockHandlerClass ，并指定blockHandlerClass里面的方法。
+      String blockHandler() default "";
+
+      //存放blockHandler的类,对应的处理函数必须static修饰。
+      Class<?>[] blockHandlerClass() default {};
+
+      //用于在抛出异常的时候提供fallback处理逻辑。 fallback函数可以针对所
+      //有类型的异常（除了 exceptionsToIgnore 里面排除掉的异常类型）进行处理。函数要求：
+      //1. 返回类型与原方法一致
+      //2. 参数类型需要和原方法相匹配
+      //3. 默认需和原方法在同一个类中。若希望使用其他类的函数，可配置fallbackClass ，并指定fallbackClass里面的方法。
+      String fallback() default "";
+
+      //存放fallback的类。对应的处理函数必须static修饰。
+      String defaultFallback() default "";
+
+      //用于通用的 fallback 逻辑。默认fallback函数可以针对所有类型的异常进
+      //行处理。若同时配置了 fallback 和 defaultFallback，以fallback为准。函数要求：
+      //1. 返回类型与原方法一致
+      //2. 方法参数列表为空，或者有一个 Throwable 类型的参数。
+      //3. 默认需要和原方法在同一个类中。若希望使用其他类的函数，可配置fallbackClass ，并指定 fallbackClass 里面的方法。
+      Class<?>[] fallbackClass() default {};
+  
+
+      //需要trace的异常
+      Class<? extends Throwable>[] exceptionsToTrace() default {Throwable.class};
+
+      //指定排除忽略掉哪些异常。排除的异常不会计入异常统计，也不会进入fallback逻辑，而是原样抛出。
+      Class<? extends Throwable>[] exceptionsToIgnore() default {};
+  }
+~~~
+
++ [例](../../源码/SpringCloud/SpringCloudAlibaba-Sentinel-Service-9500/src/main/java/com/example/cloud/controller/SentinelResourceController.java)
+  + blockHandler与fallback属性是可以混合使用的
+    + 当触发限流时，必定走blockHandler指定的方法
+    + 当未触发限流且出现异常时，走fallback指定的方法
+---
+
+#### ⑥热点规则
+
++ Sentinel可以针对路径请求的参数数据进行限流，即通过URL传递的参数进行限流
+![Sentinel热点规则](../../文件/图片/SpringCloud图片/Sentinel热点规则.png)
+
+---
+
+#### ⑦授权规则
+
++ 就是设置黑白名单
+![Sentinel授权规则](../../文件/图片/SpringCloud图片/Sentinel授权规则.png)
++ 需要在程序中实现`RequestOriginParser`接口，并在重写的方法中返回实际上要比较的值
+  + [样例](../../源码/SpringCloud/SpringCloudAlibaba-Sentinel-Service-9500/src/main/java/com/example/cloud/config/EmpowerConfig.java)
+
+---
+
+#### ⑧持久化
+
++ 如果不设置持久化，那么模块一旦重新启动，或者Sentinel重新启动，都会导致配置丢失，因此我们需要Sentinel的持久化功能
++ Sentinel的持久化是把配置保存在Nacos中
++ 我们需要先导入依赖:
+
+~~~xml
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-datasource-nacos</artifactId>
+        </dependency>
+~~~
+
++ 接下来在配置文件中添加如下配置:
+
+~~~yml
+spring:
+  application:
+    name: cloudalibaba-sentinel-service #8401微服务提供者后续将会被纳入阿里巴巴sentinel监管
+  cloud:
+    sentinel:
+      datasource:
+         ds1:
+           nacos:
+             server-addr: localhost:8848  # 告知nacos注册中心地址
+             dataId: ${spring.application.name}  # 设置dataId
+             groupId: DEFAULT_GROUP  # 设置默认组
+             data-type: json  # 设置格式为JSON
+             rule-type: flow # 设置规则类型，在com.alibaba.cloud.sentinel.datasource.RuleType中可以查看对应值
+~~~
+
++ `spring.cloud.sentinel.datasource.<configName>.nacos.rule-type`的值有多个:
+
+~~~java
+public enum RuleType {
+    FLOW("flow", FlowRule.class),  // 流量控制规则
+    DEGRADE("degrade", DegradeRule.class),  // 熔断降级规则
+    PARAM_FLOW("param-flow", ParamFlowRule.class),  // 访问控制规则
+    SYSTEM("system", SystemRule.class),  // 系统保护规则
+    AUTHORITY("authority", AuthorityRule.class),  // 热点规则
+    ...
+}
+~~~
+
++ 接下来根据在配置文件中写的值在[Nacos](http://localhost:8848/nacos)中配置相关的值:
+![Nacos实现Sentinel持久化](../../文件/图片/SpringCloud图片/Nacos持久化Sentinel配置.png)
+
+~~~json
+// 复制到Nacos上面时，把注释删掉，否则会出错
+[
+    {
+        "resource": "/sentinel/test1",  // 资源名，即Sentinel在配置时必须要写的资源名
+        "limitApp": "default",  // 来源应用，这里用默认的
+        "grade": 1,  // 阈值类型，1表示QPS，0表示线程数
+        "count": 1,  // 设置单机阈值
+        "strategy": 0,  // 流控模式，0表示直接，1表示关联，2表示链路
+        "controlBehavior": 0,   // 流控效果，0表示快速失败，1表示Warm Up，2表示排队等待
+        "clusterMode": false  // 是否集群，这里设置为false
+    }
+]
+~~~
+
+---
+
+#### ⑨整合OpenFeign
+
++ 对于OpenFeign的整合较为简单，不需要导入额外的依赖，需要什么就导什么就行
++ @SentinelResource注解有两个属性我们需要进行处理
+  + blockHandler
+  + fallback
+  + 这两个属性，我们每声明一个业务方法，就需要写它对应的限流方法和服务降级方法，而且都要写在一个类中，非常麻烦且耦合度过高
+  + 因此我们需要想办法把业务方法、限流方法和服务降级方法分开
++ OpenFeign提供的@FeignClient注解也提供了一个fallback属性
+  + 该属性需要一个Class对象，该Class对象所对应的类就是处理该注解所作用的Api进行请求调用时导致的异常的
+  + 我们提供的类对象一般都是实现了该Api接口的类对象
+  + 这样，我们就将服务降级方法与业务方法隔离开了
+  + 例:A接口上面有@FeignClient，其属性fallback指定的是`B.class`，那么B类需要实现A类，B类实现A接口对应业务方法就成为了A接口在进行请求转发时出现异常时进行请求降级的方法
+  + [A类示例](../../源码/SpringCloud/SpringCloud-Common-API/src/main/java/com/example/cloud/apis/SentinelPayFeignApi.java)
+  + [B类示例](../../源码/SpringCloud/SpringCloud-Common-API/src/main/java/com/example/cloud/apis/fallback/SentinelPayFeignApiFallback.java)
++ 另外，我们在使用OpenFeign的API接口调用时，需要在配置文件中配置
+  + 否则Feign接口可以使用，但是fallback不生效
+~~~yml
+feign:
+  sentinel:
+    enabled: true # 开启feign对Sentinel的支持
+~~~
++ 很好，当配置完成以后可能会出现如下情况
+![SpringCloudAlibaba版本适配错误导致的异常](../../文件/图片/SpringCloud图片/SpringClouAlibaba版本原因报错.png)
+  + 这是版本不适配导致的问题，此时可以降低版本，需要在pom.xml文件中降级SpringBoot和SpringCloudAlibaba的版本:
+~~~xml
+  <spring.boot.version>3.0.9</spring.boot.version>
+  <spring.cloud.version>2022.0.2</spring.cloud.version>
+  <spring.cloud.alibaba.version>2022.0.0.0</spring.cloud.alibaba.version>
+~~~
+  + 或者尝试升高SpringCloudAlibaba版本
+~~~xml
+  <spring.boot.version>3.2.0</spring.boot.version>
+  <spring.cloud.version>2023.0.0</spring.cloud.version>
+  <spring.cloud.alibaba.version>2023.0.1.0</spring.cloud.alibaba.version>
+~~~
+
++ 然后就没问题了
+
+---
+
+#### ⑩整合Gateway
+
++ 导入依赖:
+
+~~~xml
+  <!-- Nacos的依赖必须导入，否则可能在请求时报503错误 -->
+  <!--nacos-discovery-->
+  <dependency>
+      <groupId>com.alibaba.cloud</groupId>
+      <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+  </dependency>
+  <!--loadbalancer-->
+  <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+  </dependency>
+  <!-- gateway相关依赖 -->
+  <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-gateway</artifactId>
+  </dependency>
+  <!--  -->
+  <dependency>
+      <groupId>com.alibaba.csp</groupId>
+      <artifactId>sentinel-transport-simple-http</artifactId>
+      <version>1.8.6</version>
+  </dependency>
+  <!-- sentinel适配gateway适配器 -->
+  <dependency>
+      <groupId>com.alibaba.csp</groupId>
+      <artifactId>sentinel-spring-cloud-gateway-adapter</artifactId>
+      <version>1.8.6</version>
+  </dependency>
+  <!-- javax相关依赖 -->
+  <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+      <version>1.3.2</version>
+      <scope>compile</scope>
+  </dependency>
+~~~
+
++ 接下来进行配置:
+
+~~~yml
+server:
+  port: 9528
+
+spring:
+  application:
+    name: cloudalibaba-sentinel-gateway     # sentinel+gataway整合Case
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    gateway:
+      routes:
+        - id: pay_routh1 #pay_routh1                #路由的ID(类似mysql主键ID)，没有固定规则但要求唯一，建议配合服务名
+          uri: lb://nacos-consumer-service              #匹配后提供服务的路由地址
+          predicates:
+            - Path=/feign/order/**                          # 断言，路径相匹配的进行路由
+~~~
+
++ 在配置类中编写如下配置
+  + 参考[官网](https://github.com/alibaba/Sentinel/wiki/%E7%BD%91%E5%85%B3%E9%99%90%E6%B5%81)
++ [示例](../../源码/SpringCloud/SpringCloudAlibaba-Gateway-Sentinel9528/src/main/java/com/example/cloud/config/GatewayConfig.java)
++ 测试
+
+---
+
+### （三）Seata
+
++ [官网](https://seata.apache.org/zh-cn/)
++ [github](https://github.com/apache/incubator-seata)
++ Seata用于进行分布式事务的相关操作，即**一次业务操作需要跨多个数据源**来完成对应操作
+
+#### ①安装
+
++ [安装地址](https://github.com/apache/incubator-seata/releases)
+  + 直接下载zip文件，解压
+  + Seata的配置文件在其conf目录下，其最终会读取`application.yml`文件作为其配置，另外目录内还包含`application.example.yml`，该文件是官方为我们提供好的配置文件，我们可以参考其进行对应配置
+  + 最终的参考配置如下:
+~~~yml
+server:
+
+  port: 7091
+spring:
+
+  application:
+
+    name: seata-server
+logging:
+
+  config: classpath:logback-spring.xml
+
+  file:
+
+    path: ${log.home:${user.home}/logs/seata}
+
+  extend:
+
+    logstash-appender:
+
+      destination: 127.0.0.1:4560
+
+    kafka-appender:
+
+      bootstrap-servers: 127.0.0.1:9092
+
+      topic: logback_to_logstash
+console:
+
+  user:
+
+    username: seata
+
+    password: seata
+seata:
+
+  config:
+
+    type: nacos
+
+    nacos:
+
+      server-addr: 127.0.0.1:8848
+
+      namespace:
+
+      group: SEATA_GROUP #后续自己在nacos里面新建,不想新建SEATA_GROUP，就写DEFAULT_GROUP
+
+      username: nacos
+
+      password: nacos
+
+  registry:
+
+    type: nacos
+
+    nacos:
+
+      application: seata-server
+
+      server-addr: 127.0.0.1:8848
+
+      group: SEATA_GROUP #后续自己在nacos里面新建,不想新建SEATA_GROUP，就写DEFAULT_GROUP
+
+      namespace:
+
+      cluster: default
+
+      username: nacos
+
+      password: nacos    
+
+  store:
+
+    mode: db
+
+    db:
+
+      datasource: druid
+
+      db-type: mysql
+
+      driver-class-name: com.mysql.cj.jdbc.Driver
+
+      url: jdbc:mysql://localhost:3306/seata?characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
+
+      user: root
+
+      password: 1928564318asd
+
+      min-conn: 10
+
+      max-conn: 100
+
+      global-table: global_table
+
+      branch-table: branch_table
+
+      lock-table: lock_table
+
+      distributed-lock-table: distributed_lock
+
+      query-limit: 1000
+
+      max-wait: 5000
+  #  server:
+
+  #    service-port: 8091 #If not configured, the default is '${server.port} + 1000'
+
+  security:
+
+    secretKey: SeataSecretKey0c382ef121d778043159209298fd40bf3850a017
+
+    tokenValidityInMilliseconds: 1800000
+
+    ignore:
+
+      urls: /,/**/*.css,/**/*.js,/**/*.html,/**/*.map,/**/*.svg,/**/*.png,/**/*.jpeg,/**/*.ico,/api/v1/auth/login,/metadata/v1/**
+~~~
+  + **在运行Seata前确认运行Nacos**
+  + 到bin目录下打开cmd，运行`seata-server.bat`命令即可开启
+  + Seata默认占用[7091端口](http://localhost:7091/)，访问其来打开Seata的图形化界面
+    + 默认的用户名和密码都是Seata
+
+---
+
+#### ②相关概念
+
++ Seata有三个相关术语
+  + TC(Transaction Coordinator):**事务协调器**，它用来维护全局和分支事务的状态,驱动全局事务提交或回滚。
+  + TM(Transaction Manager):**事务管理器**，它用来定义全局事务的范围：开始全局事务、提交或回滚全局事务。
+  + RM(Resource Manager):**资源管理器**，管理分支事务处理的资源，与TC交谈以注册分支事务和报告分支事务的状态，并驱动分支事务提交或回滚。
+![Seata概念图例](../../文件/图片/SpringCloud图片/Seata概念图例.png)
+
+---
+
+#### ③分布式事务样例
+
++ 例：三个微服务,Order、Account和Storage，Order用来开启分布式事务并调用另外两个微服务
+  + [Order微服务服务类](../../源码/SpringCloud/SpringCloudAlibaba-Seata-Order-2001/src/main/java/com/example/cloud/service/impl/OrderServiceImpl.java)
+  + [Order微服务启动类](../../源码/SpringCloud/SpringCloudAlibaba-Seata-Order-2001/src/main/java/com/example/cloud/SeataOrderApplication.java)
+  + [Order微服务配置](../../源码/SpringCloud/SpringCloudAlibaba-Seata-Order-2001/src/main/resources/application.yml)
+  + [Order微服务依赖](../../源码/SpringCloud/SpringCloudAlibaba-Seata-Order-2001/pom.xml)
+  + [Account微服务服务类](../../源码/SpringCloud/SpringCloudAlibaba-Seata-Account-2003/src/main/java/com/example/cloud/service/impl/AccountServiceImpl.java)
+  + [Account微服务配置](../../源码/SpringCloud/SpringCloudAlibaba-Seata-Account-2003/src/main/resources/application.yml)
+  + [Storage微服务服务类](../../源码/SpringCloud/SpringCloudAlibaba-Seata-Storage-2002/src/main/java/com/example/cloud/service/impl/StorageServiceImpl.java)
+  + [Storage微服务配置](../../源码/SpringCloud/SpringCloudAlibaba-Seata-Storage-2002/src/main/resources/application.yml)
++ 哪个微服务的对应方法开启的事务，我们就需要在对应方法上面添加@GlobalTransactional注解
++ 另外，我们也可以在Seata查看当前事务的执行状态:
+
+![可视化界面查看分布式事务执行图例1](../../文件/图片/SpringCloud图片/可视化界面查看分布式事务执行图例1.png)
+![可视化界面查看分布式事务执行图例2](../../文件/图片/SpringCloud图片/可视化界面查看分布式事务执行图例2.png)
+
+---

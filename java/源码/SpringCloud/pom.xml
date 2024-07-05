@@ -22,6 +22,10 @@
         <module>SpringCloudAlibaba-Pay-9002</module>
         <module>SpringCloudAlibaba-Config-1234</module>
         <module>SpringCloudAlibaba-Sentinel-Service-9500</module>
+        <module>SpringCloudAlibaba-Gateway-Sentinel9528</module>
+        <module>SpringCloudAlibaba-Seata-Order-2001</module>
+        <module>SpringCloudAlibaba-Seata-Storage-2002</module>
+        <module>SpringCloudAlibaba-Seata-Account-2003</module>
     </modules>
 
     <properties>
@@ -38,8 +42,8 @@
         <fastjson2.version>2.0.40</fastjson2.version>
         <persistence-api.version>1.0.2</persistence-api.version>
         <spring.boot.test.version>3.1.5</spring.boot.test.version>
-        <spring.boot.version>3.2.0</spring.boot.version>
-        <spring.cloud.version>2023.0.0</spring.cloud.version>
+        <spring.boot.version>3.0.9</spring.boot.version>
+        <spring.cloud.version>2022.0.2</spring.cloud.version>
         <spring.cloud.alibaba.version>2022.0.0.0</spring.cloud.alibaba.version>
         <micrometer-tracing.version>1.2.0</micrometer-tracing.version>
         <micrometer-observation.version>1.12.0</micrometer-observation.version>

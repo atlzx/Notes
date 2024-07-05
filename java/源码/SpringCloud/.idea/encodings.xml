@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/SoringCloudAlibaba-Seata-Account-2003/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SoringCloudAlibaba-Seata-Account-2003/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringAlibaba-Sentinel-Service9500/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringAlibaba-Sentinel-Service9500/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringCloud-Common-API/src/main/java" charset="UTF-8" />
@@ -21,12 +23,20 @@
     <file url="file://$PROJECT_DIR$/SpringCloud-Pay/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Config-1234/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Config-1234/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Gateway-Sentinel9528/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Gateway-Sentinel9528/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Order-81/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Order-81/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Pay-9001/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Pay-9001/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Pay-9002/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Pay-9002/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Seata-Account-2003/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Seata-Account-2003/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Seata-Order-2001/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Seata-Order-2001/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Seata-Storage-2002/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Seata-Storage-2002/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Sentinel-Service-9500/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringCloudAlibaba-Sentinel-Service-9500/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />

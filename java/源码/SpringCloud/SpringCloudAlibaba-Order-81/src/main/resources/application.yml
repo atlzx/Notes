@@ -7,5 +7,12 @@ spring:
     nacos:
       discovery:
         service: ${spring.application.name}
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:8080
 service-url:
   nacos-user-service: http://nacos-pay-service
+feign:
+  sentinel:
+    enabled: true

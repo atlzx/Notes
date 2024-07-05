@@ -511,7 +511,7 @@ public class People {
 + 我们给前端的返回值应该有一个统一的返回格式:
   + 表示请求状态的code状态码
     + 该状态码一般使用枚举类来呈现
-    + [枚举类样例](../../源码/SpringCloud/SpringCloud-Pay/src/main/java/com/example/cloud/resp/ReturnCodeEnum.java)
+    + [枚举类样例](../../源码/SpringCloud/SpringCloud-Common-API/src/main/java/com/example/cloud/resp/ReturnCodeEnum.java)
   + 本次请求所返回的数据data
     + 如果数据内包含日期时间相关的属性或对象，可以参考下面的日期时间格式自定义规范表来自定义时间样式
       + 可以通过`spring.jackson.date-format`来自定义时间样式，一般使用`yyyy-MM-dd HH:mm:ss`就行。另外可以通过`spring.jackson.time-zone`指定时区，`GMT+8`为东八区
@@ -526,7 +526,7 @@ public class People {
 #### ②全局异常处理
 
 + 使用全局异常处理处理异常
-  + 使用HttpStatus枚举类来得到对应的状态码对象
+  + 使用Spring官方提供的**HttpStatus枚举类**来得到对应的状态码对象
   + 使用`log.error`方法来进行日志的记录
   + 利用通用的返回类将异常返回给前端，或者处理异常
 
