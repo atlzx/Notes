@@ -1539,6 +1539,8 @@ seata:
   + [Account微服务配置](../../源码/SpringCloud/SpringCloudAlibaba-Seata-Account-2003/src/main/resources/application.yml)
   + [Storage微服务服务类](../../源码/SpringCloud/SpringCloudAlibaba-Seata-Storage-2002/src/main/java/com/example/cloud/service/impl/StorageServiceImpl.java)
   + [Storage微服务配置](../../源码/SpringCloud/SpringCloudAlibaba-Seata-Storage-2002/src/main/resources/application.yml)
++ 在版本不适配的情况下，可能启动是可以成功的，但是处理请求的操作会出异常:
+  ![Seata版本不适配导致的异常](../../文件/图片/SpringCloud图片/Seata版本不适配导致的异常.png)
 + 哪个微服务的对应方法开启的事务，我们就需要在对应方法上面添加@GlobalTransactional注解
 + 另外，我们也可以在Seata查看当前事务的执行状态:
 
