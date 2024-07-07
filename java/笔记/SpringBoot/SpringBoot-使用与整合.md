@@ -1889,7 +1889,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 |^|spring.cloud.consul.discovery.service-name|指定对应微服务模块服务发现的名称|一般与spring.application.name保持一致|无|
 |**SpringCloud-OpenFeign**|spring.cloud.openfeign.client.config.default.connect-timeout|设置连接的超时时间，单位毫秒|默认为2s|无|
 |^|spring.cloud.openfeign.client.config.default.read-timeout|设置连接完成后，等待服务的超时时间，单位毫秒|默认60s|无|
-|^|spring.cloud.openfeign.client.config.<serviceName>.read-timeout|设置更细粒度的相关配置，serviceName表示对应的服务模块在Consul上注册的注册名|单位毫秒|无|
+|^|spring.cloud.openfeign.client.config.`<serviceName>`.read-timeout|设置更细粒度的相关配置，serviceName表示对应的服务模块在Consul上注册的注册名|单位毫秒|无|
 |^|spring.cloud.openfeign.httpclient.hc5.enabled|启用httpclient5配置，用以替代OpenFeign默认使用的没有连接池、性能和效率比较低的JDK自带的HttpURLConnection|布尔值|无|
 |^|spring.cloud.openfeign.compression.request.enabled|开启请求压缩|布尔值|无|
 |^|spring.cloud.openfeign.compression.request.mime-types|设置要进行压缩的请求参数类型|mime类型，如果有多个用逗号隔开|无|
@@ -1901,28 +1901,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 + 改进版配置项汇总
 
 |分组|配置项|参数|作用|值|备注|
-|:---:|:---:|:---:|:---:|:---:|
-|**SpringCloud-Resilience4j**|resilience4j.circuitbreaker.configs.<configKey>.failure-rate-threshold|configKey:自定义设置的名称|设置当多少比例（百分比）的请求失败时，进行服务熔断。|数值，如设置为50表示请求失败比例达到50%就进行服务熔断|无|
-|^|resilience4j.circuitbreaker.configs.<configKey>.sliding-window-type|^|设置进行熔断判断的模式|`TIME_BASED`:按一定时间进行计算<br>`COUNT_BASED`:按一定数量进行计算|无|
-|^|resilience4j.circuitbreaker.configs.<configKey>.slow-call-duration-threshold|^|设置慢调用的评判标准，即一次请求执行超过多长时间算慢调用|例:`5s`|**慢调用是执行慢，但是执行成功了，不能算进请求失败里**<br>`TIME_BASED`模式下才生效|
-|^|resilience4j.circuitbreaker.configs.<configKey>.slow-call-rate-threshold|^|设置当慢调用占单位时间内请求的多少比例时，进行服务熔断|数值，如设置为50表示慢调用比例达到50%就进行服务熔断|`TIME_BASED`模式下才生效|
-|^|resilience4j.circuitbreaker.configs.<configKey>.sliding-window-size|^|设置滑动窗口大小，如果是`TIME_BASED`模式，那么该值表示每隔多长时间（单位秒）就进行一次熔断判断，如果是`COUNT_BASED`模式，该值表示距离上一次判断后，请求累计到达多少次时就进行一次熔断判断|数值|无|
-|^|resilience4j.circuitbreaker.configs.<configKey>.minimum-number-of-calls|^|设置进行熔断判断的最小样本|数值|一般与上面的sliding-window-size配置保持一致|
-|^|resilience4j.circuitbreaker.configs.<configKey>.permitted-number-of-calls-in-half-open-state|^|设置断路器转换到半开状态时放行的请求数|数值|无|
-|^|resilience4j.circuitbreaker.configs.<configKey>.automatic-transition-from-open-to-half-open-enabled|^|是否启用让断路器在开启后，自动过渡到半开状态。如果设置为false，那么就是在该服务收到调用才尝试过渡|布尔值|无|
-|^|resilience4j.circuitbreaker.configs.<configKey>.wait-duration-in-open-state|^|设置断路器到达OPEN状态时间隔多长时间转为HALF_OPEN状态|例:`5s`|无|
-|^|resilience4j.circuitbreaker.configs.<configKey>.record-exceptions|^|如果请求执行时出现的异常在该设置下的异常集合内，会被断路器认定为一次请求失败|异常的全类名|无|
-|^|resilience4j.circuitbreaker.configs.<configKey>.ignore-exceptions|如果请求执行时出现的异常在该设置下的异常集合内，不会被断路器认定为一次请求失败|^|^|
-|^|resilience4j.circuitbreaker.instances.<serviceName>.base-config|serviceName:服务模块在Consul上面所注册的名字|指定该服务模块所遵循的Resilience设置集|即上面的`configKey`|无|
-|^|resilience4j.thread-pool-bulkhead.configs.<configKey>.core-thread-pool-size|configKey:自定义设置的名称|设置线程池的核心线程的数量|数值|无|
-|^|resilience4j.thread-pool-bulkhead.configs.<configKey>.max-thread-pool-size|^|设置线程池最大的线程数量|数值|无|
-|^|resilience4j.thread-pool-bulkhead.configs.<configKey>.queue-capacity|^|设置线程满了以后，承载后续请求的队列容量|数值|无|
-|^|resilience4j.bulkhead.configs.<configKey>.max-concurrent-calls|^|设置该服务模块允许并发执行的最大数量|数值|无|
-|^|resilience4j.bulkhead.configs.<configKey>.max-wait-duration|并发数达到上限时，再有请求来，若达到该值，那么自动进行服务降级处理|例:`2s`|无|
-|^|resilience4j.thread-pool-bulkhead.instances.<serviceName>.base-config|serviceName:服务模块在Consul上面所注册的名字|指定该服务模块所遵循的Resilience设置集|即上面的`configKey`|无|
-|^|resilience4j.ratelimiter.configs.<configKey>.limit-for-period|configKey:自定义设置的名称|在一次刷新周期内，允许执行的最大请求数|数值|无|
-|^|resilience4j.ratelimiter.configs.<configKey>.limit-refresh-period|^|限流器每隔limitRefreshPeriod刷新一次，将允许处理的最大请求数量重置为limitForPeriod|例:`5s`|无|
-|^|resilience4j.ratelimiter.configs.<configKey>.timeout-duration|^|线程等待其执行权限的最大时间，若超过该时间，执行服务降级|例:`5s`|无|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|**SpringCloud-Resilience4j**|resilience4j.circuitbreaker.configs.`<configKey>`.failure-rate-threshold|configKey:自定义设置的名称|设置当多少比例（百分比）的请求失败时，进行服务熔断。|数值，如设置为50表示请求失败比例达到50%就进行服务熔断|无|
+|^|resilience4j.circuitbreaker.configs.`<configKey>`.sliding-window-type|^|设置进行熔断判断的模式|`TIME_BASED`:按一定时间进行计算<br>`COUNT_BASED`:按一定数量进行计算|无|
+|^|resilience4j.circuitbreaker.configs.`<configKey>`.slow-call-duration-threshold|^|设置慢调用的评判标准，即一次请求执行超过多长时间算慢调用|例:`5s`|**慢调用是执行慢，但是执行成功了，不能算进请求失败里**<br>`TIME_BASED`模式下才生效|
+|^|resilience4j.circuitbreaker.configs.`<configKey>`.slow-call-rate-threshold|^|设置当慢调用占单位时间内请求的多少比例时，进行服务熔断|数值，如设置为50表示慢调用比例达到50%就进行服务熔断|`TIME_BASED`模式下才生效|
+|^|resilience4j.circuitbreaker.configs.`<configKey>`.sliding-window-size|^|设置滑动窗口大小，如果是`TIME_BASED`模式，那么该值表示每隔多长时间（单位秒）就进行一次熔断判断，如果是`COUNT_BASED`模式，该值表示距离上一次判断后，请求累计到达多少次时就进行一次熔断判断|数值|无|
+|^|resilience4j.circuitbreaker.configs.`<configKey>`.minimum-number-of-calls|^|设置进行熔断判断的最小样本|数值|一般与上面的sliding-window-size配置保持一致|
+|^|resilience4j.circuitbreaker.configs.`<configKey>`.permitted-number-of-calls-in-half-open-state|^|设置断路器转换到半开状态时放行的请求数|数值|无|
+|^|resilience4j.circuitbreaker.configs.`<configKey>`.automatic-transition-from-open-to-half-open-enabled|^|是否启用让断路器在开启后，自动过渡到半开状态。如果设置为false，那么就是在该服务收到调用才尝试过渡|布尔值|无|
+|^|resilience4j.circuitbreaker.configs.`<configKey>`.wait-duration-in-open-state|^|设置断路器到达OPEN状态时间隔多长时间转为HALF_OPEN状态|例:`5s`|无|
+|^|resilience4j.circuitbreaker.configs.`<configKey>`.record-exceptions|^|如果请求执行时出现的异常在该设置下的异常集合内，会被断路器认定为一次请求失败|异常的全类名|无|
+|^|resilience4j.circuitbreaker.configs.`<configKey>`.ignore-exceptions|如果请求执行时出现的异常在该设置下的异常集合内，不会被断路器认定为一次请求失败|^|^|
+|^|resilience4j.circuitbreaker.instances.`<serviceName>`.base-config|serviceName:服务模块在Consul上面所注册的名字|指定该服务模块所遵循的Resilience设置集|即上面的`configKey`|无|
+|^|resilience4j.thread-pool-bulkhead.configs.`<configKey>`.core-thread-pool-size|configKey:自定义设置的名称|设置线程池的核心线程的数量|数值|无|
+|^|resilience4j.thread-pool-bulkhead.configs.`<configKey>`.max-thread-pool-size|^|设置线程池最大的线程数量|数值|无|
+|^|resilience4j.thread-pool-bulkhead.configs.`<configKey>`.queue-capacity|^|设置线程满了以后，承载后续请求的队列容量|数值|无|
+|^|resilience4j.bulkhead.configs.`<configKey>`.max-concurrent-calls|^|设置该服务模块允许并发执行的最大数量|数值|无|
+|^|resilience4j.bulkhead.configs.`<configKey>`.max-wait-duration|并发数达到上限时，再有请求来，若达到该值，那么自动进行服务降级处理|例:`2s`|无|
+|^|resilience4j.thread-pool-bulkhead.instances.`<serviceName>`.base-config|serviceName:服务模块在Consul上面所注册的名字|指定该服务模块所遵循的Resilience设置集|即上面的`configKey`|无|
+|^|resilience4j.ratelimiter.configs.`<configKey>`.limit-for-period|configKey:自定义设置的名称|在一次刷新周期内，允许执行的最大请求数|数值|无|
+|^|resilience4j.ratelimiter.configs.`<configKey>`.limit-refresh-period|^|限流器每隔limitRefreshPeriod刷新一次，将允许处理的最大请求数量重置为limitForPeriod|例:`5s`|无|
+|^|resilience4j.ratelimiter.configs.`<configKey>`.timeout-duration|^|线程等待其执行权限的最大时间，若超过该时间，执行服务降级|例:`5s`|无|
 
 
 ---
