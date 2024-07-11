@@ -317,7 +317,7 @@ networks:
 
 |命令|参数|命令项格式|命令项作用|命令项参数|命令项值|作用|备注|
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|`docker compose [options]`|无参|`-f <fileName>`|指定要运行的文件|fileName:想运行的文件路径|路径|执行compose的相关操作|无|
+|`docker compose [options1]`|无参|`-f <fileName>`|指定要运行的文件|fileName:想运行的文件路径|路径|执行compose的相关操作|无|
 |`docker compose [options1] up [options2]`|无参|`-d`|后台运行|无|无|根据文件启动容器，默认读取的文件是当前目录下的`compose.yaml`文件|无|
 |`docker compose down`|无参|>|>|>|无|删除容器和网络|无|
 |`docker compose stop`|无参|>|>|>|无|使容器停止运行|无|

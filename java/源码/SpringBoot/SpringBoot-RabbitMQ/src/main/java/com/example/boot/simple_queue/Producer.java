@@ -1,4 +1,4 @@
-package com.example.boot;
+package com.example.boot.simple_queue;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
