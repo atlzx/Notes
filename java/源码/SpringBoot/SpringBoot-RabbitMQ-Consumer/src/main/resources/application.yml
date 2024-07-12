@@ -5,6 +5,10 @@ spring:
     username: guest  # 指定用户名
     password: 123456  # 指定密码
     virtual-host: /  # 指定Virtual-Host
+    listener:
+      simple:
+        acknowledge-mode: manual # 把消息确认模式改为手动确认，默认无论消息处理是否成功ack都是true
+        prefetch: 1  # 设置消费者一次最多可以拿多少个消息进行消费
 logging:
   level:
     root: info

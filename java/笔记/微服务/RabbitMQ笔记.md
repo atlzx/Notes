@@ -122,12 +122,7 @@
 
 #### ⑤Publish Confirms
 
-
-
-
-# 汇总
-
-## 一、配置汇总
++ 在此之后的笔记详见[SpringBoot-使用与整合章节](../SpringBoot/SpringBoot-使用与整合.md)
 
 
 

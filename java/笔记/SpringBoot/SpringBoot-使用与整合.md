@@ -1640,6 +1640,211 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
+### （八）RabbitMQ
+
+#### 方法汇总
+
+|归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|**RabbitTemplate**|`convertAndSend(String exchange,String routingKey,Object message)`|exchange:交换机名<br>routingKey:路由键名<br>message:消息数据|发送消息|无返回值|void|AmqpException|该方法有很多重载方法，参数名一般都不难理解，此处不再列举|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)|
+|^|`setConfirmCallback(RabbitTemplate.ConfirmCallback confirmCallback)`|confirmCallBack:实现了RabbitTemplate.ConfirmCallback接口的对象|设置该属性可以进行消息确认的回调函数的执行|无返回值|void|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/main/java/com/example/boot/config/RabbitMQConfig.java)|
+|^|`setReturnsCallback(RabbitTemplate.ReturnsCallback returnCallback)`|returnCallback:实现了RabbitTemplate.ReturnsCallback接口的对象|设置该属性可以进行消息转发结果确认的回调函数的执行|无返回值|void|无|无|^|
+|**RabbitTemplate.ConfirmCallback**|`confirm(CorrelationData correlationData, boolean ack, String cause)`|correlationData:消息数据<br>ack:消息是否成功到达交换机<br>cause:消息未到达交换机的原因，如果消息到达了那么为null|无论消息是否到达交换机，RabbitMQ在确认后，该回调函数都会执行|无返回值|void|无|无|^|
+|**RabbitTemplate.ReturnsCallback**|`returnedMessage(ReturnedMessage returned)`|returned:消息对象|若消息未被成功转发到队列，此回调函数会被执行|无返回值|void|无|无|^|
+|**ReturnedMessage**|`getMessage()`|无参|得到Message消息对象|Message对象|Message|无|无|^|
+|^|`getReplyCode()`|无参|得到应答码|数值|int|无|应答码与Http状态码类似，表示出现问题的分类|^|
+|^|`getReplyText()`|无参|得到问题描述文本|字符串|String|无|无|^|
+|^|`getExchange()`|无参|得到转发消息的交换机名称|字符串|String|无|无|^|
+|^|`getRoutingKey()`|无参|得到消息的路由键|字符串|String|无|无|^|
+|**Message**|`getBody()`|无参|得到消息主体|byte类型数组|byte[]|无|无|无|
+|^|`getMessageProperties()`|无参|>|>|得到MessageProperties对象|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/MyMessageListener.java)|
+|**MessageProperties**|`getExpiration()`|无参|得到该消息在消息队列保留时间|字符串类型的数值|String|无|无|无|
+|^|`setExpiration(String time)`|time:在消息队列的保留时间，单位:毫秒|设置该消息在消息队列的保留时间|无返回值|void|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)|
+`getDeliveryTag()`|无参|得到deliveredTag值，即消息的唯一标识|数值|long|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/MyMessageListener.java)|
+|^|`getRedelivered()`|无参|得到消息是否经过重新入队列操作，即该消息第一次消费时未成功消费而且又重新进到队列里面了，第二次拿到时，该值就为true|为true说明经历过|boolean|无|无|^|
+|**Channel**|basicAck(long deliveryTag,boolean requeue)|deliveryTag:消息的标签(id)<br>requeue:是否要将消息重新加入队列|向RabbitMQ服务端返回ack信息|无返回值|void|无|无|^|
+|^|basicNack(long deliveryTag,boolean multiple,boolean requeue)|deliveryTag:消息的标签(id)<br>multiple:是否进行批量操作<br>requeue:是否要将消息重新加入队列|向RabbitMQ服务端返回nack信息|无返回值|void|无|无|^|
+|^|basicReject(long deliveryTag,boolean requeue)|deliveryTag:消息的标签(id)<br>requeue:是否要将消息重新加入队列|向RabbitMQ服务端返回nack信息|无返回值|void|无|与basicNack的唯一区别就是无法进行批量操作|^|
+
+---
+
+#### ①依赖导入
+
++ 依赖:
+  + 该依赖可以直接通过IDEA的Spring initializr直接导入
+
+~~~xml
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-amqp</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.amqp</groupId>
+        <artifactId>spring-rabbit-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+~~~
+
+---
+
+#### ②消息发送消费
+
+##### Ⅰ消息发送
+
++ RabbitTemplate对象专门用来进行消息的操作，其convertAndSend方法可以用来发送消息
+
+---
+
+##### Ⅱ消费消息
+
++ @RabbitListener注解作用在方法上，可以使方法监听队列
++ [例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/MyMessageListener.java)
+
+---
+
+#### ③消息可靠性
+
+##### Ⅰ主要问题
+
++ 上面已经实现了最基本的消息发送与消费功能了，但是该功能还是面临着一些问题:
+  + 消息未发送到消息队列:我们无法保证消息是否发送到了消息队列
+    + 解决方案1:利用RabbitMQ的消息确认机制，在生产者端进行确认，RabbitMQ提供了消息到达交换机的确认机制和消息到达队列的确认机制
+    + 解决方案2:为目标交换机指定备用交换机，当目标交换机转发消息失败时，它会把消息交给备用交换机来转发，但**交给备用交换机时不会携带路由键，因此备用交换机需要以广播的方式转发消息**
+  + 消息队列服务器宕机导致消息丢失:RabbitMQ的消息一般存放在内存中，服务器宕机会导致RabbitMQ中存储的消息丢失
+    + 解决方案:消息持久化到硬盘上
+  + 消费端宕机或消费时出现异常导致消息未被成功消费
+    + 解决方案:如果消费成功给服务器返回ACK信息，然后消息队列删除该消息，如果消费失败给服务器返回NACK信息，同时把消息恢复成待消费状态，这样就可以再次取得消息进行消费，它需要消费端接口支持幂等性
+
+---
+
+##### Ⅱ消息确认机制
+
++ 消息确认机制用于我们能够确定消息已经发送到了队列上
++ 首先需要声明一个类，实现RabbitTemplate.ConfirmCallback和RabbitTemplate.ReturnsCallback接口，并实现两个接口的方法
++ 然后需要配置rabbitTemplate对象的属性
+  + 调用其setConfirmCallback方法来将该类对象设置进去，以支持消息确认的回调函数的执行
+  + 调用其setReturnsCallback方法来将该类对象设置进去，以支持消息转发结果确认的回调函数的执行
++ [样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/main/java/com/example/boot/config/RabbitMQConfig.java)
++ [测试样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)
+
+---
+
+##### Ⅲ指定备份交换机
+
++ 我们可以通过RabbitMQ的图形化界面来指定备份交换机，具体需要:
+  + 先将原交换机删除
+  + 接下来创建备用交换机，Type需要设置为fanout
+  ![创建备用交换机图例](../../文件/图片/RabbitMQ图片/创建备用交换机图例.png)
+  + 新建新的交换机，添加argument参数`alternate-exchange`
+  ![绑定备用交换机](../../文件/图片/RabbitMQ图片/绑定备用交换机图例.png)
+  + 接下来让两个交换机都绑定上消息队列:
+  ![交换机绑定消息队列图例1](../../文件/图片/RabbitMQ图片/交换机绑定消息队列图例1.png)
+  ![交换机绑定消息队列图例2](../../文件/图片/RabbitMQ图片/交换机绑定消息队列图例2.png)
+
+---
+
+##### Ⅳ消息数据持久化
+
++ 默认就是持久化的，可以通过@RabbitListener注解进行相关配置
+
+---
+
+##### Ⅴ消费端确认机制
+
++ 消费者在拿到消息并消费完成后，需要向RabbitMQ服务器返回一个ack信息，RabbitMQ才会删除队列中的指定消息
++ 如果消费者拿到消息但是消费失败，那么就会向RabbitMQ服务返回一个nack信息，RabbitMQ会根据情况决定是否将消息再放回队列中
++ 在此过程中，需要注意一些变量
+  + `deliveryTag`:即消费的消息的id，是一个64位的数值，即8字节，因此是long类型。它用来唯一的标识该消息，便于消费者返回信息时，RabbitMQ会根据该参数定位到对应消费的消息进行相关操作
+  + `multiple`:取值为true则为小于等于`deliveryTag`的消息批量返回ACK信息。取值为false则仅为指定的deliveryTag返回ACK信息
+  + `requeue`:是否让RabbitMQ将消息放回到消息队列中，true表示让，false表示不让
++ 如果要实现该机制，需要在yml文件中添加如下配置:
+
+~~~yml
+  spring.rabbitmq.listener.simple.acknowledge-mode: manual
+~~~
++ [消费者样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/MyMessageListener.java)
+
+---
+
+#### ④限流
+
++ 有时我们的消费者没有办法一次性消费很多消息，因此我们需要对消费者进行限流
+  + 使用`spring.rabbitmq.listener.simple.prefetch`配置项可以全局配置消费者最多可以一次性拿多少个消息进行消费，从而达到限流的目的
++ [消费者样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/PrefetchMessageListener.java)
+
+---
+
+#### ⑤死信
+
+##### Ⅰ简介
+
++ 当一个消息无法被消费，它就变成了死信
++ 死信产生的原因有以下三个:
+  + **拒绝**:消费者拒绝接收该消息，并使用basicNack()或basicReject()方法返回nack信息，且不把消息重新放回队列，即requeue参数设置为false
+  + **溢出**:队列中的消息到达上限后，再有来的消息，会把队列中已经存在的最早到达且还未消费的消息顶掉，而被顶掉的消息就成为了死信
+  + **超时**:消息到达其设置的存在于队列的时间但仍未被消费
++ 对死信的处理方式大致有以下三种:
+  + **丢弃**:对不重要的数据直接丢弃，不做处理
+  + **入库**:把死信写入数据库，日后处理
+  + **监听**:消息变为死信后加入到死信队列，专门设置消费端消费死信队列中的消息，做后续处理（常用）
+
+
+##### Ⅱ消息超时
+
++ 我们可以设置消息超时的时间，通过@Queue的arguments属性设置，或者通过图形化界面的方式进行设置
+![可视化设置消息在队列中的保存时间](../../文件/图片/RabbitMQ图片/可视化设置消息在队列中的保存时间.png)
++ 也可以通过编码的方式，设置每个消息的保存时间
+  + 首先需要创建一个MessagePostProcessor接口对象，它是一个函数式接口，因此可以使用lambda表达式来进行创建
+  + 回调函数接收一个Message类型的参数，它可以用来设置当前消息的各个属性，我们可以通过`message.getMessageProperties().setExpiration(String time)`来设置其保存时间
+  + 最后在发送消息的时候，将该MessagePostProcessor对象作为convertAndSend方法的第四个参数传入即可
+  + [样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)
++ 如果两个层面都做了设置，当然是看谁的保存时间更短
+
+---
+
+##### Ⅲ测试死信队列
+
++ 此处所有的交换机、路由键和队列以及它们之间的关联关系都由@RabbitListener来指定并自动生成
++ [消费者样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/DeadLetterMessageListener.java)
++ [发送消息测试](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)
+
+---
+
+##### Ⅳ延迟队列
+
++ 延迟队列就是消息发送到消息队列上以后，消费者并不立即消费消息队列中的消息，而是等待一段时间后再消费，就相当于在延迟队列上消费消息一样
++ 实现延迟队列有两种思路
+  + 将消息发送到正常的消息队列中去，消息带有超时时间，超时后进入死信队列。消费者不监听该正常的消息队列，而是监听死信队列，从而达到延迟消费的目的
+  + 使用[RabbitMQ Delayed Message Plugin插件](https://github.com/rabbitmq/rabbitmq-delayed-message-exchange)
++ 此处不演示第一种思路，仅演示第二种思路的实现方式:
+  + 首先将插件下载到Linux服务器上:`wget https://github.com/rabbitmq/rabbitmq-delayed-message-exchange/releases/download/v3.13.0/rabbitmq_delayed_message_exchange-3.13.0.ez`
+  + 接下来将该文件移动到对应的卷目录下，可以通过`docker volume ls <容器名>`查看卷名+`docker volume inspect <卷名>`的方式来查找卷的具体位置
+    + 注意，**如果是使用compose方式来启动容器的话，那么卷名是由`compose.yml`文件的`name`和具体服务的`volumes`配置项共同决定的**
+  + 之后`docker exec -it <容器名> bash`进入容器内，`cd /plugins`到达插件目录下，运行`rabbitmq-plugins enable rabbitmq_delayed_message_exchange`来开启插件
+  + 可以使用`rabbitmq-plugins directories -s`命令来查看各插件相关目录或文件所在的位置，一般的话可以通过`cat /etc/rabbitmq/enabled_plugins`打印生效的插件，以确定开启插件成功
+  + 开启成功以后，`exit`退出容器
+  + 接下来`docker restart <容器名>`重启容器，**注意是重启，不能删除再新开一个**
++ 接下来就是测试了
+  ![延迟队列插件创建交换机图例](../../文件/图片/RabbitMQ图片/延迟队列插件创建交换机图例.png)
+  ![延迟队列插件交换机与队列之间映射关系图例](../../文件/图片/RabbitMQ图片/延迟队列插件交换机与队列之间的映射关系图例.png)
+  + [消费端样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/DelayedQueueMessageListener.java)
+  + [生产者测试样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)
+
+---
+
+#### ⑥事务消息
+
++ RabbitMQ的事务消息就是将消息在发送之前，先放到缓存中，等缓存中的消息就绪以后，再一起发送出去
+  + 这样，如果Java代码中在事务执行时出现异常，那么缓存中的消息就没有全部就绪，就会触发事务的回滚
+  + 然而，它也只能保证这些了，它依然无法保证消息在最终发送后是否能够成功抵达RabbitMQ服务器，或者是否被消费者消费。因此，它的事务消息只是在Java客户端层面的事务，它仅保证了Java客户端层面上对事务消息的发送是具有事务特性的
+![事务消息交换机与队列之间的映射关系](../../文件/图片/RabbitMQ图片/事务消息交换机与队列之间的映射关系.png)
++ [测试样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)
+
+---
+
+#### ⑦优先级队列
+
+
 ## 四、部署
 
 ### （一）部署SpringBoot项目

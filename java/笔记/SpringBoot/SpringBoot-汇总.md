@@ -117,7 +117,11 @@
 |^|spring.rabbitmq.port|无参|配置RabbitMQ服务所在端口|端口号|无|
 |^|spring.rabbitmq.username|无参|连接RabbitMQ服务所需用户名|用户名|无|
 |^|spring.rabbitmq.password|无参|连接RabbitMQ服务所需密码|密码|无|
-|^|spring.rabbitmq.virtual-host|无参|要连接的RabbitMQ的Virtual-Host名|无|
+|^|spring.rabbitmq.virtual-host|无参|要连接的RabbitMQ的Virtual-Host名|virtual-host名|无|
+|^|spring.rabbitmq.listener.simple.acknowledge-mode|无参|设置消费者处理消息的确认模式，默认是无论是否消费成功都返回ack，设置为`manual`表示消费者需要编码手动确认ack|参考`org.springframework.amqp.core.AcknowledgeMode`枚举类|无|
+|^|spring.rabbitmq.listener.simple.prefetch|无参|设置消费者一次最多可以拿多少个消息进行消费|数值|无|
+|^|spring.rabbitmq.publisher-confirm-type|无参|设置交换机的消息确认模式|参考`org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType`枚举类|无|
+|^|spring.rabbitmq.publisher-returns|无参|是否启用消息转发结果确认，即确认交换机转发的请求是否到达了消息队列|布尔值，true表示启用|无|
 
 
 ---
@@ -186,22 +190,33 @@
 
 + 改进版汇总表
 
-|分组|注解|作用|参数|参数作用|参数值|注解作用范围|备注|
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|**jackson**|@JsonFormat|指定该属性返回给前端时要转换的格式|pattern|自定义格式|字符串|属性|无|
-|^|^|^|timezone|指定时间的时区|格式:`GMT+<number>`|属性|无|
-|**SpringCloud-Consul**|@EnableDiscoveryClient|开启微服务模块的服务发现|>|>|无|类|无|
-|**SpringCloud-LoadBalancer**|@LoadBalanced|使RestTemplate对象支持负载均衡|>|>|无|方法、参数、属性|无|
-|**SpringCloud-OpenFeign**|@FeignClient|声明接口为OpenFeign接口API|value|指定该接口API对应的微服务模块在Consul上面的注册名，从而指向该模块|注册名|类|无|
-|^|@EnableFeignClients|开启OpenFeign功能|>|>|无|类|无|
-|**SpringCloud-Resilience4j**|@CircuitBreaker|使对应方法被断路器监听，并在出现问题时可以触发服务熔断和服务降级|name|配置断路器要监听的服务模块的调用，即该值对应的服务模块的调用行为会被断路器监听，并在出现问题时执行服务熔断和服务降级|对应服务模块在Consul上面的注册名|方法|无|
-|^|^|^|fallback|指定服务降级要调用的fallback方法|fallback方法的名称（字符串）|^|^|
-|^|@Bulkhead|使对应方法能够经过舱壁隔离处理|name|该值对应的服务模块的调用行为会被断路器监听，并在出现问题时执行服务熔断和服务降级|对应服务模块在Consul上面的注册名|方法|无|
-|^|^|^|fallback|指定服务降级要调用的fallback方法|fallback方法的名称（字符串）|^|^|
-|^|^|^|type|舱壁隔离的方式|信号量(`Bulkhead.Type.SEMAPHORE`)和线程池(`Bulkhead.Type.THREADPOOL`)|^|^|
-|^|@RateLimiter|使对应方法能够经过限流处理|name|该值对应的服务模块的调用行为会被断路器监听，并在出现问题时执行服务熔断和服务降级|对应服务模块在Consul上面的注册名|方法|无|
-|^|^|^|fallback|指定服务降级要调用的fallback方法|fallback方法的名称（字符串）|^|^|
-|**RabbitMQ**|
+|分组|注解|作用|参数|参数作用|参数值|参数备注|注解主要作用范围|备注|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|**jackson**|@JsonFormat|指定该属性返回给前端时要转换的格式|pattern|自定义格式|字符串|无|属性|无|
+|^|^|^|timezone|指定时间的时区|格式:`GMT+<number>`|无|属性|无|
+|**SpringCloud-Consul**|@EnableDiscoveryClient|开启微服务模块的服务发现|>|>|无|无|类|无|
+|**SpringCloud-LoadBalancer**|@LoadBalanced|使RestTemplate对象支持负载均衡|>|>|无|无|方法、参数、属性|无|
+|**SpringCloud-OpenFeign**|@FeignClient|声明接口为OpenFeign接口API|value|指定该接口API对应的微服务模块在Consul上面的注册名，从而指向该模块|注册名|无|类|无|
+|^|@EnableFeignClients|开启OpenFeign功能|>|>|无|无|类|无|
+|**SpringCloud-Resilience4j**|@CircuitBreaker|使对应方法被断路器监听，并在出现问题时可以触发服务熔断和服务降级|name|配置断路器要监听的服务模块的调用，即该值对应的服务模块的调用行为会被断路器监听，并在出现问题时执行服务熔断和服务降级|对应服务模块在Consul上面的注册名|无|方法|无|
+|^|^|^|fallback|指定服务降级要调用的fallback方法|fallback方法的名称（字符串）|无|^|^|
+|^|@Bulkhead|使对应方法能够经过舱壁隔离处理|name|该值对应的服务模块的调用行为会被断路器监听，并在出现问题时执行服务熔断和服务降级|对应服务模块在Consul上面的注册名|无|方法|无|
+|^|^|^|fallback|指定服务降级要调用的fallback方法|fallback方法的名称（字符串）|无|^|^|
+|^|^|^|type|舱壁隔离的方式|信号量(`Bulkhead.Type.SEMAPHORE`)和线程池(`Bulkhead.Type.THREADPOOL`)|无|^|^|
+|^|@RateLimiter|使对应方法能够经过限流处理|name|该值对应的服务模块的调用行为会被断路器监听，并在出现问题时执行服务熔断和服务降级|对应服务模块在Consul上面的注册名|无|方法|无|
+|^|^|^|fallback|指定服务降级要调用的fallback方法|fallback方法的名称（字符串）|无|^|^|
+|**RabbitMQ**|@RabbitListener|使指定方法能够消费消息队列中的消息|bindings|指定要监听的队列|@QueueBinding注解组成的数组对象|**该属性可以详细指定要监听的队列，如果队列、交换机等不存在，那么会自动创建**|方法|无|
+|^|^|^|queues|指定要监听的队列名|队列名组成的字符串数组|该属性仅用于指定要监听的队列，没有自动创建的效果|^|^|
+|^|@QueueBinding|指定要监听的队列的详细信息|value|指定队列信息|@Queue注解对象|无|作为@RabbitListener注解的bindings属性存在|无|
+|^|^|^|exchange|指定能向队列转发消息的交换机信息|@Exchange注解对象|无|^|^|
+|^|^|^|key|指定路由键|字符串|无|^|^|
+|^|@Queue|指定队列信息|value|指定队列名称|字符串|无|作为@QueueBinding的value属性存在|无|
+|^|^|^|duration|是否将数据持久化处理|**字符串类型的布尔值**|无|^|^|
+|^|@Exchange|value|指定交换机名称|字符串|无|作为@QueueBinding的exchange属性存在|无|
+|^|^|arguments|指定交换机参数|@Argument注解组成的数组对象|无|^|^|
+|^|@Argument|name|参数名|一般为`alternate-exchange`，用来指定交换机的备用交换机|无|作为@QueueBinding、@Exchange、@Queue的arguments属性存在|无|
+|^|^|value|参数值|默认为字符串|无|^|^|
+|^|^|type|参数值的类型|默认为`java.lang.String`|无|^|^|
 
 
 
