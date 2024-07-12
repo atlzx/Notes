@@ -1839,10 +1839,35 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
   + 然而，它也只能保证这些了，它依然无法保证消息在最终发送后是否能够成功抵达RabbitMQ服务器，或者是否被消费者消费。因此，它的事务消息只是在Java客户端层面的事务，它仅保证了Java客户端层面上对事务消息的发送是具有事务特性的
 ![事务消息交换机与队列之间的映射关系](../../文件/图片/RabbitMQ图片/事务消息交换机与队列之间的映射关系.png)
 + [测试样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)
++ 注意:事务控制对消费端无效
 
 ---
 
-#### ⑦优先级队列
+#### ⑦队列
+
+##### Ⅰ惰性队列
+
++ 惰性队列会尽可能地将消息存入到磁盘中，当消费者消费到对应的消息中时，再通过IO去磁盘中加载对应消息
+  + 这样做可以有效地应对大量消息的情况并减少内存占用
+    + 可能出现的导致大量消息的原因:
+      + 消费端离线/崩溃/维护
+      + 突然出现的消息峰值，导致单位时间内生产者生产的消息大于消费者消费的消息
+      + 消费者消费消息的时间比以往慢
++ 配合持久化可以更好的处理消息
+
+---
+
+##### Ⅱ优先级队列
+
++ 我们可以为队列的消息设置优先级，优先级越高的消息，越先被消费者消费
++ 首先我们需要在创建队列时声明参数来让该队列能够处理优先级消息:
+  + `x-max-priority`表示该队列最大能够接收的优先级消息，实际上发送的消息比它大也会接收，且按照最高优先级处理。如果有多个消息优先级一致，按照先到先得的策略消费
++ 另外，在生产者发送消息时，需要给消息带有priority属性，以声明该消息的优先级，不声明默认以0（最低优先级）处理
++ [生产者样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)
++ [消费者样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/PriorityMessageListener.java)
+
+---
+
 
 
 ## 四、部署

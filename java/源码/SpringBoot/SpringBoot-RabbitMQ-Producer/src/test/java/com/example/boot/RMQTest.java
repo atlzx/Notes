@@ -111,4 +111,22 @@ public class RMQTest {
         rabbitTemplate.convertAndSend(TRANSACTION_EXCHANGE_NAME,TRANSACTION_ROUTING_KEY,"This is a transaction message-after!");
         Thread.sleep(100);
     }
+
+
+    @Test
+    public void test9() throws InterruptedException {
+        String PRIORITY_EXCHANGE_NAME="priority.exchange";
+        String PRIORITY_ROUTING_KEY="priority";
+        for(int i=0;i<20;i++){
+            int a=i;
+            rabbitTemplate.convertAndSend(PRIORITY_EXCHANGE_NAME,PRIORITY_ROUTING_KEY,"This is a priority,the priority is "+a,
+                (message)->{
+                    message.getMessageProperties().setPriority(a);
+                    return message;
+                }
+            );
+        }
+
+        Thread.sleep(100);
+    }
 }
