@@ -835,7 +835,7 @@ public @interface EnableAutoConfiguration {
 	}
 ~~~
 
-+ 因此，@AutoConfigurationPackage注解用来将我们自定义的包进行自动配置
++ 因此，**@AutoConfigurationPackage注解用来将我们自定义的包进行自动配置**
 + 现在来讨论@Import({AutoConfigurationImportSelector.class})注解导入的AutoConfigurationImportSelector类:
   + 在该类中可以找到getAutoConfigurationEntry方法
 

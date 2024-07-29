@@ -177,6 +177,8 @@
 |**Mybatis**|@MapperScan|指定mapper接口所在的包，用于创建mapper的代理对象|类|无|
 |^|@Param|指定mapper最终能看到的参数名称|方法参数|无|
 |^|@Alias|指定类在mapper文件中的别名|数据库对应实体类|无|
+|**事务**|@EnableTransactionManagement|让SpringMVC支持声明式事务管理（即支持不通过xml的方式使@Transactional注解生效）|配置类|SpringBoot通过自动装配已经自动实现了其功能|
+|^|@Transactional|在方法执行时开启事务，方法执行出现异常时会自动回滚|类或方法，作用在类上表示该类下的所有方法都统一开启事务|无|
 |**配置隔离**|@Profile|在开启指定环境后，类或方法上的注解才生效|类或方法|无|
 |**junit**|@SpringBootTest|执行测试时会启动SpringBoot项目进行测试|类|无|
 |^|其它相关Junit注解详见[其它依赖笔记](其它依赖笔记.md)|

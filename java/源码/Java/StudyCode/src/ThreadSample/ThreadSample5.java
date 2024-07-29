@@ -29,7 +29,7 @@ class Clerk {
             this.notifyAll();
         } else {
             try {
-                wait();
+                wait();  // 调用wait方法
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

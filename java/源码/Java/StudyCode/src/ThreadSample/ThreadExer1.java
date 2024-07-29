@@ -25,7 +25,7 @@ class A extends Thread {
 class B extends Thread {
     private A a;
 
-    public B(A a) {//构造器中，直接传入A类对象，传入该对象的目的是为了混淆思路，实际上传入的对象仅作为B类实例对象的属性存在，，并没什么影响
+    public B(A a) {//构造器中，直接传入A类对象，传入该对象的目的是为了混淆思路，实际上传入的对象仅作为B类实例对象的属性存在，并没什么影响
         this.a = a;
     }
     /*

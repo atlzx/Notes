@@ -721,9 +721,11 @@
 
 ### （三）使用注解
 
+#### ①基本使用
+
 |注解|作用|备注|
 |:---:|:---:|:---:|
-|@EnableTransactionManagement|让Spring支持事务管理|配置在配置类上|
+|@EnableTransactionManagement|让Spring支持声明式事务管理（即支持不通过xml的方式使@Transactional注解生效）|配置在配置类上|
 |@Transactional|配置事务处理规则|可以作用在类上或方法上，如果作用在类上，即代表类的全部方法都使用该事务|
 
 |规则|值类型|说明|备注|
@@ -763,6 +765,24 @@
 + [注解样例2](../源码/Spring/Spring-JDBC/src/main/java/com/example/service/JdbcTemplateServiceImpl.java)
 + [注解样例3](../源码/Spring/Spring-JDBC/src/main/java/com/example/service/CheckImpl.java)
 + [测试样例](../源码/Spring/Spring-JDBC/src/test/java/JdbcTemplateTest.java)
+
+---
+
+#### ②失效情况列举
+
+1. **方法不是public修饰的方法**:非public修饰的方法，Spring无法生成代理，但是不会报错
+2. **方法被final或static修饰**:因为方法无法被重写，导致代理对象没有办法通过重写方法插入事务的相关功能
+3. **方法在本类中被间接调用**:只有事务方法被直接调用才能使注解生效，Spring的AOP默认方法在被非本类方法调用时才生成代理，如果是在本类中间接调用的该方法，那么AOP不会生成代理。
+  + 例:类A有方法B和方法C，其中方法C有事务注解，方法B没有，但是方法B调用了方法C。此时外部通过调用方法B来调用方法C的话，事务注解会失效
+4. **多线程调用**:事务方法内部又新建了一个线程，而业务代码写在了新线程的run方法内。由于Spring的事务是通过ThreadLocal把数据库连接绑定到事务方法所属的线程中的，但多线程调用使得我们的业务代码是在另一个新的线程上跑的，它出了问题与我们事务方法所属的线程无关，因此会失效
+5. **数据库存储引擎不支持事务**:MyISSAM引擎是不支持事务的，实际上，MySQL那一堆存储引擎只有InnoDB支持，因此事务可以回滚建立在我们操作的表必须是InnoDB引擎表才行
+6. **未开启事务**:在SpringMVC中未使用@WebTransactionManagement注解
+7. **注解的propagation属性指定错误**:该属性支持的枚举属性中有的属性是不支持事务的
+8. **try-catch语句干扰事务异常判断**:如果抛出的异常进入了try-catch代码块且该catch代码块未抛异常，那么事务不会回滚
+9. **抛出异常类型不属于默认回滚的异常类型**:注解默认碰到RuntimeException和Error的异常才会回滚，如果碰到其它异常不会回滚
+10. **自定义回滚异常不匹配**:抛出的异常没有在我们自定义的回滚异常中，如抛出了SqlException、DuplicateKeyException等异常，但是我们指定的回滚异常只有NullPointerException，当然不会回滚
+11. **嵌套事务回滚超标**:这实际上并不属于失效情况，而属于过分回滚的情况。
+  + 例:我们调用了方法A，方法A调用了方法B，这两个方法都是事务方法，当B抛出异常时，我们希望的是B回滚而A不会滚，但是A也回滚了，因为底层的方法会继续向上抛异常被外层的事务方法捕获。
 
 ---
 
