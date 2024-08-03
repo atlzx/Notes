@@ -650,6 +650,11 @@
 + AQS(AbstractQueueSynchronizer)队列同步器负责实现各种类型的同步，它基于等待队列的设计可以实现复杂的同步控制逻辑
   + 它可以实现锁的获取、释放和其它操作，同时使用等待队列的设计来使多个线程来等待获取锁
 + 它的底层是使用双向链表来实现的:
+  + 这个链表中的节点类型可能是不同的，即共享锁节点可能与排它锁节点在一起
+    + 共享锁可以被多个线程获取（结合AQS源码推出结论），在`acquire`方法执行时，如果线程得到了共享锁，它还会唤醒链表后面的等待线程，让它们继续尝试获取锁，并把自己置为链表的头节点
+      + 此时后面的线程如果还要获取共享锁，那么它获得后也会把自己置为头节点，然后唤醒它后面的线程，实现多个线程共享一把锁
+      + 此时后面的线程如果要获取排它锁，那么他执行的是`tryAcquire`方法，该方法一般都是在state为0的情况下才能获取到的，但是之前获取共享锁的线程就决定了它无法获取排它锁，因此它会继续等待
+    + 相较共享锁，排它锁不需要考虑那么多
 ![AQS底层双向链表图例](../文件/图片/JUC图片/AQS底层双向链表图例.png)
 + 根据JDK17的源码进行分析，其底层代码如下:
 
@@ -657,7 +662,7 @@
     public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchronizer implements java.io.Serializable {
         ...
         static final int WAITING   = 1;          // must be 1  必须是1，表示正在等待获取锁
-        static final int CANCELLED = 0x80000000; // must be negative  取消状态，可能是因为超时或者打断而处于该状态
+        static final int CANCELLED = 0x80000000; // must be negative  取消状态，可能是因为超时或者打断而处于该状态，该值必须是负数
         static final int COND      = 2;          // in a condition wait  该值表示正在处于condition的等待状态
 
         abstract static class Node {
@@ -853,6 +858,7 @@
                 boolean acquired;
                 // 代码块中用来尝试获取锁，成功的话会将acquired标记为true
                 try {
+                    // 如果想获取共享锁的话，调用tryAcquireShared方法尝试获取共享锁
                     if (shared)
                         acquired = (tryAcquireShared(arg) >= 0);
                     else
@@ -879,6 +885,7 @@
             }
             // 如果节点是null，即第一次循环，那么直接创建一个节点出来
             if (node == null) {                 // allocate; retry before enqueue
+                // 若获取的是共享锁，那么创建共享锁节点出来，否则创建一个排它锁节点
                 if (shared)
                     node = new SharedNode();
                 else
@@ -904,7 +911,7 @@
                 // 如果CAS操作成功，说明node已经成功添加到队列尾，此时再添加由t到node的单向链，形成双链
                 else
                     t.next = node;
-            } 
+            }
             // 如果是第一个正在等待的线程且spins有值，那么进入自旋等待
             else if (first && spins != 0) {
                 --spins;                        // reduce unfairness on rewaits  每自旋一次就减1
@@ -929,7 +936,7 @@
                 else
                     break;
                 node.clearStatus();  // 把status置为0
-                // 如果线程是被打断而被唤醒的，那么跳出循环
+                // 如果线程被打断且该锁支持线程打断打断，那么跳出循环
                 if ((interrupted |= Thread.interrupted()) && interruptible)
                     break;
             }
@@ -2442,11 +2449,26 @@
 
 #### ①CountDownLatch
 
++ 直接看源码
+  + 从源码中可以观察到:
+    + CountDownLatch内部也有一个内部类Sync继承AbstractQueuedSynchronizer，它在构造器执行时就尝试获取指定数量的**共享锁**
+    + 共享锁可以被多个线程获取（结合AQS源码推出结论），在`acquire`方法执行时，如果线程得到了共享锁，它还会唤醒链表后面的等待线程，让它们继续尝试获取锁，并把自己置为链表的头节点
+      + 此时后面的线程如果还要获取共享锁，那么它获得后也会把自己置为头节点，然后唤醒它后面的线程，实现多个线程共享一把锁
+      + 此时后面的线程如果要获取排它锁，那么他执行的是`tryAcquire`方法，该方法一般都是在state为0的情况下才能获取到的，但是之前获取共享锁的线程就决定了它无法获取排它锁，因此它会继续等待
+    + 线程在释放共享锁时，会唤醒下一个线程节点
+
 ~~~java
     public class CountDownLatch {
+        
+        public CountDownLatch(int count) {
+            if (count < 0) throw new IllegalArgumentException("count < 0");
+            this.sync = new Sync(count);
+        }
+        // 这里有一个内部类继承自AQS类，因此它必定是通过AQS实现的功能
         private static final class Sync extends AbstractQueuedSynchronizer {
             private static final long serialVersionUID = 4982264981922014374L;
 
+            // 这里直接把AQS的state置为构造器传来的参数count
             Sync(int count) {
                 setState(count);
             }
@@ -2470,6 +2492,200 @@
                         return nextc == 0;
                 }
             }
+        }
+    }
+
+    private final Sync sync;  // 该sync对象负责所有的操作
+
+    // await内部调用的是sync的acquireSharedInterruptibly方法，即获取共享AQS锁
+    public void await() throws InterruptedException {
+        sync.acquireSharedInterruptibly(1);
+    }
+
+    // 该方法位于AQS类中
+    public final void acquireSharedInterruptibly(int arg)
+        throws InterruptedException {
+        // 如果线程已经被打断，或者当前锁已经被其他线程占有(见下面的tryAcquireShared源码)且尝试获取锁的acquire方法返回了负数（这种情况在锁支持打断且线程在获取锁被打断的情况下才会出现，详情见AQS的acquire源码），那么就抛出打断异常
+        // 该判断语句在确定线程是否已被打断的同时，同时还尝试让线程获得该锁
+        if (Thread.interrupted() ||
+            (tryAcquireShared(arg) < 0 &&
+             acquire(null, arg, true, true, false, 0L) < 0))
+            throw new InterruptedException();
+    }
+    // 该方法是CountDownLatch的内部类重写的方法
+    protected int tryAcquireShared(int acquires) {
+        return (getState() == 0) ? 1 : -1;
+    }
+
+    // 接下来看countDown方法的实现
+    public void countDown() {
+        sync.releaseShared(1);
+    }
+
+    public final boolean releaseShared(int arg) {
+        // 它尝试释放一个锁,因为countDown调用它时传递的参数值为1，如果成功，那么唤醒下一个节点
+        // 唤醒下一个节点是必须的，这是排它锁和共享锁在释放时都需要做的操作，因为必须保证锁在被释放后，那些正在等待获得锁的线程能够得到机会获取到锁而不是一直等下去
+        // 如果此时state正好减为了0，那么共享锁和排它锁都可以被获取，如果state不等于0，此时调用该方法只能说明是共享锁被释放了，因此此时只有共享锁会被获取
+        if (tryReleaseShared(arg)) {
+            signalNext(head);
+            return true;
+        }
+        return false;
+    }
+
+    protected boolean tryReleaseShared(int releases) {
+        // Decrement count; signal when transition to zero
+        // 这里很简单，就是一直循环尝试CAS操作直到成功
+        // 减到0就返回true，否则返回false，如果在CAS之前state就是0（可能是其他线程干的，或者state为0还在执行countDown方法），那么直接返回不执行CAS操作
+        for (;;) {
+            int c = getState();
+            if (c == 0)
+                return false;
+            int nextc = c - 1;
+            if (compareAndSetState(c, nextc))
+                return nextc == 0;
+        }
+    }
+~~~
+
+---
+
+#### ②CyclicBarrier
+
+~~~java
+    public class CyclicBarrier {
+        private final ReentrantLock lock = new ReentrantLock();  // 方法执行要用到的ReentrantLock
+
+        private final Condition trip = lock.newCondition();  // 用来进行等待的condition对象
+
+        private final int parties;  // 循环壁障的阈值
+        
+        private final Runnable barrierCommand;  // 在壁障破裂时（即等待的线程数大于等于阈值时）需要做的操作
+        
+        private Generation generation = new Generation();
+
+        private int count;  // 还需要多少个线程等待才能冲破壁障
+
+        // Generation类用来标识此次循环的壁障是否已被打破
+        private static class Generation {
+            Generation() {}                 // prevent access constructor creation
+            boolean broken;                 // initially false  该值初始为false
+        }
+
+        public CyclicBarrier(int parties) {
+            this(parties, null);
+        }
+
+        public CyclicBarrier(int parties, Runnable barrierAction) {
+            // 这里检查传入的数值是否合法
+            if (parties <= 0) throw new IllegalArgumentException();
+            // 赋值
+            this.parties = parties;
+            this.count = parties;
+            this.barrierCommand = barrierAction;
+        }
+
+        public int await() throws InterruptedException, BrokenBarrierException {
+            try {
+                // 直接调dowait方法
+                return dowait(false, 0L);
+            } catch (TimeoutException toe) {
+                throw new Error(toe); // cannot happen
+            }
+        }
+
+        private int dowait(boolean timed, long nanos) throws InterruptedException, BrokenBarrierException,TimeoutException {
+            // 上锁
+            final ReentrantLock lock = this.lock;
+            lock.lock();
+            try {
+                // 得到承载此次循环壁障状态的Generation对象
+                final Generation g = generation;
+
+                // 如果壁障已经破了，那么抛异常
+                if (g.broken)
+                    throw new BrokenBarrierException();
+                // 如果线程被打断了
+                if (Thread.interrupted()) {
+                    breakBarrier();
+                    throw new InterruptedException();
+                }
+                // 让count自减1
+                int index = --count;
+                // 该条件语句内是等待线程数到达阈值的情况
+                // 如果自减后index为0
+                if (index == 0) {  // tripped
+                    // 得到存储的Runnable对象
+                    Runnable command = barrierCommand;
+                    // 若该对象不为空，那么执行该操作
+                    if (command != null) {
+                        try {
+                            command.run();
+                        } catch (Throwable ex) {
+                            breakBarrier();
+                            throw ex;
+                        }
+                    }
+                    nextGeneration();
+                    return 0;
+                }
+                // 这是等待线程数未到达阈值的情况
+                // loop until tripped, broken, interrupted, or timed out
+                for (;;) {
+                    try {
+                        // 如果没设置等待超时时间，调用Condition对象的await方法一直等下去
+                        if (!timed)
+                            trip.await();
+                        // 如果超时时间合法，那么调用awaitNanos方法等待
+                        else if (nanos > 0L)
+                            nanos = trip.awaitNanos(nanos);
+                    } catch (InterruptedException ie) {
+                        // 如果方法内的g与当前的Generation对象是一致的，而且壁障还没破
+                        if (g == generation && ! g.broken) {
+                            breakBarrier();  // 执行壁障破裂的方法
+                            throw ie;  // 抛出异常
+                        } else {
+                            // We're about to finish waiting even if we had not
+                            // been interrupted, so this interrupt is deemed to
+                            // "belong" to subsequent execution.
+                            // 否则就打断当前线程
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+
+                    // 如果当前壁障已经破了，那么抛异常
+                    if (g.broken)
+                        throw new BrokenBarrierException();
+
+                    // 如果当前的Generation对象与方法内的g不一致，那么返回count自减后的值
+                    if (g != generation)
+                        return index;
+                    // 如果设置了超时时间但是超时时间非法
+                    if (timed && nanos <= 0L) {
+                        breakBarrier();  // 执行壁障破裂的方法
+                        throw new TimeoutException();  //抛异常
+                    }
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        // 该方法在等待线程数到达阈值时被触发
+        private void breakBarrier() {
+            // 将generation的broken属性置为true
+            generation.broken = true;
+            count = parties; // 重新把count置为壁障阈值
+            trip.signalAll();  // 唤醒所有正在等待的线程
+        }
+
+        // 该方法在等待线程数到达阈值时被触发
+        private void nextGeneration() {
+            // signal completion of last generation
+            trip.signalAll();  // 唤醒所有正在等待的线程
+            // set up next generation
+            count = parties;  // 重新把count置为壁障阈值
+            generation = new Generation();  // 换一个新的Generation对象
         }
     }
 ~~~
