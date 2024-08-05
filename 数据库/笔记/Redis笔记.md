@@ -900,7 +900,8 @@
   ~~~
 
   + 接下来启动各redis服务器:`redis-server xxx.conf`
-  + 然后`redis-cli -a 123456 --cluster create --cluster-replicas 1 8.130.44.112:6381 8.130.44.112:6382 8.130.66.96:6383 8.130.66.96:6384 8.130.87.94:6385 8.130.87.94:6386`来搭建集群
+  + 然后`redis-cli -a 123456 --cluster create --cluster-replicas 1 xxx:6381 xxx:6382 xxx:6383 xxx:6384 xxx:6385 xxx:6386`来搭建集群
+    + xxx表示各节点所在服务器的IP地址
     + 搭建之前确保端口开放，**每个集群节点需要两个端口**，如果服务器要占用6379端口，那么还需要一个16379（占用端口+10000）端口来与集群总线连接，用来进行节点的失败检测、配置更新、故障转移等
     + 密码需要写自己的redis设置的密码
     + IP需要写当前redis实际所在的IP,端口也一样
@@ -1126,7 +1127,7 @@
 #### ①判断BigKey
 
 + 一般的，我们认为key对应的值
-  + 若是String类型，那么大于10Kb就是BigKey
+  + 若是String类型，那么大于10Mb就是BigKey
   + 若是Hash、List、Set、ZSet类型，那么元素个数大于5000就是BigKey
 
 ---
@@ -1248,6 +1249,99 @@
 
 ---
 
+### （三）使用canal实现双写一致性
+
+#### ①canal简介
+
++ canal是阿里开源的产品，其主要用途是基于MySQL数据库增量日志解析，提供增量数据订阅和消费
++ 利用canal，我们可以实现Redis缓存与MySQL之间数据变动的双写一致性
++ [github地址](https://github.com/alibaba/canal)
+
+---
+
+#### ②canal安装与启动
+
++ 这里以CentOS配合JDK17进行演示
+  + 首先[下载](https://github.com/alibaba/canal/releases)一个版本，这里演示时下载的是v1.1.6版本
+  + 下载`canal.developer-1.1.6-xxxxx.tar.gz`包到CentOS系统内
+  + 解压
+  + 打开其目录下的`/conf/example/instance.properties`文件，编辑如下配置(建议在编辑前备份一份原文件):
+
+~~~java
+  // 下面配置都在instance.properties里面存在，直接找一下就能找到
+  // 该配置写要连接的MySQL路径，为host+port，例:8.96.133.25:3306
+  canal.instance.master.address
+  // 该配置写连接MySQL需要使用的用户名
+  canal.instance.dbUsername
+  // 该配置写连接MySQL需要用到的密码
+  canal.instance.dbPassword
+~~~
+  + 接下来进入`/bin`目录，执行`./startup.sh`运行canal。如果想重启，那么执行``
+  + 运行完成后可能会出现如下输出:
+
+  ![canal启动图例1](../文件/图片/Redis/canal启动图例1.png)
+  + 接下来去`/logs/canal`中查看`canal.log`日志来检查是否开启成功，日志文件输出为下图表示启动成功
+  ![canal启动图例2](../文件/图片/Redis/canal启动图例2.png)
+  + 然后去`/logs/example`中查看`example.log`的输出:
+  ![canal启动图例3](../文件/图片/Redis/canal启动图例3.png)
+  + 若输出不一致，详见[可能出现的问题](#canalProblem)
+
+---
+
+#### ③Java的canal业务程序Demo
+
++ [pom.xml](../../java/源码/Redis/pom.xml)
++ [配置文件](../../java/源码/Redis/Redis-Canal-Demo/src/main/resources/application.properties)
++ [程序demo](../../java/源码/Redis/Redis-Canal-Demo/src/main/java/com/example/redis/example/RedisCanalExample.java)
+
+
+<a id="canalProblem"></a>
+
+#### ④可能出现的问题
+
++ **Unrecognized VM option 'AggressiveOpts' Error: Could not create the Java Virtual Machine. Error: A fatal exception has occurred. Program will exit.**
+  + 出现该问题的原因是Java版本不对，其根本原因是JVM的AggressiveOpts参数项在JDK11时被弃用，并在JDK13的版本及以后的版本中如果出现该参数项导致JVM无法启动
+  + 解决方法有两个
+    1. 改变Java版本，推荐改成JDK8这种稳定版本
+    2. 修改`startup.sh`内的代码（**推荐**），只需要查找一下`AggressiveOpts`出现的位置，然后把该参数项删除就可以了，接下来再启动就不会报错了
++ **日志文件显示详细的报错信息在`/bin/xxxx.log`文件内，找到该文件并输出，在开头看到了下面的话
+
+  ~~~log
+    # There is insufficient memory for the Java Runtime Environment to continue.
+    # Native memory allocation (mmap) failed to map 2147483648 bytes for committing reserved memory.
+    # Possible reasons:
+    #   The system is out of physical RAM or swap space
+    #   The process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+    # Possible solutions:
+    #   Reduce memory load on the system
+    #   Increase physical memory or swap space
+    #   Check if swap backing store is full
+    #   Decrease Java heap size (-Xmx/-Xms)
+    #   Decrease number of Java threads
+    #   Decrease Java thread stack sizes (-Xss)
+    #   Set larger code cache with -XX:ReservedCodeCacheSize=
+    #   JVM is running with Zero Based Compressed Oops mode in which the Java heap is
+    #     placed in the first 32GB address space. The Java Heap base address is the
+    #     maximum limit for the native heap growth. Please use -XX:HeapBaseMinAddress
+    #     to set the Java Heap base and to place the Java Heap above 32GB virtual address.
+    # This output file may be truncated or incomplete.
+    #
+    #  Out of Memory Error (os_linux.cpp:2790), pid=30393, tid=30394
+    #
+    # JRE version:  (17.0.11+7) (build )
+    # Java VM: Java HotSpot(TM) 64-Bit Server VM (17.0.11+7-LTS-207, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, linux-amd64)
+    # No core dump will be written. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+  ~~~
+  + 这段话的意思是在JVM启动时内存无法给JVM分配这么大的内存空间，像此处报错就是在声明无法为JVM分配2G内存空间
+  + 解决方法也很简单，修改JVM需要的内存空间，也是在`startup.sh`文件中改
+  ![canal启动报错图例1](../文件/图片/Redis/canal启动报错图例1.png)
+
+
+
+
+
+---
+
 ## 四、
 
 
@@ -1295,6 +1389,7 @@
 |^|`cluster keyslot <key>`|key:想查看的key|得到指定key对应的哈希槽序号|无|
 |^|`cluster countkeysinslot <number>`|number:槽位序号|判断槽位是否被占用，1表示占用，0表示未占用|无|
 |^|`cluster keyslot <key>`|key:想查询的键|查看指定键会映射到哪个哈希槽中|无|
+|**BigKey**|`MEMORY USAGE <key> [SAMPLES <count>]`|key:想判断的键<br>count:需要进行嵌套采样的值得数量（该值作用在嵌套数据类型上）|得到指定键及其对应值占用的字节数|无|
 
 ---
 
@@ -1331,6 +1426,12 @@
 |**多线程**|`io-threads`|无参|配置多线程的支持线程个数|线程个数并不是越大越好，一般要小于CPU核数，4核建议取值2-3，8核建议取值6|
 |^|`io-thread-do-reads`|无参|该项置为yes时表示开启多线程|无|
 |**BigKey**|`rename-command <operation> ""`|operation:操作命令|将指定命令通过重命名为空字符串来禁止该命令|无|
+|**惰性释放**|`lazyfree-lazy-eviction {yes\|no}`|无参|当redis内存使用到达maxmemory并设置有淘汰策略时，是否采用非阻塞方式进行删除，默认为no|无|
+|^|`lazyfree-lazy-expire {yes\|no}`|^|当redis内的键到达超时时间时，是否采用采用非阻塞方式进行删除，默认为no|无|
+|^|`lazyfree-lazy-server-del {yes\|no}`|^|当执行像rename之类的指令时，它会隐式的删除对应的key，此时删除时是否以非阻塞方式删除，默认为no|无|
+|^|`replica-lazy-flush {yes\|no}`|^|从机根据主机进行数据同步时，需要先调用`flushall`来清除自己的库，该配置用来决定从机在flush时是否以非阻塞方式删除，默认为no|无|
+|^|`lazyfree-lazy-user-del {yes\|no}`|^|设置数据是否在调用`del`时要与调用`unlink`命令时的行为保持一致，默认为no|无|
+|^|`lazyfree-lazy-user-flush {yes\|no}`|^|当用户执行`flushdb`、`flushall`等命令但未指定`async`或`sync`参数时，该配置项用来决定是否进行异步删除，默认为no|无|
 
 ---
 
@@ -1360,7 +1461,7 @@
 2. 如何生产上限制`keys *`、`flushdb`、`flushall`等危险命令以防止误删误用
    + 在配置文件中配置`rename-command`来禁用这些命令
 3. `memory usage`命令干嘛的
-   + 计算每个键值所占用的字节数，用来查找与发现BigKey
+   + 计算指定键值所占用的字节数，用来查找与发现BigKey
 4. BigKey多大算大，如何发现，怎么删除，如何处理
    + 见上面的BigKey笔记
 5. 是否做过BigKey调优，惰性释放lazyfree?

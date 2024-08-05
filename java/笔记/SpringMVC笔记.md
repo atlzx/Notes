@@ -686,7 +686,8 @@
     jdbc.url=jdbc:mysql://localhost:3306/atguigudb
     jdbc.driver=com.mysql.cj.jdbc.Driver
     jdbc.username=root
-    jdbc.password=1928564318asd
+    # yyy对应的是密码，使用时修改为对应真实密码
+    jdbc.password=yyy
 
 ~~~
 

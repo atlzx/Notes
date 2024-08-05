@@ -7641,3 +7641,17 @@ BY、GROUP BY、DISTINCT 这些语句较为耗费CPU，数据库的CPU资源是�
 ~~~
 
 ---
+
+## 六、目录结构汇总
+
++ Windows系统:
+  + MySQL的数据库文件存放路径:`C:\ProgramData\MySQL\MySQL Server 8.0\Data`
+  + 相关命令目录一般取决于MySQL的Windows版自定义安装的位置
+  + 配置文件目录一般在`C:\Program Files\MySQL\MySQL Server 8.0\my.ini`
+
++ Linux系统:
+  + MySQL的数据库文件存放路径:`/var/lib/mysql`
+  + 相关命令目录:`/usr/bin和/usr/sbin`
+  + 配置文件目录:`/usr/share/mysql-8.0和/etc/mysql(my.cnf配置文件在该目录下，也可能该文件直接就在/etc目录里面)`
+
+---

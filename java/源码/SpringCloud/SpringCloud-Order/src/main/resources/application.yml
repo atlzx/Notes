@@ -7,7 +7,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: 1928564318asd
+    # yyy对应的是密码，使用时修改为对应真实密码
+    password: yyy
     url: jdbc:mysql://localhost:3306/spring_cloud?characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
   cloud:
     consul:

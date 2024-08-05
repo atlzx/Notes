@@ -6,7 +6,8 @@ public class Test1 {
     public static void main(String[] args) throws Exception {
         Class.forName("com.mysql.cj.jdbc.Driver");
         // 想要进行批量操作，需要传入 rewriteBatchedStatements=true 的配置
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/atguigudb?rewriteBatchedStatements=true","root","1928564318asd");
+        // yyy对应的是密码，使用时修改为对应真实密码
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/atguigudb?rewriteBatchedStatements=true","root","yyy");
         test1(conn);
 
 

@@ -32,7 +32,7 @@ public class LinkDataBaseSample1 {
         // 创建Properties对象
         Properties pro = new Properties();
         pro.put("user", "root");
-        pro.put("password", "1928564318asd");
+        pro.put("password", "yyy");  //yyy对应的是密码，使用时修改为对应真实密码
 
         System.out.println("请输入用户名:");
         String userName = sc.nextLine();
@@ -50,9 +50,10 @@ public class LinkDataBaseSample1 {
             */
 
             // 下面演示三个得到数据库连接对象的方式，都是调用一样的方法，只是传入的参数不一样
-            Connection con1 = DriverManager.getConnection("jdbc:mysql:///atguigudb", "root", "1928564318asd");
+            // yyy对应的是密码，使用时修改为对应真实密码
+            Connection con1 = DriverManager.getConnection("jdbc:mysql:///atguigudb", "root", "yyy");
             Connection con2 = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/atguigudb", pro);
-            Connection con3 = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/atguigudb?user=root&password=1928564318asd");
+            Connection con3 = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/atguigudb?user=root&password=yyy");
             Statement statement = con1.createStatement();  // 创建Statement实例对象
             // 使用statement对象进行执行可能会出现SQL注入的风险，如在password输入: ' or '1'='1 也会登陆成功
             ResultSet rs = statement.executeQuery(sql + " where user_name='" + userName + "' and password='" + pwd + "';");

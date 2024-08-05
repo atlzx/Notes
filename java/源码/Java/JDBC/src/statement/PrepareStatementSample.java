@@ -10,7 +10,8 @@ public class PrepareStatementSample {
     public static void main(String[] args) throws Exception{
         Class.forName("com.mysql.cj.jdbc.Driver");
         Scanner sc=new Scanner(System.in);
-        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/atguigudb", "root", "1928564318asd");
+        // yyy对应的是密码，使用时修改为对应真实密码
+        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/atguigudb", "root", "yyy");
         test1(sc,con);
         test2(sc,con);
         test3(sc,con);

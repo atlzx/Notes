@@ -23,7 +23,7 @@ public class Config {
 //        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 //        dataSource.setUrl("jdbc:mysql://localhost:3306/atguigudb");
 //        dataSource.setUsername("root");
-//        dataSource.setPassword("1928564318asd");
+//        dataSource.setPassword("yyy");   // yyy对应的是密码，使用时修改为对应真实密码
 //        return dataSource;
 //    }
 //    @Bean(value = "jdbcTemplate")

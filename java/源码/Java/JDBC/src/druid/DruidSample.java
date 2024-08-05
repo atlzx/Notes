@@ -22,7 +22,7 @@ public class DruidSample {
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");  // 告知驱动全类名路径
         dataSource.setUrl("jdbc:mysql://localhost:3306/atguigudb");  // 告知URL
         dataSource.setUsername("root");  // 告知连接用户名
-        dataSource.setPassword("1928564318asd");  // 告知密码
+        dataSource.setPassword("yyy");  // 告知密码
 
         // 下面的设置可选
 

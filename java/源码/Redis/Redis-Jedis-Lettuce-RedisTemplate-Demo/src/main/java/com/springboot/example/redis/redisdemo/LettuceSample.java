@@ -11,7 +11,7 @@ public class LettuceSample {
     public static void main(String[] args) {
         // 1 使用构建器链式编程来builder我们的RedisURI
         RedisURI uri = RedisURI.builder()
-            .withHost("8.130.44.112")
+            .withHost("xxx")  // 这里写redis所在服务器的ip地址
             .withPort(6379)
             .withAuthentication("default", "123456")
             .build();

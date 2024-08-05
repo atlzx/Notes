@@ -71,7 +71,7 @@
 |^|spring.data.redis.lettuce.pool.max-wait|连接池阻塞的最大等待时间|`xxxms`，如:`-1ms`|
 |^|spring.data.redis.lettuce.pool.max-idle|连接池中的最大空闲连接|数值|
 |^|spring.data.redis.lettuce.pool.min-idle|连接池中的最小空闲连接|数值|
-|^|spring.data.redis.cluster.nodes|要连接的集群节点|以`<host>:<port>`的方式提供，如果有多个，用逗号隔开，例:`8.130.44.112:6381,8.130.44.112:6382`|无|
+|^|spring.data.redis.cluster.nodes|要连接的集群节点|以`<host>:<port>`的方式提供，如果有多个，用逗号隔开，例:`6.53.11.126:6381,6.53.11.126:6382`|无|
 |**jackson**|spring.jackson.date-formate|指定自定义的时间格式|[参考](../文件/图片/Java图片/自定义日期格式规范表.png)|无|
 |^|spring.jackson.time-zone|指定时区|格式:`GMT+<number>`,number就是时区的具体值|无|
 |**SpringCloud-Consul**|spring.cloud.consul.host|指定consul服务所在的host|默认为localhost|无|

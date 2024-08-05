@@ -12,7 +12,7 @@ public class Producer {
         ConnectionFactory connectionFactory = new ConnectionFactory();
 
         // 设置RabbitMQ所在主机地址
-        connectionFactory.setHost("8.130.44.112");
+        connectionFactory.setHost("xxx");
 
         // 设置连接端口号：默认为 5672
         connectionFactory.setPort(5672);

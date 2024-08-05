@@ -1480,7 +1480,8 @@ seata:
 
       user: root
 
-      password: 1928564318asd
+      # yyy对应的是密码，使用时修改为对应真实密码
+      password: yyy
 
       min-conn: 10
 

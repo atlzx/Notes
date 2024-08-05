@@ -5,7 +5,8 @@ import com.rabbitmq.client.ConnectionFactory;
 
 public class ConnectionUtil {
 
-    public static final String HOST_ADDRESS = "8.130.44.112";
+    // rabbitMQ所在服务器的ip地址
+    public static final String HOST_ADDRESS = "xxx";
 
     public static Connection getConnection() throws Exception {
 

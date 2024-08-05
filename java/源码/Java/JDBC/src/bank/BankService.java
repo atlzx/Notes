@@ -18,7 +18,8 @@ public class BankService {
     public static boolean exchangeAccountMoney(String subAccount, String sumAccount, int money) throws Exception {
         Class.forName("com.mysql.cj.jdbc.Driver");
         // 由于转账事务的原子性，因此它们的连接必须是一个，把它提取到Service层
-        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/atguigudb", "root", "1928564318asd");
+        // yyy对应的是密码
+        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/atguigudb", "root", "yyy");
         try {
             con.setAutoCommit(false);  // setAutoCommit用来设置不自动提交
             con.commit();  // 必须设置不自动提交后才能手动提交，否则会报错

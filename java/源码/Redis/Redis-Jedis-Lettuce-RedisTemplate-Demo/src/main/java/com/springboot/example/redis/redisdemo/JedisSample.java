@@ -10,8 +10,8 @@ import java.util.Set;
 
 public class JedisSample {
     public static void main(String[] args) {
-        // 1 connection 连接，通过指定ip和端口号
-        Jedis jedis = new Jedis("8.130.44.112", 6379);
+        // 1 connection 连接，通过redis所在服务器的指定ip和其占用的端口号
+        Jedis jedis = new Jedis("xxx", 6379);
 
         // 2 指定访问服务器密码
         jedis.auth("123456");

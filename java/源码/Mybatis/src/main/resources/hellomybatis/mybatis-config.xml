@@ -26,7 +26,8 @@
                 <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
                 <property name="url" value="jdbc:mysql://localhost:3306/atguigudb"/>
                 <property name="username" value="root"/>
-                <property name="password" value="1928564318asd"/>
+                <!-- yyy对应的是密码，使用时修改为对应真实密码 -->
+                <property name="password" value="yyy"/>
             </dataSource>
         </environment>
     </environments>

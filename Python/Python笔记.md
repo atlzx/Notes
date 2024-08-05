@@ -2275,7 +2275,7 @@ def 函数名(形参1:类型,形参2:类型,...)->返回值类型:
       host="localhost",  # 主机名(IP)
       port=3306,  # 端口
       user="root",  # 数据库账户
-      password="1928564318asd",  # 数据库密码
+      password="yyy",  # 数据库密码,yyy对应的是密码，使用时修改为对应真实密码
       autocommit=False # 设置是否对数据库修改后自动确认，设置True后，即使不写确认代码，执行excute函数后会直接修改数据库
   )
   cursor = conn.cursor()  # 获取游标对象(指针)

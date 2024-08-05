@@ -12,7 +12,8 @@ public class Consumer {
         ConnectionFactory factory = new ConnectionFactory();
 
         // 2. 设置参数
-        factory.setHost("8.130.44.112");
+        // rabbitMQ所在服务器的ip地址
+        factory.setHost("xxx");
         factory.setPort(5672);
         factory.setVirtualHost("/");
         factory.setUsername("guest");

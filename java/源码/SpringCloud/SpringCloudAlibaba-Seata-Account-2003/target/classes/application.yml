@@ -14,7 +14,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/seata_account?characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
     username: root
-    password: 1928564318asd
+    # yyy对应的是密码，使用时修改为对应真实密码
+    password: yyy
 # ========================mybatis===================
 mybatis:
   mapper-locations: classpath:mapper/*.xml

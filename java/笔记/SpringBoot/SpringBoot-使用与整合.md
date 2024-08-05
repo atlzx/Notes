@@ -647,10 +647,10 @@ public class People {
     spring.data.redis.lettuce.pool.max-idle=8
     # 连接池中的最小空闲连接
     spring.data.redis.lettuce.pool.min-idle=0
-    # 连接的集群节点
-    spring.data.redis.cluster.nodes=8.130.44.112:6381,8.130.44.112:6382,\
-      8.130.66.96:6383,8.130.66.96:6384,\
-      8.130.87.94:6385,8.130.87.94:6386
+    # 连接的集群节点，使用xxx表示的是节点所在服务器的IP地址
+    spring.data.redis.cluster.nodes=xxx:6381,xxx:6382,\
+      xxx:6383,xxx:6384,\
+      xxx:6385,xxx:6386
     # 开启集群拓扑动态感应刷新
     spring.data.redis.lettuce.cluster.refresh.adaptive=true
     # 设置定时刷新频率
@@ -1910,7 +1910,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 ~~~properties
     # 配置数据库
     spring.datasource.username=root
-    spring.datasource.url=jdbc:mysql://8.130.44.112:3306/chat
+    spring.datasource.url=jdbc:mysql://xxx:3306/chat
     spring.datasource.password=123456
     spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
     spring.datasource.type=com.alibaba.druid.pool.DruidDataSource
