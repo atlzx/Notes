@@ -644,6 +644,48 @@
 
 ---
 
+#### ⑥Future
+
++ 传统的线程执行完毕后，由于Runnable接口定义的run方法返回值类型为void，导致我们无法得到线程执行完毕后的返回值
++ 使用ThreadPoolExecutor的submit方法，可以使我们得到线程操作执行完毕后的返回值
+
+|归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|**Future**|`get()`|无参|得到线程执行完毕后的返回值，如果线程尚未执行完毕，阻塞该线程直到对应线程执行完毕|>|取决于线程的返回值|InterruptedException, ExecutionException|无|[样例](../源码/JUC/BasicJUC/src/test/java/ThreadPoolTest.java)|
+|^|`isCanclled()`|无参|检查该future对应的线程是否被取消|如果被取消返回true|boolean|无|无|^|
+|^|`isDone()`|无参|检查该future对应的线程是否已经执行完毕|如果执行完毕返回true|boolean|无|无|^|
+|^|`cancel(boolean mayInterruptIfRunning)`|mayInterruptIfRunning:如果为true那么方法将尝试取消线程的任务执行|尝试取消方法的任务执行|如果成功取消返回true|boolean|无|此方法的返回值并不能代表方法是否已经被取消，例如，当两个或多个线程对同一个future调用该方法时，方法仅保证至少有一个线程返回true|^|
+|^|`get(long timeout, TimeUnit unit)`|timeout:超时时间<br>unit:时间单位|得到线程执行完毕后的返回值，如果线程尚未执行完毕，最多阻塞该线程参数设置的时间然后唤醒线程继续执行|>|取决于线程的返回值|InterruptedException, ExecutionException|无|^|
+
+##### ⅠCompletableFuture
+
++ CompletableFuture可以实现类似JavaScript中的Promise相关的效果:
+
+|归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|**CompletableFuture**|`supplyAsync(Supplier<U> supplier)`|supplier:供给型接口对象，表示要执行的操作|使用ForkJoinPool**异步**执行**有返回值**的操作|新的CompletableFuture对象|CompletableFuture<U>|无|无|[样例](../源码/JUC/BasicJUC/src/test/java/CompletableFutureTest.java)|
+|^|`supplyAsync(Supplier<U> supplier,Executor executor)`|supplier:供给型接口对象，表示要执行的操作<br>executor:线程池对象，用于自定义异步执行所使用的线程池|^|^|^|无|无|^|
+|^|`runAsync(Runnable run)`|run:Runnable接口对象，表示要执行的操作|使用ForkJoinPool异步执行**无返回值**的操作|新的CompletableFuture对象|CompletableFuture<Void>|无|无|^|
+|^|`runAsync(Runnable runnable,Executor executor)`|run:Runnable接口对象，表示要执行的操作<br>executor:线程池对象，用于自定义异步执行所使用的线程池|^|^|^|无|无|^|
+|^|`thenApply(Function<? super T,? extends U> fn)`|fn:Function接口对象，表示接下来需要执行的操作|上一步执行完毕后接收其结果并继续**以非异步方式**执行，类似于Promise的then|新的CompletableFuture对象|CompletableFuture<U>|无|无|^|
+|^|`thenApplyAsync(Function<? super T,? extends U> fn)`|^|上一步执行完毕后接收其结果并继续**以异步方式**执行，类似于Promise的then|^|^|无|无|^|
+|^|`thenApplyAsync(Function<? super T,? extends U> fn, Executor executor)`|fn:Function接口对象，表示接下来需要执行的操作<br>executor:线程池对象，用于自定义异步执行所使用的线程池|^|^|^|无|无|^|
+|^|`exceptionally(Function<Throwable, ? extends T> fn)`|fn:Function接口对象，表示接下来需要执行的异常处理的操作|该代码前面的任何操作出现异常都会进入此方法以**非异步方式**内执行|新的CompletableFuture对象|CompletableFuture<U>|无|无|^|
+|^|`exceptionallyAsync(Function<Throwable, ? extends T> fn)`|^|该代码前面的任何操作出现异常都会进入此方法以**异步方式**内执行|^|^|无|无|^|
+|^|`exceptionallyAsync(Function<Throwable, ? extends T> fn, Executor executor)`|fn:Function接口对象，表示接下来需要执行的异常处理的操作<br>executor:线程池对象，用于自定义异步执行所使用的线程池|^|^|^|无|无|^|
+|^|`thenAccept(Consumer<? super T> action)`|action:Consumer接口对象，用于执行消费操作|以**非异步方式**将之前执行的结果返回值消费掉|返回一个空值的Completable对象|Completable<Void>|无|无|^|
+|^|`thenAcceptAsync(Consumer<? super T> action)`|^|以**异步方式**将之前执行的结果返回值消费掉|^|^|无|无|^|
+|^|`thenAcceptAsync(Consumer<? super T> action,Executor executor)`|action:Consumer接口对象，用于执行消费操作<br>executor:线程池对象，用于自定义异步执行所使用的线程池|^|^|^|无|无|^|
+|^|`thenCombine(CompletionStage<? extends U> other,BiFunction<? super T,? super U,? extends V> fn)`|other:想与本对象结果合并的另外一个CompletableFuture对象<br>fn:BiFunction接口对象，用于指定合并的详细代码|将本对象与另一个相关对象以**非异步方式**合并|新的带有合并后结果的CompletableFuture对象|CompletableFuture<V>|无|无|^|
+|^|`thenCombineAsync(CompletionStage<? extends U> other,BiFunction<? super T,? super U,? extends V> fn)`|^|将本对象与另一个相关对象以**异步方式**合并|^|^|无|无|^|
+|^|`thenCombineAsync(CompletionStage<? extends U> other,BiFunction<? super T,? super U,? extends V> fn, Executor executor)`|other:想与本对象结果合并的另外一个CompletableFuture对象<br>fn:BiFunction接口对象，用于指定合并的详细代码<br>executor:线程池对象，用于自定义异步执行所使用的线程池|^|^|^|无|无|^|
+|^|`allOf(CompletableFuture<?>... cfs)`|cfs:需要全部执行的CompletableFuture对象|等待参数内的CompletableFuture对象的操作全部执行完毕后才返回值|>|CompletableFuture<Void>|无|无|^|
+|^|`anyOf(CompletableFuture<?>... cfs)`|cfs:需要任意一个执行的CompletableFuture对象|只要参数内的CompletableFuture对象有一个完成操作，就返回|返回带有最先执行完毕的CompletableFuture对象执行结果的CompletableFuture对象|CompletableFuture<Object>|无|无|^|
+
+---
+
+---
+
 ## 三、底层原理
 
 ### （一）队列同步器AQS

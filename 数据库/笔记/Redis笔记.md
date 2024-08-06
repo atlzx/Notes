@@ -1276,7 +1276,7 @@
   // 该配置写连接MySQL需要用到的密码
   canal.instance.dbPassword
 ~~~
-  + 接下来进入`/bin`目录，执行`./startup.sh`运行canal。如果想重启，那么执行``
+  + 接下来进入`/bin`目录，执行`./startup.sh`运行canal。如果想重启，那么执行`restart.sh`，如果想停止，执行`stop.sh`
   + 运行完成后可能会出现如下输出:
 
   ![canal启动图例1](../文件/图片/Redis/canal启动图例1.png)
@@ -1293,6 +1293,19 @@
 + [pom.xml](../../java/源码/Redis/pom.xml)
 + [配置文件](../../java/源码/Redis/Redis-Canal-Demo/src/main/resources/application.properties)
 + [程序demo](../../java/源码/Redis/Redis-Canal-Demo/src/main/java/com/example/redis/example/RedisCanalExample.java)
++ [RedisUtils工具类](../../java/源码/Redis/Redis-Canal-Demo/src/main/java/com/example/redis/utils/RedisUtils.java)
++ 对于connect.subscribe方法，其可以通过正则表达式来进行canal需要监听的MySQL表的区分
+
+~~~
+  mysql 数据解析关注的表，Perl正则表达式.
+  多个正则之间以逗号(,)分隔，转义符需要双斜杠(\\) 
+  常见例子：
+  1.  所有表：.*   or  .*\\..*
+  2.  canal schema下所有表： canal\\..*
+  3.  canal下的以canal打头的表：canal\\.canal.*
+  4.  canal schema下的一张表：canal.test1
+  5.  多个规则组合使用：canal\\..*,mysql.test1,mysql.test2 (逗号分隔)
+~~~
 
 
 <a id="canalProblem"></a>
@@ -1304,7 +1317,7 @@
   + 解决方法有两个
     1. 改变Java版本，推荐改成JDK8这种稳定版本
     2. 修改`startup.sh`内的代码（**推荐**），只需要查找一下`AggressiveOpts`出现的位置，然后把该参数项删除就可以了，接下来再启动就不会报错了
-+ **日志文件显示详细的报错信息在`/bin/xxxx.log`文件内，找到该文件并输出，在开头看到了下面的话
++ **日志文件显示详细的报错信息在`/bin/xxxx.log`文件内，找到该文件并输出，在开头看到了下面的话**
 
   ~~~log
     # There is insufficient memory for the Java Runtime Environment to continue.
@@ -1375,7 +1388,7 @@
 |^|`bgsave`|无参|以非阻塞的方式进行持久化|**推荐**|
 |^|`lastsave`|无参|获得最后一次执行持久化的时间戳|无|
 |^|`redis-check-rdb <filepath>`|filepath:RDB文件路径|检查并修复RDB文件|无|
-|**AOF持久化**|bgrewriteaof|无参|手动执行AOF持久化|无|
+|**AOF持久化**|`bgrewriteaof`|无参|手动执行AOF持久化|无|
 |^|`redis-check-aof --fix <filepath>`|filepath:文件路径|检查并修复AOF文件|无|
 |**主从复制**|`slaveof <host> <port>`|host:主机IP<br>port:redis主机占用端口|指定本redis服务器的master|无|
 |**集群**|`redis-cli -a <password> --cluster create --cluster-replicas <number> <host> <port> [<host> <port>]`|password:连接redis客户端需要的密码<br>number:指定复制因子，即每个主节点需要多少个从节点<br>host:连接端口<br>port:redis占用的端口|创建集群|无|
@@ -1474,11 +1487,18 @@
 ### （三）缓存双写一致性问题
 
 1. 如何解决双写缓存一致性问题
+   + 发现数据不一致时，将数据库中的数据值回写到Redis中，一般都是写操作先更新MySQL中的值并删除Redis的对应缓存，然后读操作再把MySQL中的值回写回去
 2. 处理双写一致性，先动缓存Redis还是数据库MySQL?为什么
+   + 建议先动数据库MySQL，因为MySQL中存储的数据具有最终解释权，Redis大部分情况下只是充当MySQL的缓存的作用
 3. 是否做过延时双删，有哪些问题
+   + 难以确定延时的具体时间
+   + 吞吐量可能会下降（通过CompletableFuture另起一个线程执行第二次删除操作可以解决该问题）
 4. 微服务查询Redis缓存时没有该值，但是MySQL有，为了保证数据双写一致性回写Redis应该注意什么
+   + 双检加锁，使用同步的方式，一旦一个线程回写完成，其它线程就不必再执行加锁回写的操作了，直接读取数据就行
 5. 是否了解双检加锁策略，如何避免缓存击穿问题
+   + 
 6. Redis和MySQL双写必定会出现纰漏，做不到强一致性，如何保证最终一致性
+   + 先更新MySQL中的值，再删除Redis中的缓存，下次有线程来读取的时候，就会把MySQL的值回写到Redis中去,以保证最终一致性
 
 
 
