@@ -1,5 +1,7 @@
 # JUC笔记
 
++ [参考](https://www.itbaima.cn/document)
+
 ## 一、基础篇
 
 ### （一）基本知识

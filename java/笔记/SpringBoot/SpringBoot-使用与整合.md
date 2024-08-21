@@ -142,11 +142,19 @@
 
 + 接下来添加依赖:
   + 一般就添加一个spring-boot-starter-web依赖就行:
+  + 按需求添加test测试依赖
 
 ~~~xml
+    <!-- web依赖 -->
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <!-- 测试依赖 -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
     </dependency>
 ~~~
 
@@ -404,7 +412,7 @@ public class People {
 
 ![生命周期启动加载机制](../../文件/图片/SpringBoot图片/生命周期启动加载机制.png)
 
-+ 项目启动先进行生命周期的加载，具体就是上面的监听器能够监听到的生命周期，其中掺杂者一些事件
++ 项目启动先进行生命周期的加载，具体就是上面的监听器能够监听到的生命周期，其中掺杂着一些事件
 + 在加载到一半时，即在contextLoaded完成，但started之前会进行IOC容器的刷新操作
 + 刷新操作会将所有的bean加载进IOC容器，就是Spring容器刷新的经典12大步，这12大步可以划分成两部分
   + 创建工厂
@@ -534,7 +542,7 @@ public class People {
 
 ## 三、整合
 
-### （一）整合Redis
+### （一）Redis
 
 #### ①Jedis
 
@@ -573,6 +581,65 @@ public class People {
 + [lettuce样例](../../源码/Redis/src/main/java/com/springboot/example/redis/redisdemo/LettuceSample.java)
 
 #### ③RedisTemplate
+
++ 配置项参考:
+
+~~~properties
+
+  # 设置Redis所在IP
+  spring.data.redis.host=8.130.44.112
+  # 指定Redis所在端口号
+  spring.data.redis.port=6379
+  # 指定要连接的Redis数据库序号
+  spring.data.redis.database=0
+  # 指定Redis密码
+  spring.data.redis.password=123456
+  # 设置最大连接池最大数量
+  spring.data.redis.lettuce.pool.max-active=8
+  # 连接池阻塞的最大等待时间
+  spring.data.redis.lettuce.pool.max-wait=-1ms
+  # 连接池中的最大空闲连接
+  spring.data.redis.lettuce.pool.max-idle=8
+  # 连接池中的最小空闲连接
+  spring.data.redis.lettuce.pool.min-idle=0
+
+~~~
+
+|归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|**RedisTemplate<K,V>**|`opsForValue()`|无参|得到针对String类型的操作对象|>|ValueOperations<K,V>|无|无|无|
+|^|`opsForHash()`|^|得到针对Hash类型的操作对象|>|HashOperations<K,HK,HV>|无|无|^|
+|^|`opsForGeo()`|^|得到针对Geo类型的操作对象|>|GeoOperations<K,V>|无|无|^|
+|^|`opsForList()`|^|得到针对List类型的操作对象|>|ListOperations<K,V>|无|无|^|
+|^|`opsForHyperLogLog()`|^|得到针对HyperLogLog类型的操作对象|>|HyperLogLogOperations<K,V>|无|无|^|
+|^|`opsForSet()`|^|得到针对Set类型的操作对象|>|SetOperations<K,V>|无|无|^|
+|^|`opsForZSet()`|^|得到针对ZSet类型的操作对象|>|ZSetOperations<K,V>|无|无|^|
+|**DefaultValueOperations<K,V>**|`set(K key, V value)`|key:键<br>value:值|创建或修改一个键值对|无返回值|void|无|无|^|
+|^|`set(K key, V value, final long timeout, final TimeUnit unit)`|key:键<br>value:值<br>timeout:键值对的过期时间<br>unit:时间单位|创建一个有过期时间的键值对|无返回值|void|无|无|^|
+|^|`get(Object key)`|key:键|得到指定键的值|键对应的值|V|无|无|^|
+|^|`getAndSet(K key, V newValue)`|key:想得到的键<br>newValue:想设置的新值|先get再set|旧值|V|无|无|^|
+|^|`increment(K key)`|key:键|使指定键对应的值自增1|自增后的值|Long|无|无|^|
+|^|`increment(K key, long delta)`|key:键<br>delta:要增加的值|使指定键对应的值增加指定值|增加后的值|Long|无|无|^|
+|^|`decrement(K key)`|key:键|使指定键对应的值自减1|自减后的值|Long|无|无|^|
+|^|`Long decrement(K key, long delta)`|key:键<br>delta:要减少的值|使指定键对应的值减少指定值|减少后的值|Long|无|无|^|
+|^|`multiGet(Collection<K> keys)`|keys:想得到的键组成的集合|批量得到指定数量的键所对应的值|所有对应值组成的集合|List<V>|无|无|^|
+|^|`multiSet(Map<? extends K, ? extends V> m`|m:想设置的键值对组成的Map|批量修改或创建键值对|无返回值|void|无|无|^|
+|^|`append(K key, String value)`|key:键<br>value:要拼接上去的字符串|字符串的拼接|新字符串的长度|Integer|无|无|^|
+|**DefaultHyperLogLogOperations<K,V>**|`add(K key, V... values)`|key:键<br>values:用于加入基数统计的一个或多个值|如果这些值有至少一个被统计到HyperLogLog中了，那么返回1，否则返回0|Long|无|无|^|
+|^|`delete(K key)`|key:键|删除指定HyperLogLog|无返回值|void|无|无|^|
+|^|`size(K ...keys)`|keys:一个或多个键|将多个HyperLogLog取并集并统计不重复元素的个数|数值|Long|无|无|^|
+|^|`union(K destination, K ...sourceKeys)`|destination:用于合并的HyperLogLog<br>sourceKeys:被合并的HyperLogLog|将一个或多个HyperLogLog的结果合并到指定HyperLogLog中去|
+|**Point**|`Point(double x, double y)`|x:经度<br>y:纬度|构造器|Point对象|Point|无|无|^|
+|**GeoLocation<T>**|`GeoLocation(T name, Point point)`|name:地理坐标信息<br>point:Point对象，表示该地理坐标的经纬度位置|向指定GEO对象添加地理信息|添加进去的元素数量|Long|无|无|^|
+|**Distance**|`Distance(double value, Metric metric)`|value:距离<br>metric:距离单位|构造器|Distance对象|Distance|无|无|^|
+|^|`getValue()`|无参|得到该对象表示的距离值|浮点值|double|无|无|^|
+|^|`getMetric()`|无参|得到该对象距离值所属的的长度单位对象|>|Metric|无|无|^|
+|^|`getUnit()`|无参|返回长度单位的英文缩写|字符串|String|无|无|^|
+|^|`getNormalizedValue()`|无参|返回当前距离值与赤道半径长度的比值|浮点值|double|无|无|^|
+|**DefaultGeoOperations<K,M>**|`add(K key, Map<M, Point> memberCoordinateMap)`|key:键<br>memberCoordinateMap:各地理位置组成的Map集合，由M泛型类型的key和表示地理信息的Point类型的value组成|向指定GEO对象内添加地理信息|添加进去的元素数量|Long|无|无|^|
+|^|`add(K key, GeoLocation<M> location)`|key:键<br>location:地理位置信息|向指定GEO对象添加地理信息|添加进去的元素数量|Long|无|无|^|
+|^|`distance(K key, M member1, M member2, Metric metric)`|key:键<br>member1:要比较的地理坐标1<br>member2:要比较的地理坐标2<br>metric:指定长度单位|得到指定单位的两个地理坐标相隔的位置|一个Distance对象|Distance|无|无|^|
+|^|`radius(K key, M member, Distance distance, GeoRadiusCommandArgs args)`|key:键<br>member:指定的地理坐标<br>distance:指定半径<br>args:额外参数项，可以指定结果的排序方式、限制返回的结果数量、顺带返回经纬度坐标等|得到GEO对象中给定地理坐标指定半径以内的圆内的对应地理坐标信息|>|GeoResults<GeoLocation<M>>|无|无|^|
 
 + RedisTemplate是Spring官方整合的与Redis进行交互的封装类
 + 首先配置config类，我们**需要在配置类中手动提供RedisTemplate对象并设置其数据的序列化器**，因为自动注入的对象，其序列化方式会导致Redis中文乱码:
@@ -896,7 +963,7 @@ public class People {
 
 ---
 
-### （四）整合SSM
+### （四）SSM
 
 #### ①RequestContextHolder
 

@@ -14,8 +14,7 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <!-- 使用xxx表示的都是redis或mysql所在的服务器的ip地址 -->
-    <data-source source="LOCAL" name="@xxx" uuid="1d834e2e-fe04-418d-858a-8d41860cd458">
+    <data-source source="LOCAL" name="@8.130.44.112" uuid="1d834e2e-fe04-418d-858a-8d41860cd458">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
@@ -27,7 +26,7 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="0@xxx" uuid="6697786b-54bf-444c-be04-f1cf89c5cd55">
+    <data-source source="LOCAL" name="0@8.130.44.112" uuid="6697786b-54bf-444c-be04-f1cf89c5cd55">
       <driver-ref>redis</driver-ref>
       <synchronize>true</synchronize>
       <imported>true</imported>
