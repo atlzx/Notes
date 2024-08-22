@@ -1525,6 +1525,50 @@
 
 ---
 
+### （五）缓存淘汰策略
+
++ 当Redis的key过期时，也需要对应的缓存过期淘汰策略来决定如何将这些key删除
++ 当Redis的内存容量达到maxMemory时，Redis会根据设置的缓存淘汰策略来删除一些它认为的“不重要的”key。引起Redis内存容量达到maxMemory的原因有很多，其中就有**缓存过期淘汰策略可能无法将过期的key全部删除**这一原因
++ 因此，这里会分别描述缓存过期淘汰策略和缓存淘汰策略
+
+#### ①触发前置要求
+
++ Redis的缓存淘汰策略的触发是需要一定的要求的，即当Redis的内存容量达到maxMemory时，策略才会被执行。否则一般情况下Redis并不会去执行淘汰策略
+  + 配置文件的`maxmemory`配置项以及`config set maxmemory <value>`分别是通过配置文件和命令的方式来修改当前Redis的maxMemory的值，使用命令修改仅在本次Redis服务运行时生效，重启就不会生效了
+  + 通过`config get maxmemory`可以得到当前的maxMemory的值，默认的值是0，该值为0时，在64位操作系统下表示不限制内存大小，而在32位操作系统下则表示最大为3Gb
+  + 通过`info memory`和`config get maxmemory`可以查看当前Redis的内存使用情况
++ 而缓存过期淘汰策略的前置很简单，就是key过期
+
+---
+
+#### ②过期淘汰策略
+
++ 过期淘汰策略有三种:
+  + 直接删除:该删除方式是以阻塞线程的方式删除的，因此可能会导致删除阻塞时间过长影响后端业务代码执行
+  + 惰性删除:该删除方式是key在过期后并不立即删除，而是有请求再访问的时候再将对应的key删除，好处是可以减少直接删除带来的阻塞影响，坏处是如果过期以后再也没有请求尝试访问该key，那么该key就永远也不会删除了
+  + 定期删除:就是定时删除，到时间随机抽取部分过期了的key然后删除
++ 在Redis7的版本，Redis默认使用定期删除+直接删除的方式来释放key，理由是控制异步删除过期key的`lazyfree-lazy-expire`值为`no`以及`dynamic-hz`配置为`yes`且`hz`配置项默认值为10。**这里并不是很确定，因为只是单从配置文件方面来看的，网上有很多帖子都说Redis默认使用定期删除+异步删除的方式来释放key，但仅仅是提了一嘴，并没有给出详细的配置默认值证据，如[这个](https://blog.csdn.net/ldw201510803006/article/details/126093439)、[这个](https://blog.csdn.net/weixin_42201180/article/details/129150967)跟[这个](https://blog.csdn.net/weixin_70757494/article/details/137108047)**
++ 由于直接删除对于高并发环境下难以接受，因此目前一般都使用惰性删除+定期删除配合使用的，但是这样就会导致可能出现key过期了但长期未删除导致Redis可用的内存空间进一步减少，时间一长，Redis占用内存就会逼近maxMemory配置项。为了解决这一问题，Redis提供了**内存淘汰策略**
+
+---
+
+#### ③内存淘汰策略
+
++ 当前Redis提供的缓存淘汰策略有:
+  + noeviction:摆烂，再碰到引起内存超标的命令都会返回error
+  + allkeys-lru:对所有的key使用LRU算法进行删除，优先删除掉最近最不常使用的key，用以保存新数据
+  + volatile-lru:对所有设置了过期时间的key使用LRU算法进行删除
+  + allkeys-random:对所有key随机删除
+  + volatile-random:对所有设置了过期时间的key随机删除
+  + volatile-ttl:删除马上要过期的key
+  + allkeys-lfu:对所有key使用LFU算法进行删除
+  + volatile-lfu:对所有设置了过期时间的key使用LFU
+
+
+
+
+---
+
 ## 六、分布式锁
 
 + Redis除了用来充当缓存，还可以当分布式锁来使
