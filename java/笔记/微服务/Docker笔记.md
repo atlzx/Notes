@@ -108,8 +108,8 @@
 |`docker save <imageId>`|imageId:镜像所对应的docker给该镜像赋予的唯一id(可以使用`docker images`查看)，可以不用写全，写部分前缀，只要能区分就行，或以`<imageName>:<imageVersion>`形式呈现的具体镜像名|`-o <fileName>`|将镜像打包为一个文件|fileName:文件名|一般我们都打包为tar文件|将本地镜像打包为文件|无|
 |`docker load [options]`|无参|`-i <fileName>`|导入tar文件，并将其作为一个镜像存入本地docker|fileName:想导入的文件名|文件名|加载文件来得到镜像|无|
 |`docker login`|无参|>|>|>|无|登录自己的docker hub账户|这是向docker上传镜像的必须过程|
-|`docker tag <prevImageName>:<imageVersion> <targetImageName>:<imageVersion>`|prevImageName:想上传的镜像原名称<br>imageVersion:镜像版本<br>targetImageName:改名后的想上传的镜像名，一般都在原名称上加自己的用户名，如原来的镜像为`mynginx:v1.0`，现在就叫`a1928564318/mynginx:v1.0`|>|>|>|无|给想上传的镜像重新命名|无|
-|`docker push <targetImageName>:<imageVersion>`|imageVersion:镜像版本<br>targetImageName:改名后的想上传的镜像名，一般都在原名称上加自己的用户名，如原来的镜像为`mynginx:v1.0`，现在就叫`a1928564318/mynginx:v1.0`|>|>|>|无|上传自己的镜像到Docker Hub|无|
+|`docker tag <prevImageName>:<imageVersion> <targetImageName>:<imageVersion>`|prevImageName:想上传的镜像原名称<br>imageVersion:镜像版本<br>targetImageName:改名后的想上传的镜像名，一般都在原名称上加自己的用户名，如原来的镜像为`mynginx:v1.0`，现在就叫`aaa/mynginx:v1.0`|>|>|>|无|给想上传的镜像重新命名|无|
+|`docker push <targetImageName>:<imageVersion>`|imageVersion:镜像版本<br>targetImageName:改名后的想上传的镜像名，一般都在原名称上加自己的用户名，如原来的镜像为`mynginx:v1.0`，现在就叫`aaa/mynginx:v1.0`|>|>|>|无|上传自己的镜像到Docker Hub|无|
 
 + 一般流程是先commit将容器打包为镜像，再save为一个文件发给别人
 + 或者将容器打包为镜像，执行`docker login`、`docker tag`和`docker push`上传Docker镜像
@@ -344,8 +344,8 @@ networks:
 |^|`docker save <imageId>`|imageId:镜像所对应的docker给该镜像赋予的唯一id(可以使用`docker images`查看)，可以不用写全，写部分前缀，只要能区分就行，或以`<imageName>:<imageVersion>`形式呈现的具体镜像名|`-o <fileName>`|将镜像打包为一个文件|fileName:文件名|一般我们都打包为tar文件|将本地镜像打包为文件|无|
 |^|`docker load [options]`|无参|`-i <fileName>`|导入tar文件，并将其作为一个镜像存入本地docker|fileName:想导入的文件名|文件名|加载文件来得到镜像|无|
 |^|`docker login`|无参|>|>|>|无|登录自己的docker hub账户|这是向docker上传镜像的必须过程|
-|^|`docker tag <prevImageName>:<imageVersion> <targetImageName>:<imageVersion>`|prevImageName:想上传的镜像原名称<br>imageVersion:镜像版本<br>targetImageName:改名后的想上传的镜像名，一般都在原名称上加自己的用户名，如原来的镜像为`mynginx:v1.0`，现在就叫`a1928564318/mynginx:v1.0`|>|>|>|无|给想上传的镜像重新命名|无|
-|^|`docker push <targetImageName>:<imageVersion>`|imageVersion:镜像版本<br>targetImageName:改名后的想上传的镜像名，一般都在原名称上加自己的用户名，如原来的镜像为`mynginx:v1.0`，现在就叫`a1928564318/mynginx:v1.0`|>|>|>|无|上传自己的镜像到Docker Hub|无|
+|^|`docker tag <prevImageName>:<imageVersion> <targetImageName>:<imageVersion>`|prevImageName:想上传的镜像原名称<br>imageVersion:镜像版本<br>targetImageName:改名后的想上传的镜像名，一般都在原名称上加自己的用户名，如原来的镜像为`mynginx:v1.0`，现在就叫`aaa/mynginx:v1.0`|>|>|>|无|给想上传的镜像重新命名|无|
+|^|`docker push <targetImageName>:<imageVersion>`|imageVersion:镜像版本<br>targetImageName:改名后的想上传的镜像名，一般都在原名称上加自己的用户名，如原来的镜像为`mynginx:v1.0`，现在就叫`aaa/mynginx:v1.0`|>|>|>|无|上传自己的镜像到Docker Hub|无|
 |**镜像构建**|`docker build -f Dockerfile -t lzx/myjavaapp:v1.0 <path>`|path:要构建的主体文件所在目录的路径|`-f <fileName>`|指定要读取的对应Dockerfile文件|fileName:Dockerfile文件路径|路径|构建镜像|无|
 |^|^|^|`-t <imageId>:<imageVersion>`|给镜像起名，并打版本号|imageId:指定自定义镜像名字<br>imageVersion:指定自定义镜像版本|例:`lzx/java:v1.0`|^|^|
 |**其它镜像操作**|`docker image history <imageId>`|imageId:镜像所对应的docker给该镜像赋予的唯一id(可以使用`docker images`查看)，可以不用写全，写部分前缀，只要能区分就行，或以`<imageName>:<imageVersion>`形式呈现的具体镜像名|>|>|>|无|查看指定镜像的构建历史|可以通过该命令验证镜像分层|

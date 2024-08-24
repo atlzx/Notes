@@ -42,7 +42,7 @@ public class RedisConfig {
     @Bean
     public Redisson redisson(){
         Config config=new Config();
-        config.useSingleServer().setAddress("redis://8.130.44.112:6379").setPassword("123456");
+        config.useSingleServer().setAddress("redis://xxx:6379").setPassword("123456");
         return (Redisson) Redisson.create(config);
     }
 }

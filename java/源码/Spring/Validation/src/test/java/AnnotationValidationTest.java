@@ -24,7 +24,7 @@ public class AnnotationValidationTest {
         Validator validator = context.getBean("validator", Validator.class);
         Person bean = context.getBean(Person.class);
         bean.setName("");
-        bean.setEmail("1928564318@qq.com");
+        bean.setEmail("aaa@qq.com");
         bean.setHobby(null);
         bean.setAge(-1);
         // 调用validate方法执行校验

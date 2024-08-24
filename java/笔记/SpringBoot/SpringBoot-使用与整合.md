@@ -587,7 +587,7 @@ public class People {
 ~~~properties
 
   # 设置Redis所在IP
-  spring.data.redis.host=8.130.44.112
+  spring.data.redis.host=xxx
   # 指定Redis所在端口号
   spring.data.redis.port=6379
   # 指定要连接的Redis数据库序号

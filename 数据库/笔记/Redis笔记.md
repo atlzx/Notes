@@ -758,7 +758,7 @@
   logfile "sentinel26379.log"
   pidfile "/var/run/redis-sentinel26379.pid"
   dir "/home/study/redis/data"
-  sentinel monitor mymaster 8.130.87.94 6379 2
+  sentinel monitor mymaster xxx 6379 2
   sentinel auth-pass mymaster 123456
 ~~~
 
