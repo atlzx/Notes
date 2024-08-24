@@ -27,7 +27,7 @@
 
 ---
 
-## 二、VSCode插件
+## 三、VSCode插件
 
 ### （一）markdown preview enhanced
 1. (Ctrl+k)+v在侧边栏打开markdown preview enhanced插件的对md文件预览 
@@ -50,6 +50,14 @@
 3. Live Server必须要在VSCode打开文件夹的前提下且目标网页源代码符合规范才可以使用网页自动刷新功能
 4. Live Server可以检查出HTML文件解码乱码的情况，并在使用Live Server打开浏览器时更正这一错误
 5. Live Server并不支持使用绝对路径，因此在打开Live Server的前提下打开浏览器并使用绝对路径时打开文件可能会打不开
+
+## 四 自定义配置
+
++ 自定义的全局配置文件在`C:\Users\19285\AppData\Roaming\Code\User\settings.json`
++ 项目的单体配置文件在根目录下的`settings.json`文件下
+
+
+
 
 # Pycharm
 

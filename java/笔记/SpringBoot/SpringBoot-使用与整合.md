@@ -518,13 +518,13 @@ public class People {
 
 + 我们给前端的返回值应该有一个统一的返回格式:
   + 表示请求状态的code状态码
-    + 该状态码一般使用枚举类来呈现
+    + 该状态码一般使用枚举类来呈现,**可以使用Spring官方提供的HttpStatus来得到对应的Http请求状态码**
     + [枚举类样例](../../源码/SpringCloud/SpringCloud-Common-API/src/main/java/com/example/cloud/resp/ReturnCodeEnum.java)
   + 本次请求所返回的数据data
     + 如果数据内包含日期时间相关的属性或对象，可以参考下面的日期时间格式自定义规范表来自定义时间样式
       + 可以通过`spring.jackson.date-format`来自定义时间样式，一般使用`yyyy-MM-dd HH:mm:ss`就行。另外可以通过`spring.jackson.time-zone`指定时区，`GMT+8`为东八区
       + 也可以使用@JsonFormat，将其作用在时间属性上，通过pattern和timezone属性来指定自定义时间格式与时区
-      + ![日期时间格式自定义规范表](../文件/图片/Java图片/自定义日期格式规范表.png)
+      + ![日期时间格式自定义规范表](../../文件/图片/Java图片/自定义日期格式规范表.png)
   + 描述本次请求的结果message
   + 处理请求的时间戳timeStamp,用来**判断是否使用了缓存**
   + [返回类样例](../../源码/SpringCloud/SpringCloud-Pay/src/main/java/com/example/cloud/resp/ReturnData.java)
@@ -1588,6 +1588,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 |@TableId|标记实体类中的主键字段|value|指定实体类主键属性对应的数据库主键名，如果不设置，Mybatis-Plus将使用属性名作为主键名|无|
 |^|^|type|指定主键的生成策略|无|
 |@TableField|标记实体类中的非主键属性|value|指定实体类非主键属性对应的数据库字段名|无|
+|^|^|exist|表示是否该字段存在于数据库中，若指定为false,则Mybatis-Plus在生成 SQL 时会忽略这个字段|默认为true|
 |@TableLogic|标记实体类中的属性作为逻辑删除字段|value|指定实体类属性对应的数据库逻辑删除字段名|无|
 |@Version|标记实体类中的字段作为乐观锁版本号字段|>|略|无|
 |@EnumValue|标记枚举类中的字段，指定在数据库中存储的枚举值|>|略|无|

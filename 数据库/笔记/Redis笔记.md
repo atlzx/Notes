@@ -1639,9 +1639,119 @@
 
 ## 七、五大类型源码及底层实现
 
+### （一）基础结构
 
++ Redis的具体结构如下图所示:
+![Redis结构图例1](../文件/图片/Redis/Redis结构图例1.png)
++ Redis有16个数据库，每个数据库主要有两个dict类，一个dict用来记录失效时间，另一个用来存储数据，此处重点说明用来存储数据的dict
+  + 存储数据的dict有两个指针，一个指向dictType，表示dict的具体类型，另一个指向dictht类型的数组
+  + dictht又有一个双重指针指向哈希表，哈希表中的每个元素都是dictEntry类型的元素
+  + 最终dictEntry通过指针指向key与value，其中key是redis自定义的字符串类型，而value是redisObject类型
+  + dict和dictType的结构位于dict.h，dictEntry的结构位于dict.c，redisObject的结构位于server.h
+  ![redis结构关系图例](../文件/图片/Redis/redis结构关系图例.png)
++ 下面的代码截取时版本较新，dictHT貌似在截取时已经被移除了
 
+~~~c
+  typedef struct redisDb {
+    kvstore *keys;              /* The keyspace for this DB */
+    kvstore *expires;           /* Timeout of keys with a timeout set */
+    ebuckets hexpires;          /* Hash expiration DS. Single TTL per hash (of next min field to expire) */
+    dict *blocking_keys;        /* Keys with clients waiting for data (BLPOP)*/
+    dict *blocking_keys_unblock_on_nokey;   /* Keys with clients waiting for
+                                             * data, and should be unblocked if key is deleted (XREADEDGROUP).
+                                             * This is a subset of blocking_keys*/
+    dict *ready_keys;           /* Blocked keys that received a PUSH */
+    dict *watched_keys;         /* WATCHED keys for MULTI/EXEC CAS */
+    int id;                     /* Database ID */
+    long long avg_ttl;          /* Average TTL, just for stats */
+    unsigned long expires_cursor; /* Cursor of the active expire cycle. */
+    list *defrag_later;         /* List of key names to attempt to defrag one by one, gradually. */
+} redisDb;
 
+struct dict {
+    dictType *type;
+    dictEntry **ht_table[2];
+    unsigned long ht_used[2];
+    long rehashidx; /* rehashing not in progress if rehashidx == -1 */
+    /* Keep small vars at end for optimal (minimal) struct padding */
+    unsigned pauserehash : 15; /* If >0 rehashing is paused */
+    unsigned useStoredKeyApi : 1; /* See comment of storedHashFunction above */
+    signed char ht_size_exp[2]; /* exponent of size. (size = 1<<exp) */
+    int16_t pauseAutoResize;  /* If >0 automatic resizing is disallowed (<0 indicates coding error) */
+    void *metadata[];
+  };
+
+  typedef struct dictType {
+    /* Callbacks */
+    uint64_t (*hashFunction)(const void *key);
+    void *(*keyDup)(dict *d, const void *key);
+    void *(*valDup)(dict *d, const void *obj);
+    int (*keyCompare)(dict *d, const void *key1, const void *key2);
+    void (*keyDestructor)(dict *d, void *key);
+    void (*valDestructor)(dict *d, void *obj);
+    int (*resizeAllowed)(size_t moreMem, double usedRatio);
+    void (*rehashingStarted)(dict *d);
+    void (*rehashingCompleted)(dict *d);
+    size_t (*dictMetadataBytes)(dict *d);
+    void *userdata;
+    unsigned int no_value:1;
+    unsigned int keys_are_odd:1;
+    uint64_t (*storedHashFunction)(const void *key);
+    int (*storedKeyCompare)(dict *d, const void *key1, const void *key2);
+    void (*onDictRelease)(dict *d);
+  } dictType;
+
+  struct dictEntry {
+      void *key;
+      union {
+          void *val;
+          uint64_t u64;
+          int64_t s64;
+          double d;
+      } v;
+      struct dictEntry *next;     /* Next entry in the same hash bucket. */
+  };
+
+  struct redisObject {
+    unsigned type:4;
+    unsigned encoding:4;
+    unsigned lru:LRU_BITS; /* LRU time (relative to global lru_clock) or
+                            * LFU data (least significant 8 bits frequency
+                            * and most significant 16 bits access time). */
+    int refcount;
+    void *ptr;
+  };  
+
+~~~
+
+---
+
+### （二）redisObject
+
++ redisObject用于表示value值的具体类型，并使用指针指向对应的值。它类似于Java的Object类是所有类的隐式父类，它的作用也差不多是redis的各个数据类型的父类
++ 这里着重关注一下redisObject结构:
+  + type:对象的类型，包括OBJ_STRING、OBJ_LIST、OBJ_HASH、OBJ_SET、OBJ_ZSET
+  + encoding:表示具体的数据结构
+  + lru:24位，对象最后一次被命令程序访问的时间，与内存回收有关
+  + refcount:引用计数，当该值为0时，表示该对象已经不被任何对象引用，可以进行垃圾回收
+  + ptr:指向对象实际的内存结构
++ 我们可以使用`debug object <key>`命令来查看对应的键的细节，但是此方法默认是不允许使用的，需要将`enable-debug-command`配置项置为yes才能使
++ 得到的细节中，各个参数的意义是:
+  + Value at:内存地址
+  + refcount：引用次数
+  + encoding:物理编码类型
+  + serializedlength: 序列化后的长度(注意这里的长度是序列化后的长度，保存为rdb文件时使用了该算法，不是真正存贮在内存的大小),会对字串做一些可能的压缩以便底层优化
+  + lru：记录最近使用时间戳
+  + lru_seconds_idle：空闲时间
+
+---
+
+### （三）String类型
+
+#### ①物理编码方式
+
++ String类型有三种物理编码方式:
+  + int:保存64位整型，即long类型的整数，区间在[-1*2^63,2^93-1]，默认值是0，该数字最多19位。它只能表示整数，无法表示浮点数，浮点数是通过字符串保存的
 
 
 
@@ -1659,6 +1769,7 @@
 |**基本命令**|`keys *`|无参|显示当前库中全部的key|无|
 |^|`exists key1 [key2 ...]`|^|判断给出的key有多少个是存在的，返回数值|无|
 |^|`type key`|^|查看key的类型|无|
+|^|`debug object <key>`|key:键<br>查看对应键的值对应的数据结构|无|
 |^|`del key1 [key2...]`|^|删除指定的key|如果删除的key较大，那么会阻塞后续的操作|
 |^|`scan <cursor> [pattern <pattern>] [count <count>]`|cursor:游标值，第一次遍历时需要0<br>pattern:只有满足该匹配规则的key才会被匹配<br>count:该次遍历返回的集合中的元素数量，返回值不一定准确，它会尽量的向该值靠拢|遍历键值对|无|
 |^|`unlink key1 [key2...]`|^|非阻塞删除指定的key|仅仅将keys从keyspace元数据中删除，真正的删除会在后续的异步操作中删除|无|
@@ -1735,6 +1846,7 @@
 |^|`replica-lazy-flush {yes\|no}`|^|从机根据主机进行数据同步时，需要先调用`flushall`来清除自己的库，该配置用来决定从机在flush时是否以非阻塞方式删除，默认为no|无|
 |^|`lazyfree-lazy-user-del {yes\|no}`|^|设置数据是否在调用`del`时要与调用`unlink`命令时的行为保持一致，默认为no|无|
 |^|`lazyfree-lazy-user-flush {yes\|no}`|^|当用户执行`flushdb`、`flushall`等命令但未指定`async`或`sync`参数时，该配置项用来决定是否进行异步删除，默认为no|无|
+|**debug相关**|`enable-debug-command`|无参|允许使用debug相关的命令|无|
 
 ---
 
@@ -1865,7 +1977,8 @@
 3. 分布式锁是否使用`setnx`命令实现，这个是最合适的吗？如何考虑可重入问题
   + 这个不能实现可重入性，可以使用hash结构来实现可重入的目的
 4. 如果Redis是单点部署的，会带来什么问题
-  + 
+  + 单点的宕机引来的服务的灾难、数据丢失
+  + 单点服务器内存瓶颈，无法无限纵向扩容
 5. Redis集群模式下，主从模式，CAP会有什么问题
   + Redis是AP（满足可用性(Available)、分区容错性(Partition Tolerance)而不满足一致性(Consistency)）
   + 由于该情况，在集群模式下，当主机被写而还没有将数据同步到从机时，主机宕机了，此时新上台的主机就未得到对应的数据，导致数据丢失而不满足一致性
