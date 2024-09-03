@@ -540,6 +540,13 @@ public class People {
 
 ---
 
+#### ③请求
+
++ 前端给后端传数据用DTO
++ 后端给前端传用VO
+
+---
+
 ## 三、整合
 
 ### （一）Redis
@@ -1553,6 +1560,7 @@ public class People {
 
 + BaseMapper提供了一系列的操作方法，参见[官网](https://baomidou.com/guides/data-interface/#mapper-interface)
 + [BaseMapper测试样例](../../源码/SpringBoot/SpringBoot-Mybatis-Plus/src/test/java/com/springboot/example/mybatisplus/MapperTest.java)
++ [Wrapper测试样例](../../源码/SpringBoot/SpringBoot-Mybatis-Plus/src/test/java/com/springboot/example/mybatisplus/WrapperTest.java)
 
 ---
 
@@ -1623,6 +1631,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 ~~~
 
++ [插件样例](../../源码/SpringBoot/SpringBoot-Mybatis-Plus/src/test/java/com/springboot/example/mybatisplus/PluginTest.java)
 + 其他插件见[官网](https://baomidou.com/plugins/)
 
 ---
@@ -1936,6 +1945,142 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
+### （九）跨域问题
+
++ 在前后端分离项目中，经常会出现跨域问题:
+  + 跨域问题的出现，是由于浏览器的同源策略导致的，同源策略是浏览器的一种保护机制:
+    + 当浏览器网页主动向某一地址发送请求时，**浏览器会先查看该请求的协议、域名与端口号是否一致，只要有一个不一致，那么就不接收响应数据，完全一致才接收**
+    + 不接收响应数据的原因**是浏览器认为网页想要获取与它不同源的数据，这是非法的**，简单来说就是浏览器不允许网页拿取与它非同源的数据，错的是网页，而不是后端
+  + 而在前后端分离项目中，端口号肯定是不能一致的，因此一定会出现跨域问题
+
+#### ①注解解决
+
++ 为了解决跨域问题，SpringMVC**提供了@CrossOrigin注解**，该注解可以作用于方法和类上，用来解决跨域问题
+  + 作用于方法上时，说明该方法支持跨域
+  + 作用于类上时，说明类中的全部方法都支持跨域
++ 在配置了相关注解后，由于被请求方主动接受请求方的请求，因此浏览器就不会管了
+
+---
+
+#### ②过滤器解决
+
++ 可以通过配置类的方式，向IOC容器提供一个CorsFilter类型的对象，对象内编写支持跨域的逻辑:
+  + **该方式会配置全局跨域，即整个项目都支持跨域**
+
+~~~java
+    @Configuration
+    public class GlobalCorsConfig {
+        @Bean
+        public CorsFilter corsFilter() {
+            //1. 添加 CORS配置信息
+            CorsConfiguration config = new CorsConfiguration();
+            //放行哪些原始域
+            config.addAllowedOrigin("*");
+            //是否发送 Cookie
+            config.setAllowCredentials(true);
+            //放行哪些请求方式
+            config.addAllowedMethod("*");
+            //放行哪些原始请求头部信息
+            config.addAllowedHeader("*");
+            //暴露哪些头部信息
+            config.addExposedHeader("*");
+            //2. 添加映射路径
+            UrlBasedCorsConfigurationSource corsConfigurationSource = new UrlBasedCorsConfigurationSource();
+            corsConfigurationSource.registerCorsConfiguration("/**",config);
+            //3. 返回新的CorsFilter
+            return new CorsFilter(corsConfigurationSource);
+        }
+    }
+~~~
+
+---
+
+#### ③WebMvcConfigurer接口解决
+
++ 通过实现WebMvcConfigurer接口并实现其addCorsMappings方法来配置跨域支持:
+
+~~~java
+    @Configuration
+    public class CorsConfig implements WebMvcConfigurer {
+        @Override
+        public void addCorsMappings(CorsRegistry registry) {
+            registry.addMapping("/**")
+                    //是否发送Cookie
+                    .allowCredentials(true)
+                    //放行哪些原始域
+                    .allowedOrigins("*")
+                    .allowedMethods(new String[]{"GET", "POST", "PUT", "DELETE"})
+                    .allowedHeaders("*")
+                    .exposedHeaders("*");
+        }
+    }
+~~~
+
+---
+
+#### ④自定义过滤器解决
+
++ 像JavaWeb解决跨域一样，使用一个Servlet原生的过滤器来进行跨域问题的解决
+  + **如果想让SpringBoot能够识别到原生Servlet的相关注解，需要在配置类或启动类上添加一个@ServletComponentScan注解**:
+
+~~~java
+    @SpringBootApplication
+    //让SpringBoot能够认得Servlet的相关注解
+    @ServletComponentScan
+    public class RaiseApplication {
+        public static void main(String[] args) {
+            SpringApplication.run(RaiseApplication.class, args);
+        }
+    }
+~~~
+
++ 接下来自定义一个过滤器就行了:
+
+~~~java
+  @WebFilter("/*")
+  public class ServletFilter implements Filter {
+      @Override
+      public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+          HttpServletRequest request = (HttpServletRequest) servletRequest;
+          System.out.println(request.getMethod());
+          HttpServletResponse response = (HttpServletResponse) servletResponse;
+          // 设置允许跨域的请求源，可以设置为*，表示所有请求都可以跨域
+          response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+          // 设置允许跨域的请求方式，也可以设置为*，表示所有请求方式都可以跨域
+          response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT,OPTIONS, DELETE, HEAD");
+          // 设置此次跨域凭证的持续时间，单位为秒，需要使用字符串进行设置
+          response.setHeader("Access-Control-Max-Age", "3600");
+          // 设置允许跨域的请求头中的属性，可以设置为*，表示请求头随便写，都可以跨域
+          response.setHeader("Access-Control-Allow-Headers", "access-control-allow-origin, authority, content-type, version-info, X-Requested-With");
+          // 设置跨域需要跨域凭证，该设置需要在前后端都进行设置，设置该项后，后端的session便不会出现一次请求更新一次session的情况了
+          response.setHeader("Access-Control-Allow-Credentials", "true");
+          // 如果是跨域预检请求,则直接在此响应200业务码
+          if(request.getMethod().equalsIgnoreCase("OPTIONS")){
+              response.getWriter().write("OK");
+              System.out.println("跨域响应");
+          }else{
+              // 非预检请求,放行即可
+              filterChain.doFilter(servletRequest, servletResponse);
+          }
+      }
+  }
+~~~
+
+---
+
+#### ⑤响应体手动设置
+
++ 可以使用 HttpServletResponse 对象添加响应头(Access-Control-Allow-Origin)来授权原始域，这里 Origin的值也可以设置为 “*”,表示全部放行:
+
+~~~java
+    @RequestMapping("/index")
+    public String index(HttpServletResponse response) {
+        response.addHeader("Access-Allow-Control-Origin","*");
+        return "index";
+    }
+~~~
+
+---
 
 
 ## 四、部署

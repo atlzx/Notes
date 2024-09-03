@@ -2,6 +2,8 @@
 
 ## 一、配置项汇总
 
+### （一）配置文件
+
 |分组|配置|作用|值|备注|
 |:---:|:---:|:---:|:---:|:---:|
 |**常用**|server.port|指定端口|默认8080|无|
@@ -126,6 +128,22 @@
 |^|spring.rabbitmq.publisher-confirm-type|无参|设置交换机的消息确认模式|参考`org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType`枚举类|无|
 |^|spring.rabbitmq.publisher-returns|无参|是否启用消息转发结果确认，即确认交换机转发的请求是否到达了消息队列|布尔值，true表示启用|无|
 
+---
+
+### （二）通配符
+
++ 该通配符适用于与路径相关的通配符，如
+  + 使用@RequestMapping相关注解设置的路径
+  + 配置拦截器拦截的路径
+
+|通配符|作用|备注|例|
+|:---:|:---:|:---:|:---:|
+|?|匹配任意一个字符|无|`/pages/t?st.html` 匹配 `/pages/test.html`|
+|*|匹配一层路径的零个或多个字符|无|`/*/test.html` 匹配 `/pages/test.html`|
+|**|匹配零层或多层路径|**必须写在路径最后**|`/pages/**`匹配`/pages/test/page.html`|
+|{name}|取出对应路径的字段值|无|`/{page}/test.html`匹配`/pages/test.html`，读取到的值为name=pages|
+|{name:[a-z]}|取出对应路径满足后面的正则表达式的值|`/{page:[a-z]}/test.html`匹配`/pages/test.html`，但不匹配`/pages1/test.html`|
+|{*path}|从当前路径开始截取，直到最后|**需要写在路径最后**|`/resources/{*file}`匹配`/resources/images/file.png`，读取到的值为file=/images/file.png|
 
 ---
 

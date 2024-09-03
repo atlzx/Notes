@@ -170,6 +170,8 @@
 
 ## 六、多表映射
 
+### （一）基本使用
+
 + 如果我们有一个订单表和一个顾客表，一个订单对应一个顾客，但一个顾客可以下多个订单
   + 此时一个订单需要对应一个顾客，此时订单实体类内需要有一个属性是顾客实体类对象
   + 而顾客可以下多个订单，因此顾客实体类下需要有一个属性是订单实体类对象组成的List集合
@@ -229,6 +231,84 @@
 
 ---
 
+### （二）resultMap标签
+
++ [resultMap标签书写顺序](#resultMapOrder)
++ [对象内的List<String>映射](#collection_list)
++ [多级嵌套对象映射](#nest_obj_mapping)
+
+<a id="collection_list"></a>
+
++ 假设我们有如下的类:
+  + 可以发现类中存在一个`List<String>`的属性
+
+~~~java
+    @Data
+    public class EnableBedVo {
+        private String roomFloor;
+        private Integer roomNo;
+        private List<String> beds;
+    }
+~~~
+
++ 对应的xml映射如下:
+
+~~~xml
+    <resultMap id="roomResultMap" type="com.example.neud.demo.entity.vo.EnableBedVo">
+        <result property="roomFloor" column="room_floor"/>
+        <result property="roomNo" column="room_no"/>
+        <collection property="beds" ofType="string">
+            <!-- 使用constructor标签进行来表示该List属性 -->
+            <constructor>
+                <arg column="bed_no" javaType="string"/>
+            </constructor>
+        </collection>
+    </resultMap>
+~~~
+
+---
+
+<a id="nest_obj_mapping"></a>
+
++ 这里的情况是一个楼层对应多个房间，一个房间有多个床，想把它搞成这样:
+
+~~~js
+    [
+        {
+            floor:'',
+            rooms:[
+                {
+                    roomNo:'',
+                    bed:[]
+                }
+            ]
+        },
+    ]
+~~~
+
+~~~xml
+    <resultMap id="roomResultMap" type="com.example.neud.demo.entity.vo.EnableBedVo">
+        <result property="roomFloor" column="room_floor"/>
+        <collection property="rooms" ofType="roomBedRelationVo">
+            <result column="room_no" property="roomNo" />
+            <!-- 深层映射可能导致xml文件识别不到对应proerty映射项而报错，运行是没有问题的 -->
+            <collection property="beds" ofType="string">
+                <constructor>
+                    <arg column="bed_no" javaType="string"/>
+                </constructor>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="queryEnableBeds" resultMap="roomResultMap">
+        SELECT r.room_floor,r.room_no,b.bed_no
+        FROM room r LEFT JOIN bed b ON r.room_no = b.room_no
+    </select>
+~~~
+
+
+
+
 ## 七、动态语句
 
 + 当查询的条件增多时，如果使用传统的JDBC的方式来生成查询语句，那么我们需要根据传入的参数进行复杂的字符串拼接操作，这是非常痛苦的事情
@@ -236,7 +316,7 @@
 
 |标签|属性|属性作用|作用|备注|样例|
 |:---:|:---:|:---:|:---:|:---:|:---:|
-|where|>|无属性|**自动补全where关键字，并去掉多余的and和or关键字**|无|[样例](../源码/Mybatis/src/main/resources/dynamicsql/mappers/EmployeeMapper.xml)|
+|where|>|无属性|**自动补全where关键字，并添加或去掉多余的and和or关键字**|无|[样例](../源码/Mybatis/src/main/resources/dynamicsql/mappers/EmployeeMapper.xml)|
 |if|test|测试表达式是否为真|若test内的表达式值为true,那么将标签内的语句拼接到sql语句上|**如果想写`>`、`<`、`>=`、`<=`等符号，推荐使用[字符实体](https://www.w3school.com.cn/charsets/ref_html_8859.asp)**|^|
 |set|>|无属性|**自动补全set关键字，并去掉多余的逗号**|无|^|
 |trim|prefix|指定要动态添加的前缀，如where、set等|自定义补全前后缀语句并去掉多余符号|无|^|

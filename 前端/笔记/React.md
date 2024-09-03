@@ -823,6 +823,11 @@ return (
 |`config`|`axios`此次请求的配置信息|无|
 |`request`|生成此响应的请求对象|无|
 
++ 一般我们会利用axios提供的拦截器API对axios进行封装以简化api的调用
++ [axios封装样例](../笔记代码/源码/axios/axios封装样例.js)
+  + 通过该js文件将axios暴露出去之后，再通过其它的xxxApi.js调用就可以了
++ [api简化样例](../笔记代码/源码/axios/xxxApi封装axios样例.js)
+
 ---
 
 ### （三）Redux
@@ -1315,11 +1320,12 @@ return (
 + 为了项目的简洁性，一般`src`内都需要创建如下文件夹:
   + `components`:承载组件的文件夹
   + `pages`:承载整合组件文件的文件夹，用来配合路由映射进行使用
+  + `api`:用来存放封装的api方法
   + `store`:承载`redux`的`store`与定义其切片`reduce`文件的文件夹
     + `api`文件夹用来存放`RTKQ`的相关文件
     + `reducer`文件夹用来存放各`reduce`切片文件
   + `hooks`:承载自定义钩子的文件夹
-  + `assets`:承载一些图片、视频之类的资源
+  + `assets`:承载一些图片、视频之类的静态资源
 + 这里是比较综合的[样例](../笔记代码/源码/React/DemoProject/23用户登录小练习/App.jsx)
 
 ---

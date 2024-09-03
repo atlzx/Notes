@@ -545,6 +545,23 @@
 
 ## 四、AOP
 
++ 导入依赖:
+
+~~~xml
+    <!--spring aop依赖-->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aop</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+    <!--spring aspects依赖-->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aspects</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+~~~
+
 + AOP指面向切片编程,它是通过预编译方式和运行期动态代理方式实现的，在不修改源代码的情况下，给程序动态统一添加额外功能的一种技术
 + AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率。
 
@@ -565,6 +582,8 @@
 ---
 
 ### （二）切入点表达式
+
++ [参考](https://blog.csdn.net/weixin_43793874/article/details/124753521)
 
 + 切入点表达式用来描述该通知的作用范围，其具体语法格式如下:`修饰符 返回值 包名.类名.方法名(形参类型列表)`
   + 权限修饰符与返回值:
