@@ -1367,6 +1367,51 @@ return (
     export default Test;
 ~~~
 
+---
+
+### （二）项目部署
+
++ 这里描述如何使用redis进行部署，以CentOS7为例
+  + 首先打开nginx所在目录，一般在`/usr/sbin`中，接下来直接`./nginx`运行，如果已经在运行了，使用`ps -ef|grep nginx`找到nginx进程，使用`kill -9 <...id>`结束
+  + nginx的配置文件在`/etc/nginx`中的`nginx.conf`中，可以这样配置:
+
+~~~conf
+    server {
+        listen       80;  # 监听80端口
+        listen       [::]:80;
+        server_name  _;
+        root         /usr/share/nginx/html;
+
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf;
+        # 这里是匹配以/开头的请求，像/api开头的这样的请求，如果像本例的下面的location那样，指定了匹配/api开头的请求，同时也指定了匹配/开头的请求，那么会走
+        # location /api 代码块内的内容，目前尚不知道为什么，可能与location的书写顺序有关
+        location / {
+            root /home/study/deploy/dist;  # 指定部署路径
+            index index.html index.hml;  # 指定首页面路径
+            try_files $uri $uri/ /index.html;  # 防止刷新时出现404，在浏览器刷新时尝试向浏览器返回try_files右边设置的几个项
+        }
+        # 这里是反向代理的配置
+        location /api{
+            proxy_pass http://8.130.44.112:8080;  # 后端服务器地址与端口
+            proxy_set_header Host $host;             # 保留原始Host头
+            proxy_set_header X-Real-IP $remote_addr; # 传递真实客户端IP
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;  # 传递请求协议（http/https）	
+            # 使用正则表达式来进行初始url的截取，并将截取的部分加到反向代理的URL上，这里的意思是把原始请求的URL去掉/api/前缀然后和反向代理的服务器路径拼接，如 /api/user/info就会变成 http://8.130.44.112:8080/user/info
+            # 转成代码就是 'http://8.130.44.112:8080' + url.replace(/^\/api/,'');
+            rewrite ^/api(.*) $1 break;  
+        }
+
+        error_page 404 /404.html;
+        location = /404.html {
+        }
+
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+        }
+    }
+~~~
 
 
 

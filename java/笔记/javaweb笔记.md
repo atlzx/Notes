@@ -590,8 +590,8 @@ private static final String METHOD_TRACE = "TRACE";
 |响应行相关方法|`void setStatus(int code)`|`code`:状态码|设置[响应状态码](#Status)|无|
 |响应头相关方法|`void setHeader(String headerName,String headerValue)`|`headerName`:响应头的属性名<br>`headerValue`:响应头的属性值|设置/修改响应头键值对|无|
 |^|`void setContentType(String contentType)`|`contentType`:字符集|设置`content-type`响应头及响应字符集(设置`MIME`类型)|无|
-|响应体相关方法|`PrintWriter getWriter() throws IOException`|无参数|获得向响应体放入信息的字符输出流|无|
-|^|`ServletOutputStream getOutputStream() throws IOException`|^|获得向响应体放入信息的字节输出流|无|
+|响应体相关方法|`PrintWriter getWriter() throws IOException`|无参数|获得向响应体放入信息的字符输出流|该方法是向响应体写入返回数据的方式之一|
+|^|`ServletOutputStream getOutputStream() throws IOException`|^|获得向响应体放入信息的字节输出流|该方法是向响应体写入返回数据的方式之一|
 |^|`void setContentLength(int length)`|`length`:响应体数据的字节长度|设置响应体的字节长度,其实就是在设置`content-length`响应头|无|
 |^|`void setCharacterEncoding(String encoding)`|`encoding`:响应体字符集|设置响应体字符集|无|
 |^|`void addCookie(Cookie cookie)`|`cookie`要增加的`cookie`对象|向响应体中增加`cookie`|无|

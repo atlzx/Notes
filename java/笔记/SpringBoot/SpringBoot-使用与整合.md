@@ -166,6 +166,19 @@
 
 ![构建项目图例3](../../文件/图片/SpringBoot图片/构建项目图例3.png)
 
++ 接下来引入构建依赖，没有它会导致我们的Maven项目在构建成jar包以后无法启动:
+
+~~~xml
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+~~~
+
 + 接下来在resources目录下创建一个application.properties或application.yml配置文件
 + 根据本项目的artifactid在java目录下创建包，再写一个Application启动类，加上@SpringBootApplication注解，尝试启动。如果成功，此时我们的项目就构建完了
 + 但是，会出现两个问题
@@ -361,6 +374,8 @@ public class People {
 
 ---
 
+<a id="listener"></a>
+
 #### ④生命周期、事件与监听器
 
 ##### Ⅰ自定义监听器
@@ -512,7 +527,14 @@ public class People {
 
 ---
 
-### （五）项目规范
+### （五）处理流程
+
++ 一般的SpringBoot项目对于一个请求的处理流程如下:
+![请求处理流程示意图](../../文件/图片/SpringBoot图片/请求处理流程示意图.png)
+
+---
+
+### （六）项目规范
 
 #### ①返回格式
 
@@ -540,7 +562,7 @@ public class People {
 
 ---
 
-#### ③请求
+#### ③请求与响应的实体类交互
 
 + 前端给后端传数据用DTO
 + 后端给前端传用VO
@@ -736,646 +758,9 @@ public class People {
 
 ---
 
-### （二）文件上传
+### （二）Mybatis
 
-#### ①文件保存本地
-
-+ 后端在接收文件时，如果是单文件，可以这样接收:
-
-~~~java
-    @PostMapping(value = "xxx")
-    public String fileUpload(@RequestParam(name = "xxx")MultipartFile file) throws Exception{
-        // fileUploadService是业务处理的service层类
-        fileUploadService.fileUpload(file);
-        return "OK";
-    }
-~~~
-
-+ 如果是多文件，可以这样接收:
-
-~~~java
-    @PostMapping(value = "xxx")
-    // 使用实体类接收，实体类的属性为 public List<MultipartFile> files 。该属性需要与前端传来的多文件数组保持一致
-    // 如果使用List<MultipartFile>直接来接收，会报错
-    public String fileUpload( FileEntity files) throws Exception{
-        List<MultipartFile> multipartFiles = files.getFiles();
-        for(MultipartFile file:multipartFiles){
-            System.out.println(file);
-            fileUploadService.fileUpload(file);
-        }
-        return "OK";
-    }
-~~~
-
-+ 接收到文件以后，为了防止多个用户同时上传同名的文件导致保存的文件出现冲突，可以使用UUID给文件进行重命名再保存:
-
-~~~java
-    public boolean fileUpload(MultipartFile file) throws Exception{
-        String fileName = file.getOriginalFilename();  // 
-        fileName=fileName.substring(fileName.lastIndexOf('.'));
-        file.transferTo(new File("E:"+ File.separator+"testImg"+File.separator+ UUID.randomUUID().toString()+fileName));
-        return true;
-    }
-~~~
-
-+ 相关API
-
-|归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|MultipartFile|getOriginalFilename()|无参|得到文件名称|>|字符串|无异常|无|[样例](../../源码/SpringBoot/FileUpload/src/main/java/com/springboot/example/fileupload/service/FileUploadService.java)|
-|^|getInputStream()|无参|获得文件的输入流对象|>|输入流对象|无异常|无|^|
-|^|getSize()|无参|得到文件大小|>|long类型数值|无异常|无|^|
-
-+ 相关配置:
-  + `spring.servlet.multipart.enabled`:开启文件上传功能，默认就是开启的
-  + `spring.servlet.multipart.max-file-size`:限制单文件上传的最大大小
-  + `spring.servlet.multipart.max-request-size`:限制单次请求上传的文件总量大小
-
----
-
-#### ②文件上传OSS
-
-+ 这里以上传阿里云为例，详情参见[官方文档](https://help.aliyun.com/zh/oss/getting-started/sdk-quick-start?spm=a2c4g.11186623.0.0.47422b4cPAOzJK)
-+ 使用阿里云的OSS需要先创建一个bucket，另外再申请一个acesskey
-  + bucket直接在控制台创建就行
-  + accesskey需要在右上角点击AccessKey管理，然后创建一个。**创建以后需要记住我们的AccessKey和KeySecret，否则将无法再查询到**
-   
-  ![AccessKey管理](../../文件/图片/SpringBoot图片/文件上传图例1.png)
-
-+ 接下来写一下上传逻辑
-  + 首先不应该把一些配置信息，如endPoint、acessKey等信息写在代码里面，应该写在配置文件中:[配置文件](../../源码/SpringBoot/FileUpload/src/main/resources/application.properties)
-  + 之后创建一个Properties类，通过SpringBoot的自动装配，把这些配置加载进来:[类样例](../../源码/SpringBoot/FileUpload/src/main/java/com/springboot/example/fileupload/components/FileUploadConfig.java)
-  + 把该配置类导入到Service类中，通过getter方法得到对象，然后进行文件上传的业务:[service类](../../源码/SpringBoot/FileUpload/src/main/java/com/springboot/example/fileupload/service/impl/FileUploadServiceImpl.java)
-
----
-
-### （三）日志配置
-
-#### ①日志简述
-
-+ 在开发中，我们应该使用日志来记录信息
-
-|日志门面|日志实现|
-|:---:|:---:|
-|JCL(Jakarta Commons Logging)|Log4J<br>JUL(java.util.logging)<br>Log4j2<br>Logback|
-|SLF4J(Simple Logging Facade for Java)|^|
-|jboss-logging|^|
-
-+ SpringBoot的默认日志配置是`SLF4J+Logback`，但我们可以自定义想实现的日志，不过SpringBoot的默认日志配置已经够用了
-+ 在Spring5版本后，commons-logging被spring直接自己封装了
-
----
-
-#### ②实现原理
-
-+ 核心场景`spring-boot-starter`内引入了`spring-boot-starter-logging`
-+ 一般情况下，对应的依赖都会有一个自动配置类，叫XxxAutoConfiguration
-+ 但是日志比较特殊，它需要在程序启动时就执行，因此不能在程序启动时再加载器配置项
-+ 因此**日志利用的是监听器机制配置**好的
-+ 不过，我们依然能够通过配置文件来修改日志的配置
-
----
-
-#### ③输出格式
-
-+ SpringBoot的默认输出格式为（从左到右）:
-  + 时间和日期:精确到毫秒
-  + 日志级别:根据情况，会打印**ERROR**、**WARN**、**INFO**、**DEBUG**或**TRACE**
-  + 进程ID
-  + ---:消息分隔符
-  + 线程名:当前执行操作的方法所在的线程，使用[]包含
-  + Logger名:通常是产生日志的类名
-  + 消息:打印的日志信息
-+ **Logback并没有FATAL级别的日志，取而代之的是ERROR**
-+ 其默认的输出格式参数参照spring-boot包下的additional-spring-configuration-metadata.json文件
-+ 默认输出值为:`%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}`
-+ 可以修改为`%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} ===> %msg%n`
-
-+ [配置类样例](../../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
-
----
-
-#### ④日志级别与分组
-
-+ 日志级别一般分为如下类别（由高到低）:
-  + ALL:打印所有日志
-  + TRACE:追踪框架的详细流程日志并打印
-  + DEBUG:开发调试细节日志
-  + INFO:关键的、感兴趣的日志
-  + WARN:警告但不是错误的日志，如版本过时的信息
-  + ERROR:业务错误日志，如出现各种异常
-  + FATAL:致命错误日志，如JVM虚拟机系统崩溃
-  + OFF:关闭所有日志记录
-+ 在以上的日志级别中，**我们可以主动输出日志信息的有TRACE、DEBUG、INFO、WARN、ERROR这五个**
-+ **在指定某一日志级别后，系统只会打印该级别或该级别以下的日志信息**，如指定了INFO作为日志级别，那么系统仅会打印INFO、WARN、ERROR、FATAL等日志信息，而级别高的DEBUG和TRACE不会打印
-+ **SpringBoot默认使用Logback作为日志实现依赖，且默认指定的日志级别为INFO**
-+ SpringBoot支持我们自定义全局的日志级别，或自定义某一类的日志级别
-  + 我们可以通过[下表]查阅如何指定，或者查看[样例]()
-  + 但是，当我们想手动指定的类的日志级别变多时，配置会非常繁琐，因此SpringBoot又提供了分组功能来简化配置
-    + 我们可以将多个类组成一个组，然后将这一个组看成一个整体，进行日志级别的指定
-    + SpringBoot已经为我们提供了两个默认的组:
-      + web组:包含org.springframework.core.codec、org.springframework.http、org.springframework.web、org.springframework.boot.actuate.endpoint.web、org.springframework.boot.web.servlet.ServletContextInitializerBeans类
-      + sql组:包含org.springframework.jdbc.core、org.hibernate.SQL、org.jooq.tools.LoggerListener类
-
-+ [配置类样例](../../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
-
----
-
-#### ⑤文件输出、归档与滚动切割
-
-+ **文件输出**
-  + 通过`logging.file.name`可以指定输出的文件的名字，如果文件不存在，会在当前项目所在目录内创建一个，然后输出日志
-    + 可以为其指定路径，使得日志文件保存在指定路径下，且名称也可以自定义，因此**推荐使用该方式**
-  + 通过`logging.file.path`可以指定输出的文件的路径，使用该方式输出文件，spring会自动创建一个Spring.log文件。当`logging.file.name`配置存在时，后者优先级更高
-+ **归档**
-  + 通过某种区分方式来将日志划分到指定目录叫做归档（一般按时间，如一天对应一个目录）
-  + 该方式主要是为了防止一直将日志输出到一个文件导致文件过大的问题
-  + 归档是只有当一整天结束时，SpringBoot才会进行本日的日志归档，因此我们如果想看到效果，需要向后调一天
-+ **滚动切割**
-  + 即使使用了归档，可能也会出现日志文件过大的情况，因此我们可以按某些标准（如限制单文件最大大小）来将文件切片
-  + 该方式进一步解决了文件过大的问题
-  + 这玩意貌似只能识别整数，比如设置的是1MB大小的限制，它会等到日志文件到2MB以上才会进行切割
-
-+ [配置类样例](../../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
-
----
-
-#### ⑥自定义配置
-
-+ 如果我们认为SpringBoot的配置文件用着不爽，我们也可以使用传统的xml文件的方式来自定义日志
-  + xml文件的命名需要严格遵守SpringBoot的对应规范:
-    + 建议名称都以`xxx-spring.xml`的规范命名，因为这样SpringBoot可以完全控制该配置文件
-
-|日志系统|文件命名规范|
-|:---:|:---:|
-|Logback|logback-spring.xml(**推荐**), logback-spring.groovy, logback.xml, or logback.groovy|
-|Log4j2|log4j2-spring.xml（**推荐**） or log4j2.xml|
-|JDK (Java Util Logging)|logging.properties|
-
-+ 另外，当我们想切换日志组合时，我们需要先排除掉SpringBoot所指定的默认日志组合
-  + 我们可以利用Maven的就近原则，在我们的项目内直接引入spring-boot-starter依赖，然后在下面排除掉spring-boot-starter-logging依赖
-
-~~~xml
-
-  <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
-      <exclusions>
-          <exclusion>
-              <groupId>org.springframework.boot</groupId>
-              <artifactId>spring-boot-starter-logging</artifactId>
-          </exclusion>
-      </exclusions>
-  </dependency>
-
-~~~
-
-+ 接下来导入我们对应的场景，比如我们想导入log4j2的场景，导入前需要确认[官方](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.logging)是否支持
-
-~~~xml
-  <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-log4j2</artifactId>
-  </dependency>
-~~~
-
-+ 然后就可以使用了
-+ log4j2的性能相较于Logback有很大提升，推荐使用log4j2
-+ 如果想使用log4j2,**Spring官方推荐其配置文件写log4j2-spring.xml**
-+ **log4j2支持yaml和json格式的配置文件**:
-
-|文件格式|实现支持需要导入的依赖|规范文件名|
-|YAML|**com.fasterxml.jackson.core:jackson-databind**和**com.fasterxml.jackson.dataformat:jackson-dataformat-yaml**|log4j2.yaml或log4j2.yml|
-|JSON|com.fasterxml.jackson.core:jackson-databind|log4j2.json或log4j2.jsn|
-
-+ [项目pom.xml文件](../../源码/SpringBoot/SpringBootLogging/pom.xml)
-+ [配置类样例](../../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
-+ [log4j2-spring.xml样例](../../源码/SpringBoot/SpringBootLogging/src/main/resources/log4j2-spring.xml)
-
----
-
-#### ⑦配置总览
-
-|配置|作用|备注|
-|:---:|:---:|:---:|
-|logging.level.{root\|sql\|web\|类的全类名\|自定义组名}|指定全局/sql组/web组/类/自定义组的日志级别|无|
-|logging.group.自定义组名|将多个类划分为一个组|无|
-|logging.file.name|指定日志输出的文件|也可以写路径，如果是相对路径，那么是相对于项目所在目录的|
-|loggging.file.path|指定日志输出的路径|优先级没有logging.file.name高|
-|logging.logback.rollingpolicy.file-name-pattern|指定日志归档的命名格式，默认值是`${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz`|从配置项可以看出，只有使用Logback才能使用该配置|
-|logging.logback.rollingpolicy.clean-history-on-start|应用启动前是否清除以前日志文件（默认为false）|^|
-|logging.logback.rollingpolicy.max-file-size|指定每个日志文件的最大大小|^|
-|logging.logback.rollingpolicy.total-size-cap|指定日志文件总大小超过指定大小后，就删除旧的日志文件（默认0B）|^|
-|logging.logback.rollingpolicy.max-history|日志文件保存的最大天数（默认7，单位天）|^|
-
----
-
-### （四）SSM
-
-#### ①RequestContextHolder
-
-+ RequestContextHolder是Spring官方提供的用于承载requestAttributes（request和response的封装）对象的一个工具类，它提供了相关的静态方法，可以在任意位置获得请求和响应
-+ 我们可以通过getRequestAttributes静态方法来获得request和response的封装对象，然后通过该封装对象的getRequest方法来获得请求对象。同理也可以获得响应对象
-
-|归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
-|RequestContextHolder|`getRequestAttributes()`|无参|>|得到request和response的封装对象|RequestAttributes|无异常|无|[任意位置获取请求样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/java/com/springboot/example/springbootthymeleaf/service/MyService.java)|
-|ServletRequestAttributes（它间接实现了RequestAttributes接口）|`getRequest()`|无参|得到请求对象|HttpServletRequest对象|HttpServletRequest|无|无|^|
-|^|`getResponse()`|无参|得到响应对象|HttpServletResponse对象|HttpServletResponse|无|无|^|
-
----
-
-#### ②路径匹配
-
-+ 路径匹配就是Controller层在接受请求时针对请求路径的路径匹配
-+ Spring5.3之前，只支持AntPathMatcher的路径匹配策略，在Spring5.3时，添加了新的PathPatternParser的路径匹配策略
-+ 我们也可以在配置文件内进行相对的配置
-
-|Ant风格通配符|作用|备注|样例|
-|:---:|:---:|:---:|:---:|
-|*|匹配一层下所有字符|无|`*.html`表示匹配任意html文件|
-|?|表示匹配一个任意字符|无|`/fol?er/*.html`表示匹配fol(任意字符)er目录下的任意html文件|
-|**|匹配后面的所有层|无|`/folder2/**/*.jsp` 匹配在folder2目录下任意目录深度的.jsp文件|
-|{name}|将对应层的值取出，放入name中|无|`/{type}/{id}.html` 匹配任意文件名为{id}.html，在任意命名的{type}目录下的文件|
-|[]|匹配对应的字符集合|无|无|
-
-+ PathPatternParser兼容 AntPathMatcher语法，并支持更多类型的路径模式，**它的效率较PathPatternParser的效率高**
-+ **PathPatternParser的`**`多段匹配仅能写在路径最后，不能再在中间写**。如果想这样用，需要在配置文件内把匹配准则改为PathPatternParser
-+ 新版的默认路径匹配规则是PathPatternParser匹配原则
-+ 使用`spring.mvc.pathmatch.matching-strategy`来手动修改路径匹配原则
-  + ant_path_matcher表示恢复到AntPathMatcher
-  + path_pattern_parser表示改为新版匹配原则
-
----
-
-#### ③静态资源配置
-
-+ SpringBoot默认已经配置了一些静态资源的配置:
-  + 当前端请求/webjars/**相关资源时，后端从默认从classpath:META-INF/resources/webjars文件夹内找
-  + 当前端请求/**相关资源时，后端默认从下面四个路径下找:
-    + classpath:/META-INF/resources/
-    + classpath:/resources/
-    + classpath:/static/
-    + classpath:/public/
-+ 静态资源配置可以通过两种方式配置:
-  + 通过**配置文件配置**:由于在上面出现了配置文件前缀，因此只要找对应的前缀，配置对应的属性即可
-  + 通过**代码进行配置**:通过配置类实现WebMvcConfigurer接口并实现其addResourceHandlers来进行配置，但**不要在配置类上加@EnableWebMvc注解，一旦加上，原有的默认配置会失效**
-+ 另外，部分浏览器会自动请求favicon.ico这个文件，因此在`/**`路径想映射的后端路径内加一个favicon.ico文件，就可以让网页显示出自定义的小图标了
-
-|配置|作用|属性值|备注|
-|:---:|:---:|:---:|:---:|
-|spring.mvc.static-path-pattern|用来**设置匹配的前端请求静态资源的路径**|字符串值|无|
-|spring.mvc.webjars-path-pattern|用来**设置匹配的前端请求webjars资源的路径**|字符串值|无|
-|spring.web.resources.static-locations|配置用来设置后端处理静态资源要寻找的目录，**它会覆盖掉SpringBoot默认配置的四个路径**|字符串值|**针对webjars的路径匹配依然有效，因为根据源码，webjars相关的路径匹配被单独配置了，而该项配置与webjars的路径匹配没有关系**|
-|spring.web.resources.add-mappings|开启静态资源映射|默认为true|无|
-|spring.web.resources.cache.period|配置浏览器使用资源的大概时间|数值，单位秒|**如果配置了控制项，该配置会被覆盖**|
-|spring.web.resources.cache.use-last-modified|配置是否在浏览器找服务器请求资源前，先发送请求确认资源是否发生了更改|布尔值|无|
-|spring.web.resources.cache.cachecontrol.max-age|配置浏览器使用缓存的最大时间，在此期间，浏览器会使用缓存加载资源|数值，单位秒|无|
-|spring.web.resources.cache.cachecontrol.cache-public|设置是否共享缓存|布尔值|无|
-
-+ 可以通过查看状态码来确认是否有缓存，**出现304状态码或网络栏中的履行者显示为`disk cache`即为使用了缓存**
-  + 刷新网页不会使用缓存，详情见下图:
-    + 其中Etag 是 HTTP 响应头部的一部分，用于标识资源的版本。它通常由服务器生成，并在响应中发送给客户端
-![缓存机制](../../文件/图片/SpringBoot图片/HTTP缓存机制.png)
-+ 另外，配置的寻找路径可以有两个头符号:
-  + `classpath:`:即表示类路径下，也就是从target目录中classes目录开始的东西，或者java目录或resources目录下的东西
-  + `file:`:表示文件系统路径，它支持相对路径（相对于本项目的跟路径）和绝对路径。
-+ 最后，静态资源是这样匹配的
-  + 如果前端请求`localhost:8080/context-path/haha/upload/aaa.png`，上下文路径是`context-path`
-  + 我们匹配的是`/haha/**`
-  + 那么我们截取的就是`/upload/aaa.png`这一段，然后我们重新配置静态资源的路径，比如我们配置了一个`classpath:/xxx/`
-  + 那么最后服务器要去寻找的对应静态资源路径就是`classpath:/xxx/upload/aaa.png`这一路径，也就是说，如果前端的请求路径成功与们设置的匹配路径匹配到了，那么我们服务器就会把我们配置的静态资源路径+`**`后面的路径拼接起来，作为它最后会去寻找的路径
-
-
-
-+ [配置文件](../../源码/SpringBoot/SpringBootWebStaticResource/src/main/resources/application.properties)
-+ [配置类](../../源码/SpringBoot/SpringBootWebStaticResource/src/main/java/com/springboot/example/springbootwebstaticresource/config/MyConfig.java)
-
----
-
-#### ④内容协商
-
-##### Ⅰ默认协商
-
-+ 如果我们有多个端向服务器器发送同一个请求，但是各个端期望服务器返回的请求格式不一致，此时SpringBoot会根据前端传来的**请求头参数(Accept)**或**路径参数(Param)**来进行对应的返回格式转换，该操作被称为**内容协商**
-  + SpringBoot默认开启基于请求头的内容协商，服务器会根据Accept请求参数来确认使用什么格式进行返回。通过`spring.mvc.contentnegotiation.favor-parameter`来配置是否开启，默认是true
-  + SpringBoot**默认不开启**基于路径参数的内容协商
-    + 我们需要配置`spring.mvc.contentnegotiation.favor-parameter`来手动设置为true，以开启该方式的内容协商，默认的该方式的请求参数名为format
-    + 还可以设置`spring.mvc.contentnegotiation.parameter-name`参数来手动设置以路径参数请求返回值类型时，传递该返回值类型的请求参数的名字。即SpringBoot会依据该配置的值去请求路径中去寻找对应的参数名，然后读取该值期望的返回值类型
-    + **使用该方式请求的值与Accept请求值略有不同，如Accept指定的application/json，请求参数仅需要传递json即可**
-
----
-
-##### Ⅱ自定义内容返回
-
-+ SpringBoot的默认转换器能转换的格式实在有限，因此我们需要会怎么自定义内容返回
-+ 我们以增加yaml返回值类型为例，来举例如何自定义内容返回
-+ 首先需要导入相关依赖:
-
-~~~xml
-
-  <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
-      <artifactId>jackson-dataformat-yaml</artifactId>
-  </dependency>
-
-~~~
-
-+ 在配置类中添加HttpMessageConverter组件，将能够转换yaml文件格式的对象添加进去
-
-~~~java
-
-    @Bean
-    public WebMvcConfigurer webMvcConfigurer(){
-        return new WebMvcConfigurer() {
-            @Override //配置一个能把对象转为yaml的messageConverter
-            public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-                converters.add(new MyYamlHttpMessageConverter());
-            }
-        };
-    }
-
-~~~
-
-+ 编写配置新增支持的媒体类型:
-  + spring.mvc.contentnegotiation.media-types.{type}=aaa/bbb
-  + 其中type是我们给这个媒体类型起的名字，这个名字是用来路径传参的时候携带的值，比如`spring.mvc.contentnegotiation.media-types.yaml=text/yaml`,那么路径传参的时候请求参数就是`type=yaml`
-
-~~~properties
-    spring.mvc.contentnegotiation.media-types.yaml=text/yaml
-~~~
-
-+ 创建一个实现了HttpMessageConverter接口的类
-  + SpringBoot提供了AbstractHttpMessageConverter类，供我们更简便的实现HttpMessageConverter接口，我们只需继承该类即可
-+ 继承了AbstractHttpMessageConverter类**要实现三个方法**
-  + protected boolean supports(Class clazz)这里用来**筛选我们的转换器对象能够把什么类型的对象转换为我们期望的格式**
-  + protected Object readInternal(Class clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException:这玩意是**用来将前端传来的参数转换为被@RequestBody注解作用的变量对象**的
-  + protected void writeInternal(Object o, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException:这玩意是**用来将我们的handler执行结果转换为我们期望的格式**的
-+ [自定义实现类样例](../../源码/SpringBoot/SpringBootMessageConverter/src/main/java/com/springboot/example/springbootmessageconverter/component/MyHttpMessageConverter.java)
-+ 提示:如果使用浏览器进行请求测试，**浏览器因为无法解析yaml格式的返回值，会把它下载下来保存为一个文件**
-
----
-
-#### ⑤Thyemeleaf
-
-##### Ⅰ快速体验
-
-+ [Thymeleaf](https://www.thymeleaf.org/)是一款用于前后端不分离时渲染页面的模板引擎，SpringBoot默认支持该模板引擎，但未导入对应场景
-  + 除ThymeLeaf外，SpringBoot还默认支持以下引擎:
-    + FreeMarker
-    + Groovy
-    + Mustache
-+ 首先我们要导入场景
-
-~~~xml
-
-  <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-thymeleaf</artifactId>
-  </dependency>
-
-~~~
-
-+ SpringBoot有专门的ThymeleafAutoConfiguration类，在其内部类DefaultTemplateResolverConfiguration内的defaultTemplateResolver方法中，设置了寻找对应模板的前缀和后缀:
-
-~~~java
-    @Bean
-    SpringResourceTemplateResolver defaultTemplateResolver() {
-        SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
-        ...
-        resolver.setPrefix(this.properties.getPrefix());  // 设置寻找模板引擎的前缀
-        resolver.setSuffix(this.properties.getSuffix());  // 设置寻找模板引擎的后缀
-        ...
-        return resolver;
-    }
-~~~
-
-+ 我们通过查看getPrefix方法和getSuffix方法可以看到，默认的值分别为`classpath:/templates/`和`.html`
-+ 也就是说，**该模板引擎默认从类路径下的tamplates目录下寻找xxx.html文件**
-+ 现在我们可以开始编写一个简单的Thtmeleaf模板了:
-  + 首先写一个controller，不要写@ResponseBody,直接返回我们想渲染的模板名称，也不需要带后缀，直接返回字符串即可
-  + 在对应路径下声明一个对应的html模板，可以在其html标签下加上属性约束:`<html lang="en" xmlns:th="http://www.thymeleaf.org">`，这样idea会有提示
-+ 然后就可以用了
-+ [模板样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/hello.html)
-+ [controller样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/java/com/springboot/example/springbootthymeleaf/controller/ThymeleafController.java)
-
----
-
-##### Ⅱ核心语法
-
-|语法|作用|值|备注|样例|
-|:---:|:---:|:---:|:---:|:---:|
-|th:text|将文本值渲染到对应标签内|一般使用插值表达式插入|无|[样例1](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/hello.html)|
-|th:utext|将HTML渲染到对应标签内|^|浏览器会当成HTML语句渲染|^|
-|th:属性|渲染属性值|^|无|^|
-|th:attr|批量渲染属性值|例:`th:attr="style=${style},src=${src}"`|无|^|
-|th:if|如果其表达式为真，那么该属性所在标签会被渲染|一般使用插值表达式插入，并运算|无|^|
-|th:switch|相当于switch语句|一般使用插值表达式插入|无|^|
-|th:case|相当于case语句|^|无|^|
-|th:object|变量选择，配合*{}插值表达式可以在子标签中引用该变量|^|无|^|
-|th:each|遍历集合|例:`th:each="item,state : ${list}"`|[样例2](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/list.html)|
-|th:fragment|定义模板|例:`th:fragment="xxx"`|无|[样例3](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/template.html)|
-|th:insert|在标签内部插入对应组件|例:`th:insert="~{templateName :: fragmentName}"`|无|[样例4](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/useTemplate.html)|
-|th:replace|将该标签替换为组件|例:`th:replace="~{templateName :: fragmentName}"`|无|^|
-
-|插值表达式|作用|备注|
-|:---:|:---:|:---:|
-|${}|将request域中的变量取出使用|无|
-|@{}|专门用于适配URL路径，会动态的加上后端的上下文路径|无|
-|#{}|国际化消息|无|
-|~{}|导入片段（模板）时使用|无|
-|*{}|变量选择，需要配合th:object绑定对象|无|
-
-|系统工具/内置对象|作用|备注|
-|:---:|:---:|:---:|
-|param|请求参数对象|无|
-|session|session对象|无|
-|application|context对象|无|
-|#execInfo|模板执行消息|无|
-|#messages|国际化消息|无|
-|#uris|uri/url工具|无|
-|#conversions|类型转换工具|无|
-|#dates|日期工具，是java.util.Date的工具类|无|
-|#calendars|日期工具，是java.util.Calendar的工具类|无|
-|#temporals|JDK8+,java.time的工具类|无|
-|#numbers|数字操作工具|无|
-|#strings|字符串操作工具|无|
-|#objects|对象操作工具|无|
-|#bools|布尔值操作工具|无|
-|#arrays|数组操作工具|无|
-|#lists|List操作工具|无|
-|#sets|Set操作工具|无|
-|#maps|Map操作工具|无|
-|#aggregates|集合聚合工具(sum、avg)|无|
-|#ids|id生成工具|无|
-
-+ 其它相关操作与java基本一致，但是有几个特殊的:
-  + 布尔运算中，**与操作需要使用`and`关键字，或操作需要使用`or`关键字**
-  + 字符串拼接时，可以在拼接的字符串开头和结尾加上`|`来避免传统的使用`+`符号进行拼接，而是使用类似模板字符串的拼接方式进行拼接
-  + 条件运算发生了一些变化:
-    + if-then： `(value)?(then)`
-    + if-then-else: `(value)?(then):(else)`（三元运算符）
-    + default: `(value)?:(defaultValue)`
-  + 如果想在属性内表示字符串，需要使用单引号引起来
-  + **如果想在标签内部直接插值，可以使用`[[...]]`或`[(...)]`进行插值**
-
----
-
-##### Ⅲ遍历
-
-+ 使用th:each可以对集合进行遍历:
-  + `th:each="item,state : ${list}`
-    + item表示当前遍历到的集合元素，变量名可以随便取
-    + state表示当前遍历到的元素的状态，这是个键值对类型的集合对象
-    + list表示被遍历的集合对象，它的名字取决于request域中的待遍历对象的变量名
-+ state变量中有多个属性，这些属性都有他们各自的名称:
-
-|属性名|作用|备注|
-|:---:|:---:|:---:|
-|index|索引|无|
-|count|遍历到的是第几个元素|无|
-|size|遍历的元素总量|无|
-|current|遍历到的当前元素值|无|
-|even|当前的count是否是偶数|无|
-|odd|当前的count是否是奇数|无|
-|first|是否是第一个元素|无|
-|last|是否是最后一个元素|无|
-
-+ [样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/list.html)
-
----
-
-##### Ⅳ属性优先级
-
-+ Order值越低，优先级越高
-
-|Order|分类|属性|
-|:---:|:---:|:---:|
-|1|片段包含|th:insert<br>th:replace|
-|2|遍历|th:each|
-|3|判断|th:if<br>th:unless<br>th:switch<br>th:case|
-|4|定义本地变量|th:object<br>th:with|
-|5|通用方式属性修改|th:attr<br>th:attrprepend<br>th:attrappend|
-|6|指定属性修改|th:value<br>th:href<br>th:src<br>...|
-|7|文本值|th:text<br>th:utext|
-|8|片段指定|th:fragment|
-|9|片段移除|th:remove|
-
----
-
-##### Ⅴ模板布局
-
-+ 我们有时想将网页变成一些可复用的组件，Thymeleaf也为我们提供了这一功能:
-  + 如果我们想定义一个可复用的组件，我们需要在该组件最外层的标签上加上`th:fragment`属性，并给该组件起一个名字
-  + 接下来我们就可以在别的地方引用了
-    + 使用`th:insert`或`th:replace`属性来引用该组件
-    + 属性内使用`~{}`插值表达式来专门进行引用
-    + 语法为`templateName :: componentName`，如我们的组件名字叫top，它所在的文件名是template，那么引用时就是`~{template :: top}`
-+ [组件样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/template.html)
-+ [调用组件样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/useTemplate.html)
-
----
-
-##### Ⅵ相关配置
-
-|配置项|作用|值|备注|
-|:---:|:---:|:---:|:---:|
-|server.servlet.context-path|设置项目的上下文路径|默认是`/`|无|
-|spring.thymeleaf.prefix|指定thymeleaf的匹配前缀|默认是`classpath:/templates/`|无|
-|spring.thymeleaf.suffix|指定thymeleaf的匹配后缀|默认是`.html`|无|
-|spring.thymeleaf.check-template|在响应前确认对应模板是否存在，不存在会报错|布尔值，默认为true|无|
-|spring.thymeleaf.check-template-location|在响应前确认模板所在路径是否存在，不存在会报错|布尔值，默认为true|无|
-|spring.thymeleaf.cache|如果浏览器已经缓存了该模板，那么就让浏览器用缓存|布尔值，默认为true|无|
-
----
-
-#### ⑥国际化
-
-+ SpringBoot默认寻找messages.properties文件来配置国际化
-  + messages.properties文件是默认的国际化配置文件，**该文件必须存在，否则会报错**
-  + messages_en_US.properties文件是英语（美国）的国际化配置文件，注意**该配置文件对应的语言是英语（美国）而不是英语**
-  + messages_zh_CN.properties文件是简体中文的国际化配置文件
-  + SpringBoot在寻找对应的国际化配置时，会先查找浏览器端的最高优先级的语言配置文件，如果没有再去其它语言配置文件寻找，寻找依据也是按照浏览器端的各语言优先级来找
-  + 如果要使用Thymeleaf,那么需要使用#{}的插值表达式来读取国际化配置文件中的对应值
-  + 我们可以通过spring.messages.basename配置来指定SpringBoot默认寻找的国际化文件，也可以通过spring.messages.encoding来指定国际化配置文件的解码格式
-    + spring.messages.basename配置**不仅要指定上路径，还要指定上配置文件的前缀名**。如classpath:static/test.properties要指定为`static/test`
-  + 关于国际化配置的相关配置类是MessageSourceAutoConfiguration类，它默认会使用MessageSourceProperties类对象进行一些操作
-    + 在MessageSourceProperties类中，我们可以看到默认的basename是`messages`
-+ [国际化样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/java/com/springboot/example/springbootthymeleaf/controller/ThymeleafController.java)
-+ [Thymeleaf国际化样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/national.html)
-
----
-
-#### ⑦错误处理机制
-
-##### Ⅰ处理流程
-
-+ SpringBoot在原来的SpringMVC对于错误处理的基础上做了对应拓展
-  + SpringMVC的异常处理机制如下:
-    + SpringMVC在发生了异常后，先寻找是否存在对应的ExceptionHandler来处理该异常，如果有，那么就执行该handler
-    + 如果没有找到，就去寻找@ResponseStatus机制能否解决，如果可以解决那么进行解决
-    + 如果依然不能，确认SpringMVC定义的默认错误响应能否处理，如果能够处理那么进行处理。如果依旧不能处理，那么就进入SpringBoot的拓展异常处理机制
-  + SpringBoot的拓展异常处理机制如下:
-    + 如果是出现了状态码相关的异常
-      + SpringBoot先精准匹配对应页面的视图模板，先从`templates/error`目录下找，找不到再在静态资源中找
-      + 如果都找不到，那么继续模糊匹配对应页面的视图模板，也遵循刚才的顺序寻找，默认寻找`4xx.html`和`5xx.html`文件
-      + 如果找不到，那么继续去匹配templates目录下error的视图模板
-      + 如果没有找到我们自定义的，那么SpringBoot默认会自己提供一个并返回
-    + 如果出现了非状态码相关的异常
-      + SpringBoot会提供DefaultErrorAttributes错误信息并返回
-
-![错误处理流程](../../文件/图片/SpringBoot图片/错误处理流程.png)
-
----
-
-##### Ⅱ自定义异常处理
-
-+ 如果是处理页面响应，需要根据SpringBoot配置的规则，在指定目录下配置相关的错误信息视图
-  + 如果发生了500、404、503、403 这些错误
-    + 若视图解析器存在，那么我们在`classpath:templates/error`目录下或者静态资源目录下创建对应的错误状态码视图文件
-    + 或者在在`classpath:templates/error`目录下或者静态资源目录下创建对应的模糊状态码视图文件，如`4xx.html`、`5xx.html`
-    + 或者在`classpath:templates`目录下直接创建一个`error.html`文件
-+ 如果处理JSON相关的响应，直接通过@RestControllerAdvice注解和@ExceptionHandler注解进行统一的异常处理
-
----
-
-#### ⑧WebMvcConfigurer接口
-
-+ 另外，实现WebMvcConfigurer接口可以配置SpringMVC底层的运作规则:
-
-|接口方法|参数|作用|返回值|备注|
-|:---:|:---:|:---:|:---:|:---:|
-|configurePathMatch(PathMatchConfigurer configurer)|configurer:配置对象|配置路径匹配|void|无|
-|configureContentNegotiation(ContentNegotiationConfigurer configurer)|^|配置内容协商|void|无|
-|configureAsyncSupport(AsyncSupportConfigurer configurer)|^|配置异步支持|void|无|
-|configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer)|^|配置项会覆盖Servlet的默认处理配置|void|无|
-|addFormatters(FormatterRegistry registry)|registry:格式化器注册对象|添加格式化器|void|无|
-|addInterceptors(InterceptorRegistry registry)|registry:拦截器注册对象|添加拦截器，以及设置拦截规则|void|无|
-|addResourceHandlers(ResourceHandlerRegistry registry)|registry:资源处理器注册对象|添加资源处理器|void|无|
-|addCorsMappings(CorsRegistry registry)|registry:跨域映射注册对象|添加跨域映射|void|无|
-|addViewControllers(ViewControllerRegistry registry)|registry:视图控制器注册对象|添加视图控制器|void|无|
-|configureViewResolvers(ViewResolverRegistry registry)|registry:视图解析器注册对象|添加视图解析器|void|无|
-|addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers)|resolvers:参数解析器集合|添加参数解析器|void|无|
-|addReturnValueHandlers(List<HandlerMethodReturnValueHandler> handlers)|handlers:返回值处理器集合|添加拦返回值处理器|void|无|
-|configureMessageConverters(List<HttpMessageConverter<?>> converters)|converters:消息转换器集合|添加消息转换器|void|无|
-|extendMessageConverters(List<HttpMessageConverter<?>> converters)|converters:消息转换器集合|拓展消息转换|void|无|
-|configureHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers)|resolvers:异常处理器集合|添加异常处理器|void|无|
-|extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers)|resolvers:异常处理器集合|拓展异常处理|void|无|
-|getValidator()|无参|得到校验器对象|void|无|
-|getMessageCodesResolver()|无参|得到错误代码规则对象|void|无|
-
-+ 我们可以通过@EnableWebMvc注解来禁用掉WebMvcAutoConfiguration的自动配置
-  + 其原理是EnableWebMvc注解内部有`@Import({DelegatingWebMvcConfiguration.class})`注解，导入了DelegatingWebMvcConfiguration类
-  + DelegatingWebMvcConfiguration类是WebMvcConfigurationSupport类的子类对象
-  + 而WebMvcAutoConfiguration类生效的前提之一就是WebMvcConfigurationSupport类对象不在IOC容器内
-  + 因此如果我们想在SpringBoot的默认配置的前提下做一些拓展，不要给配置类加上@EnableWebMvc注解
-
----
-
-#### ⑨整合Mybatis
-
-+ 由于SpringBoot自动装配的便捷性，我们整合SSM会十分的方便
-  + 首先需要导入相关依赖，在SpringBoot的项目创建页选择Web开发依赖、Lombok、MySQL驱动、Mybatis依赖（这四个都可以选）
-  + 说是整合SSM，实际上SpringBoot把Spring跟SpringMVC都整合好了，我们需要做的就是配置Mybatis以及一些数据库相关配置
++ SpringBoot把Spring跟SpringMVC都整合好了，我们需要做的就是配置Mybatis以及一些数据库相关配置
 
 ![SSM整合](../../文件/图片/SpringBoot图片/SSM整合1.png)
 
@@ -1417,7 +802,7 @@ public class People {
 
 ---
 
-### （五）WebSocket
+### （三）WebSocket
 
 #### ①简要概述
 
@@ -1528,12 +913,32 @@ public class People {
 
 ---
 
-### （六）Mybatis-Plus
+### （四）Mybatis-Plus
 
 + [官网](https://baomidou.com)
 + MyBatis-Plus 是一个MyBatis的增强工具，在MyBatis的基础上只做增强不做改变，为简化开发、提高效率而生。
 
 #### ①依赖
+
++ 如果是**SpringBoot3**，那么引入:
+
+~~~xml
+    <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+        <version>3.5.7</version>
+    </dependency>
+~~~
+
++ 如果是**SpringBoot2**，那么引入:
+
+~~~xml
+    <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>mybatis-plus-boot-starter</artifactId>
+        <version>3.5.7</version>
+    </dependency>
+~~~
 
 + **引入MyBatis-Plus之后不要再次引入Mybatis相关依赖。以避免因版本差异导致的问题**。如果引了，那么大概率会报错
 + 从3.5.4开始，在没有使用mybatis-plus-boot-starter或mybatis-plus-spring-boot3-starter情况下，请自行根据项目情况引入mybatis-spring
@@ -1667,9 +1072,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-### （七）Swagger
+### （五）Swagger
 
-#### ①快速入门
+#### ①依赖导入
 
 + 导入依赖
 
@@ -1681,43 +1086,175 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
   </dependency>
 ~~~
 
-+ 添加配置类:
+---
+
+#### ②配置信息
 
 ~~~java
+
     @Configuration
-    public class SwaggerConfig {
+    public class SwaggerOpenApiConfig {
         @Bean
-        public GroupedOpenApi PayApi() {
-            // 这个group里面指定的描述信息需要与@Tag的name属性指定的描述信息一致，其controller中的方法才会被加入该组内的测试中去
-            return GroupedOpenApi.builder().group("支付微服务模块").pathsToMatch("/pay/**").build();
-        }
-        @Bean
-        public GroupedOpenApi OtherApi() {
-            return GroupedOpenApi.builder().group("其它微服务模块").pathsToMatch("/other/**", "/others").build();
+        public OpenAPI createOpenAPI() {
+
+            // 联系人信息(contact)，构建API的联系人信息，用于描述API开发者的联系信息，包括名称、URL、邮箱等
+            // name：文档的发布者名称 url：文档发布者的网站地址，一般为企业网站 email：文档发布者的电子邮箱
+            Contact contact = new Contact()
+                    .name("unreal")                             // 作者名称
+                    .email("752586164@qq.com")                   // 作者邮箱
+                    .url("https://www.unreal.com/")  // 介绍作者的URL地址
+                    .extensions(new HashMap<String, Object>()); // 使用Map配置信息（如key为"name","email","url"）
+
+            // 授权许可信息(license)，用于描述API的授权许可信息，包括名称、URL等；假设当前的授权信息为Apache 2.0的开源标准
+            License license = new License()
+                    .name("Apache 2.0")                         // 授权名称
+                    .url("https://www.apache.org/licenses/LICENSE-2.0.html")    // 授权信息
+                    .identifier("Apache-2.0")                   // 标识授权许可
+                    .extensions(new HashMap<String, Object>());// 使用Map配置信息（如key为"name","url","identifier"）
+
+            //创建Api帮助文档的描述信息、联系人信息(contact)、授权许可信息(license)
+            Info info = new Info()
+                    .title("xxx文档")      // Api接口文档标题（必填）
+                    .description("后端数据测试")     // Api接口文档描述
+                    .version("1.0.1")                                  // Api接口版本
+                    .termsOfService("https://localhost:8888/")            // Api接口的服务条款地址
+                    .license(license)                                  // 设置联系人信息
+                    .contact(contact);                                 // 授权许可信息
+            // 返回信息
+            return new OpenAPI()
+                    .openapi("3.0.1")  // Open API 3.0.1(默认)
+                    .info(info);       // 配置Swagger3.0描述信息
+            @Bean
+            public GroupedOpenApi PayApi() {
+                // 这个group里面指定的描述信息需要与@Tag的name属性指定的描述信息一致，其controller中的方法才会被加入该组内的测试中去
+                return GroupedOpenApi.builder().group("支付微服务模块").pathsToMatch("/pay/**").build();
+            }
+            @Bean
+            public GroupedOpenApi OtherApi() {
+                return GroupedOpenApi.builder().group("其它微服务模块").pathsToMatch("/other/**", "/others").build();
+            }
         }
     }
 
 ~~~
 
++ OpenAPI对象是Swagger中的核心类之一，用于描述整个API的结构和元数据。可以理解为一个API文档对象，其中包含了许多元素，如：
+  - `openapi`:表示使用的 OpenAPI 规范版本（例如 3.0.1）。
+  - `info`:表示API的基本信息，包括标题、版本号、描述、联系人等。使用Info类来创建这个对象。
+  - `servers`:表示服务器地址或者URL模板列表。每个URL模板可以包含占位符，这些占位符可以被路径参数或者查询参数替换。使用Server类来创建这个对象。
+  - `paths`:（推荐使用注解方式，不推荐使用配置类配置）：表示API的所有路径和操作信息，使用PathItem类来描述每一个路径，使用Operation类来描述操作。
+  - `components`:表示API的组件信息，比如响应模板、请求模板和安全方案等。使用Schema、Response、Parameter、SecurityScheme等类来创建这些对象。
+  - `tags`:表示API的标签信息，用于对相似的操作进行分组。
+  - `addServersItem(Server server)方法`:向servers属性中添加一个Server对象。
+  - `addPaths(String name, PathItem pathItem)方法`:向paths属性中添加一个PathItem对象，其中name参数表示路径模板。
+  - `addTag(Tag tag)方法`:向tags属性中添加一个Tag对象。
+  - `setComponents(Components components)方法`:设置components属性的值。
 + 根据注解在Controller类、Controller方法和实体类的类和属性上添加注解
 + 访问`http://localhost:<port>/swagger-ui/index.html`进行测试
 
 ---
 
-#### ②常用注解
+#### ③注解使用
 
-|注解|作用|主要作用范围|备注|
-|:---:|:---:|:---:|:---:|
-|@Tag|声明Controller类的作用，与配置类内的配置相对应|类|无|
-|@Operation|描述方法作用|方法|无|
-|@Schema|描述实体类作用，以及它各个属性的作用|类、属性|name属性会修改swagger初始发送的json的key,用title才是描述作用|
-|@Parameter|描述参数作用|方法|无|
-|@Parameters|描述参数作用|方法|无|
-|@ApiResponse|描述响应状态码等|方法|无|
+|注解|作用|属性|属性作用|属性值|属性备注|主要作用范围|备注|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|@Tag|声明Controller类的作用，与配置类内的配置相对应|name|表示标签的名称|略|无|类|无|
+|^|^|description|标签的描述信息|略|无|^|^|
+|^|^|externalDoc|用于指定URL地址文档信息来追加描述接口的信息|例:`externalDocs = @ExternalDocumentation(description = "这是一个接口文档介绍",url = "https://www.unreal.com/xxx/")`|无|^|^|
+|@Operation|描述方法作用|summary|简要描述此接口的作用|略|无|方法|无|
+|^|^|description|详细描述此接口的作用|略|无|^|^|
+|^|^|parameters|使用@Parameter注解描述该接口各个参数的作用|略|无|^|^|
+|^|^|operationId|给该接口指定一个唯一的文档id，生成文档时有用|略|无|^|^|
+|^|^|requestBody|使用@RequestBody注解(是swagger的，不是Spring的)描述接口接收的实体参数|略|无|^|^|
+|^|^|responses|使用@ApiResponse注解描述接口的相应列表|略|无|^|^|
+|^|^|security|用于对API操作进行安全控制，可以使用@SecurityRequirement注解进一步定义安全需求|略|无|^|^|
+|@Schema|描述实体类作用，以及它各个属性的作用|description|描述该实体或属性的作用|略|无|类、属性|name属性会修改swagger初始发送的json的key,用title才是描述作用|
+|^|^|name|指定属性名，该属性仅对属性有效|略|无|^|^|
+|^|^|title|用于显示在生成的文档中的标题|略|无|^|^|
+|^|^|type|用于指定数据类型|略|无|^|^|
+|^|^|requireMode|指定该属性是否是必填项|略|无|^|^|
+|^|^|accessMode|指定该属性的访问方式|略|无|^|^|
+|^|^|format|用于指定属性的数据格式|略|无|^|^|
+|^|^|example|为当前的属性创建一个示例的值，后期测试可以使用该值|略|无|^|^|
+|^|^|deprecated|指定该属性是否为已过时的属性|略|无|^|^|
+|^|^|defaultValue|指定该属性的默认值|略|无|^|^|
+|^|^|implementation|指定自定义类 类型属性的 类的class对象|例:`@Schema(description = "老师信息",implementation = Teacher.class)`|无|^|^|
+|@Parameter|描述参数作用|name|指定参数名|略|无|方法|无|
+|^|^|in|参数位置|略|无|^|^|
+|^|^|description|参数描述|略|无|^|^|
+|^|^|required|参数是否必须|默认为false|无|^|^|
+|^|^|deprecated|参数是否已过时|默认为false|无|^|^|
+|^|^|allowEmptyValue|是否允许空值|默认为false|无|^|^|
+|^|^|style|参数的序列化风格|可以是 "matrix"、"label"、"form"、"simple"、"spaceDelimited"、"pipeDelimited"、"deepObject"|无|^|^|
+|^|^|explode|当参数值是对象或数组时，是否将其展开成多个参数|默认为 false|无|^|^|
+|^|^|schema|参数类型和格式的定义，通常使用@Schema注解|略|无|^|^|
+|^|^|example|参数值的示例|`parameters = {@Parameter(name = "levelStatus", description = "护理状态", required = true, example = "1：启用，2：停用")}`|无|^|^|
+|@Parameters|描述参数作用|略|无|方法|无|
+|@ApiResponse|描述响应状态码等|略|无|方法|无|
+
+#### ④注解示例
+
+1. @Tag注解
+
+~~~java
+    @Tag(
+     name = "NurseControllerAPI",
+     description = "护理控制器接口",
+     externalDocs = @ExternalDocumentation(
+        description = "这是一个接口文档介绍",
+        url = "https://www.unreal.com/xxx/")
+    )
+~~~
+
+2. @Operation注解
+
+~~~java
+    @Operation(
+      summary = "根据 levelNurse 查询护理信息",
+      description = "根据 levelNurse 查询护理信息，并返回响应结果信息",
+      parameters = {
+              @Parameter(name = "levelStatus", description = "护理状态", required = true, example = "1：启用，2：停用")
+      },
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "响应成功",
+            content = @Content(
+              mediaType = "application/json",
+              schema = @Schema(
+                title = "ResultVo 和 NurseLevel 组合模型",
+                description = "返回实体，ResultVo 内 data 为 NurseLevel",
+                anyOf = {ResultVo.class, NurseLevel.class})
+            )
+        )
+    }
+~~~
+
+3. @Schema注解
+
+~~~java
+  @Data
+  @AllArgsConstructor
+  @NoArgsConstructor
+  @Schema(name = "NurseLevel", description = "护理级别模型")
+  public class NurseLevel implements Serializable {
+      @Schema(name = "id", description = "护理级别编号")
+      Integer id;
+      @JsonProperty(value = "levelName") // pName = pname 
+      @Schema(name = "levelName", description = "护理级别名称")
+      String levelName;
+      @JsonProperty(value = "levelStatus")
+      @Schema(name = "levelStatus", description = "护理级别状态(1：启用；2：停用) ")
+      Integer levelStatus;
+      @JsonProperty(value = "isDeleted")
+      @Schema(name = "isDeleted", description = "逻辑删除标记（0：显示；1：隐藏）")
+      Integer isDeleted;
+  }
+~~~
 
 ---
 
-### （八）RabbitMQ
+### （六）RabbitMQ
 
 #### 方法汇总
 
@@ -1945,7 +1482,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-### （九）跨域问题
+## 四、WebMVC相关整合
+
+### （一）跨域问题
 
 + 在前后端分离项目中，经常会出现跨域问题:
   + 跨域问题的出现，是由于浏览器的同源策略导致的，同源策略是浏览器的一种保护机制:
@@ -2082,8 +1621,1093 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
+### （二）全局异常处理
 
-## 四、部署
+#### ①使用方法
+
++ 异常处理有两种方式:
+  + 第一种方式（编程式异常处理）是在代码内部显式的调用try-catch-finally语句来处理异常，该语句会**导致代码混杂在业务代码中**，且团队协作时不同的人编写的针对相同异常处理的逻辑可能会不同，**不利于代码维护，且可读性较差**
+  + 另一种方式（声明式异常处理）是通过配置的方式统一处理程序运行时出现的异常，**声明式异常处理可以使代码更加简洁、易于维护和扩展**
++ 想使用声明式异常处理，我们需要:
+  + 创建一个异常处理的控制类，并**使用@ControllerAdvice注解作用于该类，该注解可以声明作用类为异常处理的控制类**
+  + @RestControllerAdvice注解相当于@ControllerAdvice+@ResponseBody注解
+  + 接下来**在异常处理控制类内的方法上使用@ExceptionHadler注解，传入指定异常的Class对象,来声明该方法用来处理什么异常**
+    + 如果某个控制类的方法出现了异常，但是异常控制类的方法中仅有该异常父类的处理方法，那么该方法会被执行
+    + 如果有具体的异常类方法，那么具体的类方法会执行而其异常父类的处理方法不会执行
+    + 也就是说，**具体的异常类处理方法比其父类异常类处理方法优先级更高**
+  + 在控制类中手动抛出异常，查看处理情况
++ [异常处理类](../../源码/SpringMVC/Response/src/main/java/com/springmvc/example/controller/ExceptionClass.java)
++ [异常控制类](../../源码/SpringMVC/Response/src/main/java/com/springmvc/example/controller/ExceptionClassSample.java)
+
+---
+
+#### ②错误处理机制
+
+##### Ⅰ处理流程
+
++ SpringBoot在原来的SpringMVC对于错误处理的基础上做了对应拓展
+  + SpringMVC的异常处理机制如下:
+    + SpringMVC在发生了异常后，先寻找是否存在对应的ExceptionHandler来处理该异常，如果有，那么就执行该handler
+    + 如果没有找到，就去寻找@ResponseStatus机制能否解决，如果可以解决那么进行解决
+    + 如果依然不能，确认SpringMVC定义的默认错误响应能否处理，如果能够处理那么进行处理。如果依旧不能处理，那么就进入SpringBoot的拓展异常处理机制
+  + SpringBoot的拓展异常处理机制如下:
+    + 如果是出现了状态码相关的异常
+      + SpringBoot先精准匹配对应页面的视图模板，先从`templates/error`目录下找，找不到再在静态资源中找
+      + 如果都找不到，那么继续模糊匹配对应页面的视图模板，也遵循刚才的顺序寻找，默认寻找`4xx.html`和`5xx.html`文件
+      + 如果找不到，那么继续去匹配templates目录下error的视图模板
+      + 如果没有找到我们自定义的，那么SpringBoot默认会自己提供一个并返回
+    + 如果出现了非状态码相关的异常
+      + SpringBoot会提供DefaultErrorAttributes错误信息并返回
+
+![错误处理流程](../../文件/图片/SpringBoot图片/错误处理流程.png)
+
+---
+
+##### Ⅱ自定义异常处理
+
++ 如果是处理页面响应，需要根据SpringBoot配置的规则，在指定目录下配置相关的错误信息视图
+  + 如果发生了500、404、503、403 这些错误
+    + 若视图解析器存在，那么我们在`classpath:templates/error`目录下或者静态资源目录下创建对应的错误状态码视图文件
+    + 或者在在`classpath:templates/error`目录下或者静态资源目录下创建对应的模糊状态码视图文件，如`4xx.html`、`5xx.html`
+    + 或者在`classpath:templates`目录下直接创建一个`error.html`文件
++ 如果处理JSON相关的响应，直接通过@RestControllerAdvice注解和@ExceptionHandler注解进行统一的异常处理
+
+---
+
+### （三）拦截器
+
++ 首先先创建一个拦截器类，该类需要**实现HandlerInterceptor接口**，并实现接口的三个方法
++ 让配置类**实现WebMvcConfigurer接口，实现addInterceptors(InterceptorRegistry registry)方法**
+  + 调用registry.addInterceptor()方法，传入我们刚才创建的拦截器对象，该配置会使所有方法都被拦截器拦截
+  + 在上面的基础上，我们可以再调用addPathPatterns方法（可以链式调用），并向方法传入多个字符串匹配路径来精确的设置哪些方法需要被拦截
+  + excludePathPatterns（可以链式调用）方法可以指定哪些方法被排除在拦截范围内，也是向方法内传入指定字符串即可
+
+|方法|参数|作用|返回值|返回值类型|异常|备注|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)|request:请求对象<br>response:响应对象<br>handler:handler方法对象|在handler方法执行前执行|返回true代表放行，false代表不放行|boolean|Exception|无|
+|postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)|request:请求对象<br>response:响应对象<br>handler:handler方法对象<br>modelAndView:不知道干嘛的|在handler方法**正常执行完毕后**执行|无返回值|void|Exception|**如果handler方法执行时出现异常,那么该方法不会执行**|
+|afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)|request:请求对象<br>response:响应对象<br>handler:handler方法对象<br>ex:不知道干嘛的|在逻辑上是在视图解析器解析完毕后执行，但**返回值不经过视图解析器时，也会执行**|无返回值|void|Exception|无|
+
+~~~java
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        
+        //将拦截器添加到Springmvc环境,默认拦截所有Springmvc分发的请求
+        registry.addInterceptor(new Process01Interceptor());
+        
+        //精准匹配,设置拦截器处理指定请求 路径可以设置一个或者多个,为项目下路径即可
+        //addPathPatterns("/common/request/one") 添加拦截路径
+        registry.addInterceptor(new Process01Interceptor()).addPathPatterns("/common/request/one","/common/request/tow");
+        
+        
+        //排除匹配,排除应该在匹配的范围内排除
+        //addPathPatterns("/common/request/one") 添加拦截路径
+        //excludePathPatterns("/common/request/tow"); 排除路径,排除应该在拦截的范围内
+        registry.addInterceptor(new Process01Interceptor())
+                .addPathPatterns("/common/request/*")
+                .excludePathPatterns("/common/request/tow");
+    }
+
+~~~
+
+---
+
+### （四）WebMvcConfigurer接口
+
++ 实现WebMvcConfigurer接口可以配置SpringMVC底层的运作规则:
+
+|接口方法|参数|作用|返回值|备注|
+|:---:|:---:|:---:|:---:|:---:|
+|configurePathMatch(PathMatchConfigurer configurer)|configurer:配置对象|配置路径匹配|void|无|
+|configureContentNegotiation(ContentNegotiationConfigurer configurer)|^|配置内容协商|void|无|
+|configureAsyncSupport(AsyncSupportConfigurer configurer)|^|配置异步支持|void|无|
+|configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer)|^|配置项会覆盖Servlet的默认处理配置|void|无|
+|addFormatters(FormatterRegistry registry)|registry:格式化器注册对象|添加格式化器|void|无|
+|addInterceptors(InterceptorRegistry registry)|registry:拦截器注册对象|添加拦截器，以及设置拦截规则|void|无|
+|addResourceHandlers(ResourceHandlerRegistry registry)|registry:资源处理器注册对象|添加资源处理器|void|无|
+|addCorsMappings(CorsRegistry registry)|registry:跨域映射注册对象|添加跨域映射|void|无|
+|addViewControllers(ViewControllerRegistry registry)|registry:视图控制器注册对象|添加视图控制器|void|无|
+|configureViewResolvers(ViewResolverRegistry registry)|registry:视图解析器注册对象|添加视图解析器|void|无|
+|addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers)|resolvers:参数解析器集合|添加参数解析器|void|无|
+|addReturnValueHandlers(List<HandlerMethodReturnValueHandler> handlers)|handlers:返回值处理器集合|添加拦返回值处理器|void|无|
+|configureMessageConverters(List<HttpMessageConverter<?>> converters)|converters:消息转换器集合|添加消息转换器|void|无|
+|extendMessageConverters(List<HttpMessageConverter<?>> converters)|converters:消息转换器集合|拓展消息转换|void|无|
+|configureHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers)|resolvers:异常处理器集合|添加异常处理器|void|无|
+|extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers)|resolvers:异常处理器集合|拓展异常处理|void|无|
+|getValidator()|无参|得到校验器对象|void|无|
+|getMessageCodesResolver()|无参|得到错误代码规则对象|void|无|
+
++ 我们可以通过@EnableWebMvc注解来禁用掉WebMvcAutoConfiguration的自动配置
+  + 其原理是EnableWebMvc注解内部有`@Import({DelegatingWebMvcConfiguration.class})`注解，导入了DelegatingWebMvcConfiguration类
+  + DelegatingWebMvcConfiguration类是WebMvcConfigurationSupport类的子类对象
+  + 而WebMvcAutoConfiguration类生效的前提之一就是WebMvcConfigurationSupport类对象不在IOC容器内
+  + 因此如果我们想在SpringBoot的默认配置的前提下做一些拓展，不要给配置类加上@EnableWebMvc注解
+
+---
+
+### （五）数据校验
+
++ [参见1](https://blog.csdn.net/wangjiangongchn/article/details/86477386)
++ [参见2](https://blog.csdn.net/m0_69632475/article/details/136531252)
+
++ 引入依赖:
+
+~~~xml
+    <!-- 数据校验 -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+~~~
+
+#### ①一般校验
+
++ @Valid和@Validated注解都支持对实体类的一般校验方式
++ 实体类如下:
+
+~~~java
+  @Data
+  public class LoginDto {
+      @NotBlank(message = "用户名不能为空")
+      private String username;
+      @NotBlank(message = "密码不能为空")
+      private String password;
+      @NotBlank(message = "验证码不能为空")
+      private String verifyCode;
+  }
+~~~
+
++ 校验方式:
+
+~~~java
+    @PostMapping("/login")
+    // 下面的@Valid注解换成@Validated也可
+    public Result<?> login(@RequestBody @Valid LoginDto loginDto) throws VerifyCodeException {...}
+~~~
+
+---
+
+#### ②分组校验
+
++ **分组校验是@Validated独有的校验方式**，该校验允许我们对于同一个实体类根据其不同的分组采用不同的验证机制来进行验证
++ 分组定义
+
+~~~java
+  // 这是用于充当分组依据的类，当空体就好
+  public interface First{
+  }
+
+  public interface Second{
+  }
+~~~
+
++ 分组示例
+
+~~~java
+    public class UserModel{
+      // 该校验表示当执行分组First的校验时才生效，使用groups来指定该校验的分组
+      @NotNull(message = "{id.empty}", groups = { First.class })
+      private int id;
+      // 两个都写表示该校验在两个分组都生效
+      @NotNull(message = "{username.empty}", groups = { First.class, Second.class })
+      private String username;
+    
+      @NotNull(message = "{content.empty}", groups = { First.class, Second.class })
+      private String content;
+      // 根据不同的分组选择不同的校验方式
+      @NotEmpty(groups = { First.class })  
+      @Size(min = 3, max = 8, groups = { Second.class })  
+      private String name; 
+    }
+~~~
+
++ 执行校验:
+
+~~~java
+    // 仅@Validated注解有分组校验功能，@Valid注解是没有的，二者不能互换
+    public String save(@Validated( { Second.class }) UserModel userModel, BindingResult result){}
+~~~
+
+---
+
+#### ③嵌套校验
+
++ 由于@Validated无法作用在实体类属性上，因此**仅@Valid注解支持嵌套校验**:
++ 实体类示例:
+
+~~~java
+    public class Item {
+
+        @NotNull(message = "id不能为空")
+        @Min(value = 1, message = "id必须为正整数")
+        private Long id;
+
+        @NotNull(message = "props不能为空")
+        @Size(min = 1, message = "至少要有一个属性")
+        // 可以看到这里有一个List嵌套的属性，我们需要使用@Valid注解来校验List中的每一个Prop属性是否合法，即每一个Prop元素是否都满足Prop类中定义的校验规则
+        // 此时我们只需要使用一个@Valid注解即可进行嵌套校验，在校验Item类中的props属性时，该属性不仅需要满足上面的两个条件，其中的每隔元素还要满足Prop类中定义的条件才算校验成功
+        @Valid
+        private List<Prop> props;
+    }
+
+
+    public class Prop {
+
+        @NotNull(message = "pid不能为空")
+        @Min(value = 1, message = "pid必须为正整数")
+        private Long pid;
+
+        @NotNull(message = "vid不能为空")
+        @Min(value = 1, message = "vid必须为正整数")
+        private Long vid;
+
+        @NotBlank(message = "pidName不能为空")
+        private String pidName;
+
+        @NotBlank(message = "vidName不能为空")
+        private String vidName;
+    }
+~~~
+
++ 校验示例:
+
+~~~java
+    // 把注解改为@Valid也可
+    public void addItem(@Validated Item item, BindingResult bindingResult) {...}
+~~~
+
+---
+
+#### ④参数校验
+
++ 参数校验适用于针对使用@PathVariable和@RequestParam注解直接注入的方法参数，它的实现比较简单，即**在controller类上添加@Validated注解，然后给对应参数添加对应的校验注解即可**
+
+~~~java
+    @RestController
+    @Validated
+    public class UserController {
+        // 路径变量
+        @GetMapping("{userId}")
+        public Result detail(@PathVariable("userId") @Min(10000000000000000L) Long userId) {...}
+    
+        // 查询参数
+        @GetMapping("getByAccount")
+        public Result getByAccount(@Length(min = 6, max = 20) @NotNull String account) {...}
+    }
+~~~
+
+---
+
+#### ⑤集合校验
+
++ 如果请求体直接传递了json数组给后台，并希望对数组中的每一项都进行参数校验。此时，**如果我们直接使用java.util.Collection下的list或者set来接收数据，参数校验并不会生效**，我们可以使用自定义list集合来接收参数：
+
+~~~java
+    public class ValidationList<E> implements List<E> {
+    
+        @Delegate // @Delegate是lombok注解
+        @Valid // 一定要加@Valid注解
+        public List<E> list = new ArrayList<>();
+    
+        // 一定要记得重写toString方法
+        @Override
+        public String toString() {
+            return list.toString();
+        }
+    }
+~~~
+
++ 或者我们使用参数校验和嵌套校验的逻辑，在类上添加@Validated注解，然后在List参数上添加@Valid注解:
+
+~~~java
+    // 在类上添加@Validated注解
+    @Validated
+    @RestController
+    @RequestMapping(value = "/test")
+    public class TestController {
+    
+    @PostMapping(value = "/create")
+    // 给参数添加@Valid注解
+    public String test(@RequestBody @Valid List<User> users){
+        return "success";
+      }
+    }
+~~~
+
+#### ⑥自定义校验
+
++ 如果上面的校验方式都不满足，我们也可以自定义校验方式
+  + 首先我们需要自定义一个注解类:
+
+~~~java
+    import jakarta.validation.Constraint;
+    import jakarta.validation.Payload;
+    import jakarta.validation.constraints.NotNull;
+    import org.hibernate.validator.internal.constraintvalidators.bv.NotBlankValidator;
+
+    import java.lang.annotation.*;
+
+    @Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.PARAMETER})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    // 在这里指定哪个类负责校验我们的注解
+    @Constraint(validatedBy = {NoBlankValidator.class})
+    public @interface NoBlank {
+        // 提示信息
+        String message() default "{不能包含空格}";
+        // 指定分组信息，用来进行分组校验
+        Class<?>[] groups() default {}; 
+        // payload信息
+        Class<? extends Payload>[] payload() default {};
+        @Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.TYPE_USE})
+        @Retention(RetentionPolicy.RUNTIME)
+        @Documented
+        public @interface List {
+            NotNull[] value();
+        }
+    }
+~~~
+
++ 接下来定义一个类实现ConstraintValidator接口来进行自定义校验
+
+~~~java
+    import jakarta.validation.ConstraintValidator;
+    import jakarta.validation.ConstraintValidatorContext;
+    import jakarta.validation.ConstraintViolation;
+
+    // 实现的校验器需要实现ConstraintValidator接口，它的两个泛型分别表示该校验器作用的自定义校验注解，以及被该注解作用的属性的类型
+    public class NoBlankValidator implements ConstraintValidator<NoBlank,String> {
+
+        @Override
+        public void initialize(NoBlank constraintAnnotation) {
+            ConstraintValidator.super.initialize(constraintAnnotation);
+        }
+
+        @Override
+        // isValid用来指定校验逻辑，如果通过校验返回true
+        public boolean isValid(String s, ConstraintValidatorContext context) {
+            if(s==null||s.contains(" ")){
+                //获取默认提示信息
+                String defaultConstraintMessageTemplate = context.getDefaultConstraintMessageTemplate();
+                System.out.println("default message :" + defaultConstraintMessageTemplate);
+                //禁用默认提示信息
+                context.disableDefaultConstraintViolation();
+                //设置提示语
+                context.buildConstraintViolationWithTemplate("不能包含空格").addConstraintViolation();
+                return false;
+            }
+            return true;
+        }
+    }
+~~~
+
+---
+
+#### ⑦校验失败的处理
+
++ 一般我们使用全局异常处理来进行校验失败的处理
++ 校验失败会抛出MethodArgumentNotValidException异常，该异常可以获得BindingResult对象，由BindingResult对象可以得到本次数据校验的信息:
+
+~~~java
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public Result<?> ValidationExceptionHandler(MethodArgumentNotValidException e){
+        List<String> errorList=new ArrayList<>();
+        // getBindingResult方法来得到BindingResult对象
+        // getFieldErrors来得到属性校验错误的集合对象
+        // 遍历该集合
+        e.getBindingResult().getFieldErrors().forEach(
+            (item)->{
+                // getDefaultMessage方法用来得到我们在校验注解中手动指定的message校验出错的提示信息
+                // 如: @NotNull(message="xxx不能为空") 注解中的 xxx不能为空
+                errorList.add(item.getDefaultMessage());
+            }
+        );
+        // 返回Result对象
+        return Result.getResult(
+            ResponseStatus.VALIDATION_EXCEPTION.getStatusCode(),
+            ResponseStatus.VALIDATION_EXCEPTION.getMessage(),
+            errorList
+        );
+    }
+~~~
+
+
+
+
+
+
+---
+
+#### ⑧校验快速失败
+
++ Spring Validation默认会校验完所有字段，然后才抛出异常。可以通过一些简单的配置，开启Fali Fast模式，一旦校验失败就立即返回。
+
+~~~java
+    @Bean
+    public Validator validator() {
+        ValidatorFactory validatorFactory = Validation.byProvider(HibernateValidator.class)
+                .configure()
+                // 快速失败模式
+                .failFast(true)
+                .buildValidatorFactory();
+        return validatorFactory.getValidator();
+    }
+~~~
+
+
+
+---
+
+#### ⑨总结
+
+|注解|作用|作用区间|备注|
+|:---:|:---:|:---:|:---:|
+|@Valid|数据校验|属性、待校验实体类|1.作用于属性时用于嵌套校验，作用于实体类时仅作校验该实体类的作用。<br>2.嵌套校验一般用于校验属性也是自定义实体类型的数据，该数据的内部元素也是实体类对象，如果我们需要对该类型数据的内部元素继续校验，可以使用@Valid注解作用于该属性上<br>3.该注解是jarkarta依赖提供的|
+|@Validated|数据校验|
+
+### （六）请求与响应
+
+#### ①RequestContextHolder
+
++ RequestContextHolder是Spring官方提供的用于承载requestAttributes（request和response的封装）对象的一个工具类，它提供了相关的静态方法，可以在任意位置获得请求和响应
++ 我们可以通过getRequestAttributes静态方法来获得request和response的封装对象，然后通过该封装对象的getRequest方法来获得请求对象。同理也可以获得响应对象
+
+|归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
+|RequestContextHolder|`getRequestAttributes()`|无参|>|得到request和response的封装对象|RequestAttributes|无异常|无|[任意位置获取请求样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/java/com/springboot/example/springbootthymeleaf/service/MyService.java)|
+|ServletRequestAttributes（它间接实现了RequestAttributes接口）|`getRequest()`|无参|得到请求对象|HttpServletRequest对象|HttpServletRequest|无|无|^|
+|^|`getResponse()`|无参|得到响应对象|HttpServletResponse对象|HttpServletResponse|无|无|^|
+
+---
+
+### （七）文件上传
+
+#### ①文件保存本地
+
++ 后端在接收文件时，如果是单文件，可以这样接收:
+
+~~~java
+    @PostMapping(value = "xxx")
+    public String fileUpload(@RequestParam(name = "xxx")MultipartFile file) throws Exception{
+        // fileUploadService是业务处理的service层类
+        fileUploadService.fileUpload(file);
+        return "OK";
+    }
+~~~
+
++ 如果是多文件，可以这样接收:
+
+~~~java
+    @PostMapping(value = "xxx")
+    // 使用实体类接收，实体类的属性为 public List<MultipartFile> files 。该属性需要与前端传来的多文件数组保持一致
+    // 如果使用List<MultipartFile>直接来接收，会报错
+    public String fileUpload( FileEntity files) throws Exception{
+        List<MultipartFile> multipartFiles = files.getFiles();
+        for(MultipartFile file:multipartFiles){
+            System.out.println(file);
+            fileUploadService.fileUpload(file);
+        }
+        return "OK";
+    }
+~~~
+
++ 接收到文件以后，为了防止多个用户同时上传同名的文件导致保存的文件出现冲突，可以使用UUID给文件进行重命名再保存:
+
+~~~java
+    public boolean fileUpload(MultipartFile file) throws Exception{
+        String fileName = file.getOriginalFilename();  
+        fileName=fileName.substring(fileName.lastIndexOf('.'));
+        file.transferTo(new File("E:"+ File.separator+"testImg"+File.separator+ UUID.randomUUID().toString()+fileName));
+        return true;
+    }
+~~~
+
++ 相关API
+
+|归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|MultipartFile|getOriginalFilename()|无参|得到文件名称|>|字符串|无异常|无|[样例](../../源码/SpringBoot/FileUpload/src/main/java/com/springboot/example/fileupload/service/FileUploadService.java)|
+|^|getInputStream()|无参|获得文件的输入流对象|>|输入流对象|无异常|无|^|
+|^|getSize()|无参|得到文件大小|>|long类型数值|无异常|无|^|
+
++ 相关配置:
+  + `spring.servlet.multipart.enabled`:开启文件上传功能，默认就是开启的
+  + `spring.servlet.multipart.max-file-size`:限制单文件上传的最大大小
+  + `spring.servlet.multipart.max-request-size`:限制单次请求上传的文件总量大小
+
+---
+
+#### ②文件上传OSS
+
++ 这里以上传阿里云为例，详情参见[官方文档](https://help.aliyun.com/zh/oss/getting-started/sdk-quick-start?spm=a2c4g.11186623.0.0.47422b4cPAOzJK)
++ 使用阿里云的OSS需要先创建一个bucket，另外再申请一个acesskey
+  + bucket直接在控制台创建就行
+  + accesskey需要在右上角点击AccessKey管理，然后创建一个。**创建以后需要记住我们的AccessKey和KeySecret，否则将无法再查询到**
+   
+  ![AccessKey管理](../../文件/图片/SpringBoot图片/文件上传图例1.png)
+
++ 接下来写一下上传逻辑
+  + 首先不应该把一些配置信息，如endPoint、acessKey等信息写在代码里面，应该写在配置文件中:[配置文件](../../源码/SpringBoot/FileUpload/src/main/resources/application.properties)
+  + 之后创建一个Properties类，通过SpringBoot的自动装配，把这些配置加载进来:[类样例](../../源码/SpringBoot/FileUpload/src/main/java/com/springboot/example/fileupload/components/FileUploadConfig.java)
+  + 把该配置类导入到Service类中，通过getter方法得到对象，然后进行文件上传的业务:[service类](../../源码/SpringBoot/FileUpload/src/main/java/com/springboot/example/fileupload/service/impl/FileUploadServiceImpl.java)
+
+---
+
+### （八）日志配置
+
+#### ①日志简述
+
++ 在开发中，我们应该使用日志来记录信息
+
+|日志门面|日志实现|
+|:---:|:---:|
+|JCL(Jakarta Commons Logging)|Log4J<br>JUL(java.util.logging)<br>Log4j2<br>Logback|
+|SLF4J(Simple Logging Facade for Java)|^|
+|jboss-logging|^|
+
++ SpringBoot的默认日志配置是`SLF4J+Logback`，但我们可以自定义想实现的日志，不过SpringBoot的默认日志配置已经够用了
++ 在Spring5版本后，commons-logging被spring直接自己封装了
+
+---
+
+#### ②实现原理
+
++ 核心场景`spring-boot-starter`内引入了`spring-boot-starter-logging`
++ 一般情况下，对应的依赖都会有一个自动配置类，叫XxxAutoConfiguration
++ 但是日志比较特殊，它需要在程序启动时就执行，因此不能在程序启动时再加载器配置项
++ 因此**日志利用的是监听器机制配置**好的
++ 不过，我们依然能够通过配置文件来修改日志的配置
+
+---
+
+#### ③输出格式
+
++ SpringBoot的默认输出格式为（从左到右）:
+  + 时间和日期:精确到毫秒
+  + 日志级别:根据情况，会打印**ERROR**、**WARN**、**INFO**、**DEBUG**或**TRACE**
+  + 进程ID
+  + ---:消息分隔符
+  + 线程名:当前执行操作的方法所在的线程，使用[]包含
+  + Logger名:通常是产生日志的类名
+  + 消息:打印的日志信息
++ **Logback并没有FATAL级别的日志，取而代之的是ERROR**
++ 其默认的输出格式参数参照spring-boot包下的additional-spring-configuration-metadata.json文件
++ 默认输出值为:`%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}`
++ 可以修改为`%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} ===> %msg%n`
+
++ [配置类样例](../../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
+
+---
+
+#### ④日志级别与分组
+
++ 日志级别一般分为如下类别（由高到低）:
+  + ALL:打印所有日志
+  + TRACE:追踪框架的详细流程日志并打印
+  + DEBUG:开发调试细节日志
+  + INFO:关键的、感兴趣的日志
+  + WARN:警告但不是错误的日志，如版本过时的信息
+  + ERROR:业务错误日志，如出现各种异常
+  + FATAL:致命错误日志，如JVM虚拟机系统崩溃
+  + OFF:关闭所有日志记录
++ 在以上的日志级别中，**我们可以主动输出日志信息的有TRACE、DEBUG、INFO、WARN、ERROR这五个**
++ **在指定某一日志级别后，系统只会打印该级别或该级别以下的日志信息**，如指定了INFO作为日志级别，那么系统仅会打印INFO、WARN、ERROR、FATAL等日志信息，而级别高的DEBUG和TRACE不会打印
++ **SpringBoot默认使用Logback作为日志实现依赖，且默认指定的日志级别为INFO**
++ SpringBoot支持我们自定义全局的日志级别，或自定义某一类的日志级别
+  + 我们可以通过[下表]查阅如何指定，或者查看[样例]()
+  + 但是，当我们想手动指定的类的日志级别变多时，配置会非常繁琐，因此SpringBoot又提供了分组功能来简化配置
+    + 我们可以将多个类组成一个组，然后将这一个组看成一个整体，进行日志级别的指定
+    + SpringBoot已经为我们提供了两个默认的组:
+      + web组:包含org.springframework.core.codec、org.springframework.http、org.springframework.web、org.springframework.boot.actuate.endpoint.web、org.springframework.boot.web.servlet.ServletContextInitializerBeans类
+      + sql组:包含org.springframework.jdbc.core、org.hibernate.SQL、org.jooq.tools.LoggerListener类
+
++ [配置类样例](../../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
+
+---
+
+#### ⑤文件输出、归档与滚动切割
+
++ **文件输出**
+  + 通过`logging.file.name`可以指定输出的文件的名字，如果文件不存在，会在当前项目所在目录内创建一个，然后输出日志
+    + 可以为其指定路径，使得日志文件保存在指定路径下，且名称也可以自定义，因此**推荐使用该方式**
+  + 通过`logging.file.path`可以指定输出的文件的路径，使用该方式输出文件，spring会自动创建一个Spring.log文件。当`logging.file.name`配置存在时，后者优先级更高
++ **归档**
+  + 通过某种区分方式来将日志划分到指定目录叫做归档（一般按时间，如一天对应一个目录）
+  + 该方式主要是为了防止一直将日志输出到一个文件导致文件过大的问题
+  + 归档是只有当一整天结束时，SpringBoot才会进行本日的日志归档，因此我们如果想看到效果，需要向后调一天
++ **滚动切割**
+  + 即使使用了归档，可能也会出现日志文件过大的情况，因此我们可以按某些标准（如限制单文件最大大小）来将文件切片
+  + 该方式进一步解决了文件过大的问题
+  + 这玩意貌似只能识别整数，比如设置的是1MB大小的限制，它会等到日志文件到2MB以上才会进行切割
+
++ [配置类样例](../../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
+
+---
+
+#### ⑥自定义配置
+
++ 如果我们认为SpringBoot的配置文件用着不爽，我们也可以使用传统的xml文件的方式来自定义日志
+  + xml文件的命名需要严格遵守SpringBoot的对应规范:
+    + 建议名称都以`xxx-spring.xml`的规范命名，因为这样SpringBoot可以完全控制该配置文件
+
+|日志系统|文件命名规范|
+|:---:|:---:|
+|Logback|logback-spring.xml(**推荐**), logback-spring.groovy, logback.xml, or logback.groovy|
+|Log4j2|log4j2-spring.xml（**推荐**） or log4j2.xml|
+|JDK (Java Util Logging)|logging.properties|
+
++ 另外，当我们想切换日志组合时，我们需要先排除掉SpringBoot所指定的默认日志组合
+  + 我们可以利用Maven的就近原则，在我们的项目内直接引入spring-boot-starter依赖，然后在下面排除掉spring-boot-starter-logging依赖
+
+~~~xml
+
+  <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>
+      <exclusions>
+          <exclusion>
+              <groupId>org.springframework.boot</groupId>
+              <artifactId>spring-boot-starter-logging</artifactId>
+          </exclusion>
+      </exclusions>
+  </dependency>
+
+~~~
+
++ 接下来导入我们对应的场景，比如我们想导入log4j2的场景，导入前需要确认[官方](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.logging)是否支持
+
+~~~xml
+  <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-log4j2</artifactId>
+  </dependency>
+~~~
+
++ 然后就可以使用了
++ log4j2的性能相较于Logback有很大提升，推荐使用log4j2
++ 如果想使用log4j2,**Spring官方推荐其配置文件写log4j2-spring.xml**
++ **log4j2支持yaml和json格式的配置文件**:
+
+|文件格式|实现支持需要导入的依赖|规范文件名|
+|YAML|**com.fasterxml.jackson.core:jackson-databind**和**com.fasterxml.jackson.dataformat:jackson-dataformat-yaml**|log4j2.yaml或log4j2.yml|
+|JSON|com.fasterxml.jackson.core:jackson-databind|log4j2.json或log4j2.jsn|
+
++ [项目pom.xml文件](../../源码/SpringBoot/SpringBootLogging/pom.xml)
++ [配置类样例](../../源码/SpringBoot/SpringBootLogging/src/main/resources/application.properties)
++ [log4j2-spring.xml样例](../../源码/SpringBoot/SpringBootLogging/src/main/resources/log4j2-spring.xml)
+
+---
+
+#### ⑦配置总览
+
+|配置|作用|备注|
+|:---:|:---:|:---:|
+|logging.level.{root\|sql\|web\|类的全类名\|自定义组名}|指定全局/sql组/web组/类/自定义组的日志级别|无|
+|logging.group.自定义组名|将多个类划分为一个组|无|
+|logging.file.name|指定日志输出的文件|也可以写路径，如果是相对路径，那么是相对于项目所在目录的|
+|loggging.file.path|指定日志输出的路径|优先级没有logging.file.name高|
+|logging.logback.rollingpolicy.file-name-pattern|指定日志归档的命名格式，默认值是`${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz`|从配置项可以看出，只有使用Logback才能使用该配置|
+|logging.logback.rollingpolicy.clean-history-on-start|应用启动前是否清除以前日志文件（默认为false）|^|
+|logging.logback.rollingpolicy.max-file-size|指定每个日志文件的最大大小|^|
+|logging.logback.rollingpolicy.total-size-cap|指定日志文件总大小超过指定大小后，就删除旧的日志文件（默认0B）|^|
+|logging.logback.rollingpolicy.max-history|日志文件保存的最大天数（默认7，单位天）|^|
+
+---
+
+### （九）资源与路径映射
+
+#### ①路径匹配
+
++ 路径匹配就是Controller层在接受请求时针对请求路径的路径匹配
++ Spring5.3之前，只支持AntPathMatcher的路径匹配策略，在Spring5.3时，添加了新的PathPatternParser的路径匹配策略
++ 我们也可以在配置文件内进行相对的配置
+
+|Ant风格通配符|作用|备注|样例|
+|:---:|:---:|:---:|:---:|
+|*|匹配一层下所有字符|无|`*.html`表示匹配任意html文件|
+|?|表示匹配一个任意字符|无|`/fol?er/*.html`表示匹配fol(任意字符)er目录下的任意html文件|
+|**|匹配后面的所有层|无|`/folder2/**/*.jsp` 匹配在folder2目录下任意目录深度的.jsp文件|
+|{name}|将对应层的值取出，放入name中|无|`/{type}/{id}.html` 匹配任意文件名为{id}.html，在任意命名的{type}目录下的文件|
+|[]|匹配对应的字符集合|无|无|
+
++ PathPatternParser兼容 AntPathMatcher语法，并支持更多类型的路径模式，**它的效率较PathPatternParser的效率高**
++ **PathPatternParser的`**`多段匹配仅能写在路径最后，不能再在中间写**。如果想这样用，需要在配置文件内把匹配准则改为PathPatternParser
++ 新版的默认路径匹配规则是PathPatternParser匹配原则
++ 使用`spring.mvc.pathmatch.matching-strategy`来手动修改路径匹配原则
+  + ant_path_matcher表示恢复到AntPathMatcher
+  + path_pattern_parser表示改为新版匹配原则
+
+---
+
+#### ②静态资源配置
+
++ SpringBoot默认已经配置了一些静态资源的配置:
+  + 当前端请求/webjars/**相关资源时，后端从默认从classpath:META-INF/resources/webjars文件夹内找
+  + 当前端请求/**相关资源时，后端默认从下面四个路径下找:
+    + classpath:/META-INF/resources/
+    + classpath:/resources/
+    + classpath:/static/
+    + classpath:/public/
++ 静态资源配置可以通过两种方式配置:
+  + 通过**配置文件配置**:由于在上面出现了配置文件前缀，因此只要找对应的前缀，配置对应的属性即可
+  + 通过**代码进行配置**:通过配置类实现WebMvcConfigurer接口并实现其addResourceHandlers来进行配置，但**不要在配置类上加@EnableWebMvc注解，一旦加上，原有的默认配置会失效**
++ 另外，部分浏览器会自动请求favicon.ico这个文件，因此在`/**`路径想映射的后端路径内加一个favicon.ico文件，就可以让网页显示出自定义的小图标了
+
+|配置|作用|属性值|备注|
+|:---:|:---:|:---:|:---:|
+|spring.mvc.static-path-pattern|用来**设置匹配的前端请求静态资源的路径**|字符串值|无|
+|spring.mvc.webjars-path-pattern|用来**设置匹配的前端请求webjars资源的路径**|字符串值|无|
+|spring.web.resources.static-locations|配置用来设置后端处理静态资源要寻找的目录，**它会覆盖掉SpringBoot默认配置的四个路径**|字符串值|**针对webjars的路径匹配依然有效，因为根据源码，webjars相关的路径匹配被单独配置了，而该项配置与webjars的路径匹配没有关系**|
+|spring.web.resources.add-mappings|开启静态资源映射|默认为true|无|
+|spring.web.resources.cache.period|配置浏览器使用资源的大概时间|数值，单位秒|**如果配置了控制项，该配置会被覆盖**|
+|spring.web.resources.cache.use-last-modified|配置是否在浏览器找服务器请求资源前，先发送请求确认资源是否发生了更改|布尔值|无|
+|spring.web.resources.cache.cachecontrol.max-age|配置浏览器使用缓存的最大时间，在此期间，浏览器会使用缓存加载资源|数值，单位秒|无|
+|spring.web.resources.cache.cachecontrol.cache-public|设置是否共享缓存|布尔值|无|
+
++ 可以通过查看状态码来确认是否有缓存，**出现304状态码或网络栏中的履行者显示为`disk cache`即为使用了缓存**
+  + 刷新网页不会使用缓存，详情见下图:
+    + 其中Etag 是 HTTP 响应头部的一部分，用于标识资源的版本。它通常由服务器生成，并在响应中发送给客户端
+![缓存机制](../../文件/图片/SpringBoot图片/HTTP缓存机制.png)
++ 另外，配置的寻找路径可以有两个头符号:
+  + `classpath:`:即表示类路径下，也就是从target目录中classes目录开始的东西，或者java目录或resources目录下的东西
+  + `file:`:表示文件系统路径，它支持相对路径（相对于本项目的跟路径）和绝对路径。
++ 最后，静态资源是这样匹配的
+  + 如果前端请求`localhost:8080/context-path/haha/upload/aaa.png`，上下文路径是`context-path`
+  + 我们匹配的是`/haha/**`
+  + 那么我们截取的就是`/upload/aaa.png`这一段，然后我们重新配置静态资源的路径，比如我们配置了一个`classpath:/xxx/`
+  + 那么最后服务器要去寻找的对应静态资源路径就是`classpath:/xxx/upload/aaa.png`这一路径，也就是说，如果前端的请求路径成功与们设置的匹配路径匹配到了，那么我们服务器就会把我们配置的静态资源路径+`**`后面的路径拼接起来，作为它最后会去寻找的路径
++ [配置文件](../../源码/SpringBoot/SpringBootWebStaticResource/src/main/resources/application.properties)
++ [配置类](../../源码/SpringBoot/SpringBootWebStaticResource/src/main/java/com/springboot/example/springbootwebstaticresource/config/MyConfig.java)
+
+---
+
+#### ③内容协商
+
+##### Ⅰ默认协商
+
++ 如果我们有多个端向服务器器发送同一个请求，但是各个端期望服务器返回的请求格式不一致，此时SpringBoot会根据前端传来的**请求头参数(Accept)**或**路径参数(Param)**来进行对应的返回格式转换，该操作被称为**内容协商**
+  + SpringBoot默认开启基于请求头的内容协商，服务器会根据Accept请求参数来确认使用什么格式进行返回。通过`spring.mvc.contentnegotiation.favor-parameter`来配置是否开启，默认是true
+  + SpringBoot**默认不开启**基于路径参数的内容协商
+    + 我们需要配置`spring.mvc.contentnegotiation.favor-parameter`来手动设置为true，以开启该方式的内容协商，默认的该方式的请求参数名为format
+    + 还可以设置`spring.mvc.contentnegotiation.parameter-name`参数来手动设置以路径参数请求返回值类型时，传递该返回值类型的请求参数的名字。即SpringBoot会依据该配置的值去请求路径中去寻找对应的参数名，然后读取该值期望的返回值类型
+    + **使用该方式请求的值与Accept请求值略有不同，如Accept指定的application/json，请求参数仅需要传递json即可**
+
+---
+
+##### Ⅱ自定义内容返回
+
++ SpringBoot的默认转换器能转换的格式实在有限，因此我们需要会怎么自定义内容返回
++ 我们以增加yaml返回值类型为例，来举例如何自定义内容返回
++ 首先需要导入相关依赖:
+
+~~~xml
+
+  <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+  </dependency>
+
+~~~
+
++ 在配置类中添加HttpMessageConverter组件，将能够转换yaml文件格式的对象添加进去
+
+~~~java
+
+    @Bean
+    public WebMvcConfigurer webMvcConfigurer(){
+        return new WebMvcConfigurer() {
+            @Override //配置一个能把对象转为yaml的messageConverter
+            public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+                converters.add(new MyYamlHttpMessageConverter());
+            }
+        };
+    }
+
+~~~
+
++ 编写配置新增支持的媒体类型:
+  + spring.mvc.contentnegotiation.media-types.{type}=aaa/bbb
+  + 其中type是我们给这个媒体类型起的名字，这个名字是用来路径传参的时候携带的值，比如`spring.mvc.contentnegotiation.media-types.yaml=text/yaml`,那么路径传参的时候请求参数就是`type=yaml`
+
+~~~properties
+    spring.mvc.contentnegotiation.media-types.yaml=text/yaml
+~~~
+
++ 创建一个实现了HttpMessageConverter接口的类
+  + SpringBoot提供了AbstractHttpMessageConverter类，供我们更简便的实现HttpMessageConverter接口，我们只需继承该类即可
++ 继承了AbstractHttpMessageConverter类**要实现三个方法**
+  + protected boolean supports(Class clazz)这里用来**筛选我们的转换器对象能够把什么类型的对象转换为我们期望的格式**
+  + protected Object readInternal(Class clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException:这玩意是**用来将前端传来的参数转换为被@RequestBody注解作用的变量对象**的
+  + protected void writeInternal(Object o, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException:这玩意是**用来将我们的handler执行结果转换为我们期望的格式**的
++ [自定义实现类样例](../../源码/SpringBoot/SpringBootMessageConverter/src/main/java/com/springboot/example/springbootmessageconverter/component/MyHttpMessageConverter.java)
++ 提示:如果使用浏览器进行请求测试，**浏览器因为无法解析yaml格式的返回值，会把它下载下来保存为一个文件**
+
+---
+
+### （十）Thyemeleaf
+
+#### ①快速体验
+
++ [Thymeleaf](https://www.thymeleaf.org/)是一款用于前后端不分离时渲染页面的模板引擎，SpringBoot默认支持该模板引擎，但未导入对应场景
+  + 除ThymeLeaf外，SpringBoot还默认支持以下引擎:
+    + FreeMarker
+    + Groovy
+    + Mustache
++ 首先我们要导入场景
+
+~~~xml
+
+  <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+  </dependency>
+
+~~~
+
++ SpringBoot有专门的ThymeleafAutoConfiguration类，在其内部类DefaultTemplateResolverConfiguration内的defaultTemplateResolver方法中，设置了寻找对应模板的前缀和后缀:
+
+~~~java
+    @Bean
+    SpringResourceTemplateResolver defaultTemplateResolver() {
+        SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
+        ...
+        resolver.setPrefix(this.properties.getPrefix());  // 设置寻找模板引擎的前缀
+        resolver.setSuffix(this.properties.getSuffix());  // 设置寻找模板引擎的后缀
+        ...
+        return resolver;
+    }
+~~~
+
++ 我们通过查看getPrefix方法和getSuffix方法可以看到，默认的值分别为`classpath:/templates/`和`.html`
++ 也就是说，**该模板引擎默认从类路径下的tamplates目录下寻找xxx.html文件**
++ 现在我们可以开始编写一个简单的Thtmeleaf模板了:
+  + 首先写一个controller，不要写@ResponseBody,直接返回我们想渲染的模板名称，也不需要带后缀，直接返回字符串即可
+  + 在对应路径下声明一个对应的html模板，可以在其html标签下加上属性约束:`<html lang="en" xmlns:th="http://www.thymeleaf.org">`，这样idea会有提示
++ 然后就可以用了
++ [模板样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/hello.html)
++ [controller样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/java/com/springboot/example/springbootthymeleaf/controller/ThymeleafController.java)
+
+---
+
+#### ②核心语法
+
+|语法|作用|值|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|
+|th:text|将文本值渲染到对应标签内|一般使用插值表达式插入|无|[样例1](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/hello.html)|
+|th:utext|将HTML渲染到对应标签内|^|浏览器会当成HTML语句渲染|^|
+|th:属性|渲染属性值|^|无|^|
+|th:attr|批量渲染属性值|例:`th:attr="style=${style},src=${src}"`|无|^|
+|th:if|如果其表达式为真，那么该属性所在标签会被渲染|一般使用插值表达式插入，并运算|无|^|
+|th:switch|相当于switch语句|一般使用插值表达式插入|无|^|
+|th:case|相当于case语句|^|无|^|
+|th:object|变量选择，配合*{}插值表达式可以在子标签中引用该变量|^|无|^|
+|th:each|遍历集合|例:`th:each="item,state : ${list}"`|[样例2](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/list.html)|
+|th:fragment|定义模板|例:`th:fragment="xxx"`|无|[样例3](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/template.html)|
+|th:insert|在标签内部插入对应组件|例:`th:insert="~{templateName :: fragmentName}"`|无|[样例4](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/useTemplate.html)|
+|th:replace|将该标签替换为组件|例:`th:replace="~{templateName :: fragmentName}"`|无|^|
+
+|插值表达式|作用|备注|
+|:---:|:---:|:---:|
+|${}|将request域中的变量取出使用|无|
+|@{}|专门用于适配URL路径，会动态的加上后端的上下文路径|无|
+|#{}|国际化消息|无|
+|~{}|导入片段（模板）时使用|无|
+|*{}|变量选择，需要配合th:object绑定对象|无|
+
+|系统工具/内置对象|作用|备注|
+|:---:|:---:|:---:|
+|param|请求参数对象|无|
+|session|session对象|无|
+|application|context对象|无|
+|#execInfo|模板执行消息|无|
+|#messages|国际化消息|无|
+|#uris|uri/url工具|无|
+|#conversions|类型转换工具|无|
+|#dates|日期工具，是java.util.Date的工具类|无|
+|#calendars|日期工具，是java.util.Calendar的工具类|无|
+|#temporals|JDK8+,java.time的工具类|无|
+|#numbers|数字操作工具|无|
+|#strings|字符串操作工具|无|
+|#objects|对象操作工具|无|
+|#bools|布尔值操作工具|无|
+|#arrays|数组操作工具|无|
+|#lists|List操作工具|无|
+|#sets|Set操作工具|无|
+|#maps|Map操作工具|无|
+|#aggregates|集合聚合工具(sum、avg)|无|
+|#ids|id生成工具|无|
+
++ 其它相关操作与java基本一致，但是有几个特殊的:
+  + 布尔运算中，**与操作需要使用`and`关键字，或操作需要使用`or`关键字**
+  + 字符串拼接时，可以在拼接的字符串开头和结尾加上`|`来避免传统的使用`+`符号进行拼接，而是使用类似模板字符串的拼接方式进行拼接
+  + 条件运算发生了一些变化:
+    + if-then： `(value)?(then)`
+    + if-then-else: `(value)?(then):(else)`（三元运算符）
+    + default: `(value)?:(defaultValue)`
+  + 如果想在属性内表示字符串，需要使用单引号引起来
+  + **如果想在标签内部直接插值，可以使用`[[...]]`或`[(...)]`进行插值**
+
+---
+
+#### ③遍历
+
++ 使用th:each可以对集合进行遍历:
+  + `th:each="item,state : ${list}`
+    + item表示当前遍历到的集合元素，变量名可以随便取
+    + state表示当前遍历到的元素的状态，这是个键值对类型的集合对象
+    + list表示被遍历的集合对象，它的名字取决于request域中的待遍历对象的变量名
++ state变量中有多个属性，这些属性都有他们各自的名称:
+
+|属性名|作用|备注|
+|:---:|:---:|:---:|
+|index|索引|无|
+|count|遍历到的是第几个元素|无|
+|size|遍历的元素总量|无|
+|current|遍历到的当前元素值|无|
+|even|当前的count是否是偶数|无|
+|odd|当前的count是否是奇数|无|
+|first|是否是第一个元素|无|
+|last|是否是最后一个元素|无|
+
++ [样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/list.html)
+
+---
+
+#### ④属性优先级
+
++ Order值越低，优先级越高
+
+|Order|分类|属性|
+|:---:|:---:|:---:|
+|1|片段包含|th:insert<br>th:replace|
+|2|遍历|th:each|
+|3|判断|th:if<br>th:unless<br>th:switch<br>th:case|
+|4|定义本地变量|th:object<br>th:with|
+|5|通用方式属性修改|th:attr<br>th:attrprepend<br>th:attrappend|
+|6|指定属性修改|th:value<br>th:href<br>th:src<br>...|
+|7|文本值|th:text<br>th:utext|
+|8|片段指定|th:fragment|
+|9|片段移除|th:remove|
+
+---
+
+#### ⑤模板布局
+
++ 我们有时想将网页变成一些可复用的组件，Thymeleaf也为我们提供了这一功能:
+  + 如果我们想定义一个可复用的组件，我们需要在该组件最外层的标签上加上`th:fragment`属性，并给该组件起一个名字
+  + 接下来我们就可以在别的地方引用了
+    + 使用`th:insert`或`th:replace`属性来引用该组件
+    + 属性内使用`~{}`插值表达式来专门进行引用
+    + 语法为`templateName :: componentName`，如我们的组件名字叫top，它所在的文件名是template，那么引用时就是`~{template :: top}`
++ [组件样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/template.html)
++ [调用组件样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/useTemplate.html)
+
+---
+
+#### ⑥相关配置
+
+|配置项|作用|值|备注|
+|:---:|:---:|:---:|:---:|
+|server.servlet.context-path|设置项目的上下文路径|默认是`/`|无|
+|spring.thymeleaf.prefix|指定thymeleaf的匹配前缀|默认是`classpath:/templates/`|无|
+|spring.thymeleaf.suffix|指定thymeleaf的匹配后缀|默认是`.html`|无|
+|spring.thymeleaf.check-template|在响应前确认对应模板是否存在，不存在会报错|布尔值，默认为true|无|
+|spring.thymeleaf.check-template-location|在响应前确认模板所在路径是否存在，不存在会报错|布尔值，默认为true|无|
+|spring.thymeleaf.cache|如果浏览器已经缓存了该模板，那么就让浏览器用缓存|布尔值，默认为true|无|
+
+---
+
+### （十一）国际化
+
++ SpringBoot默认寻找messages.properties文件来配置国际化
+  + messages.properties文件是默认的国际化配置文件，**该文件必须存在，否则会报错**
+  + messages_en_US.properties文件是英语（美国）的国际化配置文件，注意**该配置文件对应的语言是英语（美国）而不是英语**
+  + messages_zh_CN.properties文件是简体中文的国际化配置文件
+  + SpringBoot在寻找对应的国际化配置时，会先查找浏览器端的最高优先级的语言配置文件，如果没有再去其它语言配置文件寻找，寻找依据也是按照浏览器端的各语言优先级来找
+  + 如果要使用Thymeleaf,那么需要使用#{}的插值表达式来读取国际化配置文件中的对应值
+  + 我们可以通过spring.messages.basename配置来指定SpringBoot默认寻找的国际化文件，也可以通过spring.messages.encoding来指定国际化配置文件的解码格式
+    + spring.messages.basename配置**不仅要指定上路径，还要指定上配置文件的前缀名**。如classpath:static/test.properties要指定为`static/test`
+  + 关于国际化配置的相关配置类是MessageSourceAutoConfiguration类，它默认会使用MessageSourceProperties类对象进行一些操作
+    + 在MessageSourceProperties类中，我们可以看到默认的basename是`messages`
++ [国际化样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/java/com/springboot/example/springbootthymeleaf/controller/ThymeleafController.java)
++ [Thymeleaf国际化样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/resources/templates/national.html)
+
+---
+
+### （十二）Ioc对象的获取
+
++ SpringBoot中，如果我们不想让我们的工具类加入到Ioc容器去，又想让工具类使用ioc容器中的对象且保证该对象不通过方法的参数传入，那么就需要工具类能够主动与ioc容器进行交互，可以**写一个SpringUtil类，让该类实现ApplicationContextAware接口，该接口只有一个setApplicationContext方法，用来提供ioc容器对象:**
+
+~~~java
+    // @Component注解是必须的，否则没办法得到ioc对象
+    @Component
+    @Slf4j
+    public class SpringUtil implements ApplicationContextAware {
+        @Getter
+        private static ApplicationContext ioc;
+
+        @Override
+        public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+            SpringUtil.ioc = applicationContext;
+        }
+
+        public ApplicationContext getApplicationContext(){
+            return ioc;
+        }
+
+        public static Object getBean(String beanName){
+            return ioc.getBean(beanName);
+        }
+
+        public static <T> T getBean(Class<T> clazz){
+            log.info("{}", clazz.getName());
+            T res;
+            try{
+                res=(T)ioc.getBean(clazz);
+            }catch (Exception e){
+                // 进入此代码块时，意味着ioc通过Class对象得到指定对象可能出现了问题
+                // 出现的问题可能包括
+                //    找不到
+                //    有多个满足条件的bean，出现该问题时，下面的代码会尝试继续使用传入的类名和类名的小驼峰命名法继续尝试得到对应的对象
+                //    出现异常
+                // 下面是得到类名的小驼峰命名法字符串，首先通过getName得到类名的全路径并使用.隔开
+                String[] split = clazz.getName().split("\\.");
+                // 得到最后一项，即类名
+                String className=split[split.length-1];
+                // 将第一个字符替换为小驼峰字符
+                className=className.replace(className.charAt(0),(char)(className.charAt(0)+32));
+                try{
+                    // 尝试继续使用传入的类名和类名的小驼峰命名法继续尝试得到对应的对象
+                    res = ioc.getBean(className, clazz);
+                }catch(Exception ex){
+                    // 如果再出现异常，那么抛出
+                    throw ex;
+                }
+                return res;
+            }
+            return res;
+        }
+    }
+
+    // 通过SpringBoot提供的RequestContextHolder可以得到本次请求的Request对象，因此把该方法放到SpringUtil中
+    public static HttpServletRequest getRequest(){
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        return requestAttributes.getRequest();
+    }
+
+~~~
+
++ 除上面的方式外，还可以通过其它方式得到ioc容器对象:
+  + 使用[监听器](#listener)
+  + 在启动类获得ioc容器:`SpringApplication.run`方法直接就返回ioc容器对象
+  + 
+
+
+
+
+
+
+## 五、部署
 
 ### （一）部署SpringBoot项目
 
@@ -2132,7 +2756,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 ---
 
 
-## 五、新特性
+## 六、新特性
 
 ### （一）Problemdetails
 

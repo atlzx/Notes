@@ -1531,7 +1531,7 @@
 + LocalStorage和sessionStorage可以实现前端一定程度的数据持久化存储，它们都可以存储键值对数据
   + localStorage会将数据保存在浏览器本地，即使关闭浏览器再打开，数据也不会被删除
   + sessionStorage会将数据保存在浏览器内存中，它仅会保存浏览器一次会话（即一个标签页）的数据，不同的标签页之间的sessionStorage是独立的
-    + sessionStorage的value只能是字符串类型，如果是其它类型可以通过JSON.stringfy方法转成字符串存储
+    + sessionStorage的value只能是字符串类型（包括null），如果是其它类型可以通过JSON.stringfy方法转成字符串存储
 
 ---
 

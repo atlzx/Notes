@@ -266,21 +266,23 @@
 
 # 路由
 
-## 一、路由简介
-
-+ 引入:`npm i vue-router`
-+ 路由就是**根据不同的`URL`地址展示不同的内容或页面**
-  + 单页应用程序（`SPA`）中，路由可以实现**不同视图之间的无刷新切换**，提升用户体验
-  + 路由还可以实现页面的认证和权限控制，保护用户的隐私和安全
-  + 路由还可以利用浏览器的前进与后退，帮助用户更好地回到之前访问过的页面
++ [官网](https://router.vuejs.org/zh/guide/)
++ 路由就是**根据不同的`URL`地址展示不同的内容或页面**，`vue-router`提供了vue的单页面应用展示路由的功能
++ 单页应用程序（`SPA`）中，路由可以实现**不同视图之间的无刷新切换**，提升用户体验
++ 路由还可以实现页面的认证和权限控制，保护用户的隐私和安全
++ 路由还可以利用浏览器的前进与后退，帮助用户更好地回到之前访问过的页面
 
 ![路由图例](../../java/文件/图片/JavaWeb图片/路由图例.png)
 
 + 查看`前端工程/Demo7-RouterPlus/srccomponents`中的三个`vue`文件和`app.vue`文件以**查看`路由传参样例`**
 
----
+## 一、安装
 
-## 二、简单使用
+~~~bash
+    npm create vue@latest
+~~~
+
+## 二、使用路由
 
 ### （一）创建路由
 
@@ -437,5 +439,146 @@
 
 ---
 
+#### ⑤组件外使用路由
+
++ 直接引入router对象直接用就行
+
+---
+
 # Pinia
 
+Pinia是Vue官方推荐的状态管理容器(就是管着那堆能跟着组件跑而值会动态变化的变量的)
+
+## 一、安装
+
+~~~bash
+    # 下载pinia
+    npm install pinia
+~~~
+
+~~~js
+    const app = createApp(App);
+    // 把pinia加进vue组件里边
+    const pinia = createPinia();
+    app.use(pinia);
+    app.mount('#app');
+~~~
+
+## 二、Store的使用
+
+### （一）定义Store
+
++ pinia的store有两种定义方式，一种是类似于redux的定义store的方式的，另一种是和vue的组合式API书写格式类似的定义方式
++ 这两种定义方式都可以得到对应的store
+
+~~~js
+    /* 这种类似于redux的定义方式的API被官方称呼为Option Store
+     它通过defineStore方法来定义一个Store
+        该方法接收两个参数
+            第一个参数:store的唯一标识,也相当于给它起个名字
+            第二个参数:一个对象，对象中一般包含三个属性，如下例所示（从官网CV的）
+    */
+   // 不要忘记导出
+    export const useCounterStore = defineStore(
+        'counter', 
+        {
+            // state表示最开始存到store中的状态变量，它接收一个回调函数作为参数，回调函数的返回值将成为其初始值
+            state: () => ({ count: 0, name: 'Eduardo' }),
+            // getters属性，顾名思义就是里面的东西都是与get相关的东西
+            getters: {
+                // 里面的方法接收一个state对象，然后返回乘以2的结果
+                doubleCount: (state) => state.count * 2,
+            },
+            // actions属性，实际上是与state变量的修改相关的方法组成的对象
+            actions: {
+                // 这个自增方法就是让count++
+                increment() {
+                    // 使用this来得到当前的state值
+                    this.count++
+                },
+            },
+        }
+    );
+~~~
+
+~~~js
+    // 这种写法被官方称为Setup Store，因为它与Vue的组合式API书写方式类似
+    // 这个也要导出
+    export const useCounterStore = defineStore(
+        'counter',
+        // 与Option Store不同，它的第二个参数接收一个回调函数作为参数
+        () => {
+            // 下面就是正常像写js代码一样写东西了，这里的count就相当于state的初始值，doubleCount相当于getters中的方法，increment相当于actions中的方法
+            const count = ref(0)
+            const doubleCount = computed(() => count.value * 2)
+            function increment() {
+                count.value++
+            }
+            // 回调函数的返回值将是我们能够从外部得到的值
+            // 可以观察到，该方式比起第一种方式，其自由度和灵活性都更好
+            return { count, doubleCount, increment }
+        }
+    );
+~~~
+
+---
+
+### （二）使用Store
+
++ Store使用起来非常简单，直接在vue文件中的script标签中调用我们定义的store即可（defineStore方法会返回一个函数，调用该函数得到store对象）
++ 需要注意的是，只有vue的组件实例(Vue的createApp方法返回的对象)使用use方法加载完pinia之后才能使用store提供的API，**这一点尤其需要在组件外使用pinia时注意**
+
+~~~vue
+    <script setup>
+        const store = useStore();
+        store.count++;  // 可以直接使用在state中定义的值来改变现有的state值
+        /* 
+            也可以调用$patch方法，通过传入对象来改变值
+            但是该方式会非常的麻烦，试想state中有很多属性，我们只想修改那么几个属性，就需要使用解构再新拷贝一个对象出来然后给它的几个属性赋新值
+            比如一个state有200个属性，我们只想修改它其中1个属性，就需要这么写:store.$patch({...store.$state,count:store.count+1})
+            当然上面的举例看起来貌似也不是很麻烦，但是假如我们想修改的属性需要一系列的操作才能得到时，而且我们想修改的属性之间互有关联时，这就麻烦了
+            于是pinia还提供了另一种写法
+         */
+        store.$patch({
+            count: store.count + 1,
+            age: 120,
+            name: 'DIO',
+        });
+        /**
+         * 这是给state赋值的另一种方式:向$patch方法传入一个回调函数，该回调函数接收state变量作为参数，然后直接设置state变量的数据即可
+         * 新值的操作可以在这里面写，就会简化操作
+         */
+        store.$patch((state) => {
+            state.items.push({ name: 'shoes', quantity: 1 })
+            state.hasChanged = true
+        });
+        // pinia还提供了$reset方法来将state置为初始值
+        store.$reset()
+    </script>
+~~~
+
+---
+
+# Element-Plus
+
++ [官网](https://element-plus.org/zh-CN/)
+
+## 一、安装
+
+~~~bash
+    npm install element-plus --save
+~~~
+
+~~~js
+    import { createApp } from 'vue'
+    import ElementPlus from 'element-plus'
+    import 'element-plus/dist/index.css'
+    import zhCn from 'element-plus/es/locale/lang/zh-cn';  // 这个玩意是配置中文国际化的，因为Element-Plus默认使用的英文国际化
+    import App from './App.vue'
+
+    const app = createApp(App).use(ElementPlus).use(ElementPlus, {
+        locale: zhCn,
+    }).mount('#app');
+~~~
+
+---

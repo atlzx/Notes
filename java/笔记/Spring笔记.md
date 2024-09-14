@@ -684,6 +684,12 @@
   + 优先级高的嵌套在外面，其前置方法先执行。优先级低的被嵌套在里面，其返回、异常和后置通知先执行
   + 使用@Order注解可以指定切面执行的优先级
 
+---
+
+### 注意事项
+
++ AOP抛出的异常只能是RuntimeException及其子类，否则会被一律视为java.lang.reflect.UndeclaredThrowableException
+
 ## 五、事务
 
 ### （一）JdbcTemplate

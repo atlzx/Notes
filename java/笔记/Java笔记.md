@@ -1216,7 +1216,7 @@
     TEST1,TEST2,TEST3;
     private Test(){
 
-    } 
+    }
     方法...
   }
 ~~~

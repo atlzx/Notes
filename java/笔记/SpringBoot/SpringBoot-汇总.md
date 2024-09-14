@@ -63,8 +63,8 @@
 |^|spring.profiles.include|指定包含的环境|一个或多个环境名|一般把基础的环境，也就是无论什么情况都用到的环境加入到这里面|
 |^|spring.profiles.group.{groupName}|配置环境组,groupName是组的名称|一个或多个环境名|无|
 |**文件上传**|spring.servlet.multipart.enabled|开启文件上传功能，默认就是开启的|布尔值|无|
-|^|spring.servlet.multipart.max-file-size|限制单文件上传的最大大小|格式:`xxMb`|无|
-|^|spring.servlet.multipart.max-request-size|限制单次请求上传的文件总量大小|格式:`xxMb`|无|
+|^|spring.servlet.multipart.max-file-size|限制单文件上传的最大大小|格式:`xxMb`，默认为1M|无|
+|^|spring.servlet.multipart.max-request-size|限制单次请求上传的文件总量大小|格式:`xxMb`，默认为10M|无|
 |**Redis**|spring.data.redis.host|配置redis所在的服务器ip|ip号|无|
 |^|spring.data.redis.port|配置redis所使用的端口号|端口号|无|
 |^|spring.data.redis.database|指定Redis要连接的数据库序号|数值|无|
