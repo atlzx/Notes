@@ -43,7 +43,6 @@
     sudo systemctl start docker
     sudo systemctl enable docker
 ~~~
-  ![Docker安装图例3](../../文件/图片/Docker图片/Docker安装图例3.png)
   + 最后配置一下Docker下载镜像的镜像源:
     + 由于2024.6开始国内的Docker镜像疑似出现了集体挂掉的情况，下面配置的镜像源可能会失效
 ~~~shell
@@ -69,6 +68,9 @@
     sudo systemctl daemon-reload
     sudo systemctl restart docker
 ~~~
+
+  + 最后输入`docker ps`命令来运行docker操作以确认docker是否安装成功
+  ![Docker安装图例3](../../文件/图片/Docker图片/Docker安装图例3.png)
 
 ---
 
@@ -179,18 +181,20 @@
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 |`docker run [options] <imageId>`|imageId:镜像所对应的docker给该镜像赋予的唯一id(可以使用`docker images`查看)，可以不用写全，写部分前缀，只要能区分就行，或以`<imageName>:<imageVersion>`形式呈现的具体镜像名|-d|在后台运行，即不占用控制台进程|无|无|启动一个容器，在该容器内运行指定镜像|无|
 |^|^|`--name`|给容器起一个名字|无|自定义名字|^|^|
-|^|^|`-p <externalPort></externalPort>:<internalPort>`|端口映射，使外界访问linux服务器的指定端口时，相当于访问在linux服务器内运行的容器的对应端口|externalPort:外部端口，即被访问的Linux服务端口<br>internalPort:映射的容器内端口|端口号|^|^|
+|^|^|`--restart=always`|在docker启动时使该镜像也跟着启动|无参|无|^|^|
+|^|^|`-d`|以后台模式运行该镜像，使其不阻塞终端|无参|无|^|^|
+|^|^|`-p <externalPort>:<internalPort>`|端口映射，使外界访问linux服务器的指定端口时，相当于访问在linux服务器内运行的容器的对应端口|externalPort:外部端口，即被访问的Linux服务端口<br>internalPort:映射的容器内端口|端口号|^|^|
 |^|^|`-v {<externalFolder>\|<volumeName>}:<internalFolder>`|进行目录挂载或卷映射|externalFolder:要建立映射关系的Linux服务器上的目录路径<br>volumeName:建立卷映射关系的卷名<br>internalFolder:容器内要建立映射关系的目录路径|示例:`myNginxConfig:/etc/nginx`、`/home/study/docker/nginxHtml:/usr/share/nginx/html`|^|^|
 |^|^|`--network <netName>`|为新运行的容器指定其所属网络|netName:网络名|网络名|^|^|
 |^|^|`-e <envName>=<envValue>`|为新运行的容器应用程序指定环境变量|envName:环境变量名<br>envValue:环境变量值|例:`-e RABBITMQ_DEFAULT_USER=guest`|^|^|
-|`docker ps`|无参|-a|查看全部容器，即使已经停止运行|无|无|查看容器状态，默认查看正在运行的容器|无|
-|^|^|-q|只打印检索到的容器id|无|无|^|^|
+|`docker ps`|无参|`-a`|查看全部容器，即使已经停止运行|无|无|查看容器状态，默认查看正在运行的容器|无|
+|^|^|`-q`|只打印检索到的容器id|无|无|^|^|
 |`docker stop <containerId>`|containerId:容器运行时分配的id，可以不用写全，写部分前缀，只要能区分就行。或者也可以指定容器名称（可以通过`docker ps`查看）|无|无|无|无|停止指定容器|无|
 |`docker start <containerId>`|^|无|无|无|无|使停止运行的容器重新开始运行|无|
 |`docker restart <containerId>`|^|无|无|无|无|重启指定容器|无|
 |`docker stats <containerId>`|^|无|无|无|无|查看指定容器的状态|无|
 |`docker logs <containerId>`|^|无|无|无|无|查看容器运行打印的日志|无|
-|`docker exec [options] <containerId> <interactionMode>`|imageId:镜像所对应的docker给该镜像赋予的唯一id(可以使用`docker images`查看)，可以不用写全，写部分前缀，只要能区分就行，或以`<imageName>:<imageVersion>`形式呈现的具体镜像名<br>interactionMode:交互方式，`/bin/bash`或直接写`bash`是使用控制台进行交互|-it|这是一个复合命令项，用来声明进入容器并进行交互操作|无|无|进入指定容器进行相关操作|使用`exit`退出容器|
+|`docker exec [options] <containerId> <interactionMode>`|imageId:镜像所对应的docker给该镜像赋予的唯一id(可以使用`docker images`查看)，可以不用写全，写部分前缀，只要能区分就行，或以`<imageName>:<imageVersion>`形式呈现的具体镜像名<br>interactionMode:交互方式，`/bin/bash`或直接写`bash`是使用控制台进行交互|`-it`|这是一个复合命令项，用来声明进入容器并进行交互操作|无|无|进入指定容器进行相关操作|使用`exit`退出容器|
 |`docker rm <containerId>`|^|-f|强制删除，该命令在容器运行时也能删除|无|无|删除指定的容器，被删除掉的容器无法被`docker ps`查看到|**删除容器时，容器需要停止运行**|
 |`docker container inspect <containerId>`|^|>|>|>|无|查看指定容器的详细信息|无|
 |`docker rm -f $(docker ps -aq)`|无参|>|>|>|无|这是一个小技巧，直接删除全部容器|无|
