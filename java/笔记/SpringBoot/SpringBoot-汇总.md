@@ -63,8 +63,8 @@
 |^|spring.profiles.include|指定包含的环境|一个或多个环境名|一般把基础的环境，也就是无论什么情况都用到的环境加入到这里面|
 |^|spring.profiles.group.{groupName}|配置环境组,groupName是组的名称|一个或多个环境名|无|
 |**文件上传**|spring.servlet.multipart.enabled|开启文件上传功能，默认就是开启的|布尔值|无|
-|^|spring.servlet.multipart.max-file-size|限制单文件上传的最大大小|格式:`xxMb`，默认为1M|无|
-|^|spring.servlet.multipart.max-request-size|限制单次请求上传的文件总量大小|格式:`xxMb`，默认为10M|无|
+|^|spring.servlet.multipart.max-file-size|限制单文件上传的最大大小|格式:`xxMB`，默认为1M|无|
+|^|spring.servlet.multipart.max-request-size|限制单次请求上传的文件总量大小|格式:`xxMB`，默认为10M|无|
 |**Redis**|spring.data.redis.host|配置redis所在的服务器ip|ip号|无|
 |^|spring.data.redis.port|配置redis所使用的端口号|端口号|无|
 |^|spring.data.redis.database|指定Redis要连接的数据库序号|数值|无|
@@ -159,6 +159,7 @@
 |^|@Controller|^|作用于Controller层|无|
 |^|@Repository|^|作用在Dao层|无|
 |^|@Bean|使方法返回值作为bean加入到IOC容器内|方法|无|
+|^|@Order|指定bean初始化或AOP执行的优先级（顺序）|类|值越小，加载顺序越靠前|
 |^|@Scope|声明该类型的bean是单实例还是多实例|方法|无|
 |^|@Controller/@Service/@Repository/@Conponent|声明对应类属于控制层/服务层/DAO层/其它层，并将其纳入IOC容器管理|类|无|
 |^|@Import|指定对应类受IOC容器管理|类|一般用于将第三方包下的类纳入IOC容器管理|
@@ -167,7 +168,7 @@
 |^|@DependOn|指定依赖加载对象|无|^|
 |^|@PreDestroy|指定销毁方法|^|该注解来源于`jakarta`包|
 |^|@PostConstruct|指定初始化方法|^|^|
-|^|@Value|注入基本数据类型对象|类属性、方法属性|无|
+|^|@Value|注入配置文件值或能够通过解析字符串解析出来的值|类属性、方法属性|它的注入方式有多种:1.如果直接写@Value("aaa")，那么注入的值是字符串aaa<br>2.如果写@Value("${xxx.yyy.zzz}")那么会把配置文件中对应的配置项的值注入进去|
 |^|@Autowared|根据byType模式匹配对应的引用数据类型对象并注入|^|1.该注解无法自动装配JDK自带的数据类型<br>**不能作用于测试类**|
 |^|@Qualifier|使自动装配按照byName的方式匹配，且依据的是该注解内指定的name值进行匹配|^|无|
 |^|@Resource|依据 指定的name -> byName -> byType的模式依次匹配对应的引用数据类型对象并注入|^|1.该注解来源于`jakarta`包<br>2.**不能作用于测试类**|
@@ -220,6 +221,7 @@
 |**SpringCloud-Consul**|@EnableDiscoveryClient|开启微服务模块的服务发现|>|>|无|无|类|无|
 |**SpringCloud-LoadBalancer**|@LoadBalanced|使RestTemplate对象支持负载均衡|>|>|无|无|方法、参数、属性|无|
 |**SpringCloud-OpenFeign**|@FeignClient|声明接口为OpenFeign接口API|value|指定该接口API对应的微服务模块在Consul上面的注册名，从而指向该模块|注册名|无|类|无|
+|^|^|^|path|指定请求的共同前缀|字符串|无|^|^|
 |^|@EnableFeignClients|开启OpenFeign功能|>|>|无|无|类|无|
 |**SpringCloud-Resilience4j**|@CircuitBreaker|使对应方法被断路器监听，并在出现问题时可以触发服务熔断和服务降级|name|配置断路器要监听的服务模块的调用，即该值对应的服务模块的调用行为会被断路器监听，并在出现问题时执行服务熔断和服务降级|对应服务模块在Consul上面的注册名|无|方法|无|
 |^|^|^|fallback|指定服务降级要调用的fallback方法|fallback方法的名称（字符串）|无|^|^|

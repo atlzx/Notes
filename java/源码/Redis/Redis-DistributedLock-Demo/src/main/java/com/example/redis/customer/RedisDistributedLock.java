@@ -111,7 +111,6 @@ public class RedisDistributedLock implements Lock {
                     unit.toSeconds(expireTime)
                 )
             )
-
         ){
             // 休眠20ms再尝试获得锁
             TimeUnit.MILLISECONDS.sleep(20);

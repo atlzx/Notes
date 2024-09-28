@@ -63,26 +63,36 @@
 ~~~js
   export default defineConfig(
       {
-          plugins: [
-              vue(),
-              vueJsx(),
-          ],
-          resolve: {
-              alias: {
-                  '@': fileURLToPath(new URL('./src', import.meta.url))
-              }
-          },
-          lintOnSave:false,
-          server:{
-              // 与server相关的在这写
-              proxy:{
-                  '/api':{
-                      target:'http://localhost:6379',
-                      changeOrigin:true,
-                      rewrite: path =>{ return path.replace(/^\/api/,'')},
-                  }
-              }
-          }
+        plugins: [
+            vue(),
+            vueJsx(),
+        ],
+        // 设置打包时对于各组件引用路径的基本前缀路径，默认是 / ，在某些情况下需要改为 ./（如electron调用打包后的index进行展示，如果前缀为/，它会直接去本地磁盘根目录找）
+        base:'./'
+        // 这个用来配置路径别名alias
+        resolve: {
+            alias: {
+                // 使用@来替代./src，也可以使用 resolve(__dirname,'src')，虽然__dirname会报错，但是实际执行和打包时不会报错
+                '@': fileURLToPath(new URL('./src', import.meta.url))
+            }
+        },
+        lintOnSave:false,
+        // 与服务器相关的配置
+        server:{
+            port:1234  // 指定服务占用的端口
+            // 反向代理设置项
+            proxy:{
+                // 左边的key表示要拦截的请求前缀，如 http://localhost:8080/api/get/info ，他会无视掉http://localhost:8080，将请求URL /api/get/info的前缀与左边的key进行匹配，如果匹配到了那么执行里面的设定进行反向代理
+                // 左边的key也支持正则表达式写法
+                '/api':{
+                    target:'http://localhost:6379',  // 要请求的后端的基础路径
+                    changeOrigin:true,  // 
+                    // 对URL的更改，如上面的例子的/api/get/info，经过这里的处理后就变成了/get/info
+                    // 这个玩意不要忘记加return，让方法有返回值
+                    rewrite: path =>{ return path.replace(/^\/api/,'')},  
+                }
+            }
+        },
       }
   )
 ~~~

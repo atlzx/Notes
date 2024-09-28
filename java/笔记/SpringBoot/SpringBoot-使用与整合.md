@@ -184,10 +184,13 @@
 + 但是，会出现两个问题
   1. 右边的Maven选项中，并未显示我们新创建的项目。**这意味着我们只能通过命令行的方式对项目进行Maven操作，也无法便捷的查看依赖**
   2. 我们的项目编译之后，放到了父项目的out目录下，而不是放到了自己模块的target目录下。**这会导致一些情况下的ClassNotFound异常**
+  3. 项目报错:`未找到Java类`
 + 因此，我们需要解决这两个问题
   + 问题1:首先打开我们父项目的pom.xml文件，会发现一个modules标签，**我们创建的项目存在于该标签内，删掉它，然后刷新Maven**。该问题的原因是idea认为我们创建的项目是该项目的子项目，因为我们并没有以`Spring Initializr`模块的方式创建，于是它自动就把我们的项目归为了上层项目的子模块了
+    + 其实该问题出现的原因是我们指定了spring-boot-starter-parent作为其父项目，而不是我们自己的Project，因此Maven显示不出来
     + **解决该问题后，idea可能会在其右下角弹出一个load maven project的选项，如果有，直接选上，这样下面的问题2也会被同步解决**
   + 问题2:右键项目->Open Module Steeings->Modules->我们新创建的项目->选择target目录->取消右上角的Excluded选项
+  + 问题3:检查构建输出的target是否在本模块下，还是在父项目下，如果在父项目下，那么按照问题1的解决方案执行一遍即可解决
 
 ![构建项目图例4](../../文件/图片/SpringBoot图片/构建项目图例5.png)
 
@@ -1482,6 +1485,81 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
+### （七）xxl-job
+
++ xxl-job是一个国产的分布式任务调度平台，一般拿它做定时任务用
++ [官网](https://www.xuxueli.com/xxl-job/)
+
+#### ①依赖
+
++ 引入依赖:
+
+~~~xml
+    <!-- xxl-job-core -->
+    <dependency>
+        <groupId>com.xuxueli</groupId>
+        <artifactId>xxl-job-core</artifactId>
+    </dependency>
+~~~
+
+---
+
+#### ②使用
+
++ 首先先查看一下[开源项目](https://gitee.com/xuxueli0323/xxl-job)的结构
+![xxl-job开源结构图例](../../文件/图片/SpringBoot图片/xxl-job开源结构图例.png)
+
+
+
+##### Ⅰ任务调度中心
+
++ **非特殊情况下，不要试图去整合该任务调度中心模块到自己的项目中**，因为里面的很多代码用的都是老依赖
++ 把源码下载下来，把依赖下好
++ 执行[SQL程序](../../源码/SpringBoot/SpringBoot-Xxl-Job/db/xxl-job.sql)，该SQL语句见官方开源项目的doc目录的db目录内
++ 修改application.properties文件，主要修改的是要连接的数据库相关的项，连接的数据库要与刚才的SQL文件执行创建出来的表所在的库一致:
+
+~~~properties
+    # 主要是改这里
+    ### xxl-job, datasource
+    spring.datasource.url=xxx?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
+    spring.datasource.username=root
+    spring.datasource.password=123456
+    spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+    
+    ### 这里是定义访问的token的，如果配置中心配置了token，那么对应的执行器也要提供相同的token
+    xxl.job.accessToken=default_token
+
+    ### 默认为zh_CN的国际化配置
+    xxl.job.i18n=zh_CN
+
+    ## xxl-job, triggerpool max size
+    xxl.job.triggerpool.fast.max=200
+    xxl.job.triggerpool.slow.max=100
+
+    ### xxl-job, log retention days
+    xxl.job.logretentiondays=30
+~~~
+
++ 直接启动任务调度中心
++ 访问[这里](http://localhost:8080/xxl-job-admin)打开任务调度中心，默认`admin/123456`作为用户名和密码
+
+---
+
+##### Ⅱ任务执行
+
++ 首先写[配置文件](../../源码/SpringBoot/SpringBoot-Xxl-Job/src/main/resources/application.properties)
++ [配置类](../../源码/SpringBoot/SpringBoot-Xxl-Job/src/main/java/com/example/boot/config/XxlJobConfig.java)
++ [任务执行接口](../../源码/SpringBoot/SpringBoot-Xxl-Job/src/main/java/com/example/boot/service/ExampleExecutorService.java)
+
+---
+
+
+
+
+
+---
+
 ## 四、WebMVC相关整合
 
 ### （一）跨域问题
@@ -2137,7 +2215,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-#### ②文件上传OSS
+#### ②阿里云
+
+##### Ⅰ文件上传OSS
 
 + 这里以上传阿里云为例，详情参见[官方文档](https://help.aliyun.com/zh/oss/getting-started/sdk-quick-start?spm=a2c4g.11186623.0.0.47422b4cPAOzJK)
 + 使用阿里云的OSS需要先创建一个bucket，另外再申请一个acesskey
@@ -2145,13 +2225,126 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
   + accesskey需要在右上角点击AccessKey管理，然后创建一个。**创建以后需要记住我们的AccessKey和KeySecret，否则将无法再查询到**
    
   ![AccessKey管理](../../文件/图片/SpringBoot图片/文件上传图例1.png)
++ 接下来引入依赖:
+
+~~~xml
+  <!-- 阿里云OSS依赖 -->
+  <dependency>
+      <groupId>com.aliyun.oss</groupId>
+      <artifactId>aliyun-sdk-oss</artifactId>
+      <version>3.17.4</version>
+  </dependency>
+  <!-- 下面的是JDK9及以上版本才需要安 -->
+  <dependency>
+    <groupId>javax.xml.bind</groupId>
+    <artifactId>jaxb-api</artifactId>
+    <version>2.3.1</version>
+  </dependency>
+  <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <version>1.1.1</version>
+  </dependency>
+  <!-- no more than 2.3.3-->
+  <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <version>2.3.3</version>
+  </dependency>
+~~~
 
 + 接下来写一下上传逻辑
   + 首先不应该把一些配置信息，如endPoint、acessKey等信息写在代码里面，应该写在配置文件中:[配置文件](../../源码/SpringBoot/FileUpload/src/main/resources/application.properties)
   + 之后创建一个Properties类，通过SpringBoot的自动装配，把这些配置加载进来:[类样例](../../源码/SpringBoot/FileUpload/src/main/java/com/springboot/example/fileupload/components/FileUploadConfig.java)
   + 把该配置类导入到Service类中，通过getter方法得到对象，然后进行文件上传的业务:[service类](../../源码/SpringBoot/FileUpload/src/main/java/com/springboot/example/fileupload/service/impl/FileUploadServiceImpl.java)
++ 额外项:
+  + 我们可以通过[授权访问](https://help.aliyun.com/zh/oss/developer-reference/authorize-access-1?spm=a2c4g.11186623.0.i29)的方式让外界在规定时间内访问某个资源
 
 ---
+
+##### Ⅱ图片识别OCR
+
++ [官方SDK示例](https://next.api.aliyun.com/api/ocr-api/2021-07-07/RecognizeIdcard?spm=api-workbench.API%20Document.0.0.45954dc3rdW9C8&lang=JAVA&sdkStyle=dara&RegionId=cn-hangzhou&tab=DEMO&useCommon=true)
++ [官方使用文档](https://next.api.aliyun.com/api/ocr-api/2021-07-07/RecognizeIdcard?spm=api-workbench.API%20Document.0.0.45954dc3k6BrTS&lang=JAVA&sdkStyle=dara&RegionId=cn-hangzhou&tab=DOC)
++ 使用OCR需要开通[个人证照识别服务](https://common-buy.aliyun.com/?spm=api-workbench.api_explorer.0.0.4057246f0V6FiQ&commodityCode=ocr_personalcard_public_cn)，该服务每个月会赠送200次免费识别额度，如果另有需求可以购买[OCR共享资源包](https://common-buy.aliyun.com/?spm=5176.25115836.commonbuy2container.2.808e778b6PBKBw&commodityCode=ocr_share_dp_cn)
+
++ 依赖:
+
+~~~xml
+  <!-- 阿里云OCR识别依赖 -->
+  <dependency>
+      <groupId>com.aliyun</groupId>
+      <artifactId>ocr_api20210707</artifactId>
+      <version>3.1.1</version>
+  </dependency>
+~~~
+
++ 代码(以身份证识别为例):
+
+~~~java
+    private Client createClient() throws Exception {
+        Config config = new Config()
+            // 必填，请确保代码运行环境设置了环境变量 ALIBABA_CLOUD_ACCESS_KEY_ID。
+            .setAccessKeyId(ossProperties.getAccessKey())
+            // 必填，请确保代码运行环境设置了环境变量 ALIBABA_CLOUD_ACCESS_KEY_SECRET。
+            .setAccessKeySecret(ossProperties.getKeySecret());
+        // Endpoint 请参考 https://api.aliyun.com/product/ocr-api
+        config.endpoint = "ocr-api.cn-hangzhou.aliyuncs.com";
+        return new Client(config);
+    }
+    @Override
+    public IdCardOcrVo idCardOcr(MultipartFile file) {
+        try {
+            Client client = createClient();
+            RecognizeIdcardRequest request = new RecognizeIdcardRequest();
+            // OCR支持传入输入流或字符串进行识别，它们对应的方法分别是setBody和setUrl，这里选择setBody
+            request.setBody(file.getInputStream());
+            // 这是选择字符串URL进行识别的方式
+//            request.setUrl(new String(file.getBytes()));
+            RuntimeOptions runtime = new RuntimeOptions();
+            // 复制代码运行请自行打印 API 的返回值
+            RecognizeIdcardResponse response = client.recognizeIdcardWithOptions(request, runtime);
+            Map map = objectMapper.readValue(response.getBody().getData(), Map.class);
+            Map<String, Map<String, Map<String,String>>> data = (Map<String, Map<String, Map<String,String>>>) (map.get("data"));
+            // 是正面的情况
+            if(data.containsKey("face")){
+                Map<String, String> idCardInfoMap = data.get("face").get("data");
+                log.info("{}",idCardInfoMap);
+                ....
+            }else{
+                // 是反面的情况
+                Map<String, String> idCardInfoMap = data.get("back").get("data");
+                log.info("{}",idCardInfoMap);
+                ...
+            }
+            return idCardOcrVo;
+        } catch (TeaException error) {
+            // 此处仅做打印展示，请谨慎对待异常处理，在工程项目中切勿直接忽略异常。
+            // 错误 message
+            System.out.println(error.getMessage());
+            // 诊断地址
+            System.out.println(error.getData().get("Recommend"));
+            Common.assertAsString(error.message);
+        } catch (Exception _error) {
+            TeaException error = new TeaException(_error.getMessage(), _error);
+            // 此处仅做打印展示，请谨慎对待异常处理，在工程项目中切勿直接忽略异常。
+            // 错误 message
+            System.out.println(error.getMessage());
+            // 诊断地址
+            System.out.println(error.getData().get("Recommend"));
+            Common.assertAsString(error.message);
+        }
+        return null;
+    }
+~~~
+
+---
+
+#### ③腾讯云
+
++ [点我](https://console.cloud.tencent.com/api/explorer?Product=cvm&Version=2017-03-12&Action=DescribeRegions)查看可用的region列表，该列表的region项可用于配置腾讯云API调用时所需的region
+
+
 
 ### （八）日志配置
 

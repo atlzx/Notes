@@ -33,6 +33,7 @@
         <option value="$USER_HOME$/OneDrive/桌面/Hotel/pom.xml" />
         <option value="$PROJECT_DIR$/SpringBoot-RabbitMQ-Consumer/pom.xml" />
         <option value="$PROJECT_DIR$/SpringBoot-RabbitMQ-Producer/pom.xml" />
+        <option value="$PROJECT_DIR$/SpringBoot-Xxl-Job/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

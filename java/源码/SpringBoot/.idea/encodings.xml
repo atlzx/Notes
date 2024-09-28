@@ -18,6 +18,8 @@
     <file url="file://$PROJECT_DIR$/SpringBoot-SSM/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBoot-WebSocket/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBoot-WebSocket/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringBoot-Xxl-Job/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/SpringBoot-Xxl-Job/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBoot-starter-robot/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBoot-use-robot/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBootConfiguration/src/main/java" charset="UTF-8" />
@@ -27,6 +29,8 @@
     <file url="file://$PROJECT_DIR$/SpringBootTest/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBootThymeleaf/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SpringBootWebStaticResource/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

@@ -158,6 +158,7 @@
 ## 七、gitignore
 
 + `.gitiignore`文件可以支持我们写入项目内不想让`git`监听的文件路径，写入后，`git`便不会再监听该文件路径下的文件了
++ [官方推荐的node的igonre模板](https://github.com/github/gitignore/blob/main/Node.gitignore)
 
 ---
 
