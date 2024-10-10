@@ -27,7 +27,7 @@
     "type": "module",
     // 这里要指定我们的electron程序启动所需要的启动的js文件，该文件是electron程序的启动文件，也是打包时必须的文件
     "main": "main.js",
-    // 这个必须要有，没有的话需要加上
+    // 这些必须要有，没有的话需要加上
     "author": "lzx",
     "description": "demo",
     "scripts": {

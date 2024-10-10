@@ -306,7 +306,7 @@
     </select>
 ~~~
 
-
+---
 
 
 ## 七、动态语句
@@ -343,8 +343,13 @@
 
 ## 八、缓存
 
-
-
++ Mybatis支持对查询结果进行缓存，其主要有两种缓存:
+  + 一级缓存:这是SqlSession级别的缓存，只要是同一个SqlSession的Mapper执行了相同的查询操作，缓存就会命中
+  + 二级缓存:这是namespace级别的缓存，不同的SqlSession的Mapper执行相同的查询操作，缓存也会命中，**需要手动开启**
++ 注意:
+  + 只要执行了增删改操作，所有缓存都会被清空
+  + 二级缓存需要缓存的数据实现Serializable接口
+  + 只有会话提交或关闭以后，一级缓存中的数据才会转移到二级缓存中去
 
 ---
 
@@ -631,7 +636,7 @@
 |:---:|:---:|:---:|:---:|:---:|
 |id|关联接口的对应方法|接口的方法名|无|无|
 |timeout|驱动程序若等待数据库返回请求结果时间超出指定秒数会抛出异常|数值|unset(未设置)|无|
-|statementType|指定Mybatis使用的Statement类型|STATEMENT:使用Statement类型<br>PREPARED:**默认值**，使用PreparedStatement<br>CALLABLE:使用CallableStatement|无|
+|statementType|指定Mybatis使用JDBC的Statement类型|STATEMENT:使用Statement类型<br>PREPARED:**默认值**，使用PreparedStatement<br>CALLABLE:使用CallableStatement|无|
 |useGeneratedKeys|设置主键回显|true/false|false|**仅适用于insert标签与update标签**|
 |keyProperty|设置主键回显赋值的对应属性|属性名|未设置|^|
 

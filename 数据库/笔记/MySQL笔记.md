@@ -3751,7 +3751,7 @@ SELECT 函数 OVER 窗口名 [字段2,字段3,....] FROM 表 [各子句] WINDOW 
 ~~~sql
   -- -- 查询慢查询目录相关信息
   show variables like '%slow_query_log%';  -- 查看慢查询日志信息
-  SHOW VARIABLES LIKE '%slow%'; -- 查询慢查询日志所在目录
+  SHOW VARIABLES LIKE '%slow%'; -- 查询慢查询日志所在目录和其他信息
   SHOW VARIABLES LIKE '%long_query_time%'; -- 查询超时时长
   -- 开启慢查询日志
   set global slow_query_log='ON';
@@ -4390,6 +4390,8 @@ MISSING_BYTES_BEYOND_MAX_MEM_SIZE: 0  //丢失的超出最大容量的字节
   + **逻辑查询优化**:就是使用另外的SQL语句来达到与之前的SQL语句同样的效果，其实就是用别的思路再写一遍相同目的的SQL语句
   + 无论怎么优化，最终都是要经过优化器来进行查询成本分析，最终决定如何执行的
 
+<a id="index_valid"></a>
+
 #### ①索引失效条件
 
 + MySQL中一个重要的提升性能的思路就是利用索引
@@ -4405,8 +4407,9 @@ MISSING_BYTES_BEYOND_MAX_MEM_SIZE: 0  //丢失的超出最大容量的字节
 |范围条件右边的列索引失效|由于是范围，会导致**联合索引相对于过滤条件在该范围字段之后的所有字段的排序情况变为乱序**|MySQL8.0.36测试，索引依旧生效，可能是低版本的是无效的|
 |不等于(!= 或<>)索引失效|索引是**建立在等值的前提下**的|无|
 |is not null导致索引失效|这个原因与上面的原因相同|无|
-|like以通配符%开头索引失效|%是多个字符的通配符，导致**优化器认为无法通过索引从左到右一个一个字符的比**|无|
+|like以通配符%**开头**索引失效|%是多个字符的通配符，导致**优化器认为无法通过索引从左到右一个一个字符的比**|以%结尾的like语句是不会失效的|
 |OR前后存在未建立独立二级索引的列|如果未建立独立的二级索引而是联合索引，因为**是or，相当于该过滤条件的每一个字段都应该是排序的最高优先级的字段，所以应该使每个字段都是独立的二级索引**|无|
+|类型转换|类型不一致，无法匹配索引|无|
 
 + 名词解释:
   + 最佳左前缀原则:即我们的条件在AND连接各条件的情况下，我们的**过滤字段应该在某次排列组合后，其顺序应该从左到右是对应索引所依赖字段从左到右的顺序，且从左到右不能有一个是空缺的，但是可以是其子集**
@@ -4522,7 +4525,7 @@ MISSING_BYTES_BEYOND_MAX_MEM_SIZE: 0  //丢失的超出最大容量的字节
   + WHERE的效率比HAVING高，过滤条件应尽可能地写在WHERE中
 + 分页查询优化思路
   + 在索引上完成排序分页操作，最后根据主键关联回原表查询所需要的其他列内容
-    + `EXPLAIN SELECT * FROM student t,(SELECT id FROM student ORDER BY id LIMIT 2000000,10)aWHERE t.id = a.id;`
+    + `EXPLAIN SELECT * FROM student t,(SELECT id FROM student ORDER BY id LIMIT 2000000,10)a WHERE t.id = a.id;`
   + 该方案适用于主键自增的表，可以把Limit 查询转换成某个位置的查询
     + `EXPLAIN SELECT * FROM student WHERE id > 2000000 LIMIT 10;`
 
@@ -5384,6 +5387,7 @@ query_cache_size=32M
 + **redo日志的特点**:
   + 顺序写入磁盘
   + 事务执行过程中，redo log不断记录
+  + 记录的是页的物理变化
 + **redo简单划分**:
   + 重做日志的缓冲(redo log buffer):其保存在内存中，通过`innodb_log_buffer_size`参数可以配置，默认16M，最小1M，最大4096M
   + 重做日志文件(redo log file):保存在磁盘中，有持久性
@@ -5443,7 +5447,7 @@ query_cache_size=32M
 #### ②undo日志
 
 + **undo日志的作用**:
-  + rndo log是事务持久性的保证，而undo log是事务原子性的保证。undo log保证了在事务执行过程中，如果出现意外，可以进行对应的回滚操作以避免出现中间状态的问题。但**回滚仅仅是逻辑回滚，数据是可以回滚到事务开始之前的状态的，但是数据的物理位置可能发生了变化**，因为在并发的情况下，可能有多个事务一起执行，将指定事务回滚到事务开始之前的物理状态，可能会导致其它事务执行出现异常。另外是undo日志是通过执行一条语句就记录该语句的相反语句的方式进行记录的，而不是记录该语句执行前的物理状态，因此根据undo日志仅能够在逻辑上回滚到事务开始前的状态
+  + redo log是事务持久性的保证，而undo log是事务原子性的保证。undo log保证了在事务执行过程中，如果出现意外，可以进行对应的回滚操作以避免出现中间状态的问题。但**回滚仅仅是逻辑回滚，数据是可以回滚到事务开始之前的状态的，但是数据的物理位置可能发生了变化**，因为在并发的情况下，可能有多个事务一起执行，将指定事务回滚到事务开始之前的物理状态，可能会导致其它事务执行出现异常。另外是undo日志是通过执行一条语句就记录该语句的相反语句的方式进行记录的，而不是记录该语句执行前的物理状态，因此根据undo日志仅能够在逻辑上回滚到事务开始前的状态
   + 另外,undo log也可以进行MVCC操作，在InnoDB引擎中MVCC的实现是通过undo来完成的，当用户读取一行记录时，若该纪录已被其它事务占用，当前事务可以根据undo日志来得到对应的数据
 + **undo存储结构**:
   + InnoDB针对undo log采取段管理的方式，也就是` 回滚段（rollback segment）`每个回滚段记录了1024个undo log segment，而在每个undo log segment段中进行 undo页的申请
@@ -6189,27 +6193,26 @@ UPDATE student SET ... -- 排他锁
   + **ReadView主要是针对的读已提交和可重复读的隔离级别**。读未提交都可以读取到未提交的记录了，就不需要快照和ReadView了，而可串行化使用了锁，因此也不需要MVCC
   + ReadView主要包含四个重要的字段
     + `creator_trx_id`:创建这个ReadView的事务ID
-    + `trx_ids`:表示在生成ReadView时当前系统中活跃的读写事务的事务id列表 
+    + `trx_ids`:表示在生成ReadView时当前系统中活跃的读写事务的事务id列表
     + `up_limit_id`:活跃的事务中**最小**的事务ID
     + `low_limit_id`:，表示生成ReadView时系统中应该分配给下一个事务的id值。low_limit_id是系统**最大**的事务id值，这里要注意是系统中的事务id，需要区别于正在活跃的事务ID。由于是下一个事务，所以是最大事务id+1。
       + **low_limit_id并不是trx_ids中的最大值**，事务id是递增分配的。比如，现在有id为1，2，3这三个事务，之后id为3的事务提交了。那么一个新的读事务在生成ReadView时，trx_ids就包括1和2，up_limit_id的值就是1，low_limit_id的值就是4。
     + 例:
-
       ![MVCC图例4](../文件/图片/mySql/MVCC图例4.png)
-
-    + **ReadView规则**
-      + 如果被访问版本的trx_id值与ReadView中的creator_trx_id相同，那么说明是同一个事务在读取值，所以该版本可以被访问
-      + 如果被访问版本的trx_id属性值小于ReadView中的up_limit_id值，那么说明此事务已经提交了，当然可以被访问
-      + 如果被访问版本的trx_id属性值大于或等于ReadView中的low_limit_id 值，说明此事务在当前ReadView生成之后才开始，因此该版本无法被当前事务所访问
-      + 如果被访问版本的trx_id属性值在ReadView的up_limit_id和low_limit_id 之间，那就需要判断一下trx_id属性值是不是在trx_ids列表中
-        + 如果在，说明创建ReadView时生成该版本的事务还是活跃的，该版本不可以被访问
-        + 如果不在，说明创建ReadView时生成该版本的事务已经被提交，该版本可以被访问
+    + 事务会在查询时生成一份ReadView用以描述当前活跃的事务以及ReadView的创建事务id，然后遍历undo log的记录，拿着遍历到的记录的`trx_id`去一一比较
+    + **ReadView规则(trx_id指的是遍历到的undo log日志记录的创建事务id)**
+      + 如果trx_id值与ReadView中的creator_trx_id相同，那么说明是同一个事务在读取值，所以该版本可以被访问
+      + 如果trx_id值小于ReadView中的up_limit_id值，那么说明这条undo log记录的事务已经提交了，可以访问
+      + 如果trx_id值大于或等于ReadView中的low_limit_id 值，这条undo log记录的事务在当前ReadView生成之后才开始，因此该版本无法被当前事务所访问
+      + 如果trx_id值在ReadView的up_limit_id和low_limit_id 之间，那就需要判断一下trx_id属性值是不是在trx_ids列表中
+        + 如果在，说明创建ReadView时这条undo log记录的事务还是活跃的，该版本不可以被访问
+        + 如果不在，说明创建ReadView时这条undo log记录的事务已经被提交，该版本可以被访问
     + MVCC整体操作流程
       + 首先获取事务自己的版本号，也就是事务ID
-      + 获取ReadView
-      + 查询得到的数据，然后与ReadView中的事务版本号进行比较
-      + 如果不符合ReadView规则，就需要从Undo Log中获取历史快照
+      + 生成ReadView
+      + 遍历undo log的历史快照，与ReadView的规则进行比较
       + 最后返回符合规则的数据
+      ![MVCC流程](../文件/图片/mySql/MVCC流程.png)
     + 在**隔离级别为读已提交（Read Committed）时，一个事务中的每一次SELECT查询都会重新获取一次Read View**
       + 此时同样的查询语句都会重新获取一次Read View，这时如果Read View不同，就**可能产生不可重复读或者幻读的情况**
 
@@ -7658,8 +7661,87 @@ BY、GROUP BY、DISTINCT 这些语句较为耗费CPU，数据库的CPU资源是�
   + 配置文件目录一般在`C:\Program Files\MySQL\MySQL Server 8.0\my.ini`
 
 + Linux系统:
-  + MySQL的数据库文件存放路径:`/var/lib/mysql`
+  + MySQL的数据库和日志文件存放路径:`/var/lib/mysql`
   + 相关命令目录:`/usr/bin和/usr/sbin`
   + 配置文件目录:`/usr/share/mysql-8.0和/etc/mysql(my.cnf配置文件在该目录下，也可能该文件直接就在/etc目录里面)`
 
 ---
+
+## 七、面试题
+
+### （一）性能分析与调优
+
+1. 如何定位慢查询
+  + 使用工具:Skywalking
+  + MySQL自带的mysqldumpslow
+2. 分析SQL慢的原因:
+  + explain判断
+  + 通过key和key_len判断是否使用了索引
+  + 通过type字段判断是否有进一步的优化空间
+  + 通过extra字段判断是否出现回表情况
+3. SQL优化:
+  + 尽量少用select *,减少回表，尽量进行索引覆盖
+  + order by尽量用到索引
+  + having的效率比where低，尽量用where
+  + 底层的索引下推会尽量先通过索引过滤一遍，再回表去查询
+  + 使用union all代替union,因为union会去重，效率低
+  + 避免索引失效的情况
+  + 尽量用inner join避免left、right join，小表驱动大表进行连接
+  + MySQL主从复制保证效率
+  + 在表的数据量大的时候进行分库分表
+
+---
+
+### （二）索引
+
+1. 什么是索引
+  + 索引是可以提高查询效率的使用数据表的字段建立的一种数据结构
+2. 聚簇索引和非聚簇索引
+  + 聚簇索引，也称为聚集索引，是唯一的，该索引把索引结构和数据存在了一起，其B+树的叶子节点可以直接拿到数据而无需回表，MySQL都默认拿主键当该索引
+  + 非聚簇索引，又称二级索引，该索引把索引结构和主键存在了一起，需要回表
+3. 回表:拿着非聚簇索引的叶子节点数据值再去聚簇索引查，最终拿到数据
+4. 覆盖索引:就是不需要回表，通过索引的数据结构就能直接拿到数据
+5. 索引创建原则:[创建原则](#)
+6. 索引失效情况:[失效情况](#index_valid)
+
+---
+
+### （三）事务
+
+1. 啥是事务:
+  + 事务是一组操作的集合
+2. undo log与redo log
+  + redo log用来在事务执行成功但是同步失败后保证同步成功的日志，它会保证事务的持久性，同步失败后，可以通过日志重新执行操作来达到目的，它记录的是**页的物理操作**
+  + redo log通过在事务commit后，先将日志操作缓冲到日志缓冲池中并同步，再同步数据页的操作来保证即使数据页同步失败，也可以通过redo log重做
+  + undo log是**逻辑回滚**，每次事务执行一次修改操作，就会记录与该操作相反的undo log日志，这样事务执行失败后，就可以通过undo log回滚保证事务的原子性
+3. undo log与redo log的区别
+  + undo log记录的是逻辑操作，redo log记录的是物理操作
+  + undo log保证的是事务的持久性和一致性，redo log保证的是事务的持久性
+  + redo log用来在服务器同步数据失败时进行重做，undo log用来在事务执行失败时回滚
+4. MVCC:
+  + MVCC通过表的两个隐藏字段、undo log和readView实现
+  + 多事务并发执行的情况下，undo log会利用链表，结合表的隐藏字段`trx_id`和`roll_pointer`来记录哪个事务修改了哪个字段，然后把它加进链表里
+  + 在其它事务查询时，根据隔离级别，生成ReadView的策略不一样，读已提交每次查询都会生成一份，而可重复读只会在第一次查询时生成一份ReadView
+  + 接下来遍历undo log的记录，通过让遍历到的记录的`trx_id`与`creator_trx_id`、`up_limit_id`、`low_limit_id`、`trx_ids`等比较，来确定查询到的值:
+    + `trx_id==creator_trx_id`和`trx_id<up_limit_id`表示可以读取该字段的值，因为情况分别是同一个事务在读取字段以及创建该记录的事务已经提交，因此可以读取
+    + `trx_id>=low_limit_id`时，表示此记录在readview生成以后才创建，不能读取
+    + `up_limit_id<=trx_id<low_limit_id`时，若`trx_id`在`trx_ids`列表内，那么不能读取，如果不在`trx_ids`列表内，那么可以读取，因为不在列表内表示创建该记录的事务已经提交
+
+---
+
+### （四）主从复制
+
+1. 主从复制原理:
+  + Master将写操作记录到二进制日志（binlog）
+  + Slave将Master的binary log events拷贝到它的中继日志（relay log）
+  + Slave重做中继日志中的事件，将改变应用到自己的数据库中。MySQL复制是异步的且串行化的，而且重启后从接入点开始复制
+
+---
+
+### （五）分库分表
+
+1. 分库分表:
+  + 水平分库:把一个库中的数据拆分到多个库，解决海量数据存储和高并发问题
+  + 水平分表:把一个表中的数据拆分到多个表，解决单表存储性能问题
+  + 垂直分库:根据业务拆分库，高并发下提高磁盘IO和网络连接数
+  + 垂直分表:冷热数据分离，多表互不影响

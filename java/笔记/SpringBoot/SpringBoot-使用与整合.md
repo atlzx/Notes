@@ -565,10 +565,76 @@ public class People {
 
 ---
 
-#### ③请求与响应的实体类交互
+#### ③请求与响应
+
+##### Ⅰ前后端交互
 
 + 前端给后端传数据用DTO
 + 后端给前端传用VO
+
+---
+
+##### Ⅱ数据转换
+
+###### <一>JSON转换
+
++ 一般使用Jackson进行JSON数据转换，jackson是目前SpringBoot自带的转换器，因此Ioc容器中自带ObjectMapper，直接用就行
+  + 转换时严格使用JSON格式，可以避免很多不必要的问题，比如上传redis时，把值转成JSON串再传，那么转回来时也这么转换，出现的问题就会减少
+  + readValue用来解析JSON串
+  + convertValue用来转换对象
+
+---
+
+###### <二>时间格式转换
+
++ SpringBoot内置了Jackson进行时间单位的转换，但是如果我们想将时间对象转换为我们制定的格式时，有两种方式:
+  + 使用@JsonFormat注解并指定pattern属性告诉Jackson如何转换(局部)
+  + 自定义消息转换器转换:
+  ~~~java
+    // 自定义消息转换器就是向消息转换器集合里面添加一个我们自己定义的消息转换器，为了达到该目的，需要让类继承WebMvcConfigurationSupport类或实现
+    public class WebMvcConfiguration extends WebMvcConfigurationSupport {
+        
+        // 需要继承extendMessageConverters方法，向converters里面加一个消息转换器进去
+        @Override
+        protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+            //创建一个消息转换器对象
+            MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+            //需要为消息转换器设置一个对象转换器，对象转换器可以将Java对象序列化为json数据
+            // 这个设置的对象转换器需要我们自己去手动编写，它需要继承ObjectMapper类(即Jackson用于进行JSON转换的类)
+            converter.setObjectMapper(new JacksonObjectMapper());
+            //将自己的消息转化器加入容器中
+            converters.add(0,converter);
+        }
+    }
+    // 自定义日期格式的对象转换器类
+    class JacksonObjectMapper extends ObjectMapper {
+
+        public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+        //public static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+        public static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
+        public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
+
+        public JacksonObjectMapper() {
+            super();
+            //收到未知属性时不报异常
+            this.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+            //反序列化时，属性不存在的兼容处理
+            this.getDeserializationConfig().withoutFeatures(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+            SimpleModule simpleModule = new SimpleModule()
+                    .addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT)))
+                    .addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)))
+                    .addDeserializer(LocalTime.class, new LocalTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_TIME_FORMAT)))
+                    .addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT)))
+                    .addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)))
+                    .addSerializer(LocalTime.class, new LocalTimeSerializer(DateTimeFormatter.ofPattern(DEFAULT_TIME_FORMAT)));
+
+            //注册功能模块 例如，可以添加自定义序列化器和反序列化器
+            this.registerModule(simpleModule);
+        }
+    }
+  ~~~
 
 ---
 
@@ -1377,6 +1443,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 + 如果要实现该机制，需要在yml文件中添加如下配置:
 
 ~~~yml
+  # manual:手动ack
+  # auto:RabbitMQ自动ack，成功则返回ack,失败返回nack
+  # none:关闭ack,消息投递以后立即被删除
   spring.rabbitmq.listener.simple.acknowledge-mode: manual
 ~~~
 + [消费者样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/MyMessageListener.java)
@@ -1696,6 +1765,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return "index";
     }
 ~~~
+
+---
+
+#### ⑥前端解决
+
++ 让前端部署时，利用nginx进行反向代理解决，详情见[React笔记](../../../前端/笔记/React.md)
 
 ---
 
@@ -2893,9 +2968,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 + 除上面的方式外，还可以通过其它方式得到ioc容器对象:
   + 使用[监听器](#listener)
   + 在启动类获得ioc容器:`SpringApplication.run`方法直接就返回ioc容器对象
-  + 
++ 其它见[这里](https://blog.csdn.net/siaok/article/details/134278243)
 
-
+---
 
 
 

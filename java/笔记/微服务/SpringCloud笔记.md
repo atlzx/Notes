@@ -257,7 +257,7 @@
 #### ①导入依赖
 
 ~~~xml
-  <!-- openfeign依赖 -->
+  <!-- openfeign依赖，该依赖自动导入了LoadBalancer负载均衡 -->
   <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-openfeign</artifactId>
@@ -646,7 +646,8 @@ resilience4j:
   + 后两个请求到了，此时最大请求数为2，因此其线程开始等待，如果等待时间超过了timeout-duration配置，就会触发服务降级
   + 如果等待时间没有超过timeout-duration配置，就执行
 + 在调用模块内新增方法，调用FeignAPI的方法，并使用@RateLimiter注解修饰方法，使用方式同@Bulkhead和@CircuitBreaker
-+ 测试
++ [测试](../../源码/SpringCloud/SpringCloud-Feign-80/src/main/java/com/example/cloud/controller/OrderResilienceController.java)
++ [被调用微服务controller](../../源码/SpringCloud/SpringCloud-Pay/src/main/java/com/example/cloud/controller/ResilienceController.java)
 
 ---
 

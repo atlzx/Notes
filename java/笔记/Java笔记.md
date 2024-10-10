@@ -1691,7 +1691,7 @@
 
 #### ③Calendar
 
-+ `java.util.③Calendar`类于`JDK1.1`被引入，它是一个抽象类，用于完成日期子段之间相互操作的功能
++ `java.util.Calendar`类于`JDK1.1`被引入，它是一个抽象类，用于完成日期子段之间相互操作的功能
 
 |方法/构造器|参数|描述|返回值|返回值类型|备注|样例|
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -3188,7 +3188,7 @@
 |^|`public Class getSuperClass()`|无参|返回当前`Class`对象的父类的`Class`对象|`Class`对象|`Class`|无|^|
 |^|`public Field[] getFields()`|无参|得到**该类本身和其继承的所有类的被`public`修饰的属性**数组|>|`Field`数组|无|^|
 |^|`public Field[] getDeclaredFields()`|无参|得到该类内声明的属性数组|>|`Field`数组|无|^|
-|^|`public Method getMethod(String  name,Class … paramTypes)`|`name`:方法名<br>`paramTypes`:该方法的各参数类型所对应的`Class`对象|得到指定的方法对象|方法对象|`Method`|无|^|
+|^|`public Method getMethod(String  name,Class … paramTypes)`|`name`:方法名<br>`paramTypes`:该方法的各参数类型所对应的`Class`对象，**如果方法有参数，务必写上**|得到指定的方法对象|方法对象|`Method`|不写后面的参数类型的话，默认会找无参的方法，找不到就报错|^|
 |^|`public Method[] getDeclaredMethods()`|无参|得到该类中所有的方法对象数组|>|`Method`数组|无|^|
 |^|`public Constructor[] getConstructors()`|无参|得到**该类及其继承的父类和祖先中所有的被`public`修饰的构造器**对象数组|>|`Constructor`数组|无|^|
 |^|`public Constructor<T>[] getDeclaredConstructors()`|无参|得到该类中所有的构造器对象数组|>|`Constructor`数组|**无法得到父类及祖先的构造器**|^|
