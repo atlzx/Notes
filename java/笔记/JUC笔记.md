@@ -43,9 +43,9 @@
 ~~~C++
     ObjectMonitor() {
         _header       = NULL;
-        _count        = 0; //记录个数
+        _count        = 0; // 记录持有该锁的线程个数
         _waiters      = 0,
-        _recursions   = 0;
+        _recursions   = 0;  // 记录线程重复持有该锁的次数
         _object       = NULL;
         _owner        = NULL;
         _WaitSet      = NULL; //处于wait状态的线程，会被加入到_WaitSet
@@ -465,8 +465,8 @@
 
 + 除了Map和List的并发容器外，JUC还提供了阻塞队列用于不同的工作场景
   + ArrayBlockingQueue:有界带缓冲队列（队列有容量可以存数据，队列满了以后就没办法再存了，只能把申请存入的线程阻塞住）
-  + SynchronousQueue:无缓冲阻塞队列（队列没有容量，线程会直接阻塞直到另外一个线程来消费该线程的数据。这就意味着生产者和消费者必须匹配才能从阻塞状态中恢复过来）
-  + LinkedBlockingQueue:无界带缓冲阻塞队列（该队列没有容量限制，也会阻塞），它使用锁保证原子性
+  + SynchronousQueue:无缓冲阻塞队列（队列没有容量，哪个线程向该队列添加数据，哪个线程就会被阻塞，直到其它线程来消费该数据。这就意味着生产者和消费者必须匹配才能从阻塞状态中恢复过来）
+  + LinkedBlockingQueue:无界带缓冲阻塞队列（该队列没有容量限制，也会阻塞，主要是用链表实现），它使用锁保证原子性
   + LinkedTransferQueue:无界阻塞队列，它结合了LinkedBlockingQueue和SynchronousQueue的优点，使其既有容量又不使用锁，性能更高
   + PriorityBlockingQueue:支持优先级的有界阻塞队列（就是可以排序），元素的获取顺序按照其优先级决定，如果优先级一样，那么按照队列的特性，先入先出
   + DelayQueue:支持延时和优先级的有界阻塞队列
@@ -505,6 +505,7 @@
     + `CallerRunsPolicy`:直接让提交任务的线程运行这个任务。
     + `DiscardOldestPolicy`:丢弃队列中最先到的，然后调用`execute`方法尝试分配线程执行或入队。
     + `DiscardPolicy`:什么也不做。
+
 |归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 |**ThreadPoolExecutor**|`ThreadPoolExecutor(int corePoolSize,int maximumPoolSize,long keepAliveTime,TimeUnit unit,BlockingQueue<Runnable> workQueue,ThreadFactory threadFactory,RejectedExecutionHandler handler)`|**corePoolSize**:核心线程池大小，在线程数量未达到该大小时，线程池会一直创建线程直到达到该大小，才尝试去复用线程<br>**maximumPoolSize**:最大线程池大小，当核心线程数到达上限且全在执行且等待队列已满时，如果还有请求，此时线程池会继续创建线程直到线程数到达最大线程池大小，这些新创建出来的线程是非核心线程，运行完毕后一段时间如果没有再复用，会自动销毁<br>**keepAliveTime**:非核心线程空闲存在的最大时间<br>**unit**:指定时间单位<br>**workQueue**:指定阻塞队列<br>**threadFactory**:指定线程创建工厂对象，通过该对象可以干涉线程池中线程的创建过程，进行自定义操作<br>**handler**:当线程池和等待队列都没办法继续处理请求时，此时会使用该对象进行拒绝策略的处理|构造器|线程池对象|ThreadPoolExecutor|无|该类一共有四个构造器，这里挑了参数最多的一个|[样例](../源码/JUC/BasicJUC/src/test/java/ThreadPoolTest.java)|
@@ -694,7 +695,7 @@
 
 + AQS(AbstractQueueSynchronizer)队列同步器负责实现各种类型的同步，它基于等待队列的设计可以实现复杂的同步控制逻辑
   + 它可以实现锁的获取、释放和其它操作，同时使用等待队列的设计来使多个线程来等待获取锁
-+ 它的底层是使用双向链表来实现的:
++ 它的底层是使用**双向链表**来实现的:
   + 这个链表中的节点类型可能是不同的，即共享锁节点可能与排它锁节点在一起
     + 共享锁可以被多个线程获取（结合AQS源码推出结论），在`acquire`方法执行时，如果线程得到了共享锁，它还会唤醒链表后面的等待线程，让它们继续尝试获取锁，并把自己置为链表的头节点
       + 此时后面的线程如果还要获取共享锁，那么它获得后也会把自己置为头节点，然后唤醒它后面的线程，实现多个线程共享一把锁
@@ -822,7 +823,8 @@
         int c = getState();  // 得到当前锁的state
         // 如果是0，那么就说明该锁还未被任何线程占用
         if (c == 0) {
-            // 查看是否没有其它线程在尝试获取该锁调用底层CAS算法执行操作
+            // 若此时等待队列为空或等待队列中的节点状态都不支持获取锁,那么尝试执行CAS执行操作
+            // 如果CAS执行成功，那么进入代码块
             if (!hasQueuedThreads() && compareAndSetState(0, 1)) {
                 setExclusiveOwnerThread(current);  // 把当前线程设置为拥有该锁的线程
                 return true;  // 返回true
@@ -849,7 +851,7 @@
     
     // 此方法于Reentrant类中实现，在AQS类中被定义
     protected final boolean tryAcquire(int acquires) {
-        // 如果state值为0（表示无线程在占用）且当前线程是等待队列的头节点或等待队列为空且CAS操作成功
+        // 如果state值为0（表示无线程在占用）且当此时等待队列为空或等待队列中的节点状态都不支持获取锁且CAS操作成功
         // 那么就将当前线程设置为锁的占用线程，并返回true
         if (getState() == 0 && !hasQueuedPredecessors() &&
             compareAndSetState(0, acquires)) {
@@ -891,7 +893,7 @@
                 if (pred.status < 0) {
                     cleanQueue();           // predecessor cancelled  取消掉队列中那些已经处于CANCELLED的节点
                     continue;
-                } 
+                }
                 // 这里的意思是if判断的时候，线程的first是false，但是执行到这里的时候，因为是多线程运行的，可能前面的线程把锁释放了导致等待队列更新了，本线程就变成了第一个等待的节点了
                 else if (pred.prev == null) {
                     Thread.onSpinWait();    // ensure serialization  这个静态方法是空体，但是其被一个@IntrinsicCandidate注解作用，根据官方的注释，HotSpot虚拟机会通过该注解得知当前线程正在自旋，它需要做些什么东西来优化自旋等待。另外，@IntrinsicCandidate注解仅能被Hot Spot虚拟机识别

@@ -92,7 +92,6 @@
 |^|spring.cloud.openfeign.compression.response.enabled|开启响应压缩|布尔值|无|
 |^|logging.level.<refrence>|设置日志级别（这个是SpringBoot的日志输出的日志级别，不是OpenFeign的日志级别）|只能设置为`debug`|无|
 
-
 + 改进版配置项汇总
 
 |分组|配置项|参数|作用|值|备注|
@@ -191,7 +190,7 @@
 |^|@ConditionalOnMissingClass|若类路径下不存在该类，那么触发指定行为|^|^|
 |^|@ConditionalOnBean|若IOC容器内存在指定的bean,那么触发指定行为|^|^|
 |^|@ConditionalOnMissingBean|如果容器中不存在这个Bean（组件）,那么触发指定行为|^|^|
-|**属性绑定**|@ConfigurationProperties|声明组件的属性和配置文件内key的前缀项以进行项绑定|类|该注解生效必须**使作用类被@Component及相关注解作用或被配置类的@EnableConfigurationProperties指定**，且**对应的实体类需要有getter和setter方法**<br>该注解生效的时机貌似是bean创建时检查|
+|**属性绑定**|@ConfigurationProperties|声明组件的属性和配置文件内key的前缀以使得配置文件中对应的值向对应属性进行注入|类|该注解生效必须**使作用类被@Component及相关注解作用或被配置类的@EnableConfigurationProperties指定**，且**对应的实体类需要有getter和setter方法**<br>该注解生效的时机貌似是bean创建时检查|
 |^|@EnableConfigurationProperties|指定某些类是属性绑定类|类|应作用于配置类|
 |^|@PropertySource|读取外部指定路径的properties文件内容|类|无|
 |**Jackson**|@JacksonXmlRootElement|声明对应类可被转换为xml格式|类|无|

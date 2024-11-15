@@ -22,7 +22,7 @@ public class MyGlobalFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         long beginTime = System.currentTimeMillis();
-        // chain.filter方法的调用即表示放行，后面的then方法是服务执行完之后过滤器相应的处理。在方形之前执行的方法是请求未放行所执行的方法
+        // chain.filter方法的调用即表示放行，后面的then方法是服务执行完之后过滤器相应的处理。在放行之前执行的方法是请求未放行所执行的方法
         return chain.filter(exchange).then(
             Mono.fromRunnable(
                 ()->{

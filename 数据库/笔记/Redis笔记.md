@@ -276,7 +276,7 @@
 
 |命令|参数|作用|备注|
 |:---:|:---:|:---:|:---:|
-|`pfadd key value1 [value2 ...]`|valuen:元素值|将指定元素添加到HyperLogLog中进行统计|无|
+|`pfadd key value1 [value2 ...]`|value:元素值|将指定元素添加到HyperLogLog中进行统计|无|
 |`pfcount key1 [key2...]`|无参|将多个HyperLogLog取并集并统计去重元素的个数|无|
 |`pfmerge destkey key1 [key2...]`|destkey:接收结果的HyperLogLog|将多个HyperLogLog合并为一个|无|
 
@@ -766,7 +766,7 @@
 ~~~
 
 + 修改conf文件名，因为默认占用的是26379端口，因此可以叫`sentinel26379.conf`
-+ 再搞俩文件出来，分别命名为`sentinel26380`和`sentinel26381.conf`
++ 再搞俩文件出来，分别命名为`sentinel26380.conf`和`sentinel26381.conf`
 + 接下来是主从复制的配置，[详情见上](#masterSlave)。这里需要给master也配置一下masterauth，方便之后测试，否则可能会报错
 + 接下来启动master和slave，之后执行`redis-sentinel 配置文件路径`来启动redis哨兵（哨兵一般都是单独运行在一个服务器上的，一个服务器运行一个，但是由于服务器成本限制，可以把哨兵跟master放在一起。
 + 启动完成以后，打开sentinel相关的配置文件，发现redis自己向配置文件写了一些东西。打开日志，发现日志也多了一些东西
@@ -859,7 +859,7 @@
 #### ①槽
 
 + Redis集群并没有使用一致性hash,而是引入了哈希槽
-  + Redis集群有16384个哈希槽，每个key通过CRC16校验后对16384取模来决定放置在哪个槽中，集群的 每个节点负责一部分槽
+  + Redis集群有16384个哈希槽，每个key通过CRC16校验后对16384取模来决定放置在哪个槽中，集群的每个节点负责一部分槽
 
   ![Redis集群示例2](../文件/图片/Redis/Redis集群示例2.png)
 
@@ -2040,9 +2040,3 @@ struct dict {
   + 缓存雪崩与缓存击穿的区别在于缓存雪崩是大量请求访问不同数据
 + **缓存预热**
   + 根据业务分析或统计数据，确定热点数据（经常被访问的数据），并将其提前加载到缓存中的策略。这样，在实际请求到达程序时，热点数据已经存在于缓存中，从而减少了缓存穿透和缓存击穿的情况，也缓解了SQL服务器的压力。
-
-if redis.call('exists',KEYS[1])==0 or redis.call('hexists',KEYS[1],KEYS[2])==1 then redis.call('hincrby',KEYS[1],KEYS[2]) redis.call('expire',KEYS[1],ARGV[1]) return 1 else return 0 end
-
-if redis.call('hexists',KEYS[1],KEYS[2])==0 then return nil elseif redis.call('hincrby',KEYS[1],KEYS[2],-1)==0 then redis.call('del',KEYS[1]) return 1 else return 0 end
-
-if redis.call('hexists',KEYS[1],KEYS[2])==1 then redis.call('expire',KEYS[1],ARGV[1]) return 1 else return 0 end

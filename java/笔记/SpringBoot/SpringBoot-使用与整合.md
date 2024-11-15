@@ -1501,7 +1501,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 + 延迟队列就是消息发送到消息队列上以后，消费者并不立即消费消息队列中的消息，而是等待一段时间后再消费，就相当于在延迟队列上消费消息一样
 + 实现延迟队列有两种思路
   + 将消息发送到正常的消息队列中去，消息带有超时时间，超时后进入死信队列。消费者不监听该正常的消息队列，而是监听死信队列，从而达到延迟消费的目的
-  + 使用[RabbitMQ Delayed Message Plugin插件](https://github.com/rabbitmq/rabbitmq-delayed-message-exchange)
+  + 使用[RabbitMQ 延迟队列插件](https://github.com/rabbitmq/rabbitmq-delayed-message-exchange)
 + 此处不演示第一种思路，仅演示第二种思路的实现方式:
   + 首先将插件下载到Linux服务器上:`wget https://github.com/rabbitmq/rabbitmq-delayed-message-exchange/releases/download/v3.13.0/rabbitmq_delayed_message_exchange-3.13.0.ez`
   + 接下来将该文件移动到对应的卷目录下，可以通过`docker volume ls <容器名>`查看卷名+`docker volume inspect <卷名>`的方式来查找卷的具体位置
@@ -1533,6 +1533,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ##### Ⅰ惰性队列
 
++ 在队列中使用`x-queue-mode`配置项配置为`lazy`来开启惰性队列
 + 惰性队列会尽可能地将消息存入到磁盘中，当消费者消费到对应的消息中时，再通过IO去磁盘中加载对应消息
   + 这样做可以有效地应对大量消息的情况并减少内存占用
     + 可能出现的导致大量消息的原因:
@@ -1554,12 +1555,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-### （七）xxl-job
+### （七）定时任务
+
+#### ①xxl-job
 
 + xxl-job是一个国产的分布式任务调度平台，一般拿它做定时任务用
 + [官网](https://www.xuxueli.com/xxl-job/)
 
-#### ①依赖
+##### Ⅰ依赖
 
 + 引入依赖:
 
@@ -1573,14 +1576,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-#### ②使用
+##### Ⅱ使用
 
 + 首先先查看一下[开源项目](https://gitee.com/xuxueli0323/xxl-job)的结构
 ![xxl-job开源结构图例](../../文件/图片/SpringBoot图片/xxl-job开源结构图例.png)
 
 
 
-##### Ⅰ任务调度中心
+###### <一>任务调度中心
 
 + **非特殊情况下，不要试图去整合该任务调度中心模块到自己的项目中**，因为里面的很多代码用的都是老依赖
 + 把源码下载下来，把依赖下好
@@ -1615,7 +1618,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-##### Ⅱ任务执行
+###### <二>任务执行
 
 + 首先写[配置文件](../../源码/SpringBoot/SpringBoot-Xxl-Job/src/main/resources/application.properties)
 + [配置类](../../源码/SpringBoot/SpringBoot-Xxl-Job/src/main/java/com/example/boot/config/XxlJobConfig.java)
@@ -1623,9 +1626,43 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
+#### ②Spring Task
 
 
 
+
+
+---
+
+### （八）Drools
+
+---
+
+### （九）Spring Cache
+
++ 导入依赖:
+
+~~~xml
+  <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-cache</artifactId>
+  </dependency>
+~~~
+
++ Spring Cache是Spring官方提供的缓存框架，它可以利用Redis等缓存工具配合注解实现缓存功能
++ 使用很简单，直接在配置类上加上@EnableCaching注解，然后开始使缓存相关注解就行了
++ 其注解有:
+
+|注解|作用|注解主要作用范围|备注|参数|参数作用|参数值|参数备注|通用备注|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|@EnableCaching|开启注解缓存的功能，使后面的注解能够生效|配置类|无|>|>|>|无|`cacheNames`、`key`、`unless`、`condition`是缓存相关注解的通用注解|
+|@Cacheable|使作用的方法在查询时，先查询缓存，缓存查不到再执行业务代码。如果缓存查不到时，会将业务代码的返回值存入缓存|方法|无|value|指定缓存键的前缀|字符串|无|^|
+|^|^|^|^|`cacheNames`|^|^|^|^|
+|^|^|^|^|`key`|指定缓存键的后缀|字符串|支持SpEL表达式|^|
+|^|^|^|^|`unless`|指定该注解不生效的条件|条件表达式|无|^|
+|^|^|^|^|`condition`|指定该注解生效的条件|条件表达式|无|^|
+|@CacheEvict|使作用的方法在执行后将指定的缓存删除|方法、类|无|`allEntries`|指定是否将以`cacheNames`为前缀的键全部删除|布尔值，true为确定全部删除|无|^|
+|@CachePut|将作用方法的返回值存入缓存|类、方法|无|>|>|>|无|^|
 
 ---
 

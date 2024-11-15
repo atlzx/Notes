@@ -35,7 +35,7 @@ spring:
             - Path=/pay/gateway/get/filter/info
           filters:
             # 过滤器的书写规则是，不同的值使用逗号隔开
-            - AddRequestHeader=X-Request-id1,value1  # 设置想想在请求头中新增的键值对，如果有多个那么就写多个AddRequestHeader
+            - AddRequestHeader=X-Request-id1,value1  # 设置想在请求头中新增的键值对，如果有多个那么就写多个AddRequestHeader
             - AddRequestHeader=X-Request-id2,value2  # 一下加俩
             - RemoveRequestHeader=sec-fetch-site # 删除请求头sec-fetch-site，如果想删除多个就写多个RemoveRequestHeader
             - SetRequestHeader=sec-fetch-mode, abcdefg # 修改请求头中的指定键对应的值，默认得到的值是null

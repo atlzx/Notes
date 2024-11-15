@@ -913,12 +913,12 @@ spring:
   + 全局过滤
 + 配置详情见[配置文件示例](../../源码/SpringCloud/SpringCloud-Gateway-9527/src/main/resources/application.yml)
 + 自定义Filter基本上与自定义Predicate一致，都是照葫芦画瓢
-  + 自定义全局Filter
+  + **自定义全局Filter**
     + 添加@Component注解
     + 实现GlobalFilter和Ordered接口
     + 实现它们的方法，其中`getOrder`方法返回值越小，自定义过滤器加载优先级就越高。而`filter`方法是进行过滤的主方法，通过传入的exchange参数可以得到请求对象和响应对象，GatewayFilterChain则是过滤器链，相当于Servlet的过滤器的过滤器链
     + 全局过滤器可以用于统计各接口的执行时长，[样例](../../源码/SpringCloud/SpringCloud-Gateway-9527/src/main/java/com/example/cloud/components/MyGlobalFilter.java)
-  + 自定义条件Filter
+  + **自定义条件Filter**
     + 添加添加@Component注解
     + 类的后缀必须为GatewayFilterFactory
     + 继承AbstractGatewayFilterFactory类，泛型指定自定义Config类
@@ -1095,6 +1095,7 @@ spring:
 + 单机阈值:与阈值类型组合使用。如果阈值类型选择的是QPS，表示当调用接口的QPS达到阈值时，进行限流操作。如果阈值类型选择的是并发线程数，则表示当调用接口的并发线程数达到阈值时，进行限流操作。
 + 是否集群:选中则表示集群环境，不选中则表示非集群环境
 <br>
+
 + Sentinel的流量控制有三种流控模式和三种流控效果，我们可以自由进行组合
   + **流控模式**
     + 直接:单位时间内访问该接口的请求次数到达一定阈值时，进行限流
