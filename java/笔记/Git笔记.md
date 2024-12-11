@@ -33,24 +33,29 @@
 
 |分类|命令|作用|备注|
 |:---:|:---:|:---:|:---:|
-|**配置Git**|`git config --global user.name "xxx"`|设置git用户名|无|
+|**配置**|`git config --global user.name "xxx"`|设置git用户名|无|
 |^|`git config --global user.email "xxx"`|设置git邮箱|无|
 |^|`git config --global http.sslVerify "false"`|设置解除SSL认证|无|
 |^|`git config --global --edit`|查看并修改git配置|无|
 |^|`git config --global core.editor {"vim"\|"nano"\|"code --wait"\|"subl -n -w"}`|修改git的编辑器模式为vim/nano/VSCode/sublime模式|无|
 |^|`git config {user.name\|user.email}`|查看git用户名和邮箱|无|
-|**管理项目**|`git init`|初始化项目，使所在目录被`git`管理|无|
+|**通用操作**|`git init`|初始化项目，使所在目录被`git`管理|无|
 |^|`git status`|查看项目内的文件状态|无|
-|^|`git add 文件路径`|将指定文件由未跟踪或已修改状态转入暂存状态|无|
-|^|`git add .`|将本目录下全部的文件都转入暂存状态|无|
-|^|`git commit -m "更新信息"`|提交文件到`git`仓库，此时文件由暂存状态转为未修改状态|无|
-|^|`git commit -a -m 文件路径`|将指定文件暂存+提交|无|
+|**拉取**|`git clone 链接`|从远程仓库下载代码|无|
+|^|`git pull [--rebase] 远程仓库地址名 分支名 [--allow-unrelated-histories]`|把远程库中的更新合并到本地仓库内，相当于`fetch+merge`|`--rebase`:以变基的方式进行合并，慎用<br>`--allow-unrelated-histories`:无视版本合并，它主要是在git报相关的错时使用|
+|**跟踪**|`git add .`|将本目录下全部的文件都转入暂存状态|无|
 |^|`git restore 文件路径`|恢复文件，即撤销操作|无|
 |^|`git restore --staged 文件路径`|取消文件的暂存状态|无|
 |^|`git rm 文件路径`|安全删除文件|无法删除有修改但未提交的文件|
 |^|`git rm 文件路径 -f`|强制删除文件|无|
 |^|`git rm -r --cached 文件路径`|让git取消对某文件的监听|**该命令用于在.gitignore不生效时删除git缓存以解决该问题**|
 |^|`git mv 文件原路径 文件新路径`|移动/重命名文件|无|
+|**提交与推送**|`git add 文件路径`|将指定文件由未跟踪或已修改状态转入暂存状态|无|
+|^|`git commit -m "更新信息"`|提交文件到`git`仓库，此时文件由暂存状态转为未修改状态|无|
+|^|`git commit -a -m 文件路径`|将指定文件暂存+提交|无|
+|^|`git push -u 远程仓库地址名 分支名[:远程仓库分支名]`|将本地的指定分支上传到指定的远程仓库[的指定分支]内|如**果本地与远程仓库的版本不匹配，无法上传**|
+|**日志与回滚**|`git log`|输出提交日志|无|
+|^|`git log --oneline`|打印精简版日志|无|
 |**分支操作**|`git branch 分支名`|创建一个新的分支|无|
 |^|`git branch`|查看当前的分支|无|
 |^|`git branch -D 分支名`|删除指定分支|无|
@@ -58,8 +63,6 @@
 |^|`git switch 分支名`|跳转到指定分支|无|
 |^|`git switch -c 分支名`|创建并切换到该分支|无|
 |^|`git switch [-c 分支名] 日志提交id`|使`HEAD`头指针移动到该id所在版本(并创建分支)|这样会导致`分离头指针`的情况，此时应避免修改，如果要修改，应该先创建分支再修改|
-|^|`git log`|输出提交日志|无|
-|^|`git log --oneline`|打印精简版日志|无|
 |^|`git merge 目标分支名`|使当前分支与目标分支合并，该合并以当前分支为起始点|无|
 |^|`git merge --abort`|使当前分支回退到合并前的状态|通常在合并出问题回滚时使用|
 |^|`git merge --quit`|放弃分支合并|无|
@@ -72,14 +75,11 @@
 |^|`git stash clear`|清空栈中的元素|无|
 |^|`git stash pop`|将栈顶元素作用在当前分支上，并从栈中移除，相当于`git stash apply`+`git stash drop`|无|
 |**远程仓库**|`git remote add <name> <url>`|name:给远程仓库起的别名<br>url:远程仓库地址<br>添加远程仓库地址|**一般此命令用于将fork仓库的原始上游仓库与本地库相关联(命名一般为upstream)，以便从原始仓库拉取最新的更新**|
-|^|`git push -u 远程仓库地址名 分支名[:远程仓库分支名]`|将本地的指定分支上传到指定的远程仓库[的指定分支]内|如**果本地与远程仓库的版本不匹配，无法上传**|
 |^|`git remote`|查看当前的远程仓库地址列表|无|
 |^|`git remote remove 远程仓库地址名`|删除指定的远程仓库地址|无|
 |^|`git remote -v`|查看当前仓库相关联的远程仓库信息|一般远程仓库都有fetch和push的权限，因此有两行|
 |^|`git fetch 远程仓库地址名/远程分支名`|从远程仓库下载代码到当前分支，但**不合并**|无|
 |^|`git merge 远程仓库地址名/远程分支名`|将当前分支与远程仓库的指定分支相合并|无|
-|^|`git pull [--rebase] 远程仓库地址名 分支名 [--allow-unrelated-histories]`|把远程库中的更新合并到本地仓库内，相当于`fetch+merge`|`--rebase`:以变基的方式进行合并，慎用<br>`--allow-unrelated-histories`:无视版本合并，它主要是在git报相关的错时使用|
-|^|`git clone 链接`|从远程仓库下载代码|无|
 |**标签**|`git tag 版本`|为当前`HEAD`指针指向的版本指定一个标签|无|
 |^|`git tag 版本 日志提交id`|为指定提交id的版本指定一个标签|无|
 |^|`git tag -m 标签说明 版本 作用分支`|为指定分支的当前版本指定一个标签，并提供标签说明|无|

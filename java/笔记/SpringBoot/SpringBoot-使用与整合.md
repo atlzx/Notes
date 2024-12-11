@@ -593,7 +593,7 @@ public class People {
   ~~~java
     // 自定义消息转换器就是向消息转换器集合里面添加一个我们自己定义的消息转换器，为了达到该目的，需要让类继承WebMvcConfigurationSupport类或实现
     public class WebMvcConfiguration extends WebMvcConfigurationSupport {
-        
+
         // 需要继承extendMessageConverters方法，向converters里面加一个消息转换器进去
         @Override
         protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -2749,7 +2749,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-### （十）Thyemeleaf
+### （十）Thymeleaf
 
 #### ①快速体验
 
@@ -3033,7 +3033,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
   + 执行`source /etc/profile`来进行配置文件的重新加载，然后运行`java -version`来查看是否配置好了
   + 接下来使用`java -jar xxx.jar`来使项目启动，但是**该种部署方式会导致终端被java进程占用，无法进行后续操作，因此不推荐**。如果使用该方式，那么`Ctrl+C`回到终端时，服务也会同步停止运行
   + 如果想使用其他方式启动，可以使用:
-    + `nohup java -jar xxxx.jar >/dev/null 2>&1 &`来使其在后台进行运行。如果想停止，先使用`ps -ef | grep java`获取Java项目的pid,接下来`kill -9 pid`来杀死进程
+    + `nohup java -jar xxxx.jar > /dev/null 2>&1 &`来使其在后台进行运行。如果想停止，先使用`ps -ef | grep java`获取Java项目的pid,接下来`kill -9 pid`来杀死进程
     + [参考](https://blog.csdn.net/Jason_We/article/details/113663318)
   + 如果在本地测试无误，但是部署上去之后请求报错`net::ERR_CONNECTION_REFUSED`，考虑是不是阿里云的安全组未开放端口
 

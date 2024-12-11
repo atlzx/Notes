@@ -52,6 +52,7 @@
 |**Mybatis**|mybatis.configuration.map-underscore-to-camel-case|开启Mybatis驼峰命名映射|布尔值，默认为true(不开启)|无|
 |^|mybatis.mapper-locations|指定mapper对应的xml文件路径映射|路径映射，一般为`classpath:mapper/*.xml`|无|
 |^|mybatis.type-aliases-package|指定实体类别名的包类路径|路径，一般为`com.example.xxx.pojo`|无|
+|^|mybatis.configuration.log-impl|指定Mybatis使用指定的日志门面输出SQL执行语句|可选项很多,一般使用`org.apache.ibatis.logging.stdout.StdOutImpl`|指定时需要指定类的全类名|
 |**Mybatis-Plus**|mybatis-plus.mapper-locations|指定mapper接口对应的mapper.xml文件的位置，默认为`classpath:/mapper/**/*.xml`|classpath:xxxx|无|
 |^|mybatis-plus.configuration.map-underscore-to-camel-case|是否开启小驼峰命名映射，默认开启|布尔值|无|
 |^|mybatis-plus.configuration.log-impl|指定对应日志在SQL执行时进行输出，默认没有配置|日志类全路径|无|
@@ -250,3 +251,6 @@
 + [配置类属性绑定样例](../../源码/SpringBoot/SpringBootInitializrDemo/src/main/java/com/springboot/example/springbootinitializrdemo/config/MyConfig.java)
 
 ---
+
+## 三、参数汇总
+

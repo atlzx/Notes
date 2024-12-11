@@ -2045,7 +2045,7 @@
     static final int MIN_TREEIFY_CAPACITY = 64;  // 表示链表转红黑树的指标，当数组长度大于等于该指标时会考虑转换
     transient Node<K,V>[] table;  // HashMap存储元素所依据的数组
     transient Set<Map.Entry<K,V>> entrySet;
-    transient int size;  // 数组当前的元素数量
+    transient int size;  // HashMap当前的键值对数量
     transient int modCount;  // 用来记录操作执行次数的变量
     int threshold;  // 数组考虑扩容的指标之一，数组元素数量达到该指标时会考虑扩容
     // 表示链表结点的内部类Node
