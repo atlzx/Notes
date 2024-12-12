@@ -53,6 +53,7 @@
 > 6. 在`JSX`的标签中，属性可以直接在标签上设置
 >    + 但`class`属性需改为`className`
 >    + `style`属性需要使用对象(`Object`)设置，且`CSS`样式需要使用驼峰命名法(如`background-color`改为`backgroundColor`)
+>    + `dangerouslySetInnerHTML`接收一个必须包含`__html`的key的object对象，该`__html`key对应的value将被当作原生HTML代码直接渲染在页面上，可以据此用于**插入原生HTML代码**
 >    + 事件处理需要使用驼峰命名法
 
 + [JSX样例](../笔记代码/源码/React/JSX样例.html)

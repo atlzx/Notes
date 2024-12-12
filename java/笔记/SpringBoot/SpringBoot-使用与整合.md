@@ -244,7 +244,7 @@
 ##### Ⅰyaml文件
 
 + 我们的application.properties文件不能明显的表示层级关系，因此当其配置变多以后，里面的内容会变得难以阅读和维护
-+ 为了解决这方面的困境，我们可以提供另外一种配置文件:application.yaml配置文件
++ 为了解决这方面的困境，我们可以提供另外一种配置文件:操蛋的application.yaml配置文件
   + YAML 是 "YAML Ain't a Markup Language"（YAML 不是一种标记语言）。在开发的这种语言时，YAML 的意思其实是："Yet Another Markup Language"（是另一种标记语言）
   + 该文件层次分明，方便人类读写
 + 它的基本语法很简单
@@ -2264,6 +2264,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 + 我们可以通过getRequestAttributes静态方法来获得request和response的封装对象，然后通过该封装对象的getRequest方法来获得请求对象。同理也可以获得响应对象
 
 |归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 |RequestContextHolder|`getRequestAttributes()`|无参|>|得到request和response的封装对象|RequestAttributes|无异常|无|[任意位置获取请求样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/java/com/springboot/example/springbootthymeleaf/service/MyService.java)|
 |ServletRequestAttributes（它间接实现了RequestAttributes接口）|`getRequest()`|无参|得到请求对象|HttpServletRequest对象|HttpServletRequest|无|无|^|
 |^|`getResponse()`|无参|得到响应对象|HttpServletResponse对象|HttpServletResponse|无|无|^|
@@ -2456,7 +2457,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 + [点我](https://console.cloud.tencent.com/api/explorer?Product=cvm&Version=2017-03-12&Action=DescribeRegions)查看可用的region列表，该列表的region项可用于配置腾讯云API调用时所需的region
 
-
+---
 
 ### （八）日志配置
 

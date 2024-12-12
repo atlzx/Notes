@@ -41,7 +41,7 @@
 |^|`git config {user.name\|user.email}`|查看git用户名和邮箱|无|
 |**通用操作**|`git init`|初始化项目，使所在目录被`git`管理|无|
 |^|`git status`|查看项目内的文件状态|无|
-|**拉取**|`git clone 链接`|从远程仓库下载代码|无|
+|**拉取**|`git clone [-b 分支名] 链接`|从远程仓库下载代码(默认master分支，可以使用`-b`指定其它分支)|无|
 |^|`git pull [--rebase] 远程仓库地址名 分支名 [--allow-unrelated-histories]`|把远程库中的更新合并到本地仓库内，相当于`fetch+merge`|`--rebase`:以变基的方式进行合并，慎用<br>`--allow-unrelated-histories`:无视版本合并，它主要是在git报相关的错时使用|
 |**跟踪**|`git add .`|将本目录下全部的文件都转入暂存状态|无|
 |^|`git restore 文件路径`|恢复文件，即撤销操作|无|
@@ -76,8 +76,8 @@
 |^|`git stash pop`|将栈顶元素作用在当前分支上，并从栈中移除，相当于`git stash apply`+`git stash drop`|无|
 |**远程仓库**|`git remote add <name> <url>`|name:给远程仓库起的别名<br>url:远程仓库地址<br>添加远程仓库地址|**一般此命令用于将fork仓库的原始上游仓库与本地库相关联(命名一般为upstream)，以便从原始仓库拉取最新的更新**|
 |^|`git remote`|查看当前的远程仓库地址列表|无|
-|^|`git remote remove 远程仓库地址名`|删除指定的远程仓库地址|无|
 |^|`git remote -v`|查看当前仓库相关联的远程仓库信息|一般远程仓库都有fetch和push的权限，因此有两行|
+|^|`git remote remove 远程仓库地址名`|删除指定的远程仓库地址|无|
 |^|`git fetch 远程仓库地址名/远程分支名`|从远程仓库下载代码到当前分支，但**不合并**|无|
 |^|`git merge 远程仓库地址名/远程分支名`|将当前分支与远程仓库的指定分支相合并|无|
 |**标签**|`git tag 版本`|为当前`HEAD`指针指向的版本指定一个标签|无|
