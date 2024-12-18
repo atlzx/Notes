@@ -829,6 +829,33 @@ public class People {
 
 ### （二）Mybatis
 
++ 依赖:
+
+~~~xml
+<!-- 如果是MVC项目，导入这个和下面的mybatis-spring，详情配置见SpringMVC笔记 -->
+<dependency>
+    <groupId>org.mybatis</groupId>
+    <artifactId>mybatis</artifactId>
+    <version>3.5.16</version>
+</dependency>
+
+<dependency>
+    <groupId>org.mybatis</groupId>
+    <artifactId>mybatis-spring</artifactId>
+    <version>3.0.3</version>
+</dependency>
+
+<!-- 如果是SpringBoot项目，导入这个 -->
+<dependency>
+    <groupId>org.mybatis.spring.boot</groupId>
+    <artifactId>mybatis-spring-boot-starter</artifactId>
+    <version>3.0.3</version>
+</dependency>
+
+
+
+~~~
+
 + SpringBoot把Spring跟SpringMVC都整合好了，我们需要做的就是配置Mybatis以及一些数据库相关配置
 
 ![SSM整合](../../文件/图片/SpringBoot图片/SSM整合1.png)
@@ -872,6 +899,15 @@ public class People {
 ---
 
 ### （三）WebSocket
+
++ 依赖:
+
+~~~xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-websocket</artifactId>
+</dependency>
+~~~
 
 #### ①简要概述
 
@@ -1058,7 +1094,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-#### ④常用注解
+#### ④Wrapper
+
++ 条件构造器Wrapper是Mybatis-Plus提供的用于快速构造查询条件的类，它主要有四种常规使用类:
+  + QueryWrapper:专门用于构造查询条件
+  + UpdateWrapper:用于构造更新条件
+  + LambdaQueryWrapper:基于Lambda表达式的查询条件构造器，**可以避免硬编码字段名**
+  + LambdaUpdateWrapper:基于Lambda表达式的更新条件构造器，**可以避免硬编码字段名**
++ 例:
+
+~~~java
+  QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+  queryWrapper.eq("name", "老王");
+
+  UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+  updateWrapper.ge("age", 18);
+  // 使用Lambda型的Wrapper时，如果直接把它扔进IService的方法中而不把它提供给对应的类型，那么必须指定泛型，如果不指定会导致编译器推断不出来而报错
+  new LambdaQueryWrapper<User>().eq(User::getName, "老王").ge(User::getAge, 18);
+  new LambdaUpdateWrapper<User>().eq(User::getName, "老王").ge(User::getAge, 18);
+~~~
+
+---
+
+#### ⑤常用注解
 
 + [参考](https://baomidou.com/reference/annotation/)
 
@@ -1077,7 +1135,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-#### ⑤常用配置
+#### ⑥常用配置
 
 + [参考](https://baomidou.com/reference/)
 
@@ -1090,7 +1148,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-#### ⑥插件
+#### ⑦插件
 
 + Mybatis_plus支持一些好用的插件，可以通过配置类来进行导入:
 
@@ -1110,7 +1168,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-#### ⑦多数据源
+#### ⑧多数据源
 
 + [官网介绍](https://baomidou.com/guides/dynamic-datasource/)
 + [github官方](https://github.com/baomidou/dynamic-datasource)
@@ -1628,13 +1686,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 #### ②Spring Task
 
-
-
-
++ Spring Task继承于Spring-Context核心依赖内，不需要导入任何依赖
+  + 使用时，需要在配置类上加上@EnableScheduling以开启定时任务的支持，然后直接在方法上加上@Scheduled注解，编写cron属性即可
 
 ---
 
 ### （八）Drools
+
++ [参见](https://www.cnblogs.com/ityml/p/15993391.html)
 
 ---
 
@@ -2954,7 +3013,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         @Override
         public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-            SpringUtil.ioc = applicationContext;
+            ioc = applicationContext;
         }
 
         public ApplicationContext getApplicationContext(){
