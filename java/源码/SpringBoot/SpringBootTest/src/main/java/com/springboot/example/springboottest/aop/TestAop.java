@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TestAop {
 
-    @Around("@target(org.springframework.transaction.annotation.Transactional)")
+//    @Around("@target(org.springframework.transaction.annotation.Transactional)")
     public Object sayHello(ProceedingJoinPoint joinPoint) throws Throwable {
 //        log.info("{}","Hello");
         return null;

@@ -34,11 +34,14 @@
         <option value="$PROJECT_DIR$/SpringBoot-RabbitMQ-Consumer/pom.xml" />
         <option value="$PROJECT_DIR$/SpringBoot-RabbitMQ-Producer/pom.xml" />
         <option value="$PROJECT_DIR$/SpringBoot-Xxl-Job/pom.xml" />
+        <option value="$PROJECT_DIR$/../../../../../../study/JavaProject/GameScript/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
         <option value="$USER_HOME$/OneDrive/桌面/Hotel/pom.xml" />
+        <option value="$PROJECT_DIR$/../../../../../../study/JavaProject/GameScript/pom.xml" />
+        <option value="$PROJECT_DIR$/GameScript/pom.xml" />
         <option value="$PROJECT_DIR$/Spring-SSM/pom.xml" />
         <option value="$PROJECT_DIR$/SpringBoot-JWT/pom.xml" />
         <option value="$PROJECT_DIR$/SpringJpa/pom.xml" />

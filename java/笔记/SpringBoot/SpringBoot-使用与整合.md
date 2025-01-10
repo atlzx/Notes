@@ -638,6 +638,22 @@ public class People {
 
 ---
 
+#### ④业务处理
+
+~~~java
+
+- controller  // 专注于接收请求与返回响应
+- service  // 专注于进行核心业务逻辑处理
+- mapper  // 专注于与数据库进行交互
+- utils  // 提供一些非业务性质的API
+- api  // 提供一些带有非核心业务性质的API
+- constant  // 专注于提供统一硬编码常量
+- config  // 专注于进行一些特定bean的提供以及配置
+- common  // 拦截器、AOP、全局异常处理等可能会放在这里
+
+~~~
+
+
 ## 三、整合
 
 ### （一）Redis

@@ -9,6 +9,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @SpringBootApplication
 public class SpringBootTestApplication {
     public static void main(String[] args) {
+        System.load("E:\\code\\opencv\\build\\java\\x64\\opencv_java4100.dll");
         SpringApplication.run(SpringBootTestApplication.class, args);
     }
 

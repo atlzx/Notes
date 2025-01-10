@@ -17,6 +17,7 @@
 <a id="check-block"></a>
 
 + 在`package.json`检查是否存在如下代码，没有的话加上:
+  + 主要是添加`main`、`author`、`descriptor`以及`scripts`的`start`项
 
 ~~~json
 {
@@ -287,7 +288,7 @@
 |分类|子分类|报错详情|报错原因|解决方案|备注|
 |:---:|:---:|:---:|:---:|:---:|:---:|
 |**Electron**|>|通用|请注意，electron默认使用的是CommonJS的格式进行代码的编写，而并非Module的模式进行编写，因此会导致其官网给出的`main.js`示例以及打包时的`forge.config.js`代码格式使用的是require的方式而不是import ...from ...的方式，且暴露对象时也是用的是module.exports而不是export default的方式|把这些代码使用Module代码风格替代|无|
-|^|^|出现路径问题导致有些静态资源加载不出来|如果直接使用绝对路径，也就是`/`开头，electron程序会直接去此盘根目录寻找，但是前端项目在打包时，其`/`一般都表示其项目的根目录，导致冲突|对于vite项目，解决该问题的方案是在`vite.config.js`中指定`base`属性，配置项详见[Vue笔记](./Vue.md)|无|
+|^|^|出现路径问题导致有些静态资源加载不出来|如果直接使用绝对路径，也就是`/`开头，electron程序会直接去磁盘根目录寻找，但是前端项目在打包时，其`/`一般都表示其项目的根目录，导致冲突|对于vite项目，解决该问题的方案是在`vite.config.js`中指定`base`属性，配置项详见[Vue笔记](./Vue.md)|无|
 |^|启动时报错|`electron Unable to find Electron app at xxx`|未在`package.json`文件中配置main项，导致electron找不到启动的js文件|补上|无|
 |^|项目打包|`Authors is required`|`package.json`文件中没有配置Author|配置一下|无|
 |**electron-builder**|项目打包|`Description is required`|`package.json`文件中没有配置description|配置一下|无|

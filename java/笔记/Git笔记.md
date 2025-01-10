@@ -162,3 +162,12 @@
 
 ---
 
+## 八、日常使用
+
++ 日常使用git，在工作时，需要先将master分支clone下来，然后根据开发需要合并的指定分支的日志id，使用`git switch -c [新分支名] [日志id]`进行回滚以达到同步状态，随后进行开发，否则可能会出现冲突或者提交更改过多的情况，步骤如下:
+  + `git clone master`
+  + `git switch -c <newSwitch> <id>`
+  + `git add`
+  + `git commit`
+  + `git push`
+  + 提交合并请求
