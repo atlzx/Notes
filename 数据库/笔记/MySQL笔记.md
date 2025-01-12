@@ -1899,7 +1899,7 @@ SELECT @name;
 |函数|参数|描述|返回值|返回值类型|备注|样例|
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 |IF(value,value1,value2)|`value`:判断表达式<br>`value1`:如果表达式为真返回的值<br>`value2`:表达式为假返回的值|如果value的值为TRUE，返回value1，否则返回value2|>|无返回值|无|[样例](../源码/MySQL/流程控制函数.sql)|
-|IFNULL(value1, value2)|`value1`:值不为空时的返回值<br>`value2`:值不为空时的返回值|如果value1不为NULL，返回value1，否则返回value2|>|无返回值|无|^|
+|IFNULL(value1, value2)|`value1`:值不为空时的返回值<br>`value2`:值为空时的返回值|如果value1不为NULL，返回value1，否则返回value2|>|无返回值|无|^|
 |`CASE WHEN 条件1 THEN 结果1 WHEN 条件2 THEN 结果2 .... [ELSE resultn] END`|>|>|>|相当于Java的if...else if...else...|无|>|无返回值|无|^|
 |`CASE expr WHEN 常量值1 THEN 值1 WHEN 常量值1 THEN 值1 .... [ELSE 值n] END`|>|>|>|相当于Java的switch...case...|无|>|无返回值|无|^|
 

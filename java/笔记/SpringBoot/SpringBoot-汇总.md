@@ -130,23 +130,6 @@
 
 ---
 
-### （二）通配符
-
-+ 该通配符适用于与路径相关的通配符，如
-  + 使用@RequestMapping相关注解设置的路径
-  + 配置拦截器拦截的路径
-
-|通配符|作用|备注|例|
-|:---:|:---:|:---:|:---:|
-|?|匹配任意一个字符|无|`/pages/t?st.html` 匹配 `/pages/test.html`|
-|*|匹配一层路径的零个或多个字符|无|`/*/test.html` 匹配 `/pages/test.html`|
-|**|匹配零层或多层路径|**必须写在路径最后**|`/pages/**`匹配`/pages/test/page.html`|
-|{name}|取出对应路径的字段值|无|`/{page}/test.html`匹配`/pages/test.html`，读取到的值为name=pages|
-|{name:[a-z]}|取出对应路径满足后面的正则表达式的值|`/{page:[a-z]}/test.html`匹配`/pages/test.html`，但不匹配`/pages1/test.html`|
-|{*path}|从当前路径开始截取，直到最后|**需要写在路径最后**|`/resources/{*file}`匹配`/resources/images/file.png`，读取到的值为file=/images/file.png|
-
----
-
 ## 二、注解汇总
 
 |分组|注解|作用|主要作用范围|备注|
@@ -216,6 +199,9 @@
 
 |分组|注解|作用|参数|参数作用|参数值|参数备注|注解主要作用范围|备注|
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|**Jackson**|@JsonIgnoreProperties|指定类序列化时忽略的序列化的字段，或者反序列化时忽略JSON串中存在而Java实体类中不存在而导致的报错|ignoreUnknown|是否在反序列化时忽略JSON串中存在而Java实体类中不存在而导致的报错|true/false|无|属性、类|无|
+|^|@JsonProperty|指定序列化和反序列化时，实体类的指定属性对应的JSON串的key名称，这样可以实现属性和JSON串中的key名称不同时也可以映射|value|JSON串中key的实际名称|字符串|无|属性、方法、参数|无|
+|^|@JsonNaming|指定序列化和反序列化时对属性采取的命名策略|value|指定序列化和反序列化时对属性采取的命名策略|`Class<? extends PropertyNamingStrategy>`对象|**由于jackson默认采取的命名策略是小驼峰命名法映射，此映射策略在处理一些属性时可能会导致错误的映射从而导致@RequestBody在映射时明明传了正确的值但是却在对应属性映射了null(如映射`pCategotyId`，2.13.5版本的jackson就会将其映射为`pcategoryId`)，因此可能需要手动指定映射策略**<br>在`PropertyNamingStrategies`接口中可以拿到当前jackson提供的所有命名策略|类|无|
 |**时间格式处理**|@JsonFormat|同时指定前端传过来的时间格式以及后端返回给前端的时间格式|pattern|自定义格式|字符串|无|属性|无|
 |^|^|^|timezone|指定时间的时区|格式:`GMT+<number>`|无|属性|无|
 |^|@DateTimeFormat|将前端传来的字符串格式时间转为Date相关类型时间|pattern|指定前端需传来的时间格式|字符串|**前端传来的格式必须与该格式保持一致，否则会报错**|属性、方法参数|无|
@@ -227,6 +213,7 @@
 |**SpringCloud-LoadBalancer**|@LoadBalanced|使RestTemplate对象支持负载均衡|>|>|无|无|方法、参数、属性|无|
 |**SpringCloud-OpenFeign**|@FeignClient|声明接口为OpenFeign接口API|value|指定该接口API对应的微服务模块在Consul上面的注册名，从而指向该模块|注册名|无|类|无|
 |^|^|^|path|指定请求的共同前缀|字符串|无|^|^|
+|^|^|^|url|直接指定请求URL前缀，需要把`http://`这样的前缀也带上|字符串|无|^|^|
 |^|@EnableFeignClients|开启OpenFeign功能|>|>|无|无|类|无|
 |**SpringCloud-Resilience4j**|@CircuitBreaker|使对应方法被断路器监听，并在出现问题时可以触发服务熔断和服务降级|name|配置断路器要监听的服务模块的调用，即该值对应的服务模块的调用行为会被断路器监听，并在出现问题时执行服务熔断和服务降级|对应服务模块在Consul上面的注册名|无|方法|无|
 |^|^|^|fallback|指定服务降级要调用的fallback方法|fallback方法的名称（字符串）|无|^|^|
@@ -259,3 +246,22 @@
 
 ## 三、参数汇总
 
+---
+
+## 四、通配符
+
+### （一）路径通配符
+
++ 该通配符适用于与路径相关的通配符，如
+  + 使用@RequestMapping相关注解设置的路径
+  + 配置拦截器拦截的路径
+  + Mybatis和Mybatis-plus对于xml文件所在路径的配置
+
+|通配符|作用|备注|例|
+|:---:|:---:|:---:|:---:|
+|?|匹配任意一个字符|无|`/pages/t?st.html` 匹配 `/pages/test.html`|
+|*|匹配一层路径的零个或多个字符|无|`/*/test.html` 匹配 `/pages/test.html`|
+|**|匹配零层或多层路径|**必须写在路径最后**|`/pages/**`匹配`/pages/test/page.html`|
+|{name}|取出对应路径的字段值|无|`/{page}/test.html`匹配`/pages/test.html`，读取到的值为name=pages|
+|{name:[a-z]}|取出对应路径满足后面的正则表达式的值|`/{page:[a-z]}/test.html`匹配`/pages/test.html`，但不匹配`/pages1/test.html`|
+|{*path}|从当前路径开始截取，直到最后|**需要写在路径最后**|`/resources/{*file}`匹配`/resources/images/file.png`，读取到的值为file=/images/file.png|
