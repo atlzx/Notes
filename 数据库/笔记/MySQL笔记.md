@@ -896,7 +896,7 @@ INSERT INTO temp_mul VALUES('男','睡觉,写代码,吃饭'); -- 成功
 |^|`ALTER TABLE 表名 RENAME TO 新名称`|^|无|^|
 |^|`ALTER TABLE 表名 ROW_FORMAT=行格式`|修改行格式|无|无|
 |删除表|`DROP TABLE [IF EXISTS] 数据表1 [, 数据表2, …, 数据表n];`|如果数据库存在指定表的话，删除|无|^|
-|清空表|`TRUNCATE TABLE 表名`|清空表数据，但不删除表结构|**不推荐**|^|
+|清空表|`TRUNCATE TABLE 表名`|清空表数据，但不删除表结构|**可以清空表对于数据的缓存**，但推荐使用`delete`，因为其可以回滚|^|
 
 ---
 
