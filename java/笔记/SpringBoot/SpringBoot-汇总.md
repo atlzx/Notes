@@ -235,8 +235,6 @@
 |^|^|value|参数值|默认为字符串|无|^|^|
 |^|^|type|参数值的类型|默认为`java.lang.String`|无|^|^|
 
-
-
 + [组件注册注解样例](../../源码/SpringBoot/SpringBootInitializrDemo/src/main/java/com/springboot/example/springbootinitializrdemo/config/MyConfig.java)
 + [条件注解样例](../../源码/SpringBoot/SpringBootInitializrDemo/src/main/java/com/springboot/example/springbootinitializrdemo/config/MyConfig.java)
 + [实体类属性绑定样例](../../源码/SpringBoot/SpringBootInitializrDemo/src/main/java/com/springboot/example/springbootinitializrdemo/pojo/Person.java)
@@ -250,18 +248,32 @@
 
 ## 四、通配符
 
-### （一）路径通配符
+### （一）路径匹配策略
 
-+ 该通配符适用于与路径相关的通配符，如
++ Ant风格路径匹配策略(即以`/`相隔的路径)，该通配符适用于与路径相关的通配符，如
   + 使用@RequestMapping相关注解设置的路径
   + 配置拦截器拦截的路径
   + Mybatis和Mybatis-plus对于xml文件所在路径的配置
++ Spring5.3后，支持了新的PathPatternParser的路径匹配策略，想要修改可以通过`spring.mvc.pathmatch.matching-strategy`配置项进行修改
++ 除以`/`相隔外，还有以`.`相隔的全类名路径匹配策略
+  + 使用@MapperScan、@ComponentScan等注解时，可以按照该匹配策略写
 
-|通配符|作用|备注|例|
-|:---:|:---:|:---:|:---:|
-|?|匹配任意一个字符|无|`/pages/t?st.html` 匹配 `/pages/test.html`|
-|*|匹配一层路径的零个或多个字符|无|`/*/test.html` 匹配 `/pages/test.html`|
-|**|匹配零层或多层路径|**必须写在路径最后**|`/pages/**`匹配`/pages/test/page.html`|
-|{name}|取出对应路径的字段值|无|`/{page}/test.html`匹配`/pages/test.html`，读取到的值为name=pages|
-|{name:[a-z]}|取出对应路径满足后面的正则表达式的值|`/{page:[a-z]}/test.html`匹配`/pages/test.html`，但不匹配`/pages1/test.html`|
-|{*path}|从当前路径开始截取，直到最后|**需要写在路径最后**|`/resources/{*file}`匹配`/resources/images/file.png`，读取到的值为file=/images/file.png|
+|分类|通配符|作用|备注|例|
+|:---:|:---:|:---:|:---:|:---:|
+|按`/`相隔|?|匹配任意一个字符|无|`/pages/t?st.html` 匹配 `/pages/test.html`|
+|^|*|匹配一层路径的零个或多个字符|无|`/*/test.html` 匹配 `/pages/test.html`|
+|^|**|匹配零层或多层路径|**必须写在路径最后**|`/pages/**`匹配`/pages/test/page.html`|
+|^|{name}|取出对应路径的字段值|无|`/{page}/test.html`匹配`/pages/test.html`，读取到的值为name=pages|
+|^|{name:[a-z]}|取出对应路径满足后面的正则表达式的值|`/{page:[a-z]}/test.html`匹配`/pages/test.html`，但不匹配`/pages1/test.html`|
+|^|{*path}|从当前路径开始截取，直到最后|**需要写在路径最后**|`/resources/{*file}`匹配`/resources/images/file.png`，读取到的值为file=/images/file.png|
+|^|[]|匹配对应的字符集合|无|无|
+|按`.`相隔|*|匹配一层路径或匹配任意字符|`com.example.*.Test` 匹配 `com.example.aa.Test`<br>`com.example.aa.*st` 匹配 `com.example.aa.Test`|无|
+|^|**|匹配多层路径|无|无|
+
+---
+
+### （二）时间格式
+
+![日期时间格式自定义规范表](../../文件/图片/Java图片/自定义日期格式规范表.png)
+
+---
