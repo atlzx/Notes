@@ -394,16 +394,18 @@ public class People {
 
 ##### Ⅱ事件与探针
 
-+ SpringBoot提供了九大事件，其中包括两个探针:
-  + ApplicationStartingEvent:应用启动但未做任何事情, 除过注册listeners and initializers
-  + ApplicationEnvironmentPreparedEvent: 环境变量已经准备好了，但IOC容器还未创建
-  + ApplicationContextInitializedEvent:IOC容器创建完毕，但还没有任何bean加载
-  + ApplicationPreparedEvent:容器刷新之前，bean定义信息加载
-  + ApplicationStartedEvent:容器刷新完成， runner未调用
-  + AvailabilityChangeEvent:**存活探针**，它表示项目启动到现在，项目依然在运行，但**它不意味着项目能对外界的请求做出响应**
-  + ApplicationReadyEvent:任何runner被调用，该事件就会触发
-  + AvailabilityChangeEvent:ReadinessState.ACCEPTING_TRAFFIC**就绪探针**，可以接请求，它表示runners都执行成功了，项目现在可以接受请求并响应了
-  + ApplicationFailedEvent:启动出错事件
++ 除监听器外，SpringBoot还支持使用事件驱动的方式干涉其启动的生命周期
++ 实现事件驱动需要**实现`ApplicationListener`接口**，并指定其泛型为具体的事件类型
+  + SpringBoot提供了很多事件，这里列出如下事件:
+    + ApplicationStartingEvent:应用启动但未做任何事情, 除过注册listeners and initializers
+    + ApplicationEnvironmentPreparedEvent: 环境变量已经准备好了，但IOC容器还未创建
+    + ApplicationContextInitializedEvent:IOC容器创建完毕，但还没有任何bean加载
+    + ApplicationPreparedEvent:容器刷新之前，bean定义信息加载
+    + ApplicationStartedEvent:容器刷新完成， runner未调用
+    + AvailabilityChangeEvent:**存活探针**，它表示项目启动到现在，项目依然在运行，但**它不意味着项目能对外界的请求做出响应**
+    + ApplicationReadyEvent:任何runner被调用，该事件就会触发
+    + AvailabilityChangeEvent:ReadinessState.ACCEPTING_TRAFFIC**就绪探针**，可以接请求，它表示runners都执行成功了，项目现在可以接受请求并响应了
+    + ApplicationFailedEvent:启动出错事件
 + 另外，SpringBoot还提供了多个事件回调监听器:
   + BootstrapRegistryInitializer:感知引导初始化阶段的事件
   + ApplicationContextInitializer:感知ioc容器初始化的相关事件
@@ -645,13 +647,26 @@ public class People {
 - controller  // 专注于接收请求与返回响应
 - service  // 专注于进行核心业务逻辑处理
 - mapper  // 专注于与数据库进行交互
-- utils  // 提供一些非业务性质的API
-- api  // 提供一些带有非核心业务性质的API
+- utils  // 提供一些非业务性质的API，或者提供一些通用的工具方法，以及一些独立于java传统三层结构controller-service-mapper的其它工具方法的非业务封装
+- api  // 提供一些带有非核心业务性质的API,用来直接与util进行交互，使对应方法带上业务含义也可以把service类中的对应私有方法封装到里面。通常会将独立于java传统三层结构controller-service-mapper的其它工具封装为api,如redis、elasticsearch等。
 - constant  // 专注于提供统一硬编码常量
 - config  // 专注于进行一些特定bean的提供以及配置
 - common  // 拦截器、AOP、全局异常处理等可能会放在这里
 
+// 我对这些依赖注入的优先级划分: controller->service->业务api->第三方工具api->util、mapper
 ~~~
+
+---
+
+#### ⑤项目结构
+
++ 为了处理冗余，可以把通用的部分抽取出来整合为一个common模块，当多个模块的`service`层和`mapper`层的相关方法也出现冗余时，可以直接把service和mapper也扔进common模块，这样就形成了controller单独在其所属模块，而service和mapper由于在common模块可以被共享使用的情况，同时可以减少冗余
++ 为了避免controller-service-mapper三层由于业务过多导致类太多翻来翻去很麻烦的情况，可以按照业务划分包，再在相关业务包里面加controller-service-mapper层，这样可以使相关业务的类聚集的更加紧凑
++ 一般像redis、oss这样独立的东西，可以添加util工具类来简化其操作，再封装api类进行业务方法处理，这样service层就可以通过调用api层来执行相关操作，就不需要在，这样就会形成 controller-service-api-util-底层操作 这样的关系
+
+---
+
+
 
 
 ## 三、整合
@@ -1425,7 +1440,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-#### ①依赖导入
+#### ①依赖导入与配置
 
 + 依赖:
   + 该依赖可以直接通过IDEA的Spring initializr直接导入
@@ -1441,6 +1456,59 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         <scope>test</scope>
     </dependency>
 ~~~
+
++ docker启动rabbitMQ命令:
+
+~~~shell
+  # 拉取镜像
+  docker pull rabbitmq:3.13-management
+  # -d 参数：后台运行 Docker 容器
+  # --name 参数：设置容器名称
+  # -p 参数：映射端口号，格式是“宿主机端口号:容器内端口号”。5672供客户端程序访问，15672供后台管理界面访问
+  # -v 参数：卷映射目录
+  # -e 参数：设置容器内的环境变量，这里我们设置了登录RabbitMQ管理后台的默认用户和密码
+  docker run -d \
+  --name rabbitmq \
+  -p 5672:5672 \
+  -p 15672:15672 \
+  -v rabbitmq-plugin:/plugins \
+  -e RABBITMQ_DEFAULT_USER=guest \
+  -e RABBITMQ_DEFAULT_PASS=123456 \
+  rabbitmq:3.13-management
+~~~
+
++ 给出如下参考配置
+  + properties配置
+
+~~~properties
+  spring.rabbitmq.host=8.130.44.112
+  spring.rabbitmq.port=6789
+  spring.rabbitmq.username=guest
+  spring.rabbitmq.password=123456
+  spring.rabbitmq.virtual-host=/
+  spring.rabbitmq.publisher-confirm-type=CORRELATED
+  spring.rabbitmq.publisher-returns=true
+  spring.rabbitmq.listener.simple.acknowledge-mode=manual
+  spring.rabbitmq.listener.simple.prefetch=1
+~~~
+  + yml配置
+~~~yml
+  spring:
+    rabbitmq:
+      host: 8.130.44.112  # 指定IP
+      port: 6789  # 指定端口
+      username: guest  # 指定用户名
+      password: 123456  # 指定密码
+      virtual-host: /  # 指定Virtual-Host
+      publisher-confirm-type: CORRELATED # 使交换机开启消息的确认模式
+      publisher-returns: true # 启用消息发送结果确认
+      listener:   # 这是消费者的相关配置
+        simple:
+          acknowledge-mode: manual # 把消息确认模式改为手动确认，默认无论消息处理是否成功ack都是true
+          prefetch: 1  # 设置消费者一次最多可以拿多少个消息进行消费
+~~~
+
++ [config配置参考](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/main/java/com/example/boot/config/RabbitMQConfig.java)
 
 ---
 
@@ -1944,8 +2012,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 + 首先先创建一个拦截器类，该类需要**实现HandlerInterceptor接口**，并实现接口的三个方法
 + 让配置类**实现WebMvcConfigurer接口，实现addInterceptors(InterceptorRegistry registry)方法**
   + 调用registry.addInterceptor()方法，传入我们刚才创建的拦截器对象，该配置会使所有方法都被拦截器拦截
-  + 在上面的基础上，我们可以再调用addPathPatterns方法（可以链式调用），并向方法传入多个字符串匹配路径来精确的设置哪些方法需要被拦截
-  + excludePathPatterns（可以链式调用）方法可以指定哪些方法被排除在拦截范围内，也是向方法内传入指定字符串即可
+  + 在上面的基础上，我们可以再调用`addPathPatterns`方法（可以链式调用），并向方法传入多个字符串匹配路径来精确的设置哪些方法需要被拦截
+  + `excludePathPatterns`（可以链式调用）方法可以指定哪些方法被排除在拦截范围内，也是向方法内传入指定字符串即可
+  + `order`方法用来指定拦截器执行优先级，**默认为0，值越小越先执行**
 
 |方法|参数|作用|返回值|返回值类型|异常|备注|
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -2367,7 +2436,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @PostMapping(value = "xxx")
     // 使用实体类接收，实体类的属性为 public List<MultipartFile> files 。该属性需要与前端传来的多文件数组保持一致
     // 如果使用List<MultipartFile>直接来接收，会报错
-    public String fileUpload( FileEntity files) throws Exception{
+    public String fileUpload(FileEntity files) throws Exception{
         List<MultipartFile> multipartFiles = files.getFiles();
         for(MultipartFile file:multipartFiles){
             System.out.println(file);

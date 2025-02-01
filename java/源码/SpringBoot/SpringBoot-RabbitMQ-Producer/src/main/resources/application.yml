@@ -2,7 +2,7 @@ server:
   port: 8001
 spring:
   rabbitmq:
-    host: xxx  # 指定IP
+    host: 8.130.44.112  # 指定IP
     port: 5672  # 指定端口
     username: guest  # 指定用户名
     password: 123456  # 指定密码
