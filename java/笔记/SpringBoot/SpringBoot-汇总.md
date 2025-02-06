@@ -246,23 +246,50 @@
 
 ---
 
-## 四、通配符
+## 四、路径汇总
 
-### （一）路径匹配策略
++ 项目的路径配置很乱，因此在此处汇总所有路径相关的知识点
 
-+ Ant风格路径匹配策略(即以`/`相隔的路径)，该通配符适用于与路径相关的通配符，如
-  + 使用@RequestMapping相关注解设置的路径
-  + 配置拦截器拦截的路径
-  + Mybatis和Mybatis-plus对于xml文件所在路径的配置
-+ Spring5.3后，支持了新的PathPatternParser的路径匹配策略，想要修改可以通过`spring.mvc.pathmatch.matching-strategy`配置项进行修改
-+ 除以`/`相隔外，还有以`.`相隔的全类名路径匹配策略
-  + 使用@MapperScan、@ComponentScan等注解时，可以按照该匹配策略写
+### （一）类路径classpath
+
++ 类路径，即classPath下的路径，不同的类加载器的classpath都不相同
+  + 与**项目最相关的是ApplicationClassLoader，它负责加载依赖jar包和我们自己编写的项目类**
+
+|ClassLoader|作用|获取方式|classpath路径|备注|
+|:---:|:---:|:---:|:---:|:---:|
+|BootStrapClassLoader|加载Java原生自带的类|由于是C++编写的，因此无法获取，即使获取也是拿到null|`JAVA_HOME/jre/lib/rt.jar`或`sun.boot.class.path`路径|无|
+|ExtensionClassLoader|从`java.ext.dirs`系统属性所指定的目录中加载类库，或从JDK的安装目录的`jre/lib/ext`子目录下加载类库，如果用户创建的`JAR`放在此目录下，也会自动由扩展类加载器加载。|不知道|见作用|无|
+|**ApplicationClassLoader**|加载我们项目直接编写的类，以及直接依赖的jar包|1.任何一个项目类的Class对象调用`getClassLoader`方法都是该类加载器<br>2.`Thread.currentThread().getContextClassLoader()`<br>3.`ClassLoader.getSystemClassLoader()`|SpringBoot项目内，从`resource`或`main`包开始，就是`classpath`的起始位置|
+
++ 在java中，如果**想获取一个项目类或依赖类**，比如想获得全类名为`org.springframework.boot.autoconfigure.SpringBootApplication`的类，那么可以通过如下手段获取:
+  + **在javaApi层面，所有用来得到资源的路径参数都需要以`/`(不是File.separator)。因为按`.`分割的是包，而资源是文件系统的东西，统一按`/`分隔**
+  + 另外，使用原生的JavaApi获取资源不需要区分`classpath`和`classpath*`
+
+~~~java
+    // 无论何种操作系统，分隔符必须为 '/'，因此在生成路径时，不能用File.separator代替
+    URL resource = ClassLoader.getSystemResource("org/springframework/boot/autoconfigure/SpringBootApplication.class");
+~~~
+
+---
+
+#### <二>路径匹配策略
+
++ 路径匹配策略的格式一般为`[前缀] xxx{.|/}yyy{.|/}zzz`，可以看到它由三部分组成:
+  + **路径前缀**:常用的可选项有:`classpath:`、`classpath*:`、`file:`、`http:`
+  + **路径**:遍历到的目录的名称，可以搭配一些匹配策略语法
+  + **分隔符**:分为两种，文件路径分隔符(**无论是什么操作系统，都必须是`/`**)和包分隔符(`.`)
++ `classpath`与`classpath*`前缀
+  + classpath:即当前项目，它只会匹配当前项目的，而不会匹配项目之外的东西（比如依赖）
+  + classpath*:不仅匹配当前项目，还会匹配项目之外的东西
++ 路径语法
+  + 以下是Ant风格路径匹配策略，也是目前主流的匹配语法
+  + Spring5.3时，添加了新的PathPatternParser的路径匹配策略，其效率更高。可以通过`spring.mvc.pathmatch.matching-strategy`配置手动切换路径匹配策略
 
 |分类|通配符|作用|备注|例|
 |:---:|:---:|:---:|:---:|:---:|
 |按`/`相隔|?|匹配任意一个字符|无|`/pages/t?st.html` 匹配 `/pages/test.html`|
 |^|*|匹配一层路径的零个或多个字符|无|`/*/test.html` 匹配 `/pages/test.html`|
-|^|**|匹配零层或多层路径|**必须写在路径最后**|`/pages/**`匹配`/pages/test/page.html`|
+|^|**|匹配零层或多层路径|**如果使用PathPatternParser，它只能写在路径最后，AntPathMatcher则无此限制**|`/pages/**`匹配`/pages/test/page.html`|
 |^|{name}|取出对应路径的字段值|无|`/{page}/test.html`匹配`/pages/test.html`，读取到的值为name=pages|
 |^|{name:[a-z]}|取出对应路径满足后面的正则表达式的值|`/{page:[a-z]}/test.html`匹配`/pages/test.html`，但不匹配`/pages1/test.html`|
 |^|{*path}|从当前路径开始截取，直到最后|**需要写在路径最后**|`/resources/{*file}`匹配`/resources/images/file.png`，读取到的值为file=/images/file.png|
@@ -270,9 +297,26 @@
 |按`.`相隔|*|匹配一层路径或匹配任意字符|`com.example.*.Test` 匹配 `com.example.aa.Test`<br>`com.example.aa.*st` 匹配 `com.example.aa.Test`|无|
 |^|**|匹配多层路径|无|无|
 
++ **前缀使用场景**:
+  + PathMatchingResourcePatternResolver类解析时
+  + 配置静态资源映射时
++ **分隔符应用场景**
+  + 使用`/`分割:
+    + @RequestMapping
+    + 配置拦截器路径
+    + Mybatis和Mybatis-plus对于xml文件所在路径的配置
+    + 使用框架或者原生的JavaApi去具体获取对应资源时
+  + 使用`.`分割
+    + 使用@MapperScan注解指定路径
+    + 使用@ComponentScan注解指定路径
+
+
+
 ---
 
-### （二）时间格式
+## 五、通配符
+
+### （一）时间格式
 
 ![日期时间格式自定义规范表](../../文件/图片/Java图片/自定义日期格式规范表.png)
 

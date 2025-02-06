@@ -1874,8 +1874,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                     //是否发送Cookie
                     .allowCredentials(true)
                     //放行哪些原始域
-                    .allowedOrigins("*")
-                    .allowedMethods(new String[]{"GET", "POST", "PUT", "DELETE"})
+                    .allowedOriginPatterns("*")
+                    .allowedMethods(new String[]{"GET", "POST", "PUT", "DELETE","OPTION"})
                     .allowedHeaders("*")
                     .exposedHeaders("*");
         }
@@ -2216,6 +2216,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 #### ④参数校验
 
 + 参数校验适用于针对使用@PathVariable和@RequestParam注解直接注入的方法参数，它的实现比较简单，即**在controller类上添加@Validated注解，然后给对应参数添加对应的校验注解即可**
++ @Validated可以直接写在类上面，也可以发挥作用，而@Valid注解不支持这样做
 
 ~~~java
     @RestController
@@ -2766,30 +2767,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ### （九）资源与路径映射
 
-#### ①路径匹配
-
-+ 路径匹配就是Controller层在接受请求时针对请求路径的路径匹配
-+ Spring5.3之前，只支持AntPathMatcher的路径匹配策略，在Spring5.3时，添加了新的PathPatternParser的路径匹配策略
-+ 我们也可以在配置文件内进行相对的配置
-
-|Ant风格通配符|作用|备注|样例|
-|:---:|:---:|:---:|:---:|
-|*|匹配一层下所有字符|无|`*.html`表示匹配任意html文件|
-|?|表示匹配一个任意字符|无|`/fol?er/*.html`表示匹配fol(任意字符)er目录下的任意html文件|
-|**|匹配后面的所有层|无|`/folder2/**/*.jsp` 匹配在folder2目录下任意目录深度的.jsp文件|
-|{name}|将对应层的值取出，放入name中|无|`/{type}/{id}.html` 匹配任意文件名为{id}.html，在任意命名的{type}目录下的文件|
-|[]|匹配对应的字符集合|无|无|
-
-+ PathPatternParser兼容 AntPathMatcher语法，并支持更多类型的路径模式，**它的效率较PathPatternParser的效率高**
-+ **PathPatternParser的`**`多段匹配仅能写在路径最后，不能再在中间写**。如果想这样用，需要在配置文件内把匹配准则改为PathPatternParser
-+ 新版的默认路径匹配规则是PathPatternParser匹配原则
-+ 使用`spring.mvc.pathmatch.matching-strategy`来手动修改路径匹配原则
-  + ant_path_matcher表示恢复到AntPathMatcher
-  + path_pattern_parser表示改为新版匹配原则
-
----
-
-#### ②静态资源配置
+#### ①静态资源配置
 
 + SpringBoot默认已经配置了一些静态资源的配置:
   + 当前端请求/webjars/**相关资源时，后端从默认从classpath:META-INF/resources/webjars文件夹内找
@@ -2831,7 +2809,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-#### ③内容协商
+#### ②内容协商
 
 ##### Ⅰ默认协商
 
@@ -3154,10 +3132,87 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
+## 五、Spring相关整合
 
+### （一）AOP
 
+#### <一>依赖导入
 
-## 五、部署
+~~~xml
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-aop</artifactId>
+        <version>3.3.5</version>
+    </dependency>
+~~~
+
+#### <二>切面表达式
+
++ AOP支持以下几种切点表达式类型:
+  + `execution`:用来匹配方法，上面的切入点表达式基本语法就是围绕该类型的语法展开说明的
+  + `within`:匹配指定类的任意方法，因为匹配任意方法了，因此切入点表达式范围缩小到`包名.类名`，**它无法匹配接口**
+  + `this`:匹配指定类的代理对象的任意方法，它也是接收类的，因此切入点表达式范围也是`包名.类名`
+  + `target`:匹配指定类的任意方法(包括接口)，因为匹配任意方法了，因此切入点表达式范围缩小到`包名.类名`，
+  + `args`:匹配带有指定方法参数的任意方法，切入表达式范围为`形参类型列表`
+  + `bean`:通过bean的id或名称匹配bean的任意方法，该切入点表达式仅需考虑名称即可
+  + `@within`:匹配被指定注解作用的类的全部方法，该切入点表达式仅需考虑注解
+  + `@target`:匹配被指定的注解作用的类的全部方法以及被该注解直接作用的方法，该切入点表达式仅需考虑注解
+  + `@annotation`:匹配被指定注解作用的方法
+  + `@args`:匹配被指定注解作用的方法参数所属的方法
++ **可复用的切入点表达式**
+  + 一个一个配置切入点表达式会非常麻烦，因此我们希望切入点表达式像方法一样可以被复用
+  + 使用@PointCut注解，在注解内配置value的值为切入点表达式，可以使切入点表达式被复用。该注解作用在方法上，可以写一个空方法，使该注解作用在其上面
+    + 如果是同类下，直接调用即可:`@Around(value = "pointCut()")`
+    + 如果是不同类下，需要使用全类名:`@Before(value = "com.spring.sample.AOPAnnoSample.pointCut()")`
+  + 使用xml配置时，需要使用`<aop:pointcut id="xxx" expression="..." />`标签，其它标签使用时，仅需要使用pointcut-ref属性指定其标签上的id即可
+
+---
+
+#### <三>注解
+
+|注解|作用|备注|样例|
+|:---:|:---:|:---:|:---:|
+|@EnableAspectJAutoProxy|使Spring自动创建代理支持AOP操作|1.SpringBoot已在自动配置中默认开启<br>2.**该注解发挥作用需要@Configuration注解**，因此，它必须与该注解一起放在配置类上|[样例](../../源码/Spring/AOPSample/src/main/java/com/spring/sample/AOPAnnoSample.java)<br>[测试样例](../../源码/Spring/AOPSample/src/test/java/com/test/AOPTest.java)|
+|@Aspect|声明作用类为切面类|仅声明切面是不够用的，**需要加上@Component注解来使其受IoC容器管理**|^|
+|@Before|声明方法为**前置通知方法**|无|^|
+|@AfterReturning|声明方法为**返回通知方法**|无|^|
+|@AfterThrowing|声明方法为**异常通知方法**|无|^|
+|@After|声明方法为**后置通知方法**|无|^|
+|@Around|声明方法为**环绕通知方法**|无|^|
+|@PointCut|声明方法为切入点表达式复用方法|**仅能作用在方法上**|^|
+|@Order|指定Bean的初始化顺序（优先级）/切面类的执行顺序（优先级）|值越小，加载顺序越靠前|^|
+
+---
+
+### （二）组件扫描
+
+#### <一>PathMatchingResourcePatternResolver
+
++ PathMatchingResourcePatternResolver是Spring提供的专门用于**解析模糊资源路径匹配**的解析工具类，SpringBoot内部也使用它来获取spring.factories和META-INF下的自动配置类
+
+|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|`getResources(String pattern)`|pattern:路径匹配策略，分隔符必须用`/`而不是`File.separator`|获取满足条件的所有资源对象组成的数组|资源数组|Resource[]|IOException|无|无|
+|`getResource(String location)`|location:资源的详细路径，分隔符必须用`/`而不是`File.separator`|获取指定路径下的资源|资源|Resource|无|无|无|
+
+---
+
+#### <二>ClassReader
+
++ Spring的ClassReader类可以通过阅读.class文件的字节码信息来得到类的信息，从而使开发者可以在组件扫描时根据resource提供的文件路径拿到类的基本信息
++ ClassReader提供了许多构造器供我们选择，只需要通过构造器new一下就能使
+  + `public ClassReader(final InputStream inputStream) throws IOException`
+  + `public ClassReader(final String className) throws IOException`
+  + `public ClassReader(final byte[] classFile)`
+  + ...
+
+|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|`getClassName()`|无参|得到类的信息|类的全类名，但是通过`/`分隔|String|无|无|无|
+
+---
+
+## 六、部署
 
 ### （一）部署SpringBoot项目
 

@@ -1414,5 +1414,19 @@ return (
     }
 ~~~
 
+---
 
+### （三）视频播放
 
++ 本处视频播放样例采用苹果公司的HLS(Http Live Streaming)协议实现，该协议需要将文件切分成小文件片段，再根据一个索引文件来请求这些文件片段，每个片段之间可以按需下载，这样可以省流。
++ 需要的依赖如下:
+  + HLS.js
+
+~~~js
+  // 使用CDN
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+  // 项目安装
+  npm install hls.js --save
+~~~
+
++ [代码样例](../笔记代码/源码/React/整合/视频播放.html)
