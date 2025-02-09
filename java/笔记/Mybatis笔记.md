@@ -658,44 +658,59 @@
 
 #### ⑤resultMap
 
-+ resultMap用于自定义结果映射
-
-|属性|作用|可选值|默认值|备注|
-|:---:|:---:|:---:|:---:|:---:|
-|id|指定id，便于其它标签引用|字符串|无|无|
-|type|最终返回的类型，支持全类名和别名|全类名和别名|无|无|
++ resultMap用于自定义结果映射，样例见下
 
 
 ~~~xml
+    <resultMap id="selectCustomerByCustomerIdMap" type="customer">
+        <result column="customer_test" property="customerTest" />
+    </resultMap>
 
     <!--
         resultMap用来实现实体类属性的嵌套映射，即自定义映射
-        其id属性便于后面引用
-        type属性为生成的实体类的类型
+        id属性用于指定resultMap的唯一标识，可以被其它resultMap继承，或者被select标签的resultMap属性使用
+        type属性为生成的实体类的类型，如果没有指定别名需要指定全类名
+        extends（可选）属性表示继承某一resultMap的结构(通过指定该resultMap的id)，这样可以简化resultMap的编写，避免重复编写一些属性
+        autoMapping（可选）属性表示是否由Mybatis自己根据 查询出来的数据库字段值和该resultMap的实体类属性值 自动映射，默认为false
      -->
-    <resultMap id="selectCustomerByCustomerIdMap" type="customer">
+    <resultMap id="selectCustomerByCustomerIdMap" type="customer" extends="selectCustomerByCustomerIdMap">
         <!--
-            id用来映射主键
+            id用来映射可以唯一标识这条记录的数据库字段，它不一定需要是主键，但是指定id标签映射主键一定是可以的。推荐在每个resultMap或其它标签下都指定id标签，因为这可以提高Mybatis的执行效率
                 column属性用来指定数据库查询结果的字段名称
                 property属性用来指定该字段对应的值赋值给实体类的哪一个属性，写属性名
+                javaType属性（可选）用于显式指定该字段对应的java类型，Mybatis一般可以自动推理
+                jdbcType属性（可选）用于显式指定该数据库字段的数据库字段类型，如 VARCHAR、Integer等，
          -->
         <id column="customer_id" property="customerId"/>
-        <!--  result用来映射普通属性  -->
+        <!--  result用来映射普通属性，其标签属性同id标签  -->
         <result column="customer_name" property="customerName" />
 
         <!--
-            collection用来映射集合(List)类型
+            collection用来映射一对多关系的嵌套集合(List)类型
                 property用来指定被赋值的属性的属性名
-                ofType用来指定集合内的元素的类型，即指定其泛型
+                ofType用来指定集合内的元素的类型，即指定其泛型，如果没有指定别名需要写全类名
+                column（可选）属性 往往与select属性一起出现（association标签可以不用） 用来指定嵌套查询时这个集合按照哪个字段进行分组。即在嵌套查询时，column用来指定内层循环时需要比较的外层循环提供的数据库查询字段
+                    举例:我现在需要查询一个顾客列表，顾客类中有一个List类型的订单列表。因为一个顾客可以点多份订单。
+                    在使用JDBC对数据库交互时，需要先把顾客列表查出来，再遍历这个顾客列表，用遍历到的每个顾客的customer_id去订单表里查相关数据并把数据设置到这个顾客的订单列表属性中去
+                    那么此时column就应该指定customer_id，因为这是订单列表确定它要映射到的顾客的依据
+                select（可选）属性 往往与column属性一起出现（association标签可以不用） 用于在嵌套查询时指定使用的查询语句的select标签ID
+                resultMap（可选）属性用于指定引用的resultMap的ID，用于替代在collection里面嵌套 id标签和result标签
+                columnPrefix（可选）属性用于指定列的点缀，该属性一般在 联表查询 或 该集合(collection或association标签)被一个结果集多次复用 导致列名冲突时指定
+                javaType（可选）用于显示指定该字段对应的java类型，Mybatis一般可以自动推理
+                autoMapping（可选）属性表示是否由Mybatis自己根据 查询出来的数据库字段值和该resultMap的实体类属性值 自动映射，默认为false
+                notNullColumn（可选）属性用来指定哪些列不为空，它不像数据校验那样只要指定的字段为空就报错，而是当指定的字段至少有一个不为空时才会创建对象。默认未设置，如果想指定多个列，使用逗号隔开
+                typeHandler（可选）属性用来让该映射使用指定类型处理器而不是默认类型处理器来处理类型
+                fetchType（可选）属性有两个值:lazy、eager。指定后将在映射中忽略全局配置参数lazyLoadingEnabled，使用属性的值
+                resultSet（可选）属性用来指定映射所关联的结果集，该属性一般用于使用存储过程返回多个ResultSet时让对应映射与之关联
+                foreignClolumn（可选）属性用来指定外键字段，指定的外键字段将与父类型的column属性指定的字段名进行匹配
          -->
-        <collection property="list" ofType="order">
+        <collection property="list" ofType="order" column="customer_id" select="">
             <id column="order_id" property="orderId" />
             <result column="order_name" property="orderName" />
         </collection>
         <!--
-            association用来映射其它实体类类型
-                property用来指定被赋值的属性的属性名
-                javaType用来其他实体类型的具体名称，可以是全类名，也可以是别名
+            association用来映射一对一关系的嵌套实体类类型
+                除ofType为collection特有外，其余属性与collection相同
          -->
         <association property="customer" javaType="customer">
             <id column="customer_id" property="customerId" />
@@ -703,6 +718,59 @@
         </association>
     </resultMap>
 
+    
+
+~~~
+
+##### Ⅰ一对多查询案例
+
+~~~xml
+    <!-- 
+        下面是一个一对多的查询案例 
+        一个视频有多条评论，评论有一级的，有二级的
+    -->
+
+    <!-- 视频评论映射 -->
+    <resultMap id="comment_with_children_map" type="videoCommentVo" >
+        <id column="comment_id" property="commentId" />
+        <result column="p_comment_id" property="pCommentId" />
+        <result column="video_id" property="videoId" />
+        <result column="video_user_id" property="videoUserId" />
+        <result column="content" property="content" />
+        <result column="img_path" property="imgPath" />
+        <result column="user_id" property="userId" />
+        <result column="user_nick_name" property="userNickName" />
+        <result column="reply_user_id" property="replyUserId" />
+        <result column="reply_user_nick_name" property="replyUserNickName" />
+        <result column="top_type" property="topType" />
+        <result column="post_time" property="postTime" />
+        <result column="like_count" property="likeCount" />
+        <result column="hate_count" property="hateCount" />
+        <!-- 二级评论children，通过column属性指定每次子查询遍历的外层循环的数据库字段comment_id(一级评论ID)，通过select属性指定查询SQL -->
+        <collection column="comment_id"  property="children"  select="selectChildrenComments"  ofType="videoCommentVo" />
+    </resultMap>
+    
+    <select id="selectChildrenComments" resultMap="comment_with_children_map">
+        select vc.*,aui.nick_name as user_nick_name,aui.avatar as user_avatar,bui.nick_name as reply_user_nick_name
+        from video_comment vc
+        inner join user_info aui on vc.user_id = aui.user_id
+        left join user_info bui on vc.user_id = bui.user_id
+        where p_comment_id = #{a} <!-- 这个 #{} 里面经测试是可以随便写变量名的，因为传进这个SQL的参数只有一个，即外层循环的comment_id，所以怎么写参数都行 -->
+    </select>
+    
+    <!-- mapper要调用的是这个select SQL -->
+    <select id="selectCommentsWithChildren" resultMap="comment_with_children_map">
+        select vc.*,ui.nick_name as user_nick_name,ui.avatar as user_avatar
+        from video_comment vc
+        inner join user_info ui on vc.user_id = ui.user_id
+        <where>
+            p_comment_id=#{query.pCommentID} and video_id = #{query.videoID}
+            <if test="query.topType!=null">
+                and top_type=#{query.topType}  <!-- 这是查询置顶评论的条件 -->
+            </if>
+        </where>
+        <include refid="com.easylive.general.mybatis.mapper.GeneralMapper.base_query_last" />
+    </select>
 ~~~
 
 ---
