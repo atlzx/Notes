@@ -1414,34 +1414,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ### （六）RabbitMQ
 
-#### 方法汇总
-
-|归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|**RabbitTemplate**|`convertAndSend(String exchange,String routingKey,Object message)`|exchange:交换机名<br>routingKey:路由键名<br>message:消息数据|发送消息|无返回值|void|AmqpException|该方法有很多重载方法，参数名一般都不难理解，此处不再列举|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)|
-|^|`setConfirmCallback(RabbitTemplate.ConfirmCallback confirmCallback)`|confirmCallBack:实现了RabbitTemplate.ConfirmCallback接口的对象|设置该属性可以进行消息确认的回调函数的执行|无返回值|void|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/main/java/com/example/boot/config/RabbitMQConfig.java)|
-|^|`setReturnsCallback(RabbitTemplate.ReturnsCallback returnCallback)`|returnCallback:实现了RabbitTemplate.ReturnsCallback接口的对象|设置该属性可以进行消息转发结果确认的回调函数的执行|无返回值|void|无|无|^|
-|**RabbitTemplate.ConfirmCallback**|`confirm(CorrelationData correlationData, boolean ack, String cause)`|correlationData:消息数据<br>ack:消息是否成功到达交换机<br>cause:消息未到达交换机的原因，如果消息到达了那么为null|无论消息是否到达交换机，RabbitMQ在确认后，该回调函数都会执行|无返回值|void|无|无|^|
-|**RabbitTemplate.ReturnsCallback**|`returnedMessage(ReturnedMessage returned)`|returned:消息对象|若消息未被成功转发到队列，此回调函数会被执行|无返回值|void|无|无|^|
-|**ReturnedMessage**|`getMessage()`|无参|得到Message消息对象|Message对象|Message|无|无|^|
-|^|`getReplyCode()`|无参|得到应答码|数值|int|无|应答码与Http状态码类似，表示出现问题的分类|^|
-|^|`getReplyText()`|无参|得到问题描述文本|字符串|String|无|无|^|
-|^|`getExchange()`|无参|得到转发消息的交换机名称|字符串|String|无|无|^|
-|^|`getRoutingKey()`|无参|得到消息的路由键|字符串|String|无|无|^|
-|**Message**|`getBody()`|无参|得到消息主体|byte类型数组|byte[]|无|无|无|
-|^|`getMessageProperties()`|无参|>|>|得到MessageProperties对象|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/MyMessageListener.java)|
-|**MessageProperties**|`getExpiration()`|无参|得到该消息在消息队列保留时间|字符串类型的数值|String|无|无|无|
-|^|`setExpiration(String time)`|time:在消息队列的保留时间，单位:毫秒|设置该消息在消息队列的保留时间|无返回值|void|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)|
-`getDeliveryTag()`|无参|得到deliveredTag值，即消息的唯一标识|数值|long|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/MyMessageListener.java)|
-|^|`getRedelivered()`|无参|得到消息是否经过重新入队列操作，即该消息第一次消费时未成功消费而且又重新进到队列里面了，第二次拿到时，该值就为true|为true说明经历过|boolean|无|无|^|
-|**Channel**|basicAck(long deliveryTag,boolean requeue)|deliveryTag:消息的标签(id)<br>requeue:是否要将消息重新加入队列|向RabbitMQ服务端返回ack信息|无返回值|void|无|无|^|
-|^|basicNack(long deliveryTag,boolean multiple,boolean requeue)|deliveryTag:消息的标签(id)<br>multiple:是否进行批量操作<br>requeue:是否要将消息重新加入队列|向RabbitMQ服务端返回nack信息|无返回值|void|无|无|^|
-|^|basicReject(long deliveryTag,boolean requeue)|deliveryTag:消息的标签(id)<br>requeue:是否要将消息重新加入队列|向RabbitMQ服务端返回nack信息|无返回值|void|无|与basicNack的唯一区别就是无法进行批量操作|^|
-
----
-
-#### ①依赖导入与配置
-
 + 依赖:
   + 该依赖可以直接通过IDEA的Spring initializr直接导入
 
@@ -1509,6 +1481,30 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 ~~~
 
 + [config配置参考](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/main/java/com/example/boot/config/RabbitMQConfig.java)
+
+#### ①方法汇总
+
+|归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|**RabbitTemplate**|`convertAndSend(String exchange,String routingKey,Object message)`|exchange:交换机名<br>routingKey:路由键名<br>message:消息数据|发送消息|无返回值|void|AmqpException|该方法有很多重载方法，参数名一般都不难理解，此处不再列举|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)|
+|^|`setConfirmCallback(RabbitTemplate.ConfirmCallback confirmCallback)`|confirmCallBack:实现了RabbitTemplate.ConfirmCallback接口的对象|设置该属性可以进行消息确认的回调函数的执行|无返回值|void|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/main/java/com/example/boot/config/RabbitMQConfig.java)|
+|^|`setReturnsCallback(RabbitTemplate.ReturnsCallback returnCallback)`|returnCallback:实现了RabbitTemplate.ReturnsCallback接口的对象|设置该属性可以进行消息转发结果确认的回调函数的执行|无返回值|void|无|无|^|
+|**RabbitTemplate.ConfirmCallback**|`confirm(CorrelationData correlationData, boolean ack, String cause)`|correlationData:消息数据<br>ack:消息是否成功到达交换机<br>cause:消息未到达交换机的原因，如果消息到达了那么为null|无论消息是否到达交换机，RabbitMQ在确认后，该回调函数都会执行|无返回值|void|无|无|^|
+|**RabbitTemplate.ReturnsCallback**|`returnedMessage(ReturnedMessage returned)`|returned:消息对象|若消息未被成功转发到队列，此回调函数会被执行|无返回值|void|无|无|^|
+|**ReturnedMessage**|`getMessage()`|无参|得到Message消息对象|Message对象|Message|无|无|^|
+|^|`getReplyCode()`|无参|得到应答码|数值|int|无|应答码与Http状态码类似，表示出现问题的分类|^|
+|^|`getReplyText()`|无参|得到问题描述文本|字符串|String|无|无|^|
+|^|`getExchange()`|无参|得到转发消息的交换机名称|字符串|String|无|无|^|
+|^|`getRoutingKey()`|无参|得到消息的路由键|字符串|String|无|无|^|
+|**Message**|`getBody()`|无参|得到消息主体|byte类型数组|byte[]|无|无|无|
+|^|`getMessageProperties()`|无参|>|>|得到MessageProperties对象|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/MyMessageListener.java)|
+|**MessageProperties**|`getExpiration()`|无参|得到该消息在消息队列保留时间|字符串类型的数值|String|无|无|无|
+|^|`setExpiration(String time)`|time:在消息队列的保留时间，单位:毫秒|设置该消息在消息队列的保留时间|无返回值|void|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)|
+`getDeliveryTag()`|无参|得到deliveredTag值，即消息的唯一标识|数值|long|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/MyMessageListener.java)|
+|^|`getRedelivered()`|无参|得到消息是否经过重新入队列操作，即该消息第一次消费时未成功消费而且又重新进到队列里面了，第二次拿到时，该值就为true|为true说明经历过|boolean|无|无|^|
+|**Channel**|basicAck(long deliveryTag,boolean requeue)|deliveryTag:消息的标签(id)<br>requeue:是否要将消息重新加入队列|向RabbitMQ服务端返回ack信息|无返回值|void|无|无|^|
+|^|basicNack(long deliveryTag,boolean multiple,boolean requeue)|deliveryTag:消息的标签(id)<br>multiple:是否进行批量操作<br>requeue:是否要将消息重新加入队列|向RabbitMQ服务端返回nack信息|无返回值|void|无|无|^|
+|^|basicReject(long deliveryTag,boolean requeue)|deliveryTag:消息的标签(id)<br>requeue:是否要将消息重新加入队列|向RabbitMQ服务端返回nack信息|无返回值|void|无|与basicNack的唯一区别就是无法进行批量操作|^|
 
 ---
 
@@ -2421,6 +2417,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 #### ①文件保存本地
 
 + 后端在接收文件时，如果是单文件，可以这样接收:
+  + **不能使用@RequestBody注解接收，因为它无法处理文件类型的值**
+  + 
 
 ~~~java
     @PostMapping(value = "xxx")
@@ -3156,7 +3154,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
   + `args`:匹配带有指定方法参数的任意方法，切入表达式范围为`形参类型列表`
   + `bean`:通过bean的id或名称匹配bean的任意方法，该切入点表达式仅需考虑名称即可
   + `@within`:匹配被指定注解作用的类的全部方法，该切入点表达式仅需考虑注解
-  + `@target`:匹配被指定的注解作用的类的全部方法以及被该注解直接作用的方法，该切入点表达式仅需考虑注解
+  + `@target`:匹配被指定的注解作用的类的全部方法以及被该注解直接作用的方法，该切入点表达式仅需考虑注解，**不知道为什么写了就报错**
   + `@annotation`:匹配被指定注解作用的方法
   + `@args`:匹配被指定注解作用的方法参数所属的方法
 + **可复用的切入点表达式**
@@ -3261,7 +3259,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 ---
 
 
-## 六、新特性
+## 七、新特性
 
 ### （一）Problemdetails
 

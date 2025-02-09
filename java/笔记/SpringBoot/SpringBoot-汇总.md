@@ -162,7 +162,7 @@
 |^|@CrossOrigin|解决跨域问题|类与方法|无|
 |^|@RequestParam|接收get参数和请求体参数|方法属性|无|
 |^|@PathVariable|接收路径参数|^|无|
-|^|@RequestBody|接收请求体参数，并将其中的属性映射为方法中接收前端请求参数的属性对应的引用数据类型对象|^|**它无法接收同名的param参数**|
+|^|@RequestBody|接收请求体参数，并将其中的属性映射为方法中接收前端请求参数的属性对应的引用数据类型对象|^|1.**它无法接收同名的param参数**<br>2.它无法实现对MultipartFile的注入|
 |^|@Cookie|得到Cookie携带的指定值|^|无|
 |^|@SessionAttribute|得到session内的指定值|^|无|
 |^|@RequestHeader|读取请求头内的指定字段的值|^|无|
