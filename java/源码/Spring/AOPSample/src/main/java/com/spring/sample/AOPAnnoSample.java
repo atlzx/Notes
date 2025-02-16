@@ -23,6 +23,7 @@ public class AOPAnnoSample {
 
     // 注解中应包含规定格式的作用对象，下面的意思是该前置通知作用于任意修饰符和返回值类型的位于com.spring.sample.ProxyInterfaceImpl全类名下的含任意形参列表的方法
     // .. 用来表示形参任意，*在不同的位置下有不同的作用
+    // @Before、@Around和@After可以指定切面的方法的参数名，并在切面方法上直接接收到（类似下面的@AfterRetrning）
     @Before(value="execution(* com.spring.sample.ProxyInterfaceImpl.*(..))")
     public void beforeMethod(JoinPoint joinPoint){
         System.out.println("前置通知执行");

@@ -175,6 +175,7 @@
 |^|@ConditionalOnBean|若IOC容器内存在指定的bean,那么触发指定行为|^|^|
 |^|@ConditionalOnMissingBean|如果容器中不存在这个Bean（组件）,那么触发指定行为|^|^|
 |**属性绑定**|@ConfigurationProperties|声明组件的属性和配置文件内key的前缀以使得配置文件中对应的值向对应属性进行注入|类|该注解生效必须**使作用类被@Component及相关注解作用或被配置类的@EnableConfigurationProperties指定**，且**对应的实体类需要有getter和setter方法**<br>该注解生效的时机貌似是bean创建时检查|
+|^|@NestedConfigurationProperty|如果该属性被此注解作用，那么SpringBoot会让其所属类的前缀继承该属性所在类的前缀|属性|例:我想写一个配置`test1.test2.test3`让它注入到Test1类的Test2类型的属性test2的属性test3，那么就需要在Test1类上加上注解@ConfigurationProperties，并在属性test2上加上@NestedConfigurationProperty|
 |^|@EnableConfigurationProperties|指定某些类是属性绑定类|类|应作用于配置类|
 |^|@PropertySource|读取外部指定路径的properties文件内容|类|无|
 |**Jackson**|@JacksonXmlRootElement|声明对应类可被转换为xml格式|类|无|

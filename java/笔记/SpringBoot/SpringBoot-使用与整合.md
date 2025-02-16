@@ -385,7 +385,7 @@ public class People {
 
 + 这里以实现全生命周期监听器为例来示范:
 + 在应用运行的各个生命周期下，我们可以自定义监听器来对事件的生命周期进行监听，并针对其事件做出不同的响应
-  + 我们需要自定义一个类**实现SpringApplicationRunListener接口**
+  + 我们需要自定义一个类**实现SpringApplicationRunListener接口**，如果SpringBoot版本为2.x，那么需要提供的构造器接收两个参数:`SpringApplication`类型的application对象以及`String[]`类型的args参数
   + 在META-INF/spring.factories文件内配置`org.springframework.boot.SpringApplicationRunListener=自定义Listener全类名`
   + 除了我们自定义的监听器，SpringBoot还配置了默认的Listener，因为在org.springframework.boot包下的META-INF目录中的spring.factories文件内就配置了对应的监听器:`sorg.springframework.boot.SpringApplicationRunListener=org.springframework.boot.context.event.EventPublishingRunListener`
 + [监听器示例](../../源码/SpringBoot/EventAndListener/src/main/java/com/springboot/example/eventandlistener/listener/MyListener.java)
@@ -665,6 +665,12 @@ public class People {
 + 一般像redis、oss这样独立的东西，可以添加util工具类来简化其操作，再封装api类进行业务方法处理，这样service层就可以通过调用api层来执行相关操作，就不需要在，这样就会形成 controller-service-api-util-底层操作 这样的关系
 
 ---
+
+#### 小细节
+
++ 查询count时使用ifnull函数避免一个都查不到返回null
++ 枚举类提供专门的根据属性获得该对象的方法
++ 添加和更新一般可以写在一个接口里面
 
 
 
@@ -3146,11 +3152,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 #### <二>切面表达式
 
++ 语法:
+  + 切入点表达式用来描述该通知的作用范围，其具体语法格式如下:`修饰符 返回类型 包名.类名.方法名(形参类型列表)`
+    + **修饰符**即`public`、`private`修饰符等，该项可以忽略，忽略时匹配任意修饰符，另外使用`*`也表示匹配任意修饰符
+    + **返回类型**即表示方法的具体返回类型，使用`*`匹配任意返回类型，**如果想要明确指定一个返回值类型，那么必须同时写明权限修饰符**
+    + **包名、类名**等即一个类的全类名，也可以使用`*`号**匹配包的任意一层**，而`..`表示**匹配包名任意、包的层次深度任意**。同时，`*`也可以表示匹配类名或方法名的一部分，例如`*Service`表示匹配所有名称以Service结尾的类或接口
+    + **形参列表**可以使用`..`表示参数列表任意，而`int,..`表示参数列表以一个int类型的参数开头。因此`..`的使用语法与可变参数基本是一致的
+    + **引用数据类型（注解、类、接口等）需要使用全类名表示**
+    + **切入点表达式支持逻辑运算**，`&&`、`||`和`!`三种逻辑运算也可以被加到切入点表达式中
 + AOP支持以下几种切点表达式类型:
-  + `execution`:用来匹配方法，上面的切入点表达式基本语法就是围绕该类型的语法展开说明的
-  + `within`:匹配指定类的任意方法，因为匹配任意方法了，因此切入点表达式范围缩小到`包名.类名`，**它无法匹配接口**
+  + `execution`:用来匹配方法（包括接口方法和类方法），上面的切入点表达式基本语法就是围绕该类型的语法展开说明的
+  + `within`:匹配指定类的任意方法，因为匹配任意方法了，因此切入点表达式范围缩小到`包名.类名`，**它支持模糊匹配多个类，但是无法匹配接口**
   + `this`:匹配指定类的代理对象的任意方法，它也是接收类的，因此切入点表达式范围也是`包名.类名`
-  + `target`:匹配指定类的任意方法(包括接口)，因为匹配任意方法了，因此切入点表达式范围缩小到`包名.类名`，
+  + `target`:匹配指定类的任意方法(包括接口)，因为匹配任意方法了，因此切入点表达式范围缩小到`包名.类名`，它仅支持匹配单个类，无法模糊匹配
   + `args`:匹配带有指定方法参数的任意方法，切入表达式范围为`形参类型列表`
   + `bean`:通过bean的id或名称匹配bean的任意方法，该切入点表达式仅需考虑名称即可
   + `@within`:匹配被指定注解作用的类的全部方法，该切入点表达式仅需考虑注解
@@ -3209,6 +3223,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 |`getClassName()`|无参|得到类的信息|类的全类名，但是通过`/`分隔|String|无|无|无|
 
 ---
+
+#### <三>ImportSelector
+
++ ImportSelector接口支持通过编程的方式告知SpringBoot哪些类需要被ioc容器加载（通过不使用@Bean、@Component注解的方式）
++ 我们只需要实现ImportSelector接口，然后实现其方法，方法的返回值是一个String类型的数组，它需要我们返回**想加入ioc容器的类的全类名**
++ 写完这个类后，可以通过@Import注解导入该类，即可实现类加入ioc容器
+
+---
+
+#### <四>
+
+
+
 
 ## 六、部署
 
