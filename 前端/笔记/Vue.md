@@ -267,7 +267,7 @@
         lintOnSave:false,
         // 与服务器相关的配置
         server:{
-            port:1234  // 指定服务占用的端口
+            port:1234,  // 指定服务占用的端口
             // 反向代理设置项
             proxy:{
                 // 左边的key表示要拦截的请求前缀，如 http://localhost:8080/api/get/info ，他会无视掉http://localhost:8080，将请求URL /api/get/info的前缀与左边的key进行匹配，如果匹配到了那么执行里面的设定进行反向代理

@@ -693,6 +693,8 @@
                     举例:我现在需要查询一个顾客列表，顾客类中有一个List类型的订单列表。因为一个顾客可以点多份订单。
                     在使用JDBC对数据库交互时，需要先把顾客列表查出来，再遍历这个顾客列表，用遍历到的每个顾客的customer_id去订单表里查相关数据并把数据设置到这个顾客的订单列表属性中去
                     那么此时column就应该指定customer_id，因为这是订单列表确定它要映射到的顾客的依据
+                    如果想传入多个参数，就需要以 {key1=value1,key2=value2} 的形式编写
+                    key为嵌套查询中使用的参数名，value为父查询结果集中的列名
                 select（可选）属性 往往与column属性一起出现（association标签可以不用） 用于在嵌套查询时指定使用的查询语句的select标签ID
                 resultMap（可选）属性用于指定引用的resultMap的ID，用于替代在collection里面嵌套 id标签和result标签
                 columnPrefix（可选）属性用于指定列的点缀，该属性一般在 联表查询 或 该集合(collection或association标签)被一个结果集多次复用 导致列名冲突时指定
@@ -727,49 +729,45 @@
 ~~~xml
     <!-- 
         下面是一个一对多的查询案例 
-        一个视频有多条评论，评论有一级的，有二级的
+        一个合集有多个视频，现在我需要拿到所有合集下的指定数量的视频并按照合集分组
     -->
 
-    <!-- 视频评论映射 -->
-    <resultMap id="comment_with_children_map" type="videoCommentVo" >
-        <id column="comment_id" property="commentId" />
-        <result column="p_comment_id" property="pCommentId" />
-        <result column="video_id" property="videoId" />
-        <result column="video_user_id" property="videoUserId" />
-        <result column="content" property="content" />
-        <result column="img_path" property="imgPath" />
-        <result column="user_id" property="userId" />
-        <result column="user_nick_name" property="userNickName" />
-        <result column="reply_user_id" property="replyUserId" />
-        <result column="reply_user_nick_name" property="replyUserNickName" />
-        <result column="top_type" property="topType" />
-        <result column="post_time" property="postTime" />
-        <result column="like_count" property="likeCount" />
-        <result column="hate_count" property="hateCount" />
-        <!-- 二级评论children，通过column属性指定每次子查询遍历的外层循环的数据库字段comment_id(一级评论ID)，通过select属性指定查询SQL -->
-        <collection column="comment_id"  property="children"  select="selectChildrenComments"  ofType="videoCommentVo" />
+    <resultMap id="base_query_video_info_with_limit_map" type="SeriesDetailVo">
+        <id property="seriesId" column="series_id"  />
+        <result property="seriesDescription" column="series_description" />
+        <result property="seriesName" column="series_name" />
+        <result property="sort" column="sort" />
+        <!-- 
+            collection如果想接收多个参数，就需要以 {key1=value1,key2=value2} 的形式编写
+            key为嵌套查询中使用的参数名
+            value为父查询结果集中的列名
+            这里面的limit参数实际是父查询的传入的参数名而并非列名
+         -->
+        <collection property="videos" column="{seriesID=series_id,limit=limit_param}" select="loadSeriesVideoDetail" />
     </resultMap>
-    
-    <select id="selectChildrenComments" resultMap="comment_with_children_map">
-        select vc.*,aui.nick_name as user_nick_name,aui.avatar as user_avatar,bui.nick_name as reply_user_nick_name
-        from video_comment vc
-        inner join user_info aui on vc.user_id = aui.user_id
-        left join user_info bui on vc.user_id = bui.user_id
-        where p_comment_id = #{a} <!-- 这个 #{} 里面经测试是可以随便写变量名的，因为传进这个SQL的参数只有一个，即外层循环的comment_id，所以怎么写参数都行 -->
+
+    <!-- 
+        由于子查询中的limit参数是本方法的参数，但是column只能拿到父查询的列，那么只需要把参数写在父查询的列上即可
+        即下面代码的 #{limit} as limit_param 
+    -->
+    <select id="loadAllUserVideoWithLimit" resultMap="base_query_video_info_with_limit_map">
+        select series_id,sort,series_name,series_description,#{limit} as limit_param
+        from user_video_series
+        where user_id = #{userID}
     </select>
     
-    <!-- mapper要调用的是这个select SQL -->
-    <select id="selectCommentsWithChildren" resultMap="comment_with_children_map">
-        select vc.*,ui.nick_name as user_nick_name,ui.avatar as user_avatar
-        from video_comment vc
-        inner join user_info ui on vc.user_id = ui.user_id
+    <!-- 嵌套查询的SQL，需要两个参数 -->
+    <select id="loadSeriesVideoDetail" resultType="com.easylive.common.series.entity.vo.SeriesVideoVo">
+        select uvsv.series_id, sort ,uvsv.video_id ,video_cover ,video_name ,play_count ,like_count ,danmu_count
+        comment_count ,coin_count ,collect_count ,duration
+        from user_video_series_video uvsv
+        join video_info vi on uvsv.video_id = vi.video_id
         <where>
-            p_comment_id=#{query.pCommentID} and video_id = #{query.videoID}
-            <if test="query.topType!=null">
-                and top_type=#{query.topType}  <!-- 这是查询置顶评论的条件 -->
-            </if>
+            series_id = #{seriesID}
         </where>
-        <include refid="com.easylive.general.mybatis.mapper.GeneralMapper.base_query_last" />
+        <if test="limit!=null">
+            limit 0,#{limit}
+        </if>
     </select>
 ~~~
 

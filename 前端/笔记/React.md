@@ -1316,6 +1316,24 @@ return (
 
 ---
 
+### （六）styled-components
+
++ styled-components是一个css-in-js库，它支持在js作用域中书写CSS规范
+
+#### <一>安装
+
++ 安装:
+
+~~~bash
+  npm install styled-components
+~~~
+
+#### <二>基本使用
+
++ [基本使用](../笔记代码/源码/React/DemoProject/30CssInJs样例/pages/CssInJsDemo.jsx)
+
+---
+
 ## 八、项目结构
 
 + 为了项目的简洁性，一般`src`内都需要创建如下文件夹:
