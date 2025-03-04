@@ -743,7 +743,7 @@
             value为父查询结果集中的列名
             这里面的limit参数实际是父查询的传入的参数名而并非列名
          -->
-        <collection property="videos" column="{seriesID=series_id,limit=limit_param}" select="loadSeriesVideoDetail" />
+        <collection property="videos" column="{seriesID=series_id,limit=limit_param}" select="loadSeriesVideoDetail"/>
     </resultMap>
 
     <!-- 

@@ -105,7 +105,7 @@
 
 ### （二）变基
 
-+ 当我们频繁使用分支进行变基时，我们的分支图可能会变得很乱，因此，`Git`为我们提供了另外一种合并的方式:变基
++ 当我们频繁使用分支进行合并时，我们的分支图可能会变得很乱，因此，`Git`为我们提供了另外一种合并的方式:变基
   + 当我们发起变基时，git 会首先找到两条分支的最近的共同祖先
   + 对比当前分支相对于祖先的历史提交，并且将它们提取出来存储到一个临时文件中
   ![变基图例1](../文件/图片/git图片/变基图例1.png)
@@ -165,9 +165,10 @@
 ## 八、日常使用
 
 + 日常使用git，在工作时，需要先将master分支clone下来，然后根据开发需要合并的指定分支的日志id，使用`git switch -c [新分支名] [日志id]`进行回滚以达到同步状态，随后进行开发，否则可能会出现冲突或者提交更改过多的情况，步骤如下:
-  + `git clone master`
-  + `git switch -c <newSwitch> <id>`
+  + `git clone master`或`git switch master+git pull origin master`
+  + `git switch -c <newSwitch>`
+  + 编写代码
   + `git add`
   + `git commit`
-  + `git push`
+  + `git push -u origin <currentBrahch>:<remoteBranch>`
   + 提交合并请求

@@ -10,3 +10,6 @@
   + `win+R`->`cmd`->以管理员程序运行->`powercfg -h off`关毕休眠文件，如果想打开再按原操作输入`powercfg -h on`
   + `win+i`->`存储`->`临时文件`->全删掉
   + 微信->设置->文件管理->修改存储路径为其它盘并删掉原数据
++ cmd设置UTF-8编码
+  + 临时修改:cmd执行`chcp 65001`
+  + 永久修改:`Win+R`输入`regedit`打开注册表，导航到`HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Command Processor`。在右侧空白处右键，选择`新建 -> 字符串值`，命名为`Autorun`，设置其值为`chcp 65001`然后保存再重启cmd即可生效

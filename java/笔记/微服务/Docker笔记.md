@@ -383,3 +383,19 @@ networks:
 |^|`docker compose down`|无参|>|>|>|无|删除容器和网络|无|
 |^|`docker compose stop`|无参|>|>|>|无|使容器停止运行|无|
 |^|`docker compose start`|无参|>|>|>|无|使容器开始运行|无|
+
+
+
+
+docker run -d \
+--restart=always \
+--name es \
+--network es-net \
+-p 9200:9200 \
+-p 9300:9300 \
+--privileged \
+-v /home/study/es/data:/usr/share/elasticsearch/data \
+-v /home/study/es/plugins:/usr/share/elasticsearch/plugins \
+-e "discovery.type=single-node" \
+-e "ES_JAVA_OPTS=-Xms512m -Xmx512m" \
+elasticsearch
