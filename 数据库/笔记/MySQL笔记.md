@@ -7116,6 +7116,7 @@ no_field_options。|
 
 |分类|代码|描述|备注|
 |:---:|:---:|:---:|:---:|
+|**基本信息|`select version()`|查看当前MySQL版本|无|
 |**字符集**|`show variables like 'character_%';`、`show variables like '%char%';`|查看数据库所用的默认字符集|无|
 |^|`show charset;`|查看MySQL所有可用的字符集|无|
 |^|`SHOW VARIABLES LIKE '%_server';`、`SHOW VARIABLES LIKE '%_database';`|查看服务器、数据库的字符集|无|

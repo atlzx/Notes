@@ -1420,6 +1420,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ### （六）RabbitMQ
 
+#### ①依赖与安装
+
 + 依赖:
   + 该依赖可以直接通过IDEA的Spring initializr直接导入
 
@@ -1488,33 +1490,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 + [config配置参考](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/main/java/com/example/boot/config/RabbitMQConfig.java)
 
-#### ①方法汇总
+#### ②消息的基本处理逻辑
 
-|归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|**RabbitTemplate**|`convertAndSend(String exchange,String routingKey,Object message)`|exchange:交换机名<br>routingKey:路由键名<br>message:消息数据|发送消息|无返回值|void|AmqpException|该方法有很多重载方法，参数名一般都不难理解，此处不再列举|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)|
-|^|`setConfirmCallback(RabbitTemplate.ConfirmCallback confirmCallback)`|confirmCallBack:实现了RabbitTemplate.ConfirmCallback接口的对象|设置该属性可以进行消息确认的回调函数的执行|无返回值|void|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/main/java/com/example/boot/config/RabbitMQConfig.java)|
-|^|`setReturnsCallback(RabbitTemplate.ReturnsCallback returnCallback)`|returnCallback:实现了RabbitTemplate.ReturnsCallback接口的对象|设置该属性可以进行消息转发结果确认的回调函数的执行|无返回值|void|无|无|^|
-|**RabbitTemplate.ConfirmCallback**|`confirm(CorrelationData correlationData, boolean ack, String cause)`|correlationData:消息数据<br>ack:消息是否成功到达交换机<br>cause:消息未到达交换机的原因，如果消息到达了那么为null|无论消息是否到达交换机，RabbitMQ在确认后，该回调函数都会执行|无返回值|void|无|无|^|
-|**RabbitTemplate.ReturnsCallback**|`returnedMessage(ReturnedMessage returned)`|returned:消息对象|若消息未被成功转发到队列，此回调函数会被执行|无返回值|void|无|无|^|
-|**ReturnedMessage**|`getMessage()`|无参|得到Message消息对象|Message对象|Message|无|无|^|
-|^|`getReplyCode()`|无参|得到应答码|数值|int|无|应答码与Http状态码类似，表示出现问题的分类|^|
-|^|`getReplyText()`|无参|得到问题描述文本|字符串|String|无|无|^|
-|^|`getExchange()`|无参|得到转发消息的交换机名称|字符串|String|无|无|^|
-|^|`getRoutingKey()`|无参|得到消息的路由键|字符串|String|无|无|^|
-|**Message**|`getBody()`|无参|得到消息主体|byte类型数组|byte[]|无|无|无|
-|^|`getMessageProperties()`|无参|>|>|得到MessageProperties对象|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/MyMessageListener.java)|
-|**MessageProperties**|`getExpiration()`|无参|得到该消息在消息队列保留时间|字符串类型的数值|String|无|无|无|
-|^|`setExpiration(String time)`|time:在消息队列的保留时间，单位:毫秒|设置该消息在消息队列的保留时间|无返回值|void|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)|
-`getDeliveryTag()`|无参|得到deliveredTag值，即消息的唯一标识|数值|long|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/MyMessageListener.java)|
-|^|`getRedelivered()`|无参|得到消息是否经过重新入队列操作，即该消息第一次消费时未成功消费而且又重新进到队列里面了，第二次拿到时，该值就为true|为true说明经历过|boolean|无|无|^|
-|**Channel**|basicAck(long deliveryTag,boolean requeue)|deliveryTag:消息的标签(id)<br>requeue:是否要将消息重新加入队列|向RabbitMQ服务端返回ack信息|无返回值|void|无|无|^|
-|^|basicNack(long deliveryTag,boolean multiple,boolean requeue)|deliveryTag:消息的标签(id)<br>multiple:是否进行批量操作<br>requeue:是否要将消息重新加入队列|向RabbitMQ服务端返回nack信息|无返回值|void|无|无|^|
-|^|basicReject(long deliveryTag,boolean requeue)|deliveryTag:消息的标签(id)<br>requeue:是否要将消息重新加入队列|向RabbitMQ服务端返回nack信息|无返回值|void|无|与basicNack的唯一区别就是无法进行批量操作|^|
++ RabbitMQ一般使用交换机绑定消息队列的方式进行消息的生产与消费
+  + **一个交换机可以绑定多个队列**，可以根据广播、路由映射以及通配符匹配三种方式将发送过来的消息放到指定的队列上
+    + 如果是广播，消息发送到交换机就会被放到它绑定的所有消息队列上去
+    + 如果是路由映射，消息发送到交换机就会被其根据路由键匹配的方式放到指定的交换机上
+    + 如果是通配符,消息发送到交换机就会被其根据通配符匹配的方式放到指定的交换机上
+  + 消费者只需要监听指定的队列进行消费就可以了
 
 ---
 
-#### ②消息发送消费
+#### ③消息生产与消费
 
 ##### Ⅰ消息发送
 
@@ -1529,7 +1516,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-#### ③消息可靠性
+#### ④消息可靠性
 
 ##### Ⅰ主要问题
 
@@ -1596,7 +1583,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-#### ④限流
+#### ⑤限流
 
 + 有时我们的消费者没有办法一次性消费很多消息，因此我们需要对消费者进行限流
   + 使用`spring.rabbitmq.listener.simple.prefetch`配置项可以全局配置消费者最多可以一次性拿多少个消息进行消费，从而达到限流的目的
@@ -1604,7 +1591,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-#### ⑤死信
+#### ⑥死信
 
 ##### Ⅰ简介
 
@@ -1662,7 +1649,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-#### ⑥事务消息
+#### ⑦事务消息
 
 + RabbitMQ的事务消息就是将消息在发送之前，先放到缓存中，等缓存中的消息就绪以后，再一起发送出去
   + 这样，如果Java代码中在事务执行时出现异常，那么缓存中的消息就没有全部就绪，就会触发事务的回滚
@@ -1673,7 +1660,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
-#### ⑦队列
+#### ⑧队列
 
 ##### Ⅰ惰性队列
 
@@ -1696,6 +1683,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 + 另外，在生产者发送消息时，需要给消息带有priority属性，以声明该消息的优先级，不声明默认以0（最低优先级）处理
 + [生产者样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)
 + [消费者样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/PriorityMessageListener.java)
+
+---
+
+#### 方法汇总
+
+|归属|方法|参数|描述|返回值|返回值类型|异常|备注|样例|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|**RabbitTemplate**|`convertAndSend(String exchange,String routingKey,Object message)`|exchange:交换机名<br>routingKey:路由键名<br>message:消息数据|发送消息|无返回值|void|AmqpException|该方法有很多重载方法，参数名一般都不难理解，此处不再列举|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)|
+|^|`setConfirmCallback(RabbitTemplate.ConfirmCallback confirmCallback)`|confirmCallBack:实现了RabbitTemplate.ConfirmCallback接口的对象|设置该属性可以进行消息确认的回调函数的执行|无返回值|void|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/main/java/com/example/boot/config/RabbitMQConfig.java)|
+|^|`setReturnsCallback(RabbitTemplate.ReturnsCallback returnCallback)`|returnCallback:实现了RabbitTemplate.ReturnsCallback接口的对象|设置该属性可以进行消息转发结果确认的回调函数的执行|无返回值|void|无|无|^|
+|**RabbitTemplate.ConfirmCallback**|`confirm(CorrelationData correlationData, boolean ack, String cause)`|correlationData:消息数据<br>ack:消息是否成功到达交换机<br>cause:消息未到达交换机的原因，如果消息到达了那么为null|无论消息是否到达交换机，RabbitMQ在确认后，该回调函数都会执行|无返回值|void|无|无|^|
+|**RabbitTemplate.ReturnsCallback**|`returnedMessage(ReturnedMessage returned)`|returned:消息对象|若消息未被成功转发到队列，此回调函数会被执行|无返回值|void|无|无|^|
+|**ReturnedMessage**|`getMessage()`|无参|得到Message消息对象|Message对象|Message|无|无|^|
+|^|`getReplyCode()`|无参|得到应答码|数值|int|无|应答码与Http状态码类似，表示出现问题的分类|^|
+|^|`getReplyText()`|无参|得到问题描述文本|字符串|String|无|无|^|
+|^|`getExchange()`|无参|得到转发消息的交换机名称|字符串|String|无|无|^|
+|^|`getRoutingKey()`|无参|得到消息的路由键|字符串|String|无|无|^|
+|**Message**|`getBody()`|无参|得到消息主体|byte类型数组|byte[]|无|无|无|
+|^|`getMessageProperties()`|无参|>|>|得到MessageProperties对象|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/MyMessageListener.java)|
+|**MessageProperties**|`getExpiration()`|无参|得到该消息在消息队列保留时间|字符串类型的数值|String|无|无|无|
+|^|`setExpiration(String time)`|time:在消息队列的保留时间，单位:毫秒|设置该消息在消息队列的保留时间|无返回值|void|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Producer/src/test/java/com/example/boot/RMQTest.java)|
+`getDeliveryTag()`|无参|得到deliveredTag值，即消息的唯一标识|数值|long|无|无|[样例](../../源码/SpringBoot/SpringBoot-RabbitMQ-Consumer/src/main/java/com/example/boot/listener/MyMessageListener.java)|
+|^|`getRedelivered()`|无参|得到消息是否经过重新入队列操作，即该消息第一次消费时未成功消费而且又重新进到队列里面了，第二次拿到时，该值就为true|为true说明经历过|boolean|无|无|^|
+|**Channel**|basicAck(long deliveryTag,boolean requeue)|deliveryTag:消息的标签(id)<br>requeue:是否要将消息重新加入队列|向RabbitMQ服务端返回ack信息|无返回值|void|无|无|^|
+|^|basicNack(long deliveryTag,boolean multiple,boolean requeue)|deliveryTag:消息的标签(id)<br>multiple:是否进行批量操作<br>requeue:是否要将消息重新加入队列|向RabbitMQ服务端返回nack信息|无返回值|void|无|无|^|
+|^|basicReject(long deliveryTag,boolean requeue)|deliveryTag:消息的标签(id)<br>requeue:是否要将消息重新加入队列|向RabbitMQ服务端返回nack信息|无返回值|void|无|与basicNack的唯一区别就是无法进行批量操作|^|
 
 ---
 
@@ -1808,6 +1821,121 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 |^|^|^|^|`condition`|指定该注解生效的条件|条件表达式|无|^|
 |@CacheEvict|使作用的方法在执行后将指定的缓存删除|方法、类|无|`allEntries`|指定是否将以`cacheNames`为前缀的键全部删除|布尔值，true为确定全部删除|无|^|
 |@CachePut|将作用方法的返回值存入缓存|类、方法|无|>|>|>|无|^|
+
+---
+
+### （十）ElasticSearch
+
+#### ①依赖与版本
+
+~~~xml
+    <!-- 由于ES更新比较勤快，而Spring官方更新比较慢，因此可能会出现版本不是配的情况 -->
+    <!-- 可以去 https://docs.spring.io/spring-data/elasticsearch/reference/elasticsearch/versions.html 查看版本适配表 -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+    </dependency>
+~~~
+
+#### ②使用
+
+##### <一>查询操作
+
++ elasticsearchTemplate直接执行search就可以执行查询：
+
+~~~java
+// 构建查询条件
+    NativeSearchQuery query = new NativeSearchQueryBuilder()
+        .withQuery(QueryBuilders.boolQuery()
+            .must(QueryBuilders.matchQuery("name", name)) // 名称匹配
+            .must(QueryBuilders.matchQuery("age", age))   // 年龄匹配
+        )
+        .withPageable(PageRequest.of(page, size)) // 分页
+        .withSort(SortBuilders.fieldSort("age").order(SortOrder.ASC)) // 排序
+        .build();
+    esTemplate.search(query,clazz);
+    
+~~~
+
+
+---
+
+##### <二>更新操作
+
+
+
+
+---
+
+##### <三>脚本操作
+
+
+
+
+---
+
+##### 方法汇总
+
+|分类|方法|描述|参数|返回值|示例|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|**索引操作**|`indexOps(Class<T> clazz).create()`|创建索引|clazz:索引实体类|布尔值，表示是否成功|无|
+|^|`indexOps(Class<T> clazz).delete()`|^|删除索引|布尔值，表示是否成功|无|
+|^|`indexOps(Class<T> clazz).exists()`|^|检查索引是否存在|布尔值，表示是否存在|无|
+|**文档操作**|`save(T entity)`|保存或更新文档|entity:索引实体类对象|
+|^|`get(String id,Class<T> clazz)`|根据ID查询文档|id:主键<br>clazz:索引实体类|
+|^|`delete(String id,Class<T> clazz)`|^|根据ID删除文档|^|`elasticsearchTemplate.delete("1",Product.class);`|
+|^|`index(IndexQuery query,IndexCoordinates index)`|保存或更新文档|query:文档信息，可以指定实体类、文档ID等<br>index:要作用的索引，可以通过`IndexCoordinates.of`方法拿到，传入多个表示对这些索引都做操作|文档ID，若指定则返回指定的ID，否则返回ES自己自动生成的ID|无|
+|**查询操作**|`search(Query query,Class<T> clazz)`|执行查询并返回结果|query:查询条件<br>clazz:索引实体类|
+|^|`search(Query query,Class<T> clazz,IndexCoordinates index)`|在指定索引中执行查询|query:查询条件<br>clazz:索引实体类<br>index:要作用的索引，可以通过`IndexCoordinates.of`方法拿到，传入多个表示对这些索引都做操作|
+|^|`queryForList(Query query,Class<T> clazz)`|执行查询并返回列表|query:实体类对象<br>clazz:索引实体类|
+|^|`queryForPage(Query query,Class<T> clazz)`|执行分页查询并返回分页结果|query:实体类对象<br>clazz:索引实体类|
+|**聚合操作**|`search(Query query,Class<T> clazz)`|执行聚合查询|query:查询条件<br>clazz:索引实体类|
+|**其他操作**|`refresh(Class<T> clazz)`|刷新索引（使新文档立即可搜索）|clazz:索引实体类|
+|^|`count(Query query,Class<T >clazz)`|统计匹配查询的文档数量|query:查询条件<br>clazz:索引实体类|
+|^|`bulkIndex(List<IndexQuery> queries)`|批量索引文档|queries:查询条件列表|
+|^|`update(UpdateQuery updateQuery)`|更新文档|updateQuery:|
+
+---
+
+#### ③拓展
+
+##### Ⅰ格式转换器
+
++ 以2.7.18版本的Spring Data Elasticsearch为例，其在转换`yyyy-MM-dd`格式的字符串到Date类型时，会爆出类似如下错误:`Unable to convert value '2025-03-09' to java.util.Date for property 'createTime'`
++ 因此我们需要手动提供转换器来执行转换，首先需要先定义一个PropertyValueConverter接口的实现类，实现其`write`和`read`方法
+  + write方法用来向es添加或修改值时，将实体类的属性值转换为es实际字段的对应值
+  + read方法则是在查询时，将es查询出来的数据转换为实体类对应类型的字段
+
+~~~java
+    // PropertyValueConverter接口是Spring Data Elasticsearch特有的类，用来将转换操作细化到属性
+    @Slf4j
+    public class EsDatePropertyValueConverter implements PropertyValueConverter{
+
+        @Override
+        public Object write(Object value) {
+            return value;
+        }
+        @Override
+        public Object read(Object value) {
+          return value;
+        }
+    }
+
+~~~
+
++ 接下来使用@ValueConverter注解放在对应属性上，指定该属性的转换器即可
+
+~~~java
+    @Data
+    @Document(indexName = "video_info")
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public class EsVideoInfoDto implements Serializable {
+        // @Field注解的pattern属性和@ValueConverter注解同时存在的情况下，@ValueConverter注解的优先级更高
+        @Field(type = FieldType.Date,index = false,pattern = "yyyy-MM-dd")
+        @ValueConverter(EsDatePropertyValueConverter.class)
+        private Date createTime;
+    }
+~~~
 
 ---
 

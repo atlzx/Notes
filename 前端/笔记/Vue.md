@@ -260,8 +260,11 @@
         // 这个用来配置路径别名alias
         resolve: {
             alias: {
-                // 使用@来替代./src，也可以使用 resolve(__dirname,'src')，虽然__dirname会报错，但是实际执行和打包时不会报错
-                '@': fileURLToPath(new URL('./src', import.meta.url))
+                // 使用@来替代./src
+                // 下面这两个都可以，path直接引Node的path模块: import path from 'path'
+                // 第一个参数为被替换的字符串路径，第二个参数为替换的字符串路径，相对路径是相对于vite.config.js文件的
+                '@': fileURLToPath(new URL('./src', import.meta.url)),
+                '@': path.resolve(path.__dirname, './src'), // 将 @/ 映射到 src 目录
             }
         },
         lintOnSave:false,
