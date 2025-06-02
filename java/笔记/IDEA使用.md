@@ -43,41 +43,9 @@
 
 ---
 
-### （三）SpringBoot项目构建设置
-
-+ 构建SpringBoot项目时，Spring官方提供的`Spring.io`只会更新最新的版本，如果想得到老版本就没办法弄了，这时可以换一下SpringBoot initializr url来解决该问题，可以换成阿里云的:`https://start.aliyun.com/`
-
----
-
-### （四）目录设置
-
-+ 怎么让IDEA每层都显示目录而不折叠
-  + 想要不让IDEA自动使用`.`合并只有一个空目录的文件夹（即文件夹仅有一个空目录的时候也要使用缩进展开进行层级区分），需要在左侧项目树菜单栏上的配置选择`Tree Appearance->Compact Middle Packages`
-    ![IDEA全面展开目录](../文件/图片/问题汇总图片/IDEA全面展开目录.png)
-
----
-
-### （五）编码设置
-
-+ 在idea设置->Editor->General->Console可以找到**终端输出的默认字符集编码**，默认为系统编码，修改为UTF-8
-+ 在idea设置->Editor->File Encodings可以找到**idea的文件编码**，有的默认是GBK和ISO8859-1，修改为UTF-8
-+ 在中文环境下，貌似Java的输出流的默认输出编码格式是GBK，但是我们想把它转成UTF-8，但我们又不能在程序内指定，因为**字符集编码格式已经在JVM启动时就被缓存下来**，因此我们需要指定JVM启动时的参数配置:
-  + 创建系统环境变量：变量名: `JAVA_TOOL_OPTIONS`， 变量值：`-Dfile.encoding=UTF-8`,这样就可以让idea在控制台的输出编码为UTF-8时输出不再乱码
-
----
-
-### （六）快捷键设置
-
-+ 如何关闭连按两次shift出现的全局搜索框?
-  + 在设置内找到高级设置(Advanced Settings)，然后找到`disable double modifier key shortcuts`，开启它来禁用
-  + 在按键映射中找到`search everywhere`来配置想配置的全局搜索框快捷键
-
----
-
 <a id="mavenSetting"></a>
 
-### （七）Maven设置
-
++ `java: 无效的目标发行版:`  `警告: 源发行版 xx 需要目标发行版 xx`
 + 每次打开idea或者刷新pom.xml再启动项目都会报他妈的JDK版本出错，如何配置?
   + 这是指定的maven配置的问题，idea会读取maven的settings.xml配置文件，如果该配置文件设置了默认的JDK版本，那么它就会自动把该版本置为当前项目使用的JDK版本，每次刷新pom时，idea就会读取一次该配置文件，因此每次刷新再启动项目都会报错
   + 解决问题的办法是修改该配置文件:
@@ -127,30 +95,67 @@
             <skipTests>true</skipTests>  <!-- 这是让maven打包时跳过test的配置 -->
         </properties>
     ~~~
+  + 接下来右键项目->Open Module Settings->修改Project和Modules栏的JDK版本，使其保持一致
+  + 然后打开设置->Build,Execution,Deployment->Compiler->Java Compiler->选择要运行的模块，更改其右侧的叫`Target bytecode version`项为自己的JDK版本
+
+---
 
 + 每次打开都要配置maven，怎么才能让idea全局都认一个maven?
   + 
 
+---
+
++ 使用`SpringBoot initializr`自动构建指定版本
+  + 构建SpringBoot项目时，Spring官方提供的`Spring.io`只会更新最新的版本，如果想得到老版本就没办法弄了，这时可以换一下SpringBoot initializr url来解决该问题，可以换成阿里云的:`https://start.aliyun.com/`
 
 ---
 
-### （八）缩进设置
++ 怎么让IDEA每层都显示目录而不折叠
+  + 想要不让IDEA自动使用`.`合并只有一个空目录的文件夹（即文件夹仅有一个空目录的时候也要使用缩进展开进行层级区分），需要在左侧项目树菜单栏上的配置选择`Tree Appearance->Compact Middle Packages`
+    ![IDEA全面展开目录](../文件/图片/问题汇总图片/IDEA全面展开目录.png)
+
+---
+
+---
+
+### （三）编码设置
+
++ 在idea设置->Editor->General->Console可以找到**终端输出的默认字符集编码**，默认为系统编码，修改为UTF-8
++ 在idea设置->Editor->File Encodings可以找到**idea的文件编码**，有的默认是GBK和ISO8859-1，修改为UTF-8
++ 在中文环境下，貌似Java的输出流的默认输出编码格式是GBK，但是我们想把它转成UTF-8，但我们又不能在程序内指定，因为**字符集编码格式已经在JVM启动时就被缓存下来**，因此我们需要指定JVM启动时的参数配置:
+  + 创建系统环境变量：变量名: `JAVA_TOOL_OPTIONS`， 变量值：`-Dfile.encoding=UTF-8`,这样就可以让idea在控制台的输出编码为UTF-8时输出不再乱码
+
+---
+
+### （四）快捷键设置
+
++ 如何关闭连按两次shift出现的全局搜索框?
+  + 在设置内找到高级设置(Advanced Settings)，然后找到`disable double modifier key shortcuts`，开启它来禁用
+  + 在按键映射中找到`search everywhere`来配置想配置的全局搜索框快捷键
+
+---
+
+### （五）数据库设置
+
+![设置数据库驱动](../文件/图片/IDEA使用图片/设置数据库驱动.png)
+
+
+---
+
+### （六）前端设置
+
++ eslint配置不生效
+  + 检查`Settings`->`Languages & Frameworks`->`JavaScript`->`Code Quality Tools`->`ESLint`设置，将其修改为`Automatic ESLint configuration`
+
+---
+
+### （七）编辑器设置
 
 + 如何让idea在空格里面默认缩进4空格而不是8空格
   + `Settings->Editor->Code Style->Java->Tabs and Indents->Continue indent`置为4即可
-
----
-
-### （九）JSON格式设置
-
 + 如何让idea在JSON写注释的情况下不报黄
   + `Settings->Editor->Inspections->JSON and JSON5->Compliance with JSON standard->Options`取消勾选`Warn about comments`
 
----
-
-### （十）设置数据库驱动
-
-![设置数据库驱动](../文件/图片/IDEA使用图片/设置数据库驱动.png)
 
 
 

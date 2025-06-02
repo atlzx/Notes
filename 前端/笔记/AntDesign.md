@@ -55,6 +55,7 @@
                 key:'operation',
                 title:'操作',
                 align:'center',
+                // 通过render进行渲染，其返回值将成为对应行的该列该列所展示的内容，同时它可以读取到这一行的值
                 render:(text,record,index)=>{
                     // text是后面的data追加的对应本列dataIndex的内容
                     // record是本行数据
@@ -72,7 +73,7 @@
                             </Popconfirm>
                         </>
                     );
-                }  // 通过render进行渲染，其返回值将成为对应行的该列该列所展示的内容，同时它可以读取到这一行的值
+                }  
             }
         ];
         // 设置表格的数据，包括key以及每组数据对应的列的各项dataIndex的值
@@ -137,6 +138,43 @@
 
 + 上传组件使用`Upload`导入
 
+~~~jsx
+    const [userInfoForm]=Form.useForm();
+    // 函数接收的e就是下面注释说的 {file,fileList} 这样的Object类型的对象
+    // 函数的返回值就是此次变化管控的组件变量要被赋的值
+    const fileEventHandler=(e)=>{
+        return e.fileList;
+    };
+
+    // 自定义的上传逻辑
+    const upload=(fileInfo)=>{
+        // 上传需要指定请求头的content-type为multipart/form-data,否则后端收不到
+        axios.post('file/upload',fileInfo.file,{headers:{'content-type':'multipart/form-data'}}).then(
+            ()=>{
+                serInfoForm.setFieldValue('fileList',[fileInfo]);
+            }
+        )
+    };
+
+    return (
+        <>
+            {/* 
+                valuePropName用来指定需要管控的对应表单组件的属性名，它一般在管控非Input组件时才用,如Checkbox就需要指定valuePropName为checked
+                name表示表单数据对象实际的键，在调用表单数据对象的getFieldValue时需要与name指定的值一致
+                getValueFromEvent用来在每次受管控的组件的值发生变化从而触发onChange回调时，接收onChange方法接收的参数，并指定此次变化该组件被管控的值具体要被赋的值
+                每个组件的onChange回调的方法接收的参数都是不一样的，这个Upload的change事件的事件event结构就是 {file,fileList} 这样的Object类型的对象
+             */}
+            <Form.Item valuePropName="fileList" rules={nickNameRule} label="头像" name="fileList" getValueFromEvent={fileEventHandler}>
+            <Upload 
+                listType="picture-circle" maxCount={1} accept="image/*"
+                customRequest={upload} 
+            >
+                点击上传
+            </Upload>
+            </Form.Item>
+        </>
+    );
+~~~
 
 
 ## 六、表单

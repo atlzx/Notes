@@ -13,3 +13,7 @@
 + cmd设置UTF-8编码
   + 临时修改:cmd执行`chcp 65001`
   + 永久修改:`Win+R`输入`regedit`打开注册表，导航到`HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Command Processor`。在右侧空白处右键，选择`新建 -> 字符串值`，命名为`Autorun`，设置其值为`chcp 65001`然后保存再重启cmd即可生效
++ 处理器架构:
+  + x64:又称AMD64或Intel64，一般在PC上很常见，可以执行64位操作，由AMD设计开发，可以执行复杂指令集操作，能耗高
+  + ARM64:又称为AArch64，一般在移动设备、嵌入式设备、服务器等设备上很常见，它在低能耗情况下依然能维持优秀的性能
+  + Windows在cmd下输入`systeminfo`，在`System Type`栏可以看到自己的设备处理器架构

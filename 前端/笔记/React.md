@@ -180,6 +180,167 @@
 
 ---
 
+## 六、语法
+
+### （一）组件
+
+### （二）钩子函数
+
+#### <一>useState
+
+##### ①简单使用
+
++ useState用来**声明一个状态变量**，以及提供一个允许我们修改状态变量的值的函数
+  + 状态变量是组件在渲染前后都可以“记住”的变量，而不像其它使用普通的let或const关键字声明后，组件每渲染一次就会重新被初始化的变量
++ useState函数接收一个参数，该参数可以是直接的值，也可以是一个函数。如果是函数，函数的返回值会成为该状态变量的初始值
++ useState返回一个**数组**，数组有两个元素
+  + 第一个元素就是当前的状态变量值
+  + 第二个元素是一个可以**修改该状态变量**并**触发组件的重新渲染**的函数，它同样接收一个参数，可以是直接的值，也可以是一个函数。如果是函数，函数的返回值会成为该状态变量被赋的值。作为参数的函数会收到一个参数，该参数是当前状态变量的值
++ 基于此，我们可以这样声明一个状态变量`const [state,setState]=useState(1);`
++ 并使用`setState((prevState)=>prevState+1);`来修改该状态变量的值
++ 注意
+> 1. 如果要修改的是一个对象或数组，需要进行**浅拷贝**而不能直接向setState传入原来的状态变量值
+> 2. 不要直接对状态变量进行赋值操作，要使用React提供的setState函数进行修改
+
+---
+
+#### <二>useEffect
+
++ useEffect用来在组件渲染以后做一些事
++ useEffect接收两个参数:
+  + 第一个参数是一个回调函数且不支持async，它没有参数，用来在每次依赖项发生变化时执行，该回调函数可以选择性的返回一个函数，返回的函数将在下一次该回调函数执行前执行
+  + 第二个参数是一个数组，它用useEffect会监听数组里的所有变量的变化，一旦有其中一个变量发生变化，回调函数就会执行。
+    + 如果不传，那么useEffect中的回调函数会在每次组件渲染时都执行
+    + 如果传入一个空数组，那么useEffect的回调函数仅会在组件第一次渲染时执行
++ useEffect没有返回值
++ useEffect可以写多个
+
+---
+
+#### <三>useMemo
+
++ useMemo用来缓存变量的计算值，与useEffect一样，它们的参数情况都大体相同。
++ 唯一的不同是useMemo的回调函数的返回值会成为useMemo的返回值。
++ 可以使用useMemo来缓存计算结果以优化性能
++ 注意
+> 1. 请确保回调函数每次的返回值都是一个新的对象，否则如果其它组件依赖了useMemo的返回值的话，一直返回同一个对象会导致使用Object.is判断失效，因此返回的是数组、对象这一类变量时，建议使用浅拷贝复制源变量再返回
+
+---
+
+#### <四>useCallback
+
++ useCallback是useMemo的语法糖，专门针对需要缓存的函数提供。假设我有一个函数A，我想缓存它，那么使用`useMemo(()=>{return A},[])`与使用`useCallback(A,[])`的结果完全相同
++ useCallback是专门用来缓存函数的
++ 注意
+> 1. 必须确保依赖项正确，否则函数将不会更新，这可能会导致它在执行时其读取的变量值是老的（因为它是被缓存的，因此它能读取到的值也永远地停留在了它刚刚被缓存了的作用域）
+
+---
+
+#### <五>useRef
+
++ useRef用来声明一个**不会因其修改而导致组件重新渲染**的状态变量
++ useRef的返回值可以作为ref参数传入html属性中以拿到原生的JS DOM对象
++ useRef的返回值也可以传给子组件，并配合子组件的useImperative钩子函数以及forwardRef函数拿到子组件想暴露给父组件的操作
+
+---
+
+#### <六>useContext
+
++ useContext可以使被`Context.Provider`组件包裹的组件（无论层级多深）拿到Provider提供的值，它在父组件想跨多个层级给子组件传参时非常有用
++ 如果想使用context，需要如下步骤
+
+  1. 首先，需要定义好一个`Context`,并使其暴露，一般我们都会新创建一个文件用以定义该`Context`:
+     + `Context`**名称必须大写，因为它要作为`React`组件使用**
+     + 定义后需要向外暴露
+~~~jsx
+    import React from 'react'
+
+
+    const TestContext=React.createContext('test');  // 创建一个context,名称大写
+    export default TestContext;  // 向外暴露
+~~~
+  2. 在想传参的祖先组件内引入该`Context`,且作为组件使用
+     + 使用`<Context.Provider></Context.Provider>`标签包裹子组件，使得这些子组件和后代组件可以使用该`Context`
+     + 该**标签的`value`属性可以重新设置原`Context`的值**，任意值都可以。设置后，被其包裹的后代组件读取的`Context`全都是**使用`value`属性重新设置的值**
+     + 如果一个组件被多个`Context.Provider`标签包裹了，那么**它获得的`Context`是离其最近的`Context`标签中的**
+~~~jsx
+    import TestContext from './TestContext'
+    import A from './A'
+    import B from './B'
+
+    const Test=()=>{
+        return (
+            <div>
+                {/* 使用Context.Provider标签包裹子组件，子组件及其后代组件都可以访问该Context */}
+                <TestContext.Provider value={'aaa'}>
+                    <A />  {/* B组件中得到的context结果为aaa */}
+                    <TestContext.Provider value={'bbb'}>
+                        <B />  {/* B组件中得到的context结果为bbb */}
+                    </TestContext.Provider>
+                </TestContext.Provider>
+            </div>
+        );
+    };
+    export default Test;
+~~~
+  3. 在对应组件内接收`Context`
+~~~jsx
+    import {useContext} from 'react'
+    import TestContext from './TestContext'
+
+    // 方法一：简易方法(使用钩子函数得到Context)
+
+    const A=()=>{
+        const context=useContext(TestContext);
+        return (
+            <div>{context}</div>
+        );
+    };
+
+    // 方法二：麻烦方法(不使用钩子函数)
+
+// 不使用钩子函数来得到context
+    const B=()=>{
+        return (
+        // 返回时，想得到context的标签必须被context.Consumer标签包裹
+            <TestContext.Consumer>
+                {/* 标签内部必须要传递一个回调函数，该回调函数接收一个参数，该参数即为想要得到的context */}
+                {
+                    (context)=>{
+                        console.log(1);
+                        // 在回调函数中以进行jsx代码的编写
+                        return (
+                            <div>{context}</div>
+                        );
+                    }
+                }
+            </TestContext.Consumer>
+        );
+    }
+
+    export default A;
+~~~
+
+---
+
+### （三）API
+
+### （四）小技巧
+
++ 在组件内的方法名前缀，可以是`getxxx`、`updatexxx`、`deletexxx`、`addxxx`。接口提供的方法名就可以改为`loadxxx`、`savexxx`、`removexxx`
++ 可以把相同关联的文件以业务而不以技术文件夹为区分，写在一起，就不用划来划去的了
+
+### （五）编写建议
+
++ 编写React代码需要注意:
+  + useEffect导致的组件无限渲染
+  + 定义方法使用useCallback,计算值使用useMemo
+  + 不要在请求方法的then函数内进行除请求值之外的多余操作（如利用返回值与状态变量进行相关运算，或根据返回值与状态变量结合成JSX代码），因为请求方法执行时，其内部变量是组件渲染前的变量值，可能会导致操作出现问题
+
+
+
+---
+
 ## 五、组件
 
 + 在`React`中，网页被拆分成了一个个组件，组件就是独立可复用的代码片段
@@ -298,7 +459,7 @@
   + `State`与`props`类似，也是存储属性的一种方式，但它是**可变的**，且**只属于当前组件**，无法被其他组件访问
   + `State`相当于一个变量，它在`React`中被注册，`React`会**监听它的变化，在发生变化时重新渲染它所属的组件**
   + 使用`useState`钩子函数得到`State`
-    + `useState`的需要一个参数,用来指定当前`State`的初始值
+    + `useState`需要一个参数,用来指定当前`State`的初始值
     + 它会返回一个**数组**，数组有两个元素
       + 第一个元素是`State`当前存储的值
       + 第二个元素是一个函数，**调用该函数来实现对`State`值的修改**，同时重新渲染组件。向函数传递的参数值将成为`State`的新值
@@ -1307,6 +1468,8 @@ return (
 |`npm install`|下载项目的`package.json`文件中`dependencies`属性对应的所有包|无|
 |`npm install -g jquery`|将指定包的最新版本下载到全局依赖目录中去|无|
 |`npm install -g jquery@3.7.1`|将指定名称和版本的包下载到全局依赖目录中去|无|
+|`npm i xxx`|`npm install`的别名|无|
+|`npm add xxx`|`npm install`的别名|无|
 |`npm uninstall jquery@3.7.1`|将指定名称和版本的包下载到直接依赖目录中去|无|
 |`npm uninstall -g jquery@3.7.1`|删除直接依赖中的指定包|无|
 |`npm ls`|查看项目依赖|无|
@@ -1331,6 +1494,23 @@ return (
 #### <二>基本使用
 
 + [基本使用](../笔记代码/源码/React/DemoProject/30CssInJs样例/pages/CssInJsDemo.jsx)
+
+---
+
+### （七）Zustand
+
++ [zustand](https://github.com/pmndrs/zustand)是React的状态管理库之一，它相较redux更便于使用，且更易上手
++ 此处以Zustand5.0.3版本为例
+
+#### <一>安装
+
+~~~bash
+  npm install zustand
+~~~
+
+#### <二>基本使用
+
++ 参考[此处](../笔记代码/源码/React/DemoProject/31Zustand样例)
 
 ---
 

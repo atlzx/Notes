@@ -387,15 +387,10 @@ networks:
 
 
 
-docker run -d \
---restart=always \
---name es \
---network es-net \
--p 9200:9200 \
--p 9300:9300 \
---privileged \
--v /home/study/es/data:/usr/share/elasticsearch/data \
--v /home/study/es/plugins:/usr/share/elasticsearch/plugins \
--e "discovery.type=single-node" \
--e "ES_JAVA_OPTS=-Xms512m -Xmx512m" \
-elasticsearch
+docker run --name MySQL \
+  -e MYSQL_ROOT_PASSWORD=1928564318asd \
+  -e MYSQL_USER=root \
+  -e MYSQL_PASSWORD=1928564318asd \
+  -p 3306:3306 \
+  -v /path/to/mysql/data:/var/lib/mysql \
+  -d mysql:8.0

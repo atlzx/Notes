@@ -671,6 +671,8 @@ public class People {
 + 查询count时使用ifnull函数避免一个都查不到返回null
 + 枚举类提供专门的根据属性获得该对象的方法
 + 添加和更新一般可以写在一个接口里面
++ 拼接文件URL时，左边的URL不保留'/'，比如`/user/info`需要是`/user`+`/info`而不是`/user/`+`info`，因为这样会让url变乱
++ 
 
 
 
@@ -2546,6 +2548,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 ---
 
+#### ②请求
+
+
+---
+
+#### ③响应
+
++ 响应体有一些需要注意的事项，尤其在SpringBoot中还有相关问题
+  + Springboot的controller如果有返回值的话，就不能再手动设置响应体了，否则会报错。换句话说，就是 如果想直接设置响应体内容，controller的方法应该返回void
+  + 响应体的响应头必须在设置响应体之前设置，否则会失效，因为响应在设置响应体之后会提交一次，提交之后再设置就不能再提交了
+
+---
+
 ### （七）文件上传
 
 #### ①文件保存本地
@@ -3532,3 +3547,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 + [函数式Web样例](../../源码/SpringBoot/SpringBootThymeleaf/src/main/java/com/springboot/example/springbootthymeleaf/config/MyConfig.java)
 
 ---
+
+
+
+

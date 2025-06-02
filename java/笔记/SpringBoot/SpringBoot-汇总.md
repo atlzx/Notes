@@ -311,7 +311,14 @@
     + 使用@MapperScan注解指定路径
     + 使用@ComponentScan注解指定路径
 
+---
 
+### （三）相对与绝对路径
+
++ 在java中，绝对路径将从项目所在盘开始寻找，而相对路径将从项目所属模块开始寻找。区分相对与绝对的关键是字符串开头是否有`File.separator`
+  + `new File("/haha.txt")`，若项目在C盘，则其路径为`C:/haha.txt`
+  + `new File("haha.txt")`，则其路径为`模块路径/haha.txt`
+  + 对于`MultipartFile`类型，在调用其`transferTo`方法时，尽量传入绝对路径表示的File文件对象，否则它就会将文件上传到系统盘(一般是C盘的AppData文件夹里)的tomcat运行文件夹里。同时，`transaferTo`方法在传入相对路径的File对象时，可能上传会出错。
 
 ---
 
@@ -322,3 +329,6 @@
 ![日期时间格式自定义规范表](../../文件/图片/Java图片/自定义日期格式规范表.png)
 
 ---
+
+## 请求与响应
+

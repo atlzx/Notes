@@ -1560,14 +1560,14 @@
 
 ---
 
-### （一）、navagator
+### （一）navagator
 
 + `navigator`表示浏览器对象，它可以实现对浏览器的一些操作
 + [详情](https://developer.mozilla.org/zh-CN/docs/Web/API/Navigator)
 
 ---
 
-### （二）、location
+### （二）location
 
 + `location`存储的是浏览器的地址栏信息
 
@@ -1580,7 +1580,7 @@
 
 ---
 
-### （三）、history
+### （三）history
 
 |操作|参数|描述|返回值|备注|通用备注|样例|
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|
