@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_并集选择器</title>
+    <style>
+        .green{
+            color: green;
+        }
+        .red{
+            color: red;
+        }
+        .blue{
+            color: blue;
+        }
+        /*使用并集选择器时，每隔一个选择器换一行，竖着写，不然看着乱*/
+        /*并集选择器支持任意选择器，且没有特定顺序*/
+        .green,
+        .red,
+        .blue,
+        #test4,
+        span{
+            font-size: 40px;
+            background-color: brown;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <h2 class="green">测试1</h2>
+    <h2 class="red">测试2</h2>
+    <h2 class="blue">测试3</h2>
+    <p id="test4">测试4</p>
+    <span>测试5</span>
+</body>
+</html>

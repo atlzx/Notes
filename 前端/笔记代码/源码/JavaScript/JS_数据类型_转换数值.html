@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_数据类型_转换数值</title>
+    <script>
+        let a='111a',b=12n,c=null,d=undefined,e='',f='    ';
+        console.log(typeof a,a,typeof b,b,typeof c,c,typeof d,d,typeof e,e,typeof f,f);
+        a=Number(a);  //不是数值，返回NaN
+        b=Number(b);  //返回12
+        c=Number(c);  //null会被转换成0
+        d=Number(d);  //undefined会被转换成NaN
+        e=Number(e);  //空字符串会被转换成数字0
+        f=Number(f);  //仅带有空格的字符串也会被转换成数字0
+        console.log(typeof a,a,typeof b,b,typeof c,c,typeof d,d,typeof e,e,typeof f,f);  //会输出NaN,因为待转换对象有字母
+        a='111a';
+        b=12n;
+        c='x123';
+        d='7.84';
+        e='';
+        f='.0';
+        //不传入radix参数默认为10，但具体要看是什么浏览器，因为不同的浏览器实际的执行效果不同，因此最好写上radix参数
+        a=parseInt(a);  //返回111
+        b=parseInt(b);  //返回12
+        c=parseInt(c);  //由于第一个字符就不是数字，因此返回NaN
+        d=parseInt(d);  //若为小数，则会仅取小数的整数部分，因为“.”不是数字
+        e=parseInt(e);  //因为第一个字符就不是数字，因此返回NaN
+        f=parseInt(f);  //因为第一个字符就不是数字，因此返回NaN
+        console.log(typeof a,a,typeof b,b,typeof c,c,typeof d,d,typeof e,e,typeof f,f);
+
+        a='111.';
+        b='6.02';
+        c='x123';
+        d='  ';
+        e='.0';
+        f='....';
+
+        a=parseFloat(a);  //返回111
+        b=parseFloat(b);  //返回6.02
+        c=parseFloat(c);  //由于第一个字母就不是数字，因此返回NaN
+        d=parseFloat(d);  //返回0
+        e=parseFloat(e);  //返回0
+        f=parseFloat(f);  //返回NaN
+        console.log(typeof a,a,typeof b,b,typeof c,c,typeof d,d,typeof e,e,typeof f,f);
+
+        a='111a';  //会转换为NaN
+        b=Infinity;  //转换为Infinity
+        c=true;  //转换为1
+        d=undefined;  //转换为NaN
+        e=null;  //转换为0
+        f=NaN;  //转换为NaN
+        a=+a;b=+b;c=+c;d=+d;e=+e;f=+f;
+        console.log(typeof a,a,typeof b,b,typeof c,c,typeof d,d,typeof e,e,typeof f,f);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

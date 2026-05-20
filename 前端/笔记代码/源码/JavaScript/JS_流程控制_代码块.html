@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_流程控制_代码块</title>
+    <script>
+        {
+            var a=1;
+        }
+        {
+            let b=1;
+            {
+                console.log(`这是在块内:  b=${b}`);  //代码块的代码块内也能算代码块内部
+            }
+        }
+        console.log(`a=${a}`);  //var声明的变量不具有块作用域，因此在块外也可以使用
+        console.log(`b=${b}`);  //由于let声明的变量具有块作用域，因此在块外无法使用
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

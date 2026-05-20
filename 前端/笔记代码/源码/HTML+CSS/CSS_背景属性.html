@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_背景属性</title>
+    <style>
+        div{
+            width: 400px;
+            height: 400px;
+            /*由于下面的复合属性没有写具体值，因此其默认为transparent,将此属性覆盖*/
+            background-color: skyblue;
+            /*若比元素大则仅会显示一部分，但不会溢出，下面的复合属性虽然没有设置背景图，但这里依然被覆盖掉了，因为复合属性如果没有设置背景图会自动将未设置的属性设为默认值*/
+            background-image: url("../../文件/图片/壁纸1.jpg");
+            /*由于下面的复合属性设置了相关值，这里被覆盖了，如果未被覆盖，那么显示的情况为水平垂直居中.若关键词仅写一个，则浏览器会自动认为另一个为居中显示*/
+            background-position: center;
+            /*由于下面的复合属性设置了相关值，这里被覆盖了.如果未被覆盖，那么显示的情况为不重复*/
+            background-repeat: no-repeat;
+            /*复合属性如果没有设置相关属性,会自动将未设置的属性设为默认值*/
+            background: left bottom repeat;
+            border: black 5px solid;
+        }
+    </style>
+</head>
+<body>
+    <div>测试文本</div>
+</body>
+</html>

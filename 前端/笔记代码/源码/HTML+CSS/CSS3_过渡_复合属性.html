@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_过渡_复合属性</title>
+    <style>
+        .outer{
+            height: 400px;
+            width: 400px;
+            margin: 0px auto;
+            border: 2px solid black;
+        }
+        .inner{
+            height: 100px;
+            width: 100px;
+            background-color: orange;
+            transition: all 3s 0.5s ease;
+        }
+        .inner:hover{
+            background-color: green;
+            width: 400px;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="outer">
+        <div class="inner">测试文本</div>
+    </div>
+</body>
+</html>

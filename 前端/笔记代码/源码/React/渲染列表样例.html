@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="../../文件/React18/babel.min.js"></script>
+    <script src="../../文件/React18/react.development.js"></script>
+    <script src="../../文件/React18/react-dom.development.js"></script>
+    <script type="text/babel">
+        // 这里展示{}的性质：数组会展开再插入标签内
+        const data=['张三','李四','王五'];
+        const test=<div>{data}</div>;  
+        const root1=ReactDOM.createRoot(document.getElementById("root1"));
+        root1.render(test);  // 根据渲染得到的结果来看，数组会被展开再写入标签内
+
+        // 渲染列表样例
+        const arr=[];
+        const root2=ReactDOM.createRoot(document.getElementById("root2"));
+        const root3=ReactDOM.createRoot(document.getElementById("root3"));
+        const root4=ReactDOM.createRoot(document.getElementById("root4"));
+        // 用循环语句给新数组赋值，赋值为<li>xxxx</li>
+        // 得到结果数组后，直接利用{arr}在标签内可以展开的性质插入到<ul>标签中去</ul>
+        for(let i=1;i<=data.length;i++){
+            arr.push(<li>{data[i-1]}</li>);
+        }
+        // 直接利用{arr}数组会被展开的性质赋值
+        const ul=<ul>{arr}</ul>;
+
+        // 下面的语句是更简便的写法
+
+        // 调用数组的map方法，传入回调函数参数进行处理，定义一个参数得到新的结果
+        const arr2=data.map(
+            (item)=>{
+                return <li>{item}</li>;
+            }
+        );
+        // 得到新的数组对象后也像上面这么干
+        const ul2=<ul>{arr2}</ul>
+
+        // 更简便的写法
+        // 直接把新的到的数组对象放到表达式中展开再插入到ul中
+        const ul3=<ul>{data.map((item)=>{return <li>{item}</li>})}</ul>
+
+        root2.render(ul);
+        root3.render(ul2)
+        root4.render(ul3);
+        
+    </script>
+</head>
+<body>
+    <div id="root1"></div>
+    <div id="root2"></div>
+    <div id="root3"></div>
+    <div id="root4"></div>
+</body>
+</html>

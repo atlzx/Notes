@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_jQuery_text方法样例</title>
+    <script src="../../文件/jQuery/jquery-3.7.1.js"></script>
+    <script>
+        $(
+            function(){
+                var $divElements=$("div");
+                console.log($divElements.text());// 不传入参数时，获取所有元素的内容组成的字符串
+                $divElements.text(
+                    function(index,text){
+                        if(index%2===0){
+                            return "eeee";  // 回调函数的返回值将作为对应索引元素的新的内容
+                        }
+                    }
+                );
+                console.log($divElements[0]);
+            }
+        );
+    </script>
+</head>
+<body>
+    <div>哦哦哦哦哦哦</div>
+    <div>aaaaa</div>
+    <div>呃呃</div>
+</body>
+</html>

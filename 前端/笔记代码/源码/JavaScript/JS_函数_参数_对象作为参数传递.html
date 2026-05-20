@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_函数_参数_对象作为参数传递</title>
+    <script>
+        function fn1(a){
+            //使用对象作参数时，函数如果对形参作修改，则传入的实参指向的值也会对应发生修改，因为他们指向的是一个对象
+        //    a={};  //如果执行该语句则会发生重新赋值，那么对该变量的更改则与传入的实参无关了
+            a.name="李四";
+            console.log("下一行为函数输出");
+            console.log(a);
+        }
+        let a={};
+        a.name="张三";
+        console.log(a);  //最开始输出的是张三
+        fn1(a);  //将对象传入时，实际上传入的是对象的地址，而不是指向对象的变量的地址
+        console.log(a);  //函数执行完后输出李四
+
+        function fn2(i,a={name:"王五"}){
+            console.log(a,i);
+            a.name="赵六";
+            console.log(a,i);
+        }
+        fn2(1);  //输出王五 赵六
+        fn2();  //输出王五  赵六
+        //原因是每次调用函数，函数都会重新生成其形参变量
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

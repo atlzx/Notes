@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="SpringCloud-Common-API" />
+        <module name="SpringCloud-Order" />
+        <module name="SpringCloudAlibaba-Config-1234" />
+        <module name="SpringCloudAlibaba-Pay-9001" />
+        <module name="SpringCloud-Gateway-9527" />
+        <module name="SpringCloudAlibaba-Order-81" />
+        <module name="SpringCloudAlibaba-Pay-9002" />
+        <module name="SpringCloudAlibaba-Seata-Order-2001" />
+        <module name="SpringCloudAlibaba-Gateway-Sentinel9528" />
+        <module name="SpringCloud-Pay" />
+        <module name="SpringCloudAlibaba-Sentinel-Service-9500" />
+        <module name="SpringCloudAlibaba-Seata-Account-2003" />
+        <module name="SpringCloud-Generator" />
+        <module name="SpringCloud-Feign-80" />
+        <module name="SpringCloud-Pay-8002" />
+        <module name="SpringCloudAlibaba-Seata-Storage-2002" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="SoringCloudAlibaba-Seata-Account-2003" target="17" />
+      <module name="SpringAlibaba-Sentinel-Service9500" target="17" />
+      <module name="SpringCloud-HelloWorld" target="17" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

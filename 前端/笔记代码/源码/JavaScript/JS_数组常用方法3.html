@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_数组常用方法3</title>
+    <script>
+        let a=[1,2,3,4,5,10,6,7,8,9];
+        console.log('原数组',a);
+        let result=a.reduce(
+            (a,b)=>{
+                return a+b;
+            },10
+        );  //传入两个参数，这样写该方法会返回从10开始加每一个数组元素的总和，该方法属于非破坏方法
+        console.log('使用reduce方法的结果',result);
+        a.sort();  //该方法属于破坏性方法，如果不传参默认以Unicode编码比较并升序排序，在进行数字排序时可能会出现排序的错误结果
+        console.log('不传参调用sort方法:',a);
+        a.sort(
+            (a,b)=>{
+                return a-b;  //返回a-b时按升序排序，返回b-a时按降序排序
+            }
+        );
+        console.log('传参调用sort方法:',a);
+        let b=a.filter(
+            (x)=>{ 
+                return x%2===0;  //如果是偶数返回true
+            }
+        );  //filter方法根据回调函数的返回值决定是否将该元素加入新数组中，回调函数返回true时才会将其加入数组，最后将该结果返回
+        console.log('使用filter方法返回的新数组',b);
+        a.forEach(
+            (x)=>{
+                return x*=2;
+            }
+        );  //遍历数组，并对数组的每个元素都执行回调函数中的操作，但不会影响数组原来的元素
+        console.log('使用forEach方法后的数组a',a);
+        b=a.map(
+            (x)=>{
+                return x.toString();  //将参数转换为字符串
+            }
+        );  //map函数会将每个数组元素都传入回调函数中进行处理，并将回调函数的返回值传入新数组中，最后将新数组返回
+        console.log('使用map方法后得到的新数组,元素的type为:',typeof b[0],'数组为:',b);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

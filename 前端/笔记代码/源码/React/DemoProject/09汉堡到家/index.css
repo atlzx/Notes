@@ -1,0 +1,9 @@
+*{
+    box-sizing: border-box;
+}
+body{
+    margin: 0px;
+}
+img{
+    vertical-align: center;  /* 防止出现行内块元素的幽灵空白 */
+}

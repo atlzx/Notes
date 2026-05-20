@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_函数_作用域链</title>
+    <script>
+        //在调用一个变量时，`JS`解释器会**优先选择在当前作用域中寻找该变量**，如果找不到则向上一层作用域中寻找，找不到再向上找，一直重复直到变量被找到
+        //如果找不到会报错:xxx is not defined
+        let a=1;
+        {
+            console.log(`该输出会输出1:${a}`);  //输出1
+            {
+                let a=2;
+                {
+                    console.log(`该输出会输出2:${a}`);  //输出2
+                    {
+                        let a=3;
+                        console.log(`该输出会输出3:${a}`);  //输出3
+                        console.log(b);  //报错
+                    }
+                    
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

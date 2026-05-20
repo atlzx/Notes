@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_对象_解构</title>
+    <script>
+        arr=[1,2,3,4,5];
+        console.log('原数组:',arr);
+        let [a,b,c,d]=arr;  //如果接收的变量数小于数组长度，则多出来的数组元素不会给任何变量赋值
+        console.log('接收的变量数小于数组长度的情况:',a,b,c,d);
+        let [e,f,g,h,i,j]=arr;  //如果接收的变量数大于数组长度，则多出来的变量名会被赋值为undefined
+        console.log('接收的变量数大于数组长度的情况:',e,f,g,h,i,j);
+        [e,f,g,h,i,j=100]=arr;  //可以通过给不想被赋值的变量指定默认值来使该变量不被赋值为undefined
+        console.log('指定了默认值的情况',e,f,g,h,i,j);
+        let args;
+        [a,b,c,...args]=arr;  //可以在接收的变量最后传入使用...运算符连接的变量来让其接收数组之后全部的元素，并存储在一个数组中
+        console.log('使用...运算符接收元素:',a,b,c,args);
+        console.log('两个变量交换前:',a,b);
+        [a,b]=[b,a];  //快速交换两个变量
+        console.log('两个变量交换后:',a,b);
+        let obj={
+            name:'张三',
+            age:18,
+            gender:'男'
+        };
+        let {age,name,gender,address}=obj;  //如果对象中没有与指定的属性名相同的属性，那么该属性会被赋值undefined
+        console.log('用对象中没有的属性接收对象内的值:',name,age,gender,address);
+        let {name:mingzi,age:nianling,gender:xingbie,address:dizhi='河北省'}=obj;  //自定义属性名并定义默认值
+        console.log('自定义属性名和默认值',mingzi,nianling,xingbie,dizhi);
+        let newObj={...obj};
+        console.log('使用解构浅拷贝对象:',newObj);
+        newObj={...obj,name:'李四'};
+        console.log('使用解构浅拷贝obj并修改一些属性',newObj);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

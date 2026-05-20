@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_伸缩盒_伸缩盒小案例</title>
+    <style>
+        /* #region重置样式*/
+        * { 
+            font-family: Arial; 
+            font-size: 14px; 
+            margin: 0; 
+            padding: 0; 
+            border: none; 
+        }
+        a { 
+            text-decoration: none; 
+        }
+        ul { 
+            list-style: none; 
+        }
+        /* #endregion 重置样式结束*/
+
+        body,html{
+            height: 100%; /*html对应的100%参考的是视口*/
+            width: 100%;
+        }
+        body{
+            background-image: url('../../文件/图片/bg.jpg');
+            background-repeat: no-repeat;
+            background-size: cover; /*该属性设置图片以一个好的观感呈现*/
+        }
+        /* #region头部CSS*/
+        .header{
+            background-color: rgba(0, 0, 0, 0.7);
+            height: 70px;
+            padding: 0px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header>.header-nav{
+            display: flex;
+        }
+        .header>.header-nav li{
+            margin-right: 20px;
+        }
+        .header>.header-nav li:last-child{
+            margin-right: 0px;
+        }
+        .header>.header-nav a{
+            padding: 10px;
+            font-size: 20px;
+            color: white;
+            border: 1px solid white;
+            border-radius: 8px;
+        }
+        .content{
+            display: flex;
+            height: calc(100vh - 70px); /*运算符要用空格隔开,否则无效*/
+        }
+        .content>.content-nav{
+            width: 1000px;
+            height: 300px;
+            margin: auto;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+        .content>.content-nav>.item{
+            display: flex;
+            flex-direction: column; /*反转主轴*/
+            align-items: center; /*由于侧轴默认对齐为stretch,会导致不设置宽高时拉伸至父容器全部空间，故更改此默认值*/
+            justify-content: space-evenly;
+            width: 180px;
+            height: 200px;
+            color: white;
+            transition: all linear 0.3s;
+            cursor: pointer;
+        }
+        .content>.content-nav>.item:hover{
+            box-shadow: 0px 0px 20px black;
+        }
+        .content>.content-nav>.item:nth-child(1){
+            background-color: #595CA8;
+        }
+        .content>.content-nav>.item:nth-child(2){
+            background-color: #FF9D2E;
+        }
+        .content>.content-nav>.item:nth-child(3){
+            background-color: #01A6DE;
+        }
+        .content>.content-nav>.item:nth-child(4){
+            background-color: #015E91;
+        }
+        .content>.content-nav>.item:nth-child(5){
+            background-color: #1DC128;
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部 -->
+    <div class="header">
+        <a href="#">
+            <img src="../../文件/图片/logo.png" alt="logo">
+        </a>
+        <ul class="header-nav">
+            <li><a href="#">国内校区</a></li>
+            <li><a href="#">缅甸校区</a></li>
+            <li><a href="#">非洲校区</a></li>
+            <li><a href="#">美国校区</a></li>
+        </ul>
+    </div>
+    <!-- 内容区 -->
+    <div class="content">
+        <div class="content-nav">
+            <div class="item">
+                <img src="../../文件/图片/item1.png" alt="">
+                <span>我的邮箱</span>
+            </div>
+            <div class="item">
+                <img src="../../文件/图片/item2.png" alt="">
+                <span>云服务</span>
+            </div>
+            <div class="item">
+                <img src="../../文件/图片/item3.png" alt="">
+                <span>手机课堂</span>
+            </div>
+            <div class="item">
+                <img src="../../文件/图片/item4.png" alt="">
+                <span>微信服务</span>
+            </div>
+            <div class="item">
+                <img src="../../文件/图片/item5.png" alt="">
+                <span>在线客服</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

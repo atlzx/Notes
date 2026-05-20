@@ -1,0 +1,37 @@
+{
+  "id": "4240210",
+  "name": "图标",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "37238384",
+      "name": "发送邮件",
+      "font_class": "a-danjucaozuofasongyoujian",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    },
+    {
+      "icon_id": "37238399",
+      "name": "发送短信",
+      "font_class": "a-danjucaozuofasongduanxin",
+      "unicode": "e612",
+      "unicode_decimal": 58898
+    },
+    {
+      "icon_id": "37238402",
+      "name": "计算器",
+      "font_class": "a-danjucaozuojisuanqi",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
+      "icon_id": "37238434",
+      "name": "组织设定",
+      "font_class": "a-danjucaozuozuzhisheding",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    }
+  ]
+}

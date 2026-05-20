@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <table>
+        <thead>
+            <th>序号</th>
+            <th>名称</th>
+            <th>年龄</th>
+            <th>描述</th>
+            <th></th>
+            <th>状态</th>
+        </thead>
+        <tbody>
+            <tr th:each=" item,state: ${list}">
+                <td>[[${item.id}]]</td>
+                <td th:text="${item.name}"></td>
+                <td th:text="${item.age}"></td>
+                <td th:text="${item.desc}"></td>
+                <td>
+                    index（索引）:[[${state.index}]]
+                    count（遍历到的是第几个元素）:[[${state.count}]]
+                    size（遍历的元素总量）:[[${state.size}]]
+                    current（遍历到的当前元素值）:[[${state.current}]]
+                    even（当前的count是否是偶数）:[[${state.even}]]
+                    odd（当前的count是否是奇数）:[[${state.odd}]]
+                    first（是否是第一个元素）:[[${state.first}]]
+                    last（是否是最后一个元素）:[[${state.last}]]
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

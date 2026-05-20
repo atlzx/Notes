@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_新增背景属性_多背景图样例</title>
+    <style>
+        div{
+            height: 400px;
+            width: 400px;
+            background-color: skyblue;
+            border: 1px solid black;
+            background: url(../../文件/图片/bg-lt.png) no-repeat left top,
+                        url(../../文件/图片/bg-rt.png) no-repeat right top,
+                        url(../../文件/图片/bg-lb.png) no-repeat left bottom,
+                        url(../../文件/图片/bg-rb.png) no-repeat right bottom;
+        }
+    </style>
+</head>
+<body>
+    <div></div>
+</body>
+</html>

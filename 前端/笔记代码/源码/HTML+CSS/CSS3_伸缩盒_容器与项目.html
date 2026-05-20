@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_伸缩盒_容器与项目</title>
+    <style>
+        .outer{
+            height: 100px;
+            width: 1000px;
+            background-color: gray; 
+            display: inline-flex; /*inline-flex属性值会将元素设置成弹性且行内块元素的性质，虽然会使目标元素水平对齐，但行内块元素之间有空白，一般该属性值并不会被使用*/
+            display: flex; /*使用display属性将该元素设置为伸缩容器,该元素的所有子元素自动成为伸缩项目*/
+        }
+        .inner{
+            height: 100px;
+            width: 100px;
+        }
+        .color1{
+            background-color: skyblue;
+        }
+        .color2{
+            background-color: brown;
+        }
+    </style>
+</head>
+<body>
+    <div class="outer">
+        <div class="inner color1">
+            <div class="a">a</div>
+            <div class="b">b</div>
+            <div class="c">c</div>
+        </div>
+    </div>
+    <!-- 即使设置元素成为了伸缩容器，该容器性质依然为独占一行，可以为body设置display: flex使该元素成为伸缩项目，便会自动水平对齐 -->
+    <div class="outer">
+        <div class="inner color1">
+            <div class="a">a</div>
+            <div class="b">b</div>
+            <div class="c">c</div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_面向对象_多态</title>
+    <script>
+        class Dog{
+            name;
+            age;
+            constructor(name,age){
+                this.name=name;
+                this.age=age;
+            }
+            sayHello(){
+                console.log('汪汪');
+            }
+        }
+        class Cat{
+            name;
+            age;
+            constructor(name,age){
+                this.name=name;
+                this.age=age;
+            }
+            sayHello(){
+                console.log('喵喵');
+            }
+        }
+        let test1=new Dog('旺财',18);
+        let test2=new Cat('Tom',12);
+        function fn1(x){
+            x.sayHello();  //使用同一个函数，传入不同参数产生不同效果
+        }
+        fn1(test1);
+        fn1(test2);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

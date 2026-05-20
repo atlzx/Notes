@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_数组基本操作1</title>
+    <script>
+        let arr1=new Array();  //使用new Array()的方法创建数组
+        let arr2=[1,2,3,4];  //使用字面量形式创建数组
+        console.log(arr1,arr2);
+        console.log(arr2[0]);  //依据索引读取数组内的数据，索引是一组从0开始，跨度为1的递增的整数
+        arr2[4]=5;  //直接使用索引对数组赋值
+        console.log(arr2);
+        arr2[100]=99;  //这会导致数组不连续，索引从5~99的数据都会被提示为空，且占用内存空间
+        console.log(arr2,arr2[60]);  //此时读取未被赋值的数组数据会返回undefined
+        console.log(arr2.length);  //输出数组长度
+        arr2.length=5;  //更改数组长度，如果修改的值比原值小，则数组会从最后开始向前删除数据，直到长度满足修改的值为止
+        console.log(arr2);  
+        arr2.length=10;  //更改数组长度，如果修改的值比原值大，则数组会自动扩容，未被赋值的部分会被提示为空
+        console.log(arr2);
+        arr2.length=5;
+        arr2[arr2.length]=arr2.length+1;  //可以使用该方法每次都在数组的最后面添加数据使数组连续
+        console.log(arr2);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

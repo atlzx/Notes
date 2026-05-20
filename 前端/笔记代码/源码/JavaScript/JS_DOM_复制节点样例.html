@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_复制节点样例</title>
+    <script>
+        onload=function(){
+            let firstLi=document.getElementById("topUl").firstElementChild;
+            let bottomUl=document.getElementById("bottomUl");
+            document.getElementById("btn").addEventListener(
+                "click",
+                function(){
+                    let newLi=firstLi.cloneNode(true);  // 深拷贝firstLi对象
+                    bottomUl.insertAdjacentElement("beforeend",newLi);
+                }
+            );
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <button id="btn">添加</button>
+    </div>
+    <ul id="topUl">
+        <li>张三</li>
+        <li>李四</li>
+        <li>王五</li>
+    </ul>
+    <ul id="bottomUl">
+        <li>赵六</li>
+    </ul>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 使用a标签强制下载文件，download属性用于浏览器强制下载，其属性值为下载好后的默认文件名称 -->
+    <p>浏览器强制下载</p>
+    <a href="超链接_跳转锚点.html" download="HTML文件">下载文件</a>
+
+    <!-- 使用a标签打开文件 -->
+    <p>浏览器可以在线打开的文件</p>
+    <a href="../../新web前端笔记.md">前端笔记</a>
+
+    <p></p>
+    <img src="../文件/图片/壁纸3.jpg" alt="壁纸">
+    <img src="../文件/图片/壁纸2.jpg" alt="壁纸">
+
+    <!-- 使用a标签打开不能打开的文件时，浏览器因不能打开此文件会默认下载该文件 -->
+    <p id="file">浏览器不能在线打开的文件</p>
+    <a href="../文件/杂项/实验报告.docx">docx文件</a>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_伪类_否定伪类</title>
+    <style>
+        /*条件:1.是div的子元素 2.没有使用“beauty”类名进行样式设置 3.是p标签*/
+        div>p:not(.beauty){
+            color: green;
+        }
+        /*条件:1.是div的子元素 2.没有在序号2-3之间 3.是p元素*/
+        div>p:not(:nth-child(n+2):nth-last-child(n+2)){
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <p title="wise">小明</p>
+        <p class="handsome">小刚</p>
+        <p title="ugly">小红</p>
+        <p class="beauty">小兰</p>
+    </div>
+</body>
+</html>

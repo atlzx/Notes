@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_获取元素节点2</title>
+    <script>
+        onload=function(){
+            let secondDiv=document.getElementById("secondDiv");
+            console.log('当前的节点:',secondDiv);
+            console.log('当前节点的子节点集合:',secondDiv.childNodes);  // 两个内容节点(空白字符)中间夹着一个ul
+            console.log('当前节点的子元素对象:',secondDiv.children);
+            let ulElement=secondDiv.firstElementChild;
+            console.log('ul节点的第一个子元素:',ulElement.firstElementChild);
+            console.log('ul节点的最后一个子元素:',ulElement.lastElementChild);
+            console.log('ul第一个子元素的下一个兄弟元素:',ulElement.firstElementChild.nextElementSibling);
+            console.log('ul最后一个子元素的前一个元素:',ulElement.lastElementChild.previousElementSibling);
+            console.log('获取ul元素的父元素:',ulElement.parentElement);
+            console.log('获取html标签的父节点:',document.documentElement.parentNode);  // 为document,因为document是文档节点
+            console.log('获取html标签的父元素:',document.documentElement.parentElement); // html标签没有父元素
+            console.log('获得当前元素的标签名:',secondDiv.tagName);
+        }
+    </script>
+</head>
+<body>
+    <div id="firstDiv">
+        <div id="secondDiv">
+            <ul>
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+                <li>5</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

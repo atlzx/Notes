@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_新增盒子属性_box-shadow</title>
+    <style>
+        .container{
+            height: 800px;
+            width: 95vw;
+            background-color: gray;
+            overflow: hidden;
+            font-size: 0px;
+        }
+        .box1,.box2{
+            height: 100px;
+            width: 100px;
+            display: inline-block;
+            margin-top: 30px;
+        }
+        .box1{
+            background-color: skyblue;
+            /*写两个值，含义:水平距离 垂直距离*/
+            /* box-shadow: 10px 10px; */
+            /*写三个值，含义:水平距离 垂直距离 阴影颜色*/
+            /* box-shadow: 10px 10px orange; */
+            /*写三个值，含义:水平距离 垂直距离 模糊度*/
+            /* box-shadow: 10px 10px 10px; */
+            /*写四个值，含义:水平距离 垂直距离 模糊度 阴影颜色*/
+            box-shadow: 10px 10px 10px orange;
+            /*写五个值，含义:水平距离 垂直距离 模糊度 外延值 阴影颜色*/
+            /* box-shadow: 10px 10px 10px 10px orange; */
+            /*写五个值，含义:水平距离 垂直距离 模糊度 外延值 阴影颜色 内阴影*/
+            /* box-shadow: 10px 10px 10px 10px orange inset; */
+        }
+        .box2{
+            background-color: brown;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box1"></div>
+        <div class="box2"></div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_媒体查询_媒体特性样例</title>
+    <style>
+        div{
+            height: 200px;
+            width: 100%;
+            margin: 0px auto;
+            background-color: gray;
+            text-align: center;
+            color: white;
+            font-size: 40px;
+            line-height: 200px;
+        }
+
+        /*当视口宽度小于等于700px时内部的样式生效*/
+        @media (max-width:700px){
+            div{
+                background-color: skyblue;
+            }
+        }
+         /*当视口宽度大于等于900px时内部的样式生效*/
+        @media (min-width:900px){
+            div{
+                background-color: orange;
+            }
+        }
+         /*当视口宽度等于800px时内部的样式生效*/
+        @media (width:800px){
+            div{
+                background-color: green;
+            }
+        }
+
+        /*当前设备宽度等于1536px时内部的样式生效,当前设备宽度=设备理论宽度/系统缩放率*/
+        /*由于该媒体查询写在了最下方，因此其会覆盖掉之前的样式，显示为棕色*/
+        @media (device-width:1536px){
+            div{
+                background-color: brown;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div>测试文本</div>
+    </div>
+</body>
+</html>

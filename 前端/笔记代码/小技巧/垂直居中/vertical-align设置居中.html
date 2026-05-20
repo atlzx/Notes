@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>vertical-align设置居中</title>
+    <style>
+        div {
+            font-size: 0px;
+            width: 500px;
+            height: 600px;
+            margin: 0px auto;
+            background-color: skyblue;
+            line-height: 600px;
+        }
+        span {
+            display: inline-block;
+            height: 200px;
+            vertical-align: middle; /*作用于元素*/
+            font-size: 20px;
+            /*消除从父元素继承的600px行高效果,并使文本在元素内居中(大部分字体由于设计原因，都不是绝对垂直的，都稍微靠下一些),100%取字体大小的像素值的100%*/
+            line-height: 200px; 
+        }
+    </style>
+</head>
+<body>
+    <div>
+        x
+        <span>x测试文本</span>
+    </div>
+</body>
+</html>

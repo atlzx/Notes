@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_margin塌陷</title>
+    <style>
+        #container{
+            width: 400px;
+            background-color: gray;
+            overflow: hidden;
+        }
+        .test1{
+            height: 100px;
+            width: 100px;
+            background-color: skyblue;
+            /*会导致margin塌陷问题*/
+            margin-top: 50px;
+        }
+        .test2{
+            height: 100px;
+            width: 100px;
+            background-color: green;
+            /*会导致margin塌陷问题*/
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="test1">测试1</div>
+        <div class="test2">测试2</div>
+    </div>
+    <div style="background-color: blue;">对照</div>
+</body>
+</html>

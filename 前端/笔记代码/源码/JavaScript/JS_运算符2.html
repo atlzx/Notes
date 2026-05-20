@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_运算符2</title>
+    <script>
+        let a=1&&2;  //根据或运算的短路特性，会判断到最后一个值返回2
+        let b=(3&&4)&&1&&2; //根据或运算的短路特性，返回2，运算带括号时遵循从左至右的顺序运算
+        let c=NaN&&1;  //根据或运算的短路特性返回NaN
+        let d=1&&null;  //根据或运算的短路特性返回null
+        let e=1||2;  //根据与运算的短路特性返回1
+        let f=0||'aa';  //根据与运算的短路特性返回'aa'
+        let g=('aa'&&null)||0;  //根据与运算的短路特性返回0，运算带括号时遵循从左至右的顺序运算
+        let h=null||NaN;  //根据与运算的短路特性返回NaN
+        console.log(a,b,c,d,e,f,g,h);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

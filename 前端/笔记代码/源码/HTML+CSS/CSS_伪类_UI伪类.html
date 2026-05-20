@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_伪类_UI伪类</title>
+    <style>
+        /*:checked伪类选择器可以在选择框被选中时为选择框提供样式设置，与:focus不同的是，它仅在被选中时才有效，而:focus即使是选择框未被选中（取消选中状态），但焦点在选择框时就会有效，因此:checked比:focus筛选条件更严格*/
+        input:checked{
+            height: 100px;
+            width: 100px;
+            /*表单的单选和复选框无法被部分属性修饰，如下面的颜色属性*/
+            color: blue;
+            background-color: red;
+        }
+        input:enabled{
+            background-color: skyblue;
+            color: brown;
+        }
+        input:disabled{
+            background-color: aquamarine;
+        }
+    </style>
+</head>
+<body>
+    <input type="checkbox" name="fuxuan">
+    <input type="radio" name="gender" value="男">男
+    <input type="radio" name="gender" value="女">女
+    <input type="text" name="other">
+    <input type="text" disabled>
+</body>
+</html>

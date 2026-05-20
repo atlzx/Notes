@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_对象_可变类型</title>
+    <script>
+        let a=Object();
+        a.name="张三";
+        a.age=18;
+        let b=a;
+        console.log(a,b,a===b);
+        b.name="李四";    //使用此行代码会改变对象属性的值
+        console.log(a,b,a===b);
+
+        let test={
+            fn1:function(){
+                console.log('函数1');
+            },
+
+            //使用该语法声明的方法，会被存储在原型对象内
+            fn2(){
+                console.log('函数2，会被存储在原型对象中')
+            },
+        }
+        console.log(test,test.fn1(),test.fn2());
+
+        // 通常使用const变量指向对象，const变量在赋值后便无法更改
+        const c={
+            name:"王五",
+            age:16,
+            gender:"女"
+        }
+        console.log(c);
+        c.name="赵六";  //const变量指向的对象依然可以更改，因为const锁的是对象的内存地址，而不是对象内属性值的内存地址
+        c=16;  //该语句会报错，无法修改const变量
+
+
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

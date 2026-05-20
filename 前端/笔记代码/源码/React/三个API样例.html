@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>三个API样例</title>
+    <script src="../../文件/React18/react.development.js"></script>
+    <script src="../../文件/React18/react-dom.development.js"></script>
+    <script>
+
+        function change(){
+            const button=React.createElement(
+                "button",
+                {onClick:()=>{alert('button was clicked')}},  // 事件处理使用驼峰命名法
+                "click me"
+            );
+            const div=React.createElement(
+            "div",
+            {
+                id:'div',
+                className:'myClass'  // class要改为className
+            },
+            "这是一个react元素生成的div",
+            button  // 将button按钮也加在div子元素里
+            );
+            // 得到react根元素
+            const root=ReactDOM.createRoot(document.getElementById("root"));
+            // root,并将div挂载到root上
+            // 当调用render方法渲染页面时，React会比较两次渲染的元素，只在真实的DOM中更新发生变化的部分，而没发生变化的保持不变
+            root.render(div);
+        }
+
+        onload=function(){
+            const button=React.createElement(
+                "button",
+                {onClick:change},  // 事件处理使用驼峰命名法
+                "点我一下"
+            );
+            const div=React.createElement(
+            "div",
+            {
+                id:'div',
+                className:'myClass'  // class要改为className
+            },
+            "这是一个react元素生成的div",
+            button  // 将button按钮也加在div子元素里
+            );
+            // 得到react根元素
+            const root=ReactDOM.createRoot(document.getElementById("root"));
+            // root,并将div挂载到root上
+            // 当调用render方法渲染页面时，React会比较两次渲染的元素，只在真实的DOM中更新发生变化的部分，而没发生变化的保持不变
+            root.render(div);
+        }
+    </script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>

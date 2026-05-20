@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<title>JS_流程控制_嵌套循环样例</title>
+	<style>
+		span{
+			display: inline-block;
+			width: 100px;
+		}
+	</style>
+	<script>
+		for(let i=1;i<=9;i++){
+			for(let j=1;j<=i;j++){
+				console.log(i,j);
+				document.write(`<span>${j}*${i}=${i*j}</span>`); /*使用css+html对齐*/
+			}
+			document.write('<br>')
+		}
+	</script>
+</head>
+<body>
+</body>
+</html>

@@ -1,0 +1,35 @@
+people:
+  name: ly
+  age: 20
+  birth-day: 2002/1/1 00:00:00  # birthDay可以写成birth-day
+  like: true
+  child:
+    name: ll
+    birthday: 2018/1/1
+    age: 5
+  cats:
+    cat1:  # 对象的第一种表示方法
+      name: A
+      age: 2
+    cat2: {name: B,age: 2}  # 对象的第二种表示方法
+    # 数组的第一种表示方法——使用 - 属性名: 值 的方式来创建数组
+#  dogs:
+#    - name: dog1
+#    - age: 10
+#    - name: dog2
+#    - age: 1
+  dogs: [{name: dog1,age: 10},{name: dog2,age: 1}]  # 数组的第二种表示方法，直接写中括号，在里面嵌入对象
+  text:
+    - |  # 该字符用于保留文本格式
+      abc
+      def
+      ghi
+    - >  # 该字符会去掉换行符，并用空格隔开
+      abc
+      def
+      ghi
+    - 'aba\nafaf'  # 单引号不会转义
+    - "aba\nafaf"  # 多引号可以转义
+    - aa\
+      bb\
+      cc

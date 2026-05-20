@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_数组去重</title>
+    <script>
+        const arr=[1,6,3,4,1,3,2,2];
+        /*法一*/
+        for(let i=0;i<arr.length;i++){
+            while(true){
+                if(arr.indexOf(arr[i],i+1)!==-1){
+                    arr.splice(arr.indexOf(arr[i],i+1),1);
+                }else{
+                    break;
+                }
+            }
+        }
+        console.log('使用方法一去重后的数组:',arr);
+
+        /*法二*/
+
+        let arr2=[];
+        for(let i=0;i<arr.length;i++){
+            if(arr2.indexOf(arr[i])===-1){
+                arr2.push(arr[i]);
+            }
+        }
+        console.log('使用方法二去重后的数组:',arr2);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

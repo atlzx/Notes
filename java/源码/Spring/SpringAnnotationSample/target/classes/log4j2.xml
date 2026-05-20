@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    configuration有两个可选属性
+        status用于指定日志框架本身输出的日志优先级，可以修改为DEBUG
+        monitorInterval用于指定自动加载配置文件的间隔时间，单位为秒
+
+-->
+<configuration>
+
+    <!-- properties内可以声明一些变量，标签体内的值就是变量的值，标签体的name就是变量名，使用时需要使用${name}嵌入 -->
+    <properties>
+        <property name="LOG_PATH">E:\大学文件\笔记类\各学科笔记\java\源码\Spring</property>
+    </properties>
+
+
+    <loggers>
+        <!--
+            level指定日志级别，从低到高的优先级：
+                TRACE < DEBUG < INFO < WARN < ERROR < FATAL
+                trace：追踪，是最低的日志级别，相当于追踪程序的执行
+                debug：调试，一般在开发中，都将其设置为最低的日志级别
+                info：信息，输出重要的信息，使用较多
+                warn：警告，输出警告的信息
+                error：错误，输出错误信息
+                fatal：严重错误
+        -->
+        <!-- 设置优先级为DEBUG,TRACE将被忽略 -->
+        <root level="DEBUG">
+            <appender-ref ref="spring6log"/>  <!-- 这里的ref属性对应着下面标签的name属性 -->
+            <appender-ref ref="RollingFile"/>
+            <appender-ref ref="log"/>
+        </root>
+    </loggers>
+
+    <appenders>
+        <!--输出日志信息到控制台-->
+        <!--
+            name与上面标签的ref需要一致
+            target值为SYSTEM_OUT时，输出黑色，SYSTEM_ERR输出红色
+        -->
+        <console name="spring6log" target="SYSTEM_OUT">
+            <!--控制日志输出的格式-->
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss SSS} [%t] %-3level %logger{1024} - %msg%n"/>
+        </console>
+
+        <!--文件会打印出所有信息，该log在每次test时都会被覆写，而不是追加-->
+        <File name="log" fileName="${LOG_PATH}\logFile\testLog\test.log" append="false">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>
+        </File>
+
+        <!--
+            fileName表示要将日志文件存入的文件夹，使用${name}来嵌入之前声明的变量
+            filePattern指定日志文件的名称格式
+        -->
+        <RollingFile name="RollingFile" fileName="${LOG_PATH}\logFile\minLog\log"
+                     filePattern="${LOG_PATH}\logFile\bigLog\$${date:yyyy-MM}\app-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n"/>
+            <!-- 如果堆存起来的日志信息超过了50MB，那么把它们放入指定的文件夹内 -->
+            <SizeBasedTriggeringPolicy size="50MB"/>
+            <!-- DefaultRolloverStrategy属性如不设置，
+            则默认为最多同一文件夹下7个文件，这里设置了20 -->
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+    </appenders>
+</configuration>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_jQuery_删除元素样例</title>
+    <script src="../../文件/jQuery/jquery-3.7.1.js"></script>
+    <script>
+        $(
+            function(){
+                var $btn=$("#btn");
+                var $firstUl=$(".ul1");
+                var $secondUl=$(".ul2");
+                var $btn2=$("#btn2");
+                $btn.click(
+                    function(){
+                        $firstUl.empty();  // 清空其全部子元素，包括事件和数据
+                    }
+                );
+                $secondUl.click(
+                    function(){
+                        $secondUl.remove(".ul2 li:last-child");  // 传入的参数仅会检验对象内的元素，而不会检验对象内元素的元素，因此该方法什么也不会移除
+                        $secondUl.detach();  // 使用detach方法不会删除元素绑定的事件处理和数据，因此在删除再恢复依旧能用事件处理,但remove删除的很彻底
+                    }
+                );
+                $btn2.click(
+                    function(){
+                        $firstUl.after($secondUl);  // 删除后不会清空JS内存中存储的变量数据，数据依旧可以恢复
+                    }
+                );
+            }
+        );
+    </script>
+</head>
+<body>
+    <div>
+        <button id="btn" type="button">按钮1</button>
+        <button type="button" id="btn2">按钮2</button>
+    </div>
+    <ul class="ul1">
+        <li>张三</li>
+        <li>李四</li>
+    </ul>
+    <ul class="ul2">
+        <li>王五</li>
+        <li>赵六</li>
+    </ul>
+</body>
+</html>

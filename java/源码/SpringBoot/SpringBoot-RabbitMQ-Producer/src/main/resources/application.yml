@@ -1,0 +1,14 @@
+server:
+  port: 8001
+spring:
+  rabbitmq:
+    host: 8.130.44.112  # 指定IP
+    port: 5672  # 指定端口
+    username: guest  # 指定用户名
+    password: 123456  # 指定密码
+    virtual-host: /  # 指定Virtual-Host
+    publisher-confirm-type: CORRELATED # 使交换机开启消息的确认模式
+    publisher-returns: true # 启用消息发送结果确认
+logging:
+  level:
+    root: info

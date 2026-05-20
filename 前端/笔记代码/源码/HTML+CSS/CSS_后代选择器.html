@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_后代选择器</title>
+    <style>
+        /*该选择器作用于所有后代元素有li的ul标签*/
+        ul li{
+            color: blue;
+            font-size: 40px;
+        }
+        /*直接使用类名进行后代选择，同时在里面写其它复合选择*/
+        .day li.noon{
+            color: red;
+            font-size: 30px;
+        }
+        .day div.noon{
+            color: green;
+            font-size: 30px;
+        }
+    </style>
+</head>
+<body>
+    <ul>
+        <li>河北</li>
+        <li>上海</li>
+        <li>天津</li>
+        <li>广东</li>
+        <div>
+            <li>福建</li> <!-- 这个li标签并不是ul的直接子元素，但仍然为ul的后代元素，因此后代选择器依然有效 -->
+        </div>
+        <li>北京</li>
+    </ul>
+    <br>
+    <ol class="day">
+        <li>早上睡觉</li>
+        <li class="noon">中午打游戏</li>
+        <li>
+            <span>晚上摆烂</span>
+        </li>
+        <div class="noon">
+            测试
+        </div>
+    </ol>
+</body>
+</html>

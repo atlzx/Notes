@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_Set样例</title>
+    <script>
+        let set1=new Set([1,2,2,5,7,3,3,3,3,4,9,7]);  //集合会将重复的值自动过滤掉，可以利用该特性进行去重操作
+        let arr1=[...set1];  //将集合转换为数组，为浅拷贝
+        let arr2=Array.from(set1);  //另一种转换集合的方式，为浅拷贝
+        arr1.sort(
+            (a,b)=>{
+                return a-b;
+            }
+        );
+        console.log('转换并排序后的数组:',arr1);
+        console.log('原集合:',set1,'原集合长度:',set1.size);
+        set1.add(18);
+        set1.delete(1);
+        console.log('添加和删除后的set:',set1,'判断集合中是否有2:',set1.has(3));
+        console.log('获取set中的值:',set1.values());
+        console.log('获取set中的键:',set1.keys());  //该方法实际上与调用values方法完全一致
+        console.log('获取set中的键值对:',set1.entries());  //可以发现其key和value是一致的
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

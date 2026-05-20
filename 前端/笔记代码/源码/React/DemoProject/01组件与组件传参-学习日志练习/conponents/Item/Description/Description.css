@@ -1,0 +1,17 @@
+/*设置日志内容的样式*/
+.description{
+    flex: auto;
+    text-align: center;
+    font-weight: bold;
+}
+
+/*设置描述内容*/
+.desc{
+    font-size: 16px;
+    color: #194B49;
+}
+
+/*设置学习时间*/
+.time{
+    color: #D62828;
+}

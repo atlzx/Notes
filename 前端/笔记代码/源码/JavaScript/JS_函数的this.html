@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_函数的this</title>
+    <script>
+        function fn1(){
+            console.log('函数调用时的this:',this);
+        }
+        let a={
+            sayhello(){
+                console.log("方法调用时的this:",this);
+                const fn2=()=>{
+                    //箭头函数的this继承自其外部作用域的this,这里的外部作用域是sayhello函数作用域，因此this为sayhello函数的this，即对象a
+                    console.log("箭头函数的this::",this);  
+                };
+                fn2();
+            },
+            b:{
+                fn3:()=>{
+                    //该箭头函数的外部作用域是对象b的块作用域，除函数作用域外，对象的this一般都为window,因此输出window
+                    console.log('对象内的箭头函数的this:',this);
+                }
+            },
+        };
+        fn1();  //函数被调用时，this为window全局对象
+        a.sayhello();  //作为方法被调用时，this为调用该方法的对象
+        a.b.fn3();
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

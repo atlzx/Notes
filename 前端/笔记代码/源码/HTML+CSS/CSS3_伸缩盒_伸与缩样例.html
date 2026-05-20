@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_伸缩盒_基准长度</title>
+    <style>
+        .outer{
+            height: 600px;
+            width: 600px;
+            border: 1px solid black;
+            margin: 0px auto;
+            display: flex;
+            /*设置主轴方向从下到上*/
+            flex-direction: row;
+            background-color: #888;
+
+            /*中心对齐*/
+            align-content: center;
+
+            justify-content: flex-start;
+        }
+        .inner{
+            height: 200px;
+            width: 200px;
+            border: 1px solid black;
+            box-sizing: border-box;
+            background-color: skyblue;
+            flex-grow: 1;
+            flex-shrink: 1;
+            flex-basis: 100px;
+
+            /*以下为复合属性*/
+            flex: 1 1 auto; /*可简写为flex: auto;*/
+
+            flex: 1 1 0; /*可简写为flex: 1*/
+
+            flex: 0 0 auto; /*可简写为 flex: none*/
+
+            flex: 0 1 auto; /*可简写为flex: 0 auto*/
+        }
+    </style>
+</head>
+<body>
+    <div class="outer">
+        <div class="inner">测试1</div>
+        <div class="inner">测试2</div>
+        <div class="inner">测试3</div>
+    </div>
+</body>
+</html>

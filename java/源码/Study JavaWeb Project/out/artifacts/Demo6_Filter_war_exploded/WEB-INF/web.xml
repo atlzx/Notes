@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+    <!--
+        为web.xml文件配置filter和filter-mapping标签可以设置过滤器
+    -->
+    <servlet>
+        <servlet-name>ServletA</servlet-name>
+        <servlet-class>Service.ServletA</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ServletA</servlet-name>
+        <url-pattern>/ServletA</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>Filter1</filter-name>  <!-- 给filter起一个别名 -->
+        <filter-class>Filter.Servlet1</filter-class>  <!-- 告知tomcat这个filter的路径 -->
+    </filter>
+    <filter-mapping>
+        <filter-name>Filter1</filter-name>  <!-- 别名 -->
+        <url-pattern>/Servlet1</url-pattern>  <!-- filter要进行过滤的请求资源路径 -->
+        <servlet-name>ServletA</servlet-name>  <!-- filter要过滤的处理请求的Servlet -->
+        <url-pattern>*.html</url-pattern>  <!-- 一个filter-mapping可以同时存在多个url-pattern和servlet-name标签 -->
+    </filter-mapping>
+</web-app>

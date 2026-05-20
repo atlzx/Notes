@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>伸缩盒模型水平垂直居中</title>
+    <style>
+        .outer{
+            height: 600px;
+            width: 600px;
+            margin: 0px auto;
+            border: 2px solid black;
+            background-color: gray;
+            display: flex;
+        }
+        .inner{
+            height: 100px;
+            width: 100px;
+            background-color: skyblue;
+            margin: auto;
+            box-sizing: border-box;
+            border: 10px solid red
+        }
+    </style>
+</head>
+<body>
+    <div class="outer">
+        <div class="inner">测试文本</div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_面向对象_类的属性</title>
+    <script>
+        class Test{
+            name = "李子轩";
+            age = 18;
+            static gender = "男";
+        }
+        test1=new Test();
+        test2=new Test();
+        console.log(test1,test2);  //静态属性无法被实例对象访问，因此没有在这里显示
+        console.log(Test.gender);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_伸缩盒_主轴属性样例2</title>
+    <style>
+        .outer{
+            height: 600px;
+            width: 1000px;
+            border: 1px solid black;
+            margin: 0px auto;
+            display: flex;
+            /*设置主轴方向从下到上*/
+            flex-direction: row;
+            /*设置主轴反向换行*/
+            flex-wrap: wrap;
+            /*上面俩属性的复合属性*/
+            /* flex-flow: column-reverse wrap; */
+
+            /*项目均匀分布*/
+            /* justify-content: space-evenly; */
+
+            /*项目均匀分布，项目与项目的距离是项目与边界距离的二倍*/
+            /* justify-content: space-around; */
+
+            /*项目均匀分布，项目与项目之间距离相同，项目与边界无距离*/
+            /* justify-content: space-between; */
+
+            /*主轴起点对齐*/
+            /* justify-content: flex-start; */
+
+            /*主轴终点对齐*/
+            /* justify-content: flex-end; */
+            
+            /*中心对齐*/
+            justify-content: center;
+        }
+        .inner{
+            height: 200px;
+            width: 200px;
+            border: 1px solid black;
+            box-sizing: border-box;
+            background-color: skyblue;
+        }
+    </style>
+</head>
+<body>
+    <!-- 项目之间出现空白的原因是浏览器认为该弹性盒子的宽度或高度在其项目换行完之后还有空余，
+        因此让换行后的项目与其前后或左右的项目间隔一定的距离，这些距离都是相同的 -->
+    <div class="outer">
+        <div class="inner">1</div>
+        <div class="inner">2</div>
+        <div class="inner">3</div>
+        <div class="inner">4</div>
+        <div class="inner">5</div>
+        <div class="inner">6</div>
+        <div class="inner">7</div>
+    </div>
+</body>
+</html>

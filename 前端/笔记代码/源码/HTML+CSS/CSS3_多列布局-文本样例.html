@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_多列布局-文本样例</title>
+    <style>
+        div{
+            column-count: 3;
+            column-width: 150px; /*即使该属性定义在后面，与前面的相斥，浏览器依旧会选择列数少的呈现*/
+            columns: 4 120px; /*该属性貌似会覆盖前面的*/
+            column-gap: 50px; /*即使设置成0，也会有最小的间距*/
+            column-rule: red 1px dashed;
+        }
+        h1{
+            text-align: center;
+            column-span: all;
+        }
+        img{
+            width: 100%; /*设置宽度为列宽的100%*/
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>新闻</h1>
+        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolorem laboriosam corporis, maxime dolor aperiam
+            nisi voluptate perferendis! Error, officiis cumque illo excepturi dolor aliquid beatae vitae eveniet iure
+            ducimus cupiditate repellat magni adipisci facilis mollitia delectus, nisi omnis in corporis nihil
+            consequuntur ex veritatis qui assumenda! Ab deleniti porro corrupti incidunt eum, dignissimos enim soluta
+            iste delectus rerum, quis veritatis nihil aliquam facilis quas in, dolorum aliquid. Cum quod dolore
+            exercitationem sit nemo, distinctio est quos, tempora asperiores tempore libero ea a commodi ducimus facilis
+            nostrum necessitatibus! Quas numquam et necessitatibus accusamus eaque, culpa laborum eos cupiditate debitis
+            facilis, quaerat reiciendis velit blanditiis quibusdam, dolores expedita enim eius dolore quis recusandae!
+            Aut laudantium aperiam et optio aliquid id quis asperiores.</p>
+        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Consequatur sapiente doloremque obcaecati incidunt
+            mollitia voluptates quae amet, harum voluptate sit vitae excepturi, porro iure perferendis beatae ratione
+            accusantium dolores quam rerum magni quaerat totam delectus. Totam architecto velit facere veritatis
+            debitis! Ullam at nulla consequuntur aut, debitis quidem, inventore nesciunt animi voluptatum temporibus
+            adipisci, amet obcaecati ipsa. Odit, dolore id hic deserunt eum, impedit ipsa officiis, odio est sequi neque
+            quaerat. Id voluptatum rerum autem maxime ratione repudiandae nisi exercitationem, illo aliquid molestiae
+            placeat commodi ullam eum. Officia perspiciatis commodi inventore ipsam a unde debitis sapiente incidunt?
+            Deserunt quos aliquid animi. At et veniam, expedita totam nesciunt placeat dolorum id hic blanditiis maxime
+            qui? Earum ab sunt itaque natus repellendus.</p>
+            <img src="../../文件/图片/shanghai.jpg" alt="插图">
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia corrupti tempore numquam ipsum amet non quos
+            iusto voluptatum similique, quam expedita? Obcaecati at expedita fuga assumenda aspernatur dolor dignissimos
+            hic modi, saepe pariatur reiciendis. Minus maiores facilis amet cum ipsa voluptates consequatur, excepturi
+            nihil molestias sapiente distinctio magni nobis itaque eligendi eveniet molestiae dolore quia consequuntur
+            voluptate. Doloribus ad assumenda vitae reprehenderit nam? Sint nisi nam saepe dolor eos, laboriosam quasi
+            voluptatum mollitia maxime, natus laudantium voluptas, at perferendis vel corrupti numquam. Sunt adipisci
+            minima odit corrupti dignissimos, molestias, nam consectetur molestiae dolorem cumque commodi officiis
+            mollitia, exercitationem in culpa voluptatem cum dicta pariatur libero voluptas! Ducimus sunt praesentium
+            ipsa incidunt voluptatibus, deleniti dolore eligendi temporibus magnam recusandae. Molestias, sit!</p>
+        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestiae, sunt incidunt vitae, hic dolorem
+            reprehenderit, eligendi id totam unde eos saepe officia. Ab nam modi praesentium? Maiores alias vero
+            similique odit quam? Eveniet dignissimos ipsum laudantium perferendis earum quasi ipsa repellendus saepe
+            voluptas velit vel in, sapiente accusamus cumque adipisci ducimus veritatis pariatur. Obcaecati soluta velit
+            recusandae, debitis fugiat quos, aspernatur omnis architecto sunt, explicabo a excepturi aut quaerat. Quidem
+            adipisci laudantium minima consectetur iusto, mollitia, magnam eaque porro iure maxime harum, debitis quam!
+            Vel aperiam ipsa dignissimos quaerat repellat sunt, error placeat doloremque soluta rem! Nihil cupiditate
+            maiores expedita, quae voluptatibus pariatur natus eius atque cumque, quod quia ratione aliquam debitis.
+            Dolore, quisquam corporis. Libero cupiditate molestiae quidem natus!</p>
+    </div>
+</body>
+</html>

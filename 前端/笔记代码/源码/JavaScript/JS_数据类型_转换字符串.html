@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_数据类型_转换字符串</title>
+    <script>
+        let a=true;
+        let b=1;
+        let c=2n;
+        let d=null;
+        let e=undefined;
+        let f=Infinity;
+        let g=NaN;
+        console.log(typeof a,a);
+        console.log(typeof b,b);
+        console.log(typeof c,c);
+        console.log(typeof d,d);
+        console.log(typeof e,e);
+        console.log(typeof f,f);
+        console.log(typeof g,g);
+        a=a.toString();
+        b=b.toString();
+        c=c.toString();
+       /*  d=d.toString();  //由于null未含有toString方法，因此无法转换 */
+       /*  e=e.toString();   由于undefined未含有toString方法，因此无法转换*/
+        f=f.toString();
+        g=g.toString();
+        console.log(typeof a,a);
+        console.log(typeof b,b);
+        console.log(typeof c,c);
+        console.log(typeof d,d);
+        console.log(typeof e,e);
+        console.log(typeof f,f);
+        console.log(typeof g,g);
+
+        console.log(typeof String(a),a,typeof String(b),b,typeof String(c),c,typeof String(d),d,typeof String(e),e,typeof String(f),f,typeof String(g),g);  //String函数可以对null和undefined进行转换
+        //使用‘+’运算符进行字符串转换，该方法无法转换null和undefined
+        console.log(typeof a+'',a+'',typeof b+'',b+'',typeof c+'',c+'',typeof d+'',d+'',typeof e+'',e+'',typeof f+'',f+'',typeof g+'',g+'');
+
+
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

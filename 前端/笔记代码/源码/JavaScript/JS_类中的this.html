@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_类中的this</title>
+    <script>
+        class Test{
+            name;
+            age;
+            // 对于构造函数来说,this就是当前创建的对象
+            constructor(name,age){
+                this.name=name;
+                this.age=age;
+                console.log(this.name,this.age);
+            }
+           // 对于实例方法来说，this就是当前实例
+            print(){
+                console.log(this.name,this.age);
+            }
+            //对于静态方法来说，this就是当前类
+            static sayHello(){
+                console.log(this.name,this.age);
+            }
+        }
+        t1=new Test("张三",18);
+        t2=new Test("李四",12);
+        t1.print();
+        t2.print();
+        Test.sayHello();
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    XML文件中的文档声明必须写在最上面
+    XML文件相比properties文件，其更有层次性，因为标签可以嵌套
+    XML文件的根标签仅能有一个
+
+-->
+<jdbc>
+    <dev>
+        <userName>lzx</userName>
+        <password>123456</password>
+        <driver>com.mysql.cj.jdbc.Driver</driver>
+        <url>jdbc:/mysql://localhost:3306/me</url>
+    </dev>
+    <test>
+        <userName>aaa</userName>
+        <password>654321</password>
+        <driver>com.mysql.cj.jdbc.Driver</driver>
+        <url>jdbc:/mysql://localhost:3306/me</url>
+    </test>
+</jdbc>

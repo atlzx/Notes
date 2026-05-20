@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_定位_填满包含块</title>
+    <style>
+        .container{
+            height: 400px;
+            width: 400px;
+            background-color: gray;
+            border: 10px solid red;
+            position: relative;
+        }
+        .box{
+            /*想使用此方法，定位元素必须要有明确的宽高*/
+            height: 100px;
+            width: 100px;
+            border: 10px solid black;
+            padding: 20px;
+            background-color: orange;
+            /*方法一(推荐):*/
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            right: 0px;
+            bottom: 0px;
+            margin: auto;
+            
+            /*方法二(不推荐)*/
+            /*
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-top: -80px;
+            margin-left: -80px;
+            */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box">测试文本</div>
+    </div>
+</body>
+</html>

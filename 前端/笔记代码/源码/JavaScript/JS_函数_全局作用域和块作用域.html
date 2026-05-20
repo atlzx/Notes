@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_函数_全局作用域和块作用域</title>
+    <script>
+        let a=111;
+        console.log(`全局作用域内访问全局变量a=${a}`);  //全局变量可以在任意位置被访问
+        {
+            let b='aaa';
+            console.log(`块作用域内访问全局变量a=${a}`);  //全局变量可以在任意位置被访问
+            console.log(`块作用域内访问块内局部变量b=${b}`);  //局部变量可以在自己的作用域被访问
+            {
+                console.log(`块作用域的块作用域内访问块作用域的局部变量b=${b}`);  //局部变量也可以在自己嵌套的块作用域中被访问
+            }
+        }
+        console.log(`全局作用域内访问块作用域局部变量b=${b}`);  //会报错，因为局部变量无法被外部访问
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

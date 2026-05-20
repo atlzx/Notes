@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_媒体查询_媒体类型样例</title>
+    <style>
+        div{
+            height: 500px;
+            width: 500px;
+            margin: 0px auto;
+            background-image: linear-gradient(30deg,red,blue,green);
+            text-align: center;
+            text-shadow: 0px 0px 10px black;
+            color: white;
+        }
+        /*给打印专门设置的样式*/
+        /*在媒体查询内的css语句与其它css语句相比其优先级是一样的*/
+        /*必须将媒体查询写在对应样式后才能生效，因为写在前面会被后面的效果覆盖*/
+        @media print {
+            div{
+                background-image: none;
+                line-height: 500px;
+                background-color: skyblue;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div>测试文本</div>
+    </div>
+</body>
+</html>

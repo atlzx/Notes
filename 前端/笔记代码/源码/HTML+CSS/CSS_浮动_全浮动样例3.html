@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_浮动_全浮动样例2</title>
+    <style>
+        .container{
+            width: 250px; /*由于父元素宽度不够，第三个盒子只能去下边*/
+            background-color: gray;
+            border: 1px transparent solid; /*在此处设置border，因此不会出现margin塌陷问题*/
+        }
+        .box{
+            height: 100px;
+            width: 100px;
+            float: left;
+        }
+        .box1{
+            background-color: brown;
+            margin: 10px;
+            height: 120px; /*由于第一个盒子高度较高，会将由于宽度限制的第三个盒子挤到第二个盒子下边*/
+        }
+        .box2{
+            background-color: skyblue;
+            margin: 10px;
+        }
+        .box3{
+            background-color: green;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box box1">测试1</div>
+        <div class="box box2">测试2</div>
+        <div class="box box3">测试3</div>
+    </div>
+</body>
+</html>

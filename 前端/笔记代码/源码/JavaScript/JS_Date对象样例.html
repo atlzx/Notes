@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_Date对象样例</title>
+    <script>
+        let date=new Date('2011-06-12T13:16:33');  //月份不能只用6，必须保证用0补以使月份到达2位数
+        console.log(date);
+        console.log('获取日期:',date.getDate(),'获取月份:',date.getMonth(),'获取年份:',date.getFullYear());
+        console.log('获取时间戳:',date.getTime(),'获取当前时间戳:',Date.now());
+        let date2=new Date(2);
+        console.log('用时间戳定义的Date对象:',date2);  //这里它直接转换成了东八区时间，即早上八点零2毫秒
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

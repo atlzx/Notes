@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_函数_函数作用域</title>
+    <script>
+        let a='全局变量a';
+        function fn1(){
+            console.log('fn1输出',a);
+        }
+        //闭包
+        function fn2(){
+            let a='局部变量a';
+            let b=11;
+            function fn3(){
+                console.log('fn3输出',a);
+            }
+            fn1();  //  会输出全局变量，因为函数作用域在其创建时已经被确定了
+            return fn3;
+        }
+        const result=fn2();  //接受闭包
+        // 函数每次执行时，都会产生一个执行环境，执行环境负责存储函数执行时产生的一切数据
+        result();  //运行result即运行返回的fn3,输出局部变量a
+        console.log(`在全局作用域中访问函数作用域内的变量b=${b}`);  //会报错，因为函数作用域属于局部作用域，其内部变量仅能在函数内被访问
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

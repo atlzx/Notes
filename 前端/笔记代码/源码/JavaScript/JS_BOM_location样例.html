@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_BOM_location样例</title>
+    <script>
+        onload=function(){
+            let btn=document.getElementsByTagName("button");
+            btn[0].addEventListener(
+                "click",
+                ()=>{
+                    location="https://www.baidu.com";
+                }
+            );
+            btn[1].addEventListener(
+                "click",
+                ()=>{
+                    location.assign("https://www.bilibili.com/");
+                }
+            );
+            btn[2].addEventListener(
+                "click",
+                ()=>{
+                    location.replace("https://developer.mozilla.org/zh-CN/");  // 使用replace方法无法回退
+                }
+            );
+            btn[3].addEventListener(
+                "click",
+                ()=>{
+                    location.reload();
+                }
+            );
+        }
+    </script>
+</head>
+<body>
+    <button type="button" id="btn1">使用location跳转网页</button>
+    <button type="button" id="btn2">使用assign跳转网页</button>
+    <button type="button" id="btn3">使用replace跳转网页</button>
+    <button type="button" id="btn4">刷新网页</button>
+</body>
+</html>

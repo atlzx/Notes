@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>视频播放样例</title>
+        <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+    </head>
+    <body>
+        <!-- 一个普通的video标签 -->
+        <video id="myVideo" controls width="640" muted></video>
+        <script>
+            // 拿到标签对象
+            const videoElement = document.getElementById("myVideo");
+            // 设置m3u8文件索引路径
+            const m3u8URL ="http://localhost:7071/web/video/resource/iG9N6oYzzZSklHSWbVgR";
+            // 检查浏览器是否支持 HLS.js
+            if (Hls.isSupported()) {
+                const hls = new Hls({
+                    // 干涉请求发送，如果是拿到索引那么按原路径请求，如果是拿到ts文件那么拼接一下
+                    // 这里可以自定义
+                    xhrSetup: function (xhr, url) {
+                        console.log(url);
+                        const tsName=url.slice(url.lastIndexOf('/')+1);
+                        if(tsName.includes('ts')){
+                            console.log(tsName);
+                            xhr.open(
+                                "GET",
+                                "http://localhost:7071/web/video/resource/iG9N6oYzzZSklHSWbVgR/" + tsName,
+                                true
+                            );
+                        }else{
+                            xhr.open('GET',url,true);
+                        }
+                        // 这里可以设置请求路径或修改请求头等
+                    },
+                });
+                hls.loadSource(m3u8URL); // 加载 .m3u8 流
+                hls.attachMedia(videoElement); // 将 HLS.js 连接到 video 对象，使其确认哪个video对象是用来播放该视频的
+                // 监听事件
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    console.log(videoElement);
+                    videoElement.play();  // 视频自动播放，想调用该方法必须给video标签加上muted静音属性
+                    console.log("加载成功");
+                });
+                // 监听出错事件
+                hls.on(Hls.Events.ERROR, (event, data) => {
+                    console.log(event, data);
+                    
+                    console.log("加载失败");
+                });
+            }
+
+            // 如果浏览器原生支持 HLS（如 Safari），直接播放 .m3u8
+            else if (
+                videoElement.canPlayType("application/vnd.apple.mpegurl")
+            ) {
+                videoElement.src = m3u8URL; // Safari 原生支持 HLS 流
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_文本_行高</title>
+    <style>
+        #div1{
+            font-size: 40px;
+            line-height: 40px; /*行高与font-size的值相近，文字和行可能会垂直重叠*/
+            background-color: orange;
+        }
+        #div2{
+            font-size: 40px;
+            background-color: blue;
+            line-height: 1.5; /*行高的值可以使用像素值、normal关键字、数值和百分比，其中数值和百分比最终呈现的行高为:(数值(或百分比))*(font-size属性值)px*/
+        }
+        /*将行高设置为0,可以发现三个问题: 1.各行文字相互覆盖 2.背景色消失 3.文字上半部分与更上方重叠(若在网页最上方，则可以发现文字的上部分有一部分被网页遮挡了)*/
+        #div3{
+            font-size: 100px;
+            line-height: 0px;
+            background-color: skyblue;
+        }
+        /*height与line-height之间的关系为:有height属性时，盒子的高度会为height属性的值，与line-height无关，若此时各行的高度加起来比height还高，则高出去的部分会向下溢出；若没有height而有line-height，那么盒子的高度会是各行的高度总和*/
+        /*当没有height属性而行高的值为0时，那么div的高度也是0，因此没有高度的div无法显示背景色，这也是为什么行高为0时无背景色的原因*/
+        #div4{
+            height: 100px;
+            line-height: 50px;
+            font-size: 40px;
+            background-color: aqua;
+        }
+        /*行高的一大作用是，使单行文本垂直居中，但不能使多行文本垂直居中，这是因为行高调整的是每行高度，而不是文本块整体的高度*/
+        #div5{
+            line-height: 1.5;
+            background-color: brown;
+            font-size: 40px;
+        }
+        /*行高是有继承效果的，因此最好写数值，使对应属性的行高都取决于其属性内font-size的值*/
+        /*同一行内不同大小的文字间的对齐方式是通过字体设计框内的基线对齐的，而基线一般都与字母x最下端齐平*/
+        #div6{
+            line-height: 1.5;
+            font-size: 40px;
+        }
+        span{
+            font-size: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div id="div1">
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Et architecto accusamus quas ducimus, eligendi, fugiat at nulla voluptas iure iusto repudiandae tempora similique voluptatibus voluptatum culpa ullam nesciunt, magnam sed.
+    </div>
+    <br>
+    <div id="div2">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quaerat tempora non sed? Accusantium, perferendis dicta doloremque itaque quaerat, provident deserunt nobis quod magnam sint nesciunt aspernatur similique dolorem autem aliquam maiores. Blanditiis at explicabo perferendis, sequi ut exercitationem fugit facilis illum esse dolor ab assumenda sed sapiente cum deleniti officiis.</div>
+    <br>
+    <div id="div3">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Incidunt quaerat adipisci quis deserunt numquam aperiam velit voluptatibus eum iusto voluptate, distinctio autem molestiae nemo ad natus itaque voluptatem, modi quos vel ratione earum pariatur dignissimos voluptates vitae! Atque optio aut, earum cum exercitationem soluta nobis commodi expedita totam voluptatem laborum sunt sint? Alias perferendis, maxime animi earum recusandae aspernatur at.</div>
+    <br>
+    <div id="div4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam fuga esse voluptate consequuntur consectetur omnis, reiciendis quis magnam aperiam, illo iusto, nesciunt quos soluta sapiente dolorem laboriosam nostrum ipsum id corrupti amet quae. Praesentium, sapiente necessitatibus. Quisquam alias itaque ab!</div>
+    <br>
+    <div style="height: 400px; background-color: antiquewhite;"></div>
+    <div id="div5">Lorem ipsum</div>
+    <br>
+    <div id="div6">Lorem ipsum dolor, sit amet consectetur adipisicing elit. <span> Ratione x </span> x nobis eaque, amet quasi minima, odit consequatur dignissimos totam velit rem veniam recusandae? Numquam veritatis ullam ipsum quasi dolor magnam dolores?</div>
+</body>
+</html>

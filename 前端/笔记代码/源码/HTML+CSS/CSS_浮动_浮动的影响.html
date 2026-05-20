@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_浮动_浮动的影响</title>
+    <style>
+        .d1{
+            /*若父元素未设置高度，则不能撑起父元素的高度，导致父元素高度塌陷，但会受到父元素的宽度限制*/
+            /*这里有高度是因为即使box2和box3浮动了但box4顶了上去*/
+            width: 500px;
+            background-color: gray;
+            border: 1px black solid;
+        }
+        .box{
+            height: 100px;
+            width: 100px;
+        }
+        .box2,.box3{
+            /*后面的兄弟元素(box4)会占据浮动元素之前的位置，对前面的兄弟元素无影响*/
+            float: left;
+        }
+        .box1{
+            background-color: green;
+        }
+        .box2{
+            background-color: blue;
+        }
+        .box3{
+            background-color: red;
+        }
+        .box4{
+            background-color: brown;
+        }
+        .d2{
+            background-color: skyblue;
+        }
+    </style>
+</head>
+<body>
+    <div class="d1">
+        <div class="box box1">测试1</div>
+        <div class="box box2">测试2</div>
+        <div class="box box3">测试3</div>
+        <div class="box box4">测试4</div>
+    </div>
+    <div class="d2">测试5</div>
+</body>
+</html>

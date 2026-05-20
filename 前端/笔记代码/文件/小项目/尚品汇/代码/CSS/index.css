@@ -1,0 +1,502 @@
+/*#region通用css*/
+
+
+/*内容区不设置高，由内容自行撑开*/
+.container{
+    width: 1190px;
+    margin: 0px auto;
+}
+
+/* #endregion通用css结束*/
+
+
+/* #region顶部导航栏css*/
+.top-bar{
+    height: 30px;
+    background-color: #ECECEC;
+}
+.welcome,.topbar-nav{
+    height: 30px;
+    line-height: 30px; /*垂直居中*/
+    font-size: 0px;  /*清除HTML代码换行带来的空白影响*/
+}
+.welcome span,.welcome a{
+    font-size: 12px;
+    color: #666666;
+}
+.welcome a:hover{
+    color: red;
+}
+.welcome span:first-child{
+    margin-right: 28px;
+}
+.welcome .login{
+    padding-right: 10px;
+    border-right: 1px solid #666;
+}
+.welcome .register{
+    padding-left: 10px;
+}
+.topbar-nav .list li{
+    float: left; /*设置整体左浮动*/
+    font-size: 12px;
+}
+.topbar-nav ul li a{
+    padding: 0px 15px;
+    border-right: 1px solid #666;
+}
+.topbar-nav ul li:first-child a{
+    padding-left: 0px;
+}
+.topbar-nav ul li:last-child a{
+    border-right: 0px;
+    padding-right: 0px;
+}
+
+/* #endregion顶部导航栏css结束  */
+
+/* #region 头部css*/
+
+.header{
+    height: 120px;
+}
+.header .search form{
+    font-size: 0px; /*清空换行导致的空白，并配合line-height与子元素的vertival-align使其垂直居中*/
+    height: 120px;
+    line-height: 120px;
+}
+.header .search input{
+    width: 508px;
+    height: 34px;
+    border: #DD302D 1px solid;
+    /*令其垂直居中显示*/
+    vertical-align: middle; 
+}
+.header .search button{
+    width: 80px;
+    height: 36px;
+    vertical-align: middle;
+    background-image: url("../images/serch_icon.png"); /*设置背景图*/
+    background-repeat: no-repeat; /*设置背景图不重复*/
+    background-color: #DD302D;
+    background-position: 28px 6px; /*调整背景图位置*/
+    cursor: pointer;
+}
+/* #endregion 头部css结束*/
+
+/* #region 主导航栏css*/
+
+.main-nav .sort,.main-nav ul li{
+    float: left;
+    text-align: center;
+}
+.main-nav .sort{
+    height: 48px;
+    width: 190px;
+    margin-right: 10px;
+    background-color: #DD302D;
+    line-height: 48px;
+    font-size: 16px;
+    color: white;
+}
+.main-nav ul{
+    height: 48px;
+}
+.main-nav ul li{
+    height: 48px;
+    line-height: 48px;
+    margin-right: 20px;
+}
+.main-nav ul li:hover{
+    background-color: #DD302D;
+}
+.main-nav ul li:hover a{
+    color: white;
+}
+.main-nav ul li a{
+    color: #333333;
+    font-size: 16px;
+}
+.main-nav ul li:last-child{
+    margin-right: 0px;
+}
+.main-nav hr{
+    border: 1px #DD302D solid;
+}
+/* #endregion 主导航栏css结束  */
+
+/* #region 主内容区-左侧导航栏css*/
+
+.content{
+    margin-top: 10px;
+}
+.content .left-nav{
+    height: 458px;
+    width: 190px;
+    background-color: #F4F4F4;
+    position: relative;
+}
+.content .left-nav li{
+    height: 28px;
+    line-height: 28px;
+    padding-left: 16px;
+}
+.content .left-nav li a{
+    font-size: 14px;
+    display: inline-block;
+    height: 20px;
+}
+.content .second-menu{
+    height: 458px;
+    width: 680px;
+    position: absolute;
+    z-index: 1;
+    display: none;
+    left: 190px;
+    top: 0px;
+    background-color: #F4F4F4;
+    padding-left: 20px;
+}
+.content .left-nav li:first-child{
+    margin-top: 5px;
+}
+.content .left-nav li:hover{
+    background-color: #DD302D;
+}
+.content .left-nav li:hover .second-menu{
+    display: block;
+}
+/*该选择器选择li被鼠标悬浮时的a标签*/
+.content .left-nav li:hover>a{
+    color: white;
+    cursor: pointer;
+}
+.content .second-menu dl{
+    height: 36px;
+    line-height: 20px;
+}
+.content .second-menu dl:first-child{
+    margin-top: 10px;
+}
+.content .second-menu dt,.content .second-menu dd{
+    font-size: 14px;
+    float: left;
+    margin: 8px 0px;
+}
+.content .second-menu dt a,.content .second-menu dd a{
+    color: #666666;
+}
+.content .second-menu dt a:hover,.content .second-menu dd a:hover{
+    color: #DD302D;
+}
+.content .second-menu dt{
+    width: 70px;
+    font-weight: bold;
+    border-right: 1px solid #999999;
+    padding-right: 10px;
+}
+.content .second-menu dt a{
+    color: black;
+}
+.content .second-menu dd{
+    padding: 0px 10px;
+    border-right: 1px solid #999999;
+}
+.content .second-menu dd:last-child{
+    border-right: 0px;
+}
+/* #endregion 主内容区-左侧导航栏css结束*/
+
+/* #region 主内容区-中部css*/
+
+.content .center-content{
+    height: 458px;
+    width: 690px;
+    background-color: green;
+    margin: 0px 10px;
+}
+
+
+
+/* #endregion 主内容区-中部css结束*/
+
+/* #region 主内容区-右侧css*/
+
+.content .right-content{
+    height: 458px;
+    width: 290px;
+}
+.content .right-content .message{
+    padding-left: 14px;
+    padding-right: 14px;
+    height: 156px;
+    width: 260px;
+    border: 1px solid #D9D9D9;
+    background-color: aquamarine;
+}
+
+.content .right-content .message div{
+    height: 39px;
+    line-height: 39px;
+    border-bottom: 1px solid #D9D9D9;
+}
+.content .right-content .message div span{
+    font-size: 14px;
+}
+.content .right-content .message div a{
+    color: #999999;
+    font-size: 12px;
+}
+.content .right-content .message div a:hover{
+    color: #DD302D;
+}
+.content .right-content .cheap{
+    padding-top: 2px;
+    height: 104px;
+    padding-bottom: 12px;
+}
+.content .right-content .cheap li{
+    line-height: 26px;
+    color: #666666;
+}
+.content .right-content .icon{
+    margin-top: 10px;
+    height: 290px;
+    width: 290px;
+    overflow: hidden;
+}
+.content .right-content .icon ul{
+    margin-top: 16px;
+}
+.content .right-content .icon ul li{
+    width: 48px;
+    margin: 0px 11px;
+    text-align: center;
+    cursor: pointer;
+}
+.content .right-content .icon ul li:first-child{
+    margin-left: 16px;
+}
+.content .right-content .icon ul li .picture{
+    height: 48px;
+    width: 48px;
+}
+/*使用多个小图标合在一起的图片并使用背景图可以减少网页加载时的图片数，
+同时减轻服务器负担*/
+.content .right-content .icon ul:nth-child(1) li:nth-child(1) .picture{
+    background-image: url('../images/精灵图-侧边功能.png');
+    background-position: 0px 0px;
+}
+.content .right-content .icon ul:nth-child(1) li:nth-child(2) .picture{
+    background-image: url('../images/精灵图-侧边功能.png');
+    background-position: -48px 0px;
+}
+.content .right-content .icon ul:nth-child(1) li:nth-child(3) .picture{
+    background-image: url('../images/精灵图-侧边功能.png');
+    background-position: -96px 0px;
+}
+.content .right-content .icon ul:nth-child(1) li:nth-child(4) .picture{
+    background-image: url('../images/精灵图-侧边功能.png');
+    background-position: -144px -0px;
+}
+.content .right-content .icon ul:nth-child(2) li:nth-child(1) .picture{
+    background-image: url('../images/精灵图-侧边功能.png');
+    background-position: -0px -48px;
+}
+.content .right-content .icon ul:nth-child(2) li:nth-child(2) .picture{
+    background-image: url('../images/精灵图-侧边功能.png');
+    background-position: -48px -48px;
+}
+.content .right-content .icon ul:nth-child(2) li:nth-child(3) .picture{
+    background-image: url('../images/精灵图-侧边功能.png');
+    background-position: -96px -48px;
+}
+.content .right-content .icon ul:nth-child(2) li:nth-child(4) .picture{
+    background-image: url('../images/精灵图-侧边功能.png');
+    background-position: -144px -48px;
+}
+.content .right-content .icon ul:nth-child(3) li:nth-child(1) .picture{
+    background-image: url('../images/精灵图-侧边功能.png');
+    background-position: 0px -96px;
+}
+.content .right-content .icon ul:nth-child(3) li:nth-child(2) .picture{
+    background-image: url('../images/精灵图-侧边功能.png');
+    background-position: -48px -96px;
+}
+.content .right-content .icon ul:nth-child(3) li:nth-child(3) .picture{
+    background-image: url('../images/精灵图-侧边功能.png');
+    background-position: -96px -96px;
+}
+.content .right-content .icon ul:nth-child(3) li:nth-child(4) .picture{
+    background-image: url('../images/精灵图-侧边功能.png');
+    background-position: -144px -96px;
+}
+/* #endregion 主内容区-右侧css结束*/
+
+
+/* #region 秒杀css*/
+.seckill{
+    margin-top: 10px;
+}
+.seckill img{
+    float: left;
+    margin-right: 11px;
+    cursor: pointer;
+}
+.seckill img:last-child{
+    margin-right: 0px;
+}
+
+/* #endregion 秒杀css结束*/
+
+
+/* #region 楼层css*/
+
+.floor{
+    margin-top: 48px;
+}
+.floor-top{
+    height: 30px;
+    padding-bottom: 4px;
+    border-bottom: 2px #DD302D solid;
+}
+.floor-top span{
+    font-size: 20px;
+    color: black;
+}
+.floor-top ul li{
+    float: left;
+    height: 24px;
+}
+.floor-top ul li a{
+    padding: 0px 10px;
+    font-size: 16px;
+    color: #666666;
+    border-right: 1px solid #666666;
+}
+.floor-top ul li a:hover{
+    color: #DD302D;
+}
+.floor-top ul li:first-child a{
+    padding-left: 0px;
+}
+.floor-top ul li:last-child a{
+    padding-right: 0px;
+    border-right: 0px;
+}
+.floor-bottom .floor-bottom-first,
+.floor-bottom .floor-bottom-second,
+.floor-bottom .floor-bottom-third,
+.floor-bottom .floor-bottom-fifth{
+    height: 432px;
+}
+.floor-bottom .floor-bottom-third,
+.floor-bottom .floor-bottom-fourth,
+.floor-bottom .floor-bottom-fifth{
+    width: 206px;
+}
+.floor-bottom .floor-bottom-first{
+    width: 194px;
+    padding: 0px 18px;
+}
+.floor-bottom .floor-bottom-second{
+    width: 340px;
+}
+.floor-bottom .floor-bottom-third{
+    border-right: 1px #E2E2E2 solid;
+}
+.floor-bottom .floor-bottom-fourth{
+    height: 431px;
+    border-right: 1px #E2E2E2 solid;
+    border-bottom: 1px #E2E2E2 solid;
+}
+.floor-bottom-first>div:first-child{
+    height: 108px;
+    width: 190px;
+    padding: 20px 0px;
+}
+.floor-bottom-first>div li{
+    font-size: 16px;
+    color: #666666;
+    border-bottom: 1px solid #D9D9D9;
+    text-align: center;
+}
+.floor-bottom-first>div li:first-child{
+    padding-bottom: 3.5px;
+}
+.floor-bottom-first>div li:not(:first-child){
+    margin-top: 14.4px;
+}
+.floor-bottom-first>div:last-child{
+    margin-top: 10px;
+
+}
+.floor-bottom-third>div,.floor-bottom-fifth>div{
+    border-bottom: 1px #E2E2E2 solid;
+}
+/* #endregion 楼层css结束*/
+
+
+/* #region 页脚css*/
+
+.footer{
+    height: 440px;
+    background: #483E3E;
+    margin-top: 48px;
+    overflow: hidden;
+    text-align: center;
+}
+.footer .links{
+    height: 192px;
+    display: inline-block;
+    margin-top: 48px;
+}
+.footer .links .links-list{
+    float: left;
+    width: 190px;
+    height: 176px;
+    margin-right: 10px;
+    line-height: 24px;
+}
+.footer .links .links-list:last-child{
+    margin-right: 0px;
+}
+.footer .links .links-list li a{
+    color: white;
+    font-size: 14px;
+}
+.footer .links .links-list li a:hover{
+    color: #DD302D;
+}
+.footer .line{
+    border: 1px solid #584D4D;
+}
+.footer .end{
+    margin-top: 47px;
+    text-align: center;
+}
+.footer .end>ul{
+    display: inline-block;
+}
+.footer .end>div{
+    color: #FFFFFF;
+}
+.footer .end>ul>li{
+    float: left;
+}
+.footer .end>ul>li>a{
+    padding: 0px 26px;
+    border-right: 1px solid #D9D9D9;
+    color: #FFFFFF;
+}
+.footer .end>ul>li>a:hover{
+    color: #DD302D;
+}
+.footer .end>ul>li:first-child>a{
+    padding-left: 0px;
+}
+.footer .end>ul>li:last-child>a{
+    padding-right: 0px;
+    border-right: 0px;
+}
+/* #endregion 页脚css结束*/

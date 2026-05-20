@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_2D变换_多重变换</title>
+    <style>
+        .outer{
+            height: 400px;
+            width: 400px;
+            border: 2px solid black;
+            margin: 0px auto;
+            margin-top: 100px;
+        }
+        .inner{
+            height: 400px;
+            width: 400px;
+            background-color: skyblue;
+            font-size: 30px;
+            /* transform: translate(200px,200px) scale(0.5); */
+            transform: scale(0.5) translate(200px,200px);
+            /* transform: translate(200px,200px) rotate(30deg); */
+            /*先旋转会让坐标轴也跟着旋转*/
+            transform: rotate(30deg) translate(200px,200px); /*两个重复的属性，后面的会覆盖前面的*/
+        }
+    </style>
+</head>
+<body>
+    <div class="outer">
+        <div class="inner">测试文本</div>
+    </div>
+</body>
+</html>

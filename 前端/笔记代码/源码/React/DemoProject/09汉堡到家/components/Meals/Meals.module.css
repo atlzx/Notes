@@ -1,0 +1,10 @@
+.Meals{
+    /* 设置盒子的高度被拉伸到顶部在最上面，底部在最下面 */
+    position: absolute;
+    top: 100rem;
+    bottom: 0;
+    overflow: auto;  /* 设置滚动条，使滚动条由body转到该容器 */
+    padding-left: 5%;
+    z-index: 1;
+    padding-bottom: 150rem;
+}

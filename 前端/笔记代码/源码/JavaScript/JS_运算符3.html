@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_运算符3</title>
+    <script>
+        let a=1=='1';  //一般会转换为数字类型再进行比较，因此返回true
+        let b=1==0;
+        let c=null==undefined;  //返回true
+        let d=NaN==NaN;  //返回false
+
+        console.log(a,b,c,d);
+        a=1==='1';
+        b=1===0;
+        c=null===undefined;
+        d=NaN===NaN;  //全等运算符也会返回false
+        console.log(a,b,c,d);
+
+        //!=即对==的结果取反
+         a=1!='1';
+         b=1!=0;
+         c=null!=undefined;
+         d=NaN!=NaN;
+        console.log(a,b,c,d);
+
+        //!==即对===的结果取反
+        a=1!=='1';
+        b=1!==0;
+        c=null!==undefined;
+        d=NaN!==NaN;
+        console.log(a,b,c,d);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

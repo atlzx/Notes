@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_事件处理样例1</title>
+    <script>
+        function btn1(){
+            alert('第一个按钮被点击了');
+        }
+        window.onload=function(){
+            let btnElement=document.getElementsByTagName("button");
+            btnElement[1].onclick=()=>{
+                alert('第二个按钮被点击了');
+            };
+            // 如果针对同一个元素对象的同一时间写了两种处理方法，且处理方法是使用 element.事件 的方式定义的，那么后面写的会覆盖前面，即写多个只有最后一个会执行
+            // 通过元素对象属性进行事件处理
+            btnElement[1].onclick=()=>{
+                alert('点击了第二个按钮');
+            };
+            // 使用addEventListener方法处理事件
+            // 使用addEventListener方法处理事件时，可以向用户展示对同一个事件的全部的不同的处理方法
+            btnElement[2].addEventListener(
+                "click",
+                ()=>{
+                    alert('第三个按钮被点击了');
+                }
+            );
+            btnElement[2].addEventListener(
+                "click",
+                ()=>{
+                    alert('点击了第三个按钮');
+                }
+            );
+        }
+    </script>
+</head>
+<body>
+    <!-- 通过元素属性进行事件处理 -->
+    <button type="button" onclick="btn1()">点我</button>
+    <button type="button">点我</button>
+    <button type="button">点我</button>
+</body>
+</html>

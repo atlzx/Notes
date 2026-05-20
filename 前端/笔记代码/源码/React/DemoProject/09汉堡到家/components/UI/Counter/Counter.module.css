@@ -1,0 +1,30 @@
+
+.countContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.countContainer button{
+    height: 40rem;
+    width: 40rem;
+    border-radius: 50%;
+    line-height: 40rem;
+    cursor: pointer;
+    margin: 0px 5px;
+    text-align: center;
+    padding: 0px;
+    font-size: 14px;
+}
+
+.add{
+    background-color: #FCBF49;
+    border: 1px solid black;
+}
+.decrease{
+    border: 1px solid black;
+}
+.count{
+    font-size: 30rem;
+}

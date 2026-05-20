@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_jQuery_jQuery对象</title>
+    <style>
+        .box1{
+            height: 300px;
+            width: 300px;
+            background-color: orange;
+        }
+        .box2{
+            height: 250px;
+            width: 250px;
+            background-color: brown;
+        }
+        .box3{
+            height: 200px;
+            width: 200px;
+            background-color: skyblue;
+        }
+        .box4{
+            border: 10px solid black;
+        }
+        .box5{
+            margin: 0px auto;
+        }
+    </style>
+    <script src="../../文件/jQuery/jquery-3.7.1.js"></script>
+    <script>
+        $(
+            function(){
+                var $divElement=$("div");
+                $divElement.addClass("box4");  // 取得jQuery对象后，对其进行修改会使得其中包含的所有元素都被修改，该特性为jQuery的隐式迭代
+                console.log($divElement.addClass("box4")===$divElement);  // 一般来说，jQuery对象方法的返回值是其本身
+                $divElement.addClass("box4").addClass("box5");  // 利用上面的特性，可以在调用一个方法后继续调用其他方法，这一特性为jQuery的链式调用
+            }
+        );
+    </script>
+</head>
+<body>
+    <div class="box1">
+        <div class="box2">
+            <div class="box3"></div>
+        </div>
+    </div>
+</body>
+</html>

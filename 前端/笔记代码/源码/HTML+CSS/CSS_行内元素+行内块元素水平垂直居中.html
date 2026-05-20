@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        .container{
+            height: 400px;
+            width: 400px;
+            background-color: gray;
+
+            /*给文本大小设置为0px，原因是子元素在使用vertical-align属性时其元素中心会相对于父元素小写字母x的中心对齐，
+            但由于字体设计时x普遍位于字体设计框偏下位置，子元素仅使用vertical-align相对于父元素小写字母x对齐的话的会跟着普遍靠下，最后
+            导致这些子元素全部偏下，且父元素设置的字体越大越显著。如果反过来想，字体越小就越靠近垂直居中位置，因此只需要将字体大小
+            设置为0，便可以实现子元素在父元素内的垂直居中*/
+              font-size: 0px;  
+            text-align: center; /*设置水平居中，适用于行内元素和行内块元素，使其在父元素内水平居中*/
+            line-height: 400px; /*设置行高，由于要调整的元素在一个以上，会使这些元素在基线对齐而并非垂直居中，但如果元素仅为1个
+            (父元素的文本与子元素的文本是不算在一起的，这也算一个以上)，确实是居中了 */
+
+        }
+        img{
+            height: 100px;
+            vertical-align: middle; /*让图片相对于其父元素垂直居中*/
+        }
+        .text{
+            font-size: 20px; /*给文本设置字体大小用来抵消掉继承过来的父元素设置的0px字体大小*/
+            /*vertical-align: middle; /*让span内的元素也相对于其父元素垂直居中*/
+        }
+    </style>
+</head>
+<body>
+    <div class="container">x
+        <span class="text">x</span>
+        <img src="../../文件/图片/壁纸1.jpg" alt="壁纸">
+    </div>
+</body>
+</html>

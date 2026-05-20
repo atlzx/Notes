@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_数组常用方法2</title>
+    <script>
+        let arr1=[1,2,3,4,5,6];
+        arr1.push(7);  //push方法可以向数组的最后添加指定元素
+        console.log('使用push方法添加属性之后的数组:',arr1);
+        let result=arr1.pop();  //pop方法用于取出数组的最后一个元素并将其从数组中移除，同时返回该元素
+        console.log('pop的返回值:',result,'使用pop之后的数组:',arr1);
+        arr1.unshift(0);  //push方法可以向数组的开头添加指定元素
+        console.log('使用unshift方法添加属性之后的数组:',arr1);
+        result=arr1.shift();  //shift方法用于取出数组的第一个元素并将其从数组中移除，同时返回该元素
+        console.log('shift的返回值:',result,'使用shift之后的数组:',arr1);
+        arr1.splice(100,1,'张三','李四');  //参数1超出最大索引后，删除操作不会进行，插入数据将从数组最后开始插入
+        console.log('使用splice方法后的数组:',arr1);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

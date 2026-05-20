@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/Maven_JavaSE/pom.xml" />
+        <option value="$PROJECT_DIR$/Maven_JavaWeb1/pom.xml" />
+        <option value="$PROJECT_DIR$/Maven_JavaWeb2/pom.xml" />
+        <option value="$PROJECT_DIR$/Test/pom.xml" />
+        <option value="$PROJECT_DIR$/NexusSample/pom.xml" />
+        <option value="$PROJECT_DIR$/Maven_Father/pom.xml" />
+      </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/Test/pom.xml" />
+      </set>
+    </option>
+  </component>
+  <component name="ProjectResources">
+    <resource url="http://maven.apache.org/xsd/maven-4.0.0.xsd" location="$PROJECT_DIR$/../../../../../../Programming Language/Java/xml/maven-4.0.0.xsd" />
+    <resource url="http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" location="$PROJECT_DIR$/../../../../../../Programming Language/Java/xml/web-app_4_0.xsd" />
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" project-jdk-name="17" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+</project>

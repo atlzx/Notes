@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_jQuery_jQuery核心函数作用</title>
+    <script src="../../文件/jQuery/jquery-3.7.1.js"></script>
+    <script>
+        var a=[]; 
+        console.log($.isArray(a));  // jQuery作为工具类，可以进行一些函数调用，isArray与Array.isArray相同
+
+        $(function(){
+            alert('123');
+        });  // 向核心函数中传入函数参数，该函数会等待文档加载完成后再执行，相当于document.addEventListener("DOMContentLoaded",function(){alert('123')})
+        alert('456');
+
+        console.log($('#divElement'));  // 向核心函数中传入选择器字符串作为参数，函数会返回满足选择器要求的jQuery对象
+        console.log($('<h1>这是一个标题</h1>'));  // 向核心函数中传入html字符串作为参数，函数会返回该标签的jQuery元素对象
+        var div=document.getElementById("divElement");
+        console.log($(div));  // 向核心函数中传入元素对象，函数会将其转换为jQuery元素对象
+    </script>
+</head>
+<body>
+    <div id="divElement"></div>
+</body>
+</html>

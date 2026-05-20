@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>register</title>
+    <link rel="stylesheet" href="../static/css/register.css">
+    <script src="../static/js/register.js"></script>
+
+</head>
+<body>
+    <h1 class="ht">欢迎使用日程管理系统</h1>
+    <h3 class="ht">请注册</h3>
+    <form action="#" name="dateManager" class="login-form" method="post">
+        <table class="login-table" cellspacing="0px">
+            <tbody>
+                <tr class="login-tr">
+                    <td class="login-td">请输入账号</td>
+                    <td class="login-td">
+                        <input type="text" id="userNameInput" name="login_name">
+                        <span id="userNameTip"></span>
+                    </td>
+                </tr>
+                <tr class="login-tr">
+                    <td class="login-td">请输入密码</td>
+                    <td class="login-td">
+                        <input type="text" id="passwordInput" name="pwd">
+                        <span id="passwordTip"></span>
+                    </td>
+                </tr>
+                <tr class="login-tr">
+                    <td class="login-td">请确认密码</td>
+                    <td class="login-td">
+                        <input type="text" id="confirmPasswordInput" name="confirm_pwd">
+                        <span id="confirmPasswordTip"></span>
+                    </td>
+                </tr>
+                <tr class="login-tr">
+                    <td colspan="2" class="login-td">
+                        <button type="submit" class="button" id="submitButton">登录</button>
+                        <button type="reset" class="button">重置</button>
+                        <button type="button" class="button" id="loginButton">去登录</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</body>
+</html>

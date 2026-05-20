@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_数据类型_字符串</title>
+    <script>
+        let a='Hello';//使用单引号表示字符串
+        let b="Hello";//使用多引号表示字符串
+        let c='转义字符表示单引号\'、转义字符表示换行\n、转义字符表示制表符(缩进)\t';//使用转义字符表示一些特殊字符
+        c='ohohoh \
+        ooooo';  //无法跨行生成字符串,只能通过在行末添加\运算符转义才行，但转义后无法维持源代码中两行相隔的这么多空行与缩进
+        console.log(`c=${c}`);
+        let e=true;
+        let d=`模板字符串可以随意换行
+              并可以在字符串内插入变量
+              变量e = ${e}`;  //使用模板字符串插入变量
+        console.log(d);  
+        console.log(`无论是普通字符串还是模板字符串，typeof出来的值都是一样的
+                     变量a的类型为:${typeof a}，变量d的类型为${typeof d}`);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

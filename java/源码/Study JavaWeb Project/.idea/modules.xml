@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Demo-JSON/Demo-JSON.iml" filepath="$PROJECT_DIR$/Demo-JSON/Demo-JSON.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Hello World/Demo2-Hello World.iml" filepath="$PROJECT_DIR$/Hello World/Demo2-Hello World.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Demo3-ServletConf-and-ServletContext/Demo3-ServletConf-and-ServletContext.iml" filepath="$PROJECT_DIR$/Demo3-ServletConf-and-ServletContext/Demo3-ServletConf-and-ServletContext.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Demo4-ForwardAndRedirect/Demo4-ForwardAndRedirect.iml" filepath="$PROJECT_DIR$/Demo4-ForwardAndRedirect/Demo4-ForwardAndRedirect.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Demo5-Session-Cookie/Demo5-Session-Cookie.iml" filepath="$PROJECT_DIR$/Demo5-Session-Cookie/Demo5-Session-Cookie.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Demo6-Filter/Demo6-Filter.iml" filepath="$PROJECT_DIR$/Demo6-Filter/Demo6-Filter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Demo7-Listener/Demo7-Listener.iml" filepath="$PROJECT_DIR$/Demo7-Listener/Demo7-Listener.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Demo8-Ajax/Demo8-Ajax.iml" filepath="$PROJECT_DIR$/Demo8-Ajax/Demo8-Ajax.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Demo9-Module/Demo9-Module.iml" filepath="$PROJECT_DIR$/Demo9-Module/Demo9-Module.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Idea Project.iml" filepath="$PROJECT_DIR$/.idea/Idea Project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Schedule-System/Schedule-System.iml" filepath="$PROJECT_DIR$/Schedule-System/Schedule-System.iml" />
+      <module fileurl="file://$PROJECT_DIR$/javawebStudyDemo1/javawebStudyDemo1.iml" filepath="$PROJECT_DIR$/javawebStudyDemo1/javawebStudyDemo1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/snakeProject/snakeProject.iml" filepath="$PROJECT_DIR$/snakeProject/snakeProject.iml" />
+    </modules>
+  </component>
+</project>

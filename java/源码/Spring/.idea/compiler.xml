@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="Validation" />
+        <module name="Spring-JDBC" />
+        <module name="AOPSample" />
+        <module name="Spring-JUnit" />
+        <module name="Resources" />
+        <module name="SpringEL" />
+        <module name="SpringAnnotationSample" />
+        <module name="CreateIoC" />
+        <module name="SpringTest1" />
+        <module name="I18n" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="BeanTest" target="17" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

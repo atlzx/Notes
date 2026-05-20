@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_事件对象样例1</title>
+    <style>
+        #div1{
+            height: 300px;
+            width: 300px;
+            background-color: gray;
+        }
+        #div2{
+            height: 250px;
+            width: 250px;
+            background-color: aqua;
+        }
+        #div3{
+            height: 200px;
+            width: 200px;
+            background-color: orange;
+        }
+    </style>
+    <script>
+        onload=function(){
+            let div1=document.getElementById("div1");
+            let div2=document.getElementById("div2");
+            let div3=document.getElementById("div3");
+            let form=document.getElementsByTagName("form")[0];
+            div1.addEventListener(
+                "click",
+                function(event){
+                    alert(1);
+                    console.log('this指向事件响应函数绑定的对象，event.target指向触发事件的对象，event.currentTarget指向绑定事件的对象:',this,event.target,event.currentTarget);
+                }
+            );
+            div2.addEventListener(
+                "click",
+                function(event){
+                    alert(2);
+                    event.stopPropagation();  // 调用stopPropagation方法以阻止事件进一步冒泡
+                }
+            );// 点击div2,由于事件冒泡机制，div1的事件监听也会响应
+            div3.addEventListener(
+                "click",
+                function(event){
+                    alert(3);
+                }
+            );  // 点击div3,由于事件冒泡机制，div2和div1的事件监听也会响应
+            form.addEventListener(
+                "click",
+                function(event){
+                    event.preventDefault();  // 阻止表单的默认提交
+                }
+            );
+        }
+    </script>
+</head>
+<body>
+    <form action="#">
+        <div id="div1">
+            <div id="div2">
+                <div id="div3"></div>
+            </div>
+        </div>
+        <button>点我提交</button>
+    </form>
+</body>
+</html>

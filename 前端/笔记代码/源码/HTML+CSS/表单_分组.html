@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>表单_分组</title>
+</head>
+<body>
+    <form action="https://search.jd.com/Search">
+        <fieldset>
+            <legend>主要信息</legend>
+            <label for="zhanghu">账户:</label>
+            <input type="text" name="account" value="zhangsan" maxlength="10" id="zhanghu"><br>
+            <!-- 使用label标签嵌套的方式将文本与表单标签相关联 -->
+            <label>
+            密码:
+            <input type="password" name="pwd" value="123"><br>
+            </label>
+            性别:
+            <!-- 单选框,拥有checked属性的单选选项将被默认选中 -->
+            <label><input type="radio" name="gender" value="male" checked>男</label><input type="radio" name="gender" value="female">女<br>
+        </fieldset>
+
+        <fieldset>
+            <legend>次要信息</legend>
+            爱好:
+            <!-- 复选框 -->
+            <input type="checkbox" name="hobby" value="smoke" checked>抽烟  <!-- 拥有checked属性的复选选项将被默认选中 -->
+            <label><input type="checkbox" name="hobby" value="drink">喝酒</label>
+            <input type="checkbox" name="hobby" value="perm" checked>烫头
+            <br>
+            <label for="dhwbk">其它:</label>
+            <!-- 多行文本框，支持输入多行文本 -->
+            <textarea  id="dhwbk" name="other" cols="30" rows="10"></textarea><br>
+            籍贯:
+            <!-- 下拉框 -->
+            <select name="place">
+                <option value="冀">河北</option>
+                <option value="陕">陕西</option>
+                <option value="京" selected>北京</option>
+                <option value="川">四川</option>
+            </select>
+            <br>
+            <!-- 隐藏输入框 -->
+            <input type="hidden" name="from" value="123">
+        </fieldset>
+
+
+        <input type="submit" value="提交按钮">
+        <input type="reset" value="重置按钮">
+        <input type="button" value="检查账户是否可用">
+    </form>
+</body>
+</html>

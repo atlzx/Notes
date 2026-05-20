@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_浮动_左浮动样例</title>
+    <style>
+        .container{
+            width: 300px;
+            background-color: gray;
+            border: 1px transparent solid; /*在此处设置border，因此不会出现margin塌陷问题*/
+            padding: 10px;
+        }
+        .box{
+            height: 100px;
+            width: 100px;
+        }
+        .box1{
+            background-color: brown;
+            /*设置左浮动，使第一个盒子漂浮，第二个盒子会跑到第一个盒子的位置去且在第一个盒子的后面
+            由于第一个盒子为浮动，第二个盒子的文本必须在不被第一个盒子覆盖的前提下围绕第一个盒子显示
+            而两个盒子之间是同样的宽高和margin设置，使第二个盒子的文本无论在盒子的哪个区域都会被第一个盒子覆盖，
+            因此第二个盒子的文本溢出到下面(如果给div设置了宽，文本一般不会超宽度溢出，只会超高度溢出)，与第三个盒子的文本重合了*/
+            float: left; 
+            margin: 10px;
+        }
+        .box2{
+            background-color: skyblue;
+            margin: 10px;
+        }
+        .box3{
+            background-color: green;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box box1">测试1</div>
+        <div class="box box2">测试2</div>
+        <div class="box box3">测试3</div>
+    </div>
+</body>
+</html>

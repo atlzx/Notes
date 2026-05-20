@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_长度单位</title>
+    <style>
+        #div1{
+            height: 400px;
+            width: 400px;
+            font-size: 20px;
+        }
+        #div1>div{
+            height: 70%; /*使用百分比会参考父元素的对应属性来调整*/
+            width: 60%;
+            /*使用em会参考当前元素的font-size值进行样式调整，其计算方法为:实际大小=em值*font-size值(单位:px)，如果当前元素没有设置font-size，则会向其最近的祖先元素寻找，若仍没有继续向上寻找，若全都没有，使用浏览器默认字体大小(一般为16px)*/
+            font-size: 2em; /*这里父元素设置了font-size值，因此字体大小应该为40px*/
+            background-color: skyblue;
+        }
+        #div2{
+            font-size: 2rem;  /*使用rem会参考根元素的font-size值进行样式调整，其计算方法与em一样，如果根元素没有设置font-size，则会使用浏览器默认字体大小(一般为16px)*/
+            background-color: orange;
+        }
+        #div2+div{
+            font-size: 40px; /*直接设置像素值*/
+            background-color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div id="div1">
+        <div>测试文本1</div>
+    </div>
+    <div id="div2">
+        测试文本2
+    </div>
+    <div>
+        测试文本3
+    </div>
+</body>
+</html>

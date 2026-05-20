@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_流程控制_break与continue</title>
+    <script>
+        let num=+prompt('输入一个正整数');
+        let flag=true;
+        for(let i=2;i<=num;i++){
+            flag=true;
+            //判断是否为非2偶数，是则跳过此次循环
+            if(i%2==0&&i!=2){
+                continue;
+            }else{
+                //因数最大为该数字的平方根
+                for(let j=2;j<=i**0.5;j++){
+                    //一旦被整除表示该数不是质数，直接跳过
+                    if(i%j==0){
+                        flag=false;
+                        break;
+                    }
+                }
+            }
+            if(flag===true){
+                console.log(i);
+            }
+        }
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

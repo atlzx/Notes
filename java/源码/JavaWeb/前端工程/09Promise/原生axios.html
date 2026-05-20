@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>原生axios</title>
+    <script src="./node_modules/axios/dist/axios.js"></script>
+    <script>
+        onload=function(){
+            async function getAxiosPromise(){
+                return axios(
+                    {
+                        url:'https://api.uomg.com/api/rand.qinghua?format=json',
+                        method:'post',
+                        params:{
+                            name:'xxxx'
+                        }
+                    }
+                );
+            }
+            (
+                async function(){
+                    let message=await getAxiosPromise();
+                    document.getElementById("show").textContent=message.data.content;
+                    console.log(message);
+                }
+            )();
+        }
+    </script>
+</head>
+<body>
+    <div id="show"></div>
+</body>
+</html>

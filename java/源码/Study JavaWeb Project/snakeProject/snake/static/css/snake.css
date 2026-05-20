@@ -1,0 +1,58 @@
+*{
+    padding: 0px;
+    margin: 0px;
+    border-width: 0px;
+    box-sizing: border-box;
+}
+body{
+    overflow: hidden;
+}
+.outer{
+    height: 420px;
+    width: 360px;
+    border: 10px #000000 solid;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 0px auto;
+    margin-top: 100px;
+}
+.container{
+    width: 304px;
+    height: 304px;
+    border: 2px solid black;
+    margin: 0px auto;
+    margin-top: 20px;
+    position: relative;
+}
+.snake>div{
+    height: 10px;
+    width: 10px;
+    position: absolute;
+    background-color: #000000;
+    border: 1px solid white;
+}
+.food{
+    position: absolute;
+    display: flex;
+    flex-wrap: wrap;
+    width: 10px;
+    height: 10px;
+    /* top: 100px; */
+    /* left: 150px; */
+}
+.food>div{
+    width: 5px;
+    height: 5px;
+    background-color: black;
+    transform: rotate(45deg);
+}
+.info{
+    display: flex;
+    width: 304px;
+    margin: 0px auto;
+    justify-content: space-between;
+    margin-top: 30px;
+    font-size: 20px;
+    font-family: Courier;
+    font-weight: bold;
+}

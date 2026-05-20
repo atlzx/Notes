@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_遍历数组</title>
+    <script>
+        arr=[1,2,3,4,5];
+        for(let i of arr){
+            console.log(i);
+        }  //使用for-of语法打印出数组的值
+        for(let i in arr){
+            console.log(i);
+        }  //使用for-in语法貌似会打印出索引
+        for(let i of "abcdefg"){
+            console.log(i);
+        }  //for-of语法可以作用于所有可迭代对象
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

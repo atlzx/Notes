@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_对象_修改原型</title>
+    <script>
+        class Person{
+            name;
+            age;
+            constructor(name,age){
+                this.name=name;
+                this.age=age;
+            }
+        }
+        class Dog{
+            name;
+            dog;
+        }
+        class Animal{
+            name;
+            age;
+        }
+        let p1=new Person('张三',12);
+        let p2=new Person('李四',15);
+        console.log(p1.__proto__);
+        p1.__proto__.run=function(){
+            console.log(this,'调用了这个方法');
+        };  //向原型对象中添加一个函数run()
+        console.log(p1.run(),p1);  
+        //使用实例对象的__proto__直接修改比较危险，该代码将p1对象的原型对象由默认的Object实例修改为一个Dog类的实例，但p2的__proto__不会发生变化
+        //因为p1和p2各有一个__proto__属性，p1的__proto__属性发生变化不会影响到p2的__proto__属性，换句话说，就是每生成一个实例对象就会生成一条原型链
+        p1.__proto__=new Dog();  //修改p1的原型对象为Dog类的实例
+        console.log(p1);  //打印发现p1的__proto__发生了变化
+        console.log(p2.run(),p2);  //使用p2调用run(),发现可以调用，说明同一个类的实例对象的原型对象都是同一个。而p2的__proto__未发生变化
+
+        //貌似无法直接修改类的prototype属性值，但可以修改类的prototype对象中的值
+        Person.prototype={ name:'aaaaa', };
+        console.log(Person.prototype);  //可以看到prototype仍然输出Object
+        Object.setPrototypeOf(
+            p1,
+            {
+                name:'对象',
+            }
+        );  //可以使用 Object.setPrototypeOf(obj,prototype)方法来指定修改某一个对象的prototype属性
+        console.log(p1);
+        Person.prototype.sayGoodbye=function(){
+            console.log(`Goodbye${this.name}`);
+        };
+        console.log(Person.prototype);  
+        console.log(p2.sayGoodbye());  //p2调用了通过修改类的prototype指向的对象新增的方法
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

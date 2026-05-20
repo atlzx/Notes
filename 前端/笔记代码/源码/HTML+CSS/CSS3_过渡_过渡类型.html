@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_过渡_过渡类型</title>
+    <style>
+        .outer{
+            height: 900px;
+            width: 1000px;
+            margin: 0px auto;
+            border: 2px solid black;
+        }
+        .box{
+            height: 100px;
+            width: 100px;
+            transition-property: all;
+            transition-duration: 3s;
+        }
+        .outer:hover>.box{
+            width: 1000px;
+        }
+        .box1{
+            background-color: green;
+            transition-timing-function: ease;
+        }
+        .box2{
+            background-color: blue;
+            transition-timing-function: linear;
+        }
+        .box3{
+            background-color: orange;
+            transition-timing-function: ease-in;
+        }
+        .box4{
+            background-color: purple;
+            transition-timing-function: ease-out;
+        }
+        .box5{
+            background-color: skyblue;
+            transition-timing-function: ease-in-out;
+        }
+        .box6{
+            background-color: gray;
+            transition-timing-function: step-start;
+        }
+        .box7{
+            background-color: brown;
+            transition-timing-function: step-end;
+        }
+        .box8{
+            background-color: yellow;
+            transition-timing-function: steps(20,start);
+        }
+        .box9{
+            background-color: red;
+            transition-timing-function: cubic-bezier(.98,.03,.21,1.36);
+        }
+    </style>
+</head>
+<body>
+    <div class="outer">
+        <div class="box box1">ease</div>
+        <div class="box box2">linear</div>
+        <div class="box box3">ease-in</div>
+        <div class="box box4">ease-out</div>
+        <div class="box box5">ease-in-out</div>
+        <div class="box box6">step-start</div>
+        <div class="box box7">step-end</div>
+        <div class="box box8">steps</div>
+        <div class="box box9">cubic-bezie</div>
+    </div>
+</body>
+</html>

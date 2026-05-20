@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_数组常用方法4</title>
+    <script>
+        let a=18;
+        let b=[1,2,3,4];
+        console.log('判断两个变量是否为数组:',Array.isArray(a),Array.isArray(b));
+        let obj1={name:'李四'};
+        let map = new Map([[null,10],['name','张三'],[Infinity,18],[obj1,{gender:'男'}]]);
+        let arr=Array.from(map);
+        console.log('使用from将map转换为数组:',arr);
+        console.log('查看是否为浅拷贝:',arr[3][1]===map.get(obj1));
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

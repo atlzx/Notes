@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_伪类_结构伪类(1)</title>
+    <style>
+        /*:first-child的检索范围是全体子元素*/
+        /*满足三个条件:1.是div的子元素 2.是第一个子元素 3.是p标签*/
+        /*该选择器选择的是“选择div元素中第一个子元素且标签为p的元素”，而不是“选择div元素的子元素中第一个为p的元素”*/
+        div>p:first-child{
+            color: red;
+        }
+        /*三个条件:1.是div的子元素 2.是第一个子元素 3.使用了类名为“normal”的CSS样式*/
+        div>.normal:first-child{
+            color: brown;
+        }
+        /*三个条件:1.是div的后代元素 2.是某一元素的第一个子元素 3.是p标签*/
+        div p:first-child{
+            color: orange;
+        }
+        /*两个条件:1.是某一元素的第一个子元素 2.是p标签*/
+        p:first-child{
+            color: green;
+        }
+        .normal{
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <p>省份</p>
+    <div>
+        <p class="normal">河北</p>
+        <marquee>
+            <p>北京</p>
+        </marquee>
+        <p>山东</p>
+        <p>山西</p>
+        <p>陕西</p>
+    </div>
+</body>
+</html>

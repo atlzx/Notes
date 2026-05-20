@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_jQuery_css样式操作</title>
+    <style>
+        .box1{
+            height: 300px;
+            width: 300px;
+            background-color: orange;
+        }
+        .box2{
+            height: 250px;
+            width: 250px;
+            background-color: brown;
+        }
+        .box3{
+            height: 200px;
+            width: 200px;
+            background-color: skyblue;
+        }
+    </style>
+    <script src="../../文件/jQuery/jquery-3.7.1.js"></script>
+    <script>
+        $(
+            function(){
+                var $div1=$(".box1");
+                var $div2=$(".box2");
+                console.log('传入数组读取css样式:',$div1.css(["width","height","background-color","overflow"]));  // 传入数组批量读取css样式，会返回对象
+                console.log('传入字符串读取css样式:',$div1.css("width"));
+                $div1.css({width:"600px",height:"600px"});  // 传入对象批量修改css样式
+                $div1.css("height",900);  // 传入两个字符串修改指定css属性的样式,修改值为数值时，自动转换为字符串并加上默认单位px
+                console.log('读取偏移量:',$div2.offset());  // 读取偏移量，返回一个对象
+                $div2.offset({top: 200,left:100});  // 传入对象以修改偏移量，如果元素未开启定位方法会为其开启定位,修改值必须为数值，不能为字符串
+            }
+        );
+    </script>
+</head>
+<body>
+    <div class="box1">
+        <div class="box2">
+            <div class="box3"></div>
+        </div>
+    </div>
+</body>
+</html>

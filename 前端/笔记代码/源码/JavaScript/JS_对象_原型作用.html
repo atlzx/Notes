@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_对象_原型作用</title>
+    <script>
+        class Test{
+            name;
+            age;
+            gender;
+            constructor(name,age,gender){
+                this.name=name;
+                this.age=age;
+                this.gender=gender;
+            }
+            sayHello(){
+                console.log('Hello');
+            }
+        }
+        let t1=new Test('张三',18,'男');
+        let t2=new Test('李四',12,'女');
+        t1.sayHello();
+        t2.sayHello();  //原型中的属性可以被该类的任意实例所访问，这样可以节约内存
+
+        class Test2 extends Test{
+            telephone;
+            constructor(name,age,gender,telephone){
+                super(name,age,gender);
+                this.telephone=telephone;
+            }
+        }
+        let t3=new Test2('王五',20,'男','10086');
+        console.log(t3.__proto__);  //t3的原型对象就是它所属的类的父类Test，这足以说明继承是通过原型实现的
+        console.log(t3.__proto__.__proto__);  //其原型对象的原型对象为Object类
+        console.log(t3.__proto__.__proto__.__proto__);  //为Object的原型对象
+        console.log(t3.__proto__.__proto__.__proto__.__proto__);  //null
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

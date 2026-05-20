@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mybatis.example.multitablemapping.mapper.CustomerMapper">
+
+    <!--
+        resultMap用来实现实体类属性的嵌套映射，即自定义映射
+        其id属性便于后面引用
+        type属性为生成的实体类的类型
+     -->
+    <resultMap id="selectCustomerByCustomerIdMap" type="customer">
+        <!--
+            id用来映射主键
+                column属性用来指定数据库查询结果的字段名称
+                property属性用来指定该字段对应的值赋值给实体类的哪一个属性，写属性名
+         -->
+        <id column="customer_id" property="customerId"/>
+        <!--  result用来映射普通属性  -->
+        <result column="customer_name" property="customerName" />
+
+        <!--
+            collection用来映射集合(List)类型
+                property用来指定被赋值的属性的属性名
+                ofType用来指定集合内的元素的类型，即指定其泛型
+         -->
+        <collection property="list" ofType="order">
+            <id column="order_id" property="orderId" />
+            <result column="order_name" property="orderName" />
+        </collection>
+    </resultMap>
+    
+    <select id="selectCustomerByCustomerId" resultMap="selectCustomerByCustomerIdMap">
+        select o.customer_id,customer_name,order_id,order_name
+        from mybatis_order o join mybatis_customer c on c.customer_id=o.customer_id
+        where o.customer_id=#{customerId};
+    </select>
+
+
+</mapper>

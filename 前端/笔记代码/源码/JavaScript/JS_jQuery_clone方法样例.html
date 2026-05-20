@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="../../文件/jQuery/jquery-3.7.1.js"></script>
+    <script>
+        $(
+            function(){
+                var $buttonElement=$("#btn");
+                var $firstUl=$("ul:nth-child(2) li:first-child");
+                $firstUl.click(
+                    function(){
+                        alert('点击了这个li标签');
+                    }
+                );
+
+                $buttonElement.click(
+                    function(){
+                        var $firstLiElement=$firstUl.clone(true);  // 深拷贝对象，同时为其绑定原复制对象的事件
+                        $("ul:nth-child(3)").append($firstLiElement);
+                    }
+                );
+                
+            }
+        );
+    </script>
+</head>
+<body>
+    <div>
+        <button type="button" id="btn">点我</button>
+    </div>
+    <ul>
+        <li>张三</li>
+        <li>李四</li>
+    </ul>
+    <ul>
+        <li>王五</li>
+        <li>赵六</li>
+    </ul>
+</body>
+</html>

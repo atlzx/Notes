@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>表单_基本结构</title>
+</head>
+<body>
+    <!-- 定义form标签，action属性内写接收并处理表单数据的服务器程序的url地址，此处为百度搜索地址。
+         与平常不同的是，需要在'.com'后再加上'/s'。该情况由百度后端决定，同时也可以直接在浏览器中百度搜索的网址中看到-->
+    <form action="https://www.baidu.com/s" target="_blank">  
+        <!-- 输入框输入类型为文本，传入的数据名称为wd，该name也由百度决定，使用其他名称无法使用百度搜索 -->
+        <!-- 如果要调用其它网址，直接在官网搜索而得到的搜索结果的网址中就会包含form所需的action值和input所需的name值 -->
+        <input type="text" name="wd">
+        <button>百度搜索</button>
+    </form>
+    <hr>
+    <!-- 调用微软必应搜索 -->
+    <form action="https://cn.bing.com/search" target="_self">
+        <input type="text" name="q">
+        <button>必应搜索</button>
+    </form>
+    <hr>
+    <!-- 调用京东搜索 -->
+    <!-- 该搜索是不可能成功的，因为method的值为post，需要为get才能搜索成功，而不写该属性时，默认为get -->
+    <form action="https://search.jd.com/Search" method="post">
+        <input type="text" name="keyword">
+        <button>京东搜索</button>
+    </form>
+
+</body>
+</html>

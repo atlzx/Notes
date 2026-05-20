@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_运算符1</title>
+    <script>
+        let a=5-'2';  //JS是一门弱类型语言，当进行运算时会通过自动的类型转换来完成运算
+        console.log(a);
+        a='3'+6;  //JS是一门弱类型语言，当进行运算时会通过自动的类型转换来完成运算
+        console.log(a);
+        a=10/3;  //会计算出小数且不精确
+        console.log(a);
+        a=+''  //使用一元运算符‘+’进行数值的转换
+        console.log(typeof a,a);
+        let b={ 
+            name:'张三',
+            age:18,
+        };  
+        delete b.age;  //使用delete运算符删除指定对象内的属性
+        console.log('属性删除后的对象b:',b);
+        //in运算符用来判断指定的属性是否在指定的对象或其原型链中
+        // toString方法存在于Object对象及其原型对象内，因此返回true
+        // 需要注意的是，在进行属性判断时，属性名应该以字符串形式传入
+        console.log('in运算符的判断:','toString' in b);
+        console.log('instanceof运算符的判断:',b instanceof Object);  //返回true，因为Object是所有对象的原型，instanceof运算符用来判断对象的原型链上是否存在指定类
+        function fn1(name,age,gender){
+            console.log(name,age,gender);
+        }
+        b=['张三',18,'男'];
+        fn1(...b);  //使用展开运算符进行参数传递，需要保证展开的是可迭代类型对象
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

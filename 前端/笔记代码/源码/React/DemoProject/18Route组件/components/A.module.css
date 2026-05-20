@@ -1,0 +1,11 @@
+
+
+a:visited,a:link{
+    color: orange;
+    text-decoration: none;
+}
+
+a:hover,a.navLink{
+    color: red;
+    text-decoration: underline;
+}

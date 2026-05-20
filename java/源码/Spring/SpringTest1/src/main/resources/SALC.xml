@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="scopeSample1" class="com.spring.sample.dependencyInject.JDBCTest" scope="prototype" />
+
+    <bean id="scopeSample2" class="com.spring.sample.dependencyInject.DependencyInjectSample1" />
+
+    <!-- 使用init-method属性和destroy-method属性来指定初始化和销毁方法 -->
+    <bean id="lifecycle" class="com.spring.sample.lifecycle.LifeCycleSample" init-method="init" destroy-method="destroy" >
+        <property name="name" value="test" />
+    </bean>
+    <bean id="processorImpl" class="com.spring.sample.lifecycle.PostProcessorImpl" />
+</beans>

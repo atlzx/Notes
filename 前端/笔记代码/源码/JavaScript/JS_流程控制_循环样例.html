@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS_流程控制_循环样例</title>
+    <script>
+        //三位水仙花数判断
+
+        //法1:使用数学方法确定百位、十位和个位
+        let bai,shi,ge;
+        for(let i=100;i<1000;i++){
+            bai=parseInt(i/100);
+            shi=parseInt((i-bai*100)/10);
+            ge=i%10;
+            if(bai**3+shi**3+ge**3==i){
+                console.log(i);
+            }
+        }
+
+
+        //法2:使用字符串的下标索引确定百位、十位和个位
+        for(let j=100;j<1000;j++){
+            if((''+j)[0]**3+(''+j)[1]**3+(''+j)[2]**3==j){
+                console.log(j);
+            }
+        }
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

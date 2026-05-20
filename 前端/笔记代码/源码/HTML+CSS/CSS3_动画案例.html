@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3_动画案例</title>
+    <style>
+        div{
+            height: 130px;
+            width: 130px;
+            background-image: url('../../文件/图片/bike.png');
+            margin: 0px auto;
+            margin-top: 200px;
+            animation: bike 1s steps(31) infinite; /*由于初始时就占了一帧，因此要走31步*/
+        }
+        @keyframes bike{
+            0%{
+
+            }
+            100%{
+                background-position: 0px -4030px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div></div>
+</body>
+</html>

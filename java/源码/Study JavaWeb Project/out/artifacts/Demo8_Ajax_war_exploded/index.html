@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        function test(){
+            let xmlHttpRequest = new XMLHttpRequest();
+            xmlHttpRequest.addEventListener(
+                "readystatechange",
+                (event)=>{
+                    if(event.currentTarget.readyState===4&&xmlHttpRequest.status===200){
+                        document.getElementById("btn").insertAdjacentHTML("afterend","<h1>收到了请求</h1>");
+                    }
+                }
+            );
+            xmlHttpRequest.open("GET","/Demo8/ServletA?name=张三");
+            xmlHttpRequest.send();
+        }
+        onload=function(){
+            document.getElementById("btn").addEventListener(
+                "click",
+                test
+            );
+        }
+    </script>
+</head>
+<body>
+    <button type="button" id="btn">点我一下</button>
+</body>
+</html>

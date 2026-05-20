@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_var关键字样例</title>
+    <script>
+        {
+            var a=10;  //var声明的变量没有块作用域
+        }
+        console.log(a);  //由于var声明的变量无视块作用域，因此可以读取到变量a的值
+        console.log(window.b);  //输出undefined
+        var b=10;
+        console.log(window.b);  //输出10,这表明使用var定义的变量会作为window对象的属性存在
+        var b=11;  //重复声明相同变量会使前面的变量被覆盖
+        console.log(b);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

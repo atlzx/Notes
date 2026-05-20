@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 设置表格，使用border属性设置边框的宽度 -->
+    <!-- 将cellspacing属性设置为0可以去除td与table之间的间距 -->
+    <table border="1px" width="300px" height="500px" cellspacing="0px">
+
+        <!-- caption标签用来修饰表格标题 -->
+        <caption>表格</caption>
+
+        <!-- thead标签用来修饰表格头部，tr标签添加行，th标签添加表格头部一行的单元格 -->
+        <thead height="400px" align="center" valign="middle">
+            <tr>
+                <th width="500px" align="center" valign="top" height="500px">姓名</th>
+                <th>性别</th>
+                <th>年龄</th>
+                <th>民族</th>
+                <th>政治面貌</th>
+            </tr>
+
+        </thead>
+
+        <!-- tbody标签用来修饰表格主体，tr标签添加行，td标签添加表格主体某一行的单元格 -->
+        <tbody height="50px" align="right" valign="top">
+            <tr>
+                <td width="40px" align="right" valign="bottom" height="50px">张三</td>
+                <td>男</td>
+                <td>18</td>
+                <td>汉族</td>
+                <td>团员</td>
+            </tr>
+            <tr>
+                <td>李四</td>
+                <td>女</td>
+                <td>19</td>
+                <td>壮族</td>
+                <td>群众</td>
+            </tr>
+            <tr>
+                <td>王五</td>
+                <td>男</td>
+                <td>20</td>
+                <td>满族</td>
+                <td>党员</td>
+            </tr>
+            <tr>
+                <td>赵六</td>
+                <td>女</td>
+                <td>21</td>
+                <td>回族</td>
+                <td>团员</td>
+            </tr>
+        </tbody>
+
+        <!-- tfoot标签用来添加表格脚注,tr标签添加行，td标签添加表格主体某一行的单元格 -->
+        <tfoot height="50px" align="left" valign="bottom">
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>总计:4人</td>
+            </tr>
+        </tfoot>
+    </table>
+</body>
+</html>

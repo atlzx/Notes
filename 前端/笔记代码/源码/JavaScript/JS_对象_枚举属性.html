@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_对象_枚举属性</title>
+    <script>
+        let a={
+            name:"张三",
+            age:18,
+            gender:"男",
+            [Symbol()]:"特殊属性"  //不是所有属性都可以被枚举，如:使用Symbol()对应的属性
+        }
+        for(let i in a){
+            console.log(i); //这样会打印属性名
+            console.log(a.i);  //这样的打印是错误的，因为这样打印的是对象里属性名为i的值,返回undefined
+            console.log(a[i]);  //需要使用[]才能得到合适的值
+        }
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

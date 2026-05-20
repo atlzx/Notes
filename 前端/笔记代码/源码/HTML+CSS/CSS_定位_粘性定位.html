@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_定位_粘性定位</title>
+    <style>
+        *{
+            margin: 0px;
+            padding: 0px;
+        }
+        body{
+            height: 2000px;
+        }
+        .head{
+            height: 100px;
+            background-color: orange;
+            text-align: center;
+            line-height: 100px;
+        }
+        .content{
+            overflow: scroll; /*由于粘性定位是找离它最近的有滚动机制的元素作参考点，那么只要支持滚动即可，无论其是否能滚动*/
+        }
+        .item{
+            background-color: gray;
+        }
+        .first{
+            font-size: 40px;
+            background-color: skyblue; 
+            position: sticky; /*设置粘性定位*/
+            top: 0px; /*设置完后需要使用top、bottom、left、right等属性设置其相对于离其最近的有滚动机制的祖先元素的位置，没有默认是body标签*/
+        }
+    </style>
+</head>
+<body>
+    <div class="head">头部区域</div>
+    <div class="content">
+        <div class="item">
+            <div class="first">A</div>
+            <h2>A1</h2>
+            <h2>A2</h2>
+            <h2>A3</h2>
+            <h2>A4</h2>
+            <h2>A5</h2>
+            <h2>A6</h2>
+            <h2>A7</h2>
+            <h2>A8</h2>
+        </div>
+        <div class="item">
+            <div class="first">B</div>
+            <h2>B1</h2>
+            <h2>B2</h2>
+            <h2>B3</h2>
+            <h2>B4</h2>
+            <h2>B5</h2>
+            <h2>B6</h2>
+            <h2>B7</h2>
+            <h2>B8</h2>
+        </div>
+        <div class="item">
+            <div class="first">C</div>
+            <h2>C1</h2>
+            <h2>C2</h2>
+            <h2>C3</h2>
+            <h2>C4</h2>
+            <h2>C5</h2>
+            <h2>C6</h2>
+            <h2>C7</h2>
+            <h2>C8</h2>
+        </div>
+    </div>
+</body>
+</html>

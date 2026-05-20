@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_对象_对象的创建</title>
+    <script>
+        let a=new Object();  //对象的创建
+        a.name="李子轩";
+        a.age=20;
+        a.gender="男";
+        console.log(a);
+        //想打印指定属性时直接对象.属性名即可
+        console.log(a.gender);
+        console.log(a.parents);  //打印对象中不存在的属性，不会报错，但会返回undefined
+        delete a.name;  //使用delete关键字删除属性
+        console.log(a);
+        delete a;  //貌似无法直接删除对象
+        console.log(a);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

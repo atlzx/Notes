@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_表格属性</title>
+    <style>
+        table{
+            border: brown solid 3px;
+            /*设置表格的列宽度*/
+            table-layout: fixed;
+            /*设置表格单元格（各边框）间距*/
+            border-spacing: 10px;
+            /*设置相邻单元格边框合并，该属性一旦被设置，单元格间距(border-spacing)便不再生效*/
+            border-collapse: collapse;
+            /*隐藏无内容的单元格，由于此时单元格合并的原因，各单元格距离为0，因此被隐藏的单元格的四个相邻单元格或表格的边框仍然存在，使其看起来没有隐藏一般，实际上已经被隐藏了*/
+            empty-cells: hide;
+            /*设置表格标题位置*/
+            caption-side: bottom;
+        }
+        th,td{
+            border: orange solid 3px
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <caption>表格</caption>
+        <thead>
+            <tr>
+                <th>姓名</th>
+                <th>年龄</th>
+                <th>民族</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>张三</td>
+                <td>20</td>
+                <td>汉族</td>
+            </tr>
+            <tr>
+                <td>李四</td>
+                <td>18</td>
+                <td>彝族</td>
+            </tr>
+            <tr>
+                <td>王五</td>
+                <td>12</td>
+                <td>满族</td>
+            </tr>
+            <tr>
+                <td>赵六</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Manager className="org.apache.catalina.session.PersistentManager" maxIdleSwap="1">
+        <Store className="org.apache.catalina.session.FileStore" directory="E:\Project\Idea Project\Study JavaWeb Project\Demo7-Listener\web\mySession" />
+    </Manager>
+</Context>

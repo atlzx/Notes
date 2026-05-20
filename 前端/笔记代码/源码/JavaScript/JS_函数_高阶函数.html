@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_函数_高阶函数</title>
+    <script>
+        //  函数的第二个参数接收函数以提高函数的功能性，并增加灵活性
+        function filter(array,cb){
+            for(let i=0;i<array.length;i++){
+                if(cb(array[i].age)){
+                    console.log(array[i]);
+                }
+            }
+        }
+        let arr1=[{name:'张三',age:18},{name:'李四',age:16},{name:'王五',age:36},{name:'赵六',age:12},{name:'钱七',age:33}];
+        filter(
+            arr1,
+            (x)=>{
+                return x>=18;
+            }  //传入匿名函数来指定以什么规则进行判断
+        );
+        
+
+
+        function sayHello(){
+            return "hello";
+        }
+        //需要在不改变sayHello的前提下为其“添加”新功能
+        function test(cb){
+            return ()=>{
+                console.log('打印日志');
+                const result=cb();
+                return result;
+            };
+        }
+        let test1=test(sayHello);  //调用test函数并将sayHello函数传入,将返回值的匿名函数赋值给变量test1
+        console.log(test1());  //调用test1，即调用test函数返回的匿名函数，由于匿名函数返回sauHello函数执行的值，因此会输出一个hello,但匿名函数添加了一句话"打印日志",因此实现了不改动sayHello函数的前提下对其进行拓展
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

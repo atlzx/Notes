@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>HTML5_状态标签1</title>
+</head>
+<body>
+    <span>电量:</span>
+    <!-- 在没有optimum属性时，浏览器会认为low到high之间的数值为正常值，显示为绿色，其他不属于此区间的值为非正常值，显示为黄色 -->
+    <!-- 使用了optimum属性后，浏览器会参考optimum属性在哪个区间，从而确定该区间为正常区间，显示为绿色，与此区间相邻的区间显示为黄色，剩余区间显示为红色 -->
+    <meter max="100" min="0" value="60" low="15" high="30" optimum="70"></meter>
+</body>
+</html>

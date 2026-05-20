@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+    <welcome-file-list>
+        <welcome-file>Hello World.html</welcome-file>
+    </welcome-file-list>
+<!--     配置servlet类，并为它起一个别名-->
+<!--     注解与xml文件配置无法共存，如果共存会报错     -->
+    <!--<servlet>
+        <servlet-name>Hello</servlet-name>  &lt;!&ndash; 这是给要实例化的类起的别名 &ndash;&gt;
+        <servlet-class>com.Hello.Servlet.HelloWorld</servlet-class>  &lt;!&ndash; 在这里告诉tomcat要实例化的类的路径 &ndash;&gt;
+        <load-on-startup>100</load-on-startup>  &lt;!&ndash; 设置该类在tomcat运行时就构建，并排在第100位 &ndash;&gt;
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Hello</servlet-name>  &lt;!&ndash; 此处告诉tomcat接收到向/Hello路径发送请求的信息后，寻找Hello的servlet类进行实例化 &ndash;&gt;
+        <url-pattern>/Hello</url-pattern>  &lt;!&ndash; 此处对应form表单提交的路径，但要在前面加上一个/ &ndash;&gt;
+    </servlet-mapping>-->
+
+    <!--
+        servlet-name可以对应多个url-pattern，但一个url-pattern仅能对应一个servlet-name
+        一个servlet可以对应多个servlet-mapping
+
+        url-pattern有两种匹配模式
+            1 精确匹配
+                /xxx  匹配路径xxx
+            2 模糊匹配
+                /           匹配全部，但不包括jsp文件
+                *           *在哪里，哪里就模糊，即可以匹配任意路径
+                /*          匹配全部，且包括jsp文件
+                /xxx/*      精确匹配前缀，后缀模糊匹配(随便写)
+                *.action    精确匹配后缀，前缀匹配模糊(随便写)
+    -->
+
+
+
+
+<!--    <servlet>
+        <servlet-name>Servlet1</servlet-name>
+        <servlet-class>com.Hello.Servlet.Servlet1</servlet-class>
+    </servlet>
+    &lt;!&ndash; servlet-name可以对应多个url-pattern，但一个url-pattern仅能对应一个servlet-name &ndash;&gt;
+    <servlet-mapping>
+        <servlet-name>Servlet1</servlet-name>
+        <url-pattern>/aaa</url-pattern>  &lt;!&ndash; 使用了/匹配符进行的匹配为精确匹配 &ndash;&gt;
+        <url-pattern>/bbb</url-pattern>
+    </servlet-mapping>
+    &lt;!&ndash;
+        一个servlet可以对应多个servlet-mapping
+        一般来说如果都对应一个servlet，那么只用一个servlet-mapping标签就可以了
+    &ndash;&gt;
+    <servlet-mapping>
+        <servlet-name>Servlet1</servlet-name>
+        <url-pattern>/ccc</url-pattern>
+        <url-pattern>/ddd</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Servlet1</servlet-name>
+        <url-pattern>/</url-pattern>   &lt;!&ndash; 进行不包含jsp文件的匹配 &ndash;&gt;
+        <url-pattern>/*</url-pattern>  &lt;!&ndash; 进行包含jsp文件的匹配 &ndash;&gt;
+        <url-pattern>/www2233/*</url-pattern>  &lt;!&ndash; 进行包含www2233前缀，后缀模糊的匹配 &ndash;&gt;
+        <url-pattern>*.action</url-pattern>  &lt;!&ndash; 进行前缀模糊，包含后缀.action的匹配 &ndash;&gt;
+
+    </servlet-mapping>-->
+</web-app>

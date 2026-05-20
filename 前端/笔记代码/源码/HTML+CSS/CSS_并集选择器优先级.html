@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS_并集选择器优先级</title>
+    <style>
+        /*并集选择器的被逗号隔开的每一个部分是分开计算权重的，并不会将它们加在一起。因此文本“test1”被显示成了绿色，因为span:first-child与span.test1的权重是一样的，因此浏览器根据后来者居上原则显示为绿色*/
+        /*该写法等价于将并集选择器的每一个部分分开写:
+        span:first-child{
+            color: red;
+        }
+        p{
+            color: red;
+        }
+        */
+        span:first-child,p{
+            color: #168dd2;
+        }
+        span.test1{
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <span class="test1">test1</span>
+        <span>test2</span>
+        <p>test3</p>
+    </div>
+</body>
+</html>

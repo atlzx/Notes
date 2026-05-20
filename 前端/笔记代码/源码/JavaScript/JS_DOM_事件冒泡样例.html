@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_事件冒泡样例</title>
+    <style>
+        .qiu{
+            height: 10px;
+            width: 10px;
+            background-color: orange;
+            border-radius: 50%;
+            position: absolute;
+        }
+        .div1{
+            height: 200px;
+            width: 200px;
+            background-color: gray;
+        }
+        .div2{
+            height: 150px;
+            width: 150px;
+            background-color: skyblue;
+            position: absolute;
+            bottom: 0px;
+        }
+    </style>
+    <script>
+        onload=function(){
+            let qiu=document.getElementsByClassName("qiu")[0];
+            document.addEventListener(
+                "mousemove",
+                function(event){
+                    qiu.style.top=event.clientY+10+"px";  
+                    qiu.style.left=event.clientX+10+"px";
+                }
+            );
+            let div1=document.getElementsByClassName("div1")[0];
+            div1.addEventListener(
+                "click",
+                function(event){
+                    alert(1);
+                }
+            );
+            let div2=document.getElementsByClassName("div2")[0];
+            div2.addEventListener(
+                "click",
+                function(){
+                    alert(2);
+                }
+            );  // 事件的冒泡不会受到CSS样式的影响，仅与HTML结构有关
+        }
+    </script>
+</head>
+<body>
+    <div class="qiu"></div>
+    <div class="div1">
+        <div class="div2">
+
+        </div>
+    </div>
+</body>
+</html>

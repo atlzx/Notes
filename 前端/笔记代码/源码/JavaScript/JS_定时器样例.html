@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_定时器样例</title>
+    <script>
+        onload=function(){
+            let spanElement=document.getElementById("text");
+            let count=5;
+            let t=setInterval(
+                (...args)=>{
+                    count--;
+                    spanElement.textContent=''+count;
+                    if(count===0){
+                        clearInterval(t);  // 清除定时器
+                    }
+                    console.log(args);
+                },
+                1000,
+                ['a','b','c'],
+                'd'
+            );  // 设置定时器
+        }
+    </script>
+</head>
+<body>
+    <span id="text">5</span>
+</body>
+</html>

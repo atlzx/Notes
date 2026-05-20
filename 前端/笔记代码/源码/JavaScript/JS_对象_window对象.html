@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_对象_window对象</title>
+    <script>
+        //强制转换字符串
+        let a=10;
+        console.log(window.String(a),String(a));
+        window.document.write("hahaha");  //window对象可以通过window对象访问
+        document.write('hahaha');  //也可以直接访问
+        function fn1(){
+            console.log("fn1函数输出");  //函数无返回值，打印时会输出undefined
+        }
+        console.log(window.fn1);  //可以验证，使用function定义的函数实际上为window对象的方法
+        console.log(window.fn1());  //可以验证，使用function定义的函数实际上为window对象的方法
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

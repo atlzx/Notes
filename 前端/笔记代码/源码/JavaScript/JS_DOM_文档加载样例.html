@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_文档加载样例</title>
+    <!-- 使用defer引入js文件 -->
+    <script defer src="../../文件/JS/JS_DOM_文档加载样例.js"></script>
+    <script>
+        // 使用window.onload回调函数，window可以省略不写
+        window.onload=function(){
+            let div2=document.getElementById("div2");
+            div2.innerText="使用window.onload的脚本";
+        };
+        // 使用addEventListener的DOMContentLoaded事件
+        document.addEventListener(
+            "DOMContentLoaded",
+            ()=>{
+                let div3=document.getElementById("div3");
+                div3.innerText="使用DOMContentLoaded的脚本";
+            }
+        );
+        // 什么都不写，可能会出问题
+        let div5=document.getElementById("div5");  /* 返回null */
+        div5.innerText="直接在head的script标签内写的脚本" /* 该语句会报错 */
+    </script>
+</head>
+<body>
+    <div id="div1"></div>
+    <div id="div2"></div>
+    <div id="div3"></div>
+    <div id="div4"></div>
+    <div id="div5"></div>
+    <!-- 将script标签写在最后 -->
+    <script>
+        let div1=document.getElementById("div1");
+        div1.innerText="在body最后写的脚本";
+    </script>
+</body>
+</html>

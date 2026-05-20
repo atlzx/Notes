@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_面向对象_旧类.旧类</title>
+    <script>
+
+        //使用立即执行函数创建类，并接受创建完后的函数对象
+        var Person=(
+            function(){
+                /*
+                    这样写等价于
+                    class Person{
+                        constructor(name,age){
+                            this.name=name;
+                            this.age=age;
+                        }
+                    }
+                */
+                //使用函数定义类,该函数在函数作用域内，与外部声明的Person变量不会冲突
+                function Person(name,age){
+                    this.name=name;
+                    this.age=age;
+                }
+                Person.prototype.sayHello=function(){
+                    console.log('Hello World');
+                };
+                Person.gender='男';  //添加类的静态属性
+                Person.yeah=function(){
+                    console.log('yeah');  
+                };  //添加类的静态方法
+                return Person;
+            }
+        )();
+        
+
+
+        var p1=new Person('李四',18);  //声明变量时，使用new 类名(参数)来进行类的实例化
+        console.log(p1,p1.__proto__,p1.sayHello());
+        console.log(Person.gender,Person.yeah());
+
+
+        //旧类的继承
+
+
+        var Dog=(
+            function(){
+                function Dog(name){
+                    this.name=name;
+                }
+                function Animal(){
+
+                }
+                Animal.gender='雄性';
+                Dog.prototype=new Animal();  //修改Dog类的原型对象。妈的，这个怎么能直接改
+                return Dog;
+            }
+        )();
+        var d1=new Dog('旺财');
+        console.log(d1);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

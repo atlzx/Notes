@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>原生promise样例</title>
+    <script>
+        onload=function(){
+            console.log('啊啊啊啊啊');
+
+            /* 
+                Promise的构造函数接收一个函数作为参数，但该函数有两个参数
+                函数调用resolve方法，将使promise对象进入resolved状态
+                函数调用reject方法，将使promise对象进入rejected状态
+                函数的两个参数可以通过thenh函数来定义
+            */
+            let promise=new Promise(
+                (resolve,reject)=>{
+                    console.log('原生的Promise对象');
+                    return 10;  // 该函数的返回值将被忽略，且函数内出现的任何异常都将导致该promise对象变为rejected状态
+                }
+            );
+            /* 
+                then函数支持最多传入两个函数参数，用来定义对应promise对象中的resolve和reject方法，即上面构造函数传入的函数参数的两个函数
+                reject函数将在抛出异常或promise进入rejected状态时被调用，当其抛出异常时，catch函数中定义的函数也会执行
+                then函数的返回值是与当前promise对象等效的promise，这意味着它可以进行链式调用
+             */
+            promise.then(
+                function(){ console.log('then方法中的resolve函数被调用了'); },
+                function(){ console.log('then方法中的reject函数被调用了');throw new Error('报错了呃呃'); }
+            ).catch(
+                function(){
+                    console.log('catch方法中的reject函数被调用了');
+                }
+            );
+            console.log('哈哈哈哈哈');
+        }
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

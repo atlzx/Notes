@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        .box{
+            height: 100px;
+            width: 100px;
+            margin: 0px 10px;
+            float: left;
+            background-color: skyblue;
+            border: 5px solid orange;
+        }
+        .border{
+            border: 5px solid red;
+        }
+        .big{
+            height: 500px;
+            width: 500px;
+        }
+        #innerDiv{
+            width: 50px;
+            height: 50px;
+            background-color: red;
+        }
+    </style>
+    <script src="../../文件/jQuery/jquery-3.7.1.js"></script>
+    <script>
+        $(
+            function(){
+                var $divElements=$(".box");
+                var $innerDiv=$("#innerDiv");
+                $innerDiv.on(
+                    "click.a",  // 使用.xxx的方式给该事件起一个用于区分的名字
+                    function(event){
+                        // jQuery的event对象是一个经过jQuery包装过的对象，它主要是为了浏览器兼容性，使用方法与DOM对象的event对象使用方法基本一致
+                        event.stopPropagation();
+                        alert('aaa');
+                    }
+                );
+                $innerDiv.on(
+                    "click.b",
+                    function(event){
+                        event.stopPropagation();  // 阻止事件继续冒泡
+                        alert('bbb');
+                    }
+                );
+                $innerDiv.off("click.a");  //  使用区分事件的特有名称来清除事件绑定，如果不传入参数默认清空元素与该事件相关的所有绑定事件
+                $innerDiv.one(
+                    "click",
+                    function(event){
+                        console.log(event);
+                    }
+                );  // 调用一次性方法
+
+                $(document).on(
+                    "click",
+                    ".border",  // 该参数用来指定事件委派时触发事件的对象
+                    function(){
+                        alert('点击了红色边框的div');
+                    }
+                );
+            }
+        );
+    </script>
+</head>
+<body>
+    <div class="box border" id="first"></div>
+    <div class="box"></div>
+    <div class="box border big">
+        <div id="innerDiv"></div>
+    </div>
+    <div class="box border"></div>
+    <div class="box border"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box border" id="last"></div>
+</body>
+</html>

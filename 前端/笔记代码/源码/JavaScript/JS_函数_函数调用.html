@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_函数_函数调用</title>
+    <script>
+        function fn(a,b){
+            console.log('a=',this.a,'b=',this.b,'name=',this.name);
+        }
+        fn(1,2);  //正常调用函数,name输出为空字符串(不知道window.name为什么是空字符串)
+        const obj1={
+            name:'张三'
+        };
+        const obj2={
+            name:'李四'
+        };
+        fn.call(obj1,1,2);  //call方法的第一个参数可以用来指定函数的this,后面为函数所需实参
+        fn.apply(obj2,[1,2]);  //apply的实参需要使用数组传入
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

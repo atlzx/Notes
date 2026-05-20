@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_函数_递归</title>
+    <script>
+        // 求斐波那契数列 
+        // 边界条件为 n<3
+        // 递归公式为 result[n]=result[n-1]+result[n-2]
+        function fn(num){
+            if(num<3){
+                return 1;
+            }
+            return fn(num-1)+fn(num-2);
+        }
+        console.log(fn(10));
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

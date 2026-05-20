@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_修改元素节点样例1</title>
+    <script>
+        onload=function(){
+            function creElement(){
+                let li=document.createElement("li");  // 创建对象
+                li.textContent="赵六";
+                li.id="zl";
+                return li;
+            }
+            let li1=document.getElementById("zs");
+            let ulElement=document.getElementById("ul");
+            
+            let btnElement=document.getElementsByTagName("button");
+            btnElement[0].addEventListener(
+                "click",
+                ()=>{
+                    /* 
+                        根据实践，网页中似乎无法在不同位置显示多个内存地址相同的对象，即因此每添加一次都要创建一次内容相同但是本质不同的对象
+                    */
+                    let li=creElement();  
+                    ulElement.appendChild(li);
+                }
+            );
+            btnElement[1].addEventListener(
+                "click",
+                ()=>{
+                    let li=creElement();
+                    ulElement.insertAdjacentElement("afterbegin",li); // 在第一个子节点之前插入
+                }
+            );
+            btnElement[2].addEventListener(
+                "click",
+                ()=>{
+                    let li=creElement();
+                    console.log(document.querySelector("ul>li"));
+                    document.querySelector("ul>li").replaceWith(li);  // 用li对象替换掉本元素
+                }
+            );
+            btnElement[3].addEventListener(
+                "click",
+                ()=>{
+                    document.querySelector("ul>li").remove();  // 移除指定元素
+                }
+            );
+            btnElement[4].addEventListener(
+                "click",
+                ()=>{
+                    ulElement.insertAdjacentHTML("afterbegin","<li>aaa</li>");  // 在第一个子节点之前插入li标签
+                }
+            );
+        }
+    </script>
+</head>
+<body>
+    <button type="button">添加1</button>
+    <button type="button">添加2</button>
+    <button type="button">修改第一个li元素</button>
+    <button type="button">删除第一个li元素</button>
+    <button type="button">添加HTML代码</button>
+    <ul id="ul">
+        <li id="zs">张三</li>
+        <li id="ls">李四</li>
+        <li id="ww">王五</li>
+    </ul>
+</body>
+</html>

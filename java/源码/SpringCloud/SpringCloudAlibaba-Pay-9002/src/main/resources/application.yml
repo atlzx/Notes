@@ -1,0 +1,9 @@
+server:
+  port: 9002
+spring:
+  application:
+    name: nacos-pay-service
+  cloud:
+    nacos:
+      discovery:
+        service: ${spring.application.name}

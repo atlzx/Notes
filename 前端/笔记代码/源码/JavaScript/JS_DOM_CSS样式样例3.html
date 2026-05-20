@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_DOM_CSS样式样例3</title>
+    <style>
+        .box1{
+            height: 100px;
+            width: 300px;
+            background-color: blue;
+        }
+        .box2{
+            height: 300px;
+            width: 600px;
+            margin: 0px auto;
+            background-color: brown;
+        }
+        .box3{
+            height: 200px;
+            width: 400px;
+            background-color: gray;
+        }
+    </style>
+    <script>
+        onload=function(){
+            let btn=document.getElementsByTagName("button");
+            let divElement=document.getElementById("divElement");
+            btn[0].addEventListener(
+                "click",
+                function(){
+                    divElement.classList.add('box2');
+                }
+            );
+            btn[1].addEventListener(
+                "click",
+                function(){
+                    divElement.classList.remove("box2");
+                }
+            );
+            btn[2].addEventListener(
+                "click",
+                function(){
+                    divElement.classList.toggle("box2");
+                }
+            );
+            btn[3].addEventListener(
+                "click",
+                function(){
+                    divElement.classList.replace("box2","box3");
+                }
+            );
+            btn[4].addEventListener(
+                "click",
+                function(){
+                    if(divElement.classList.contains("box2")){
+                        alert('样式2存在');
+                    }else{
+                        alert('样式2不存在');
+                    }
+                }
+            ); 
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <button type="button" id="btn">添加样式2</button>
+        <button type="button" id="btn">移除样式2</button>
+        <button type="button" id="btn">切换样式2</button>
+        <button type="button" id="btn">替换样式2</button>
+        <button type="button" id="btn">检验样式2</button>
+    </div>
+    <div class="box1" id="divElement"></div>
+</body>
+</html>

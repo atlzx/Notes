@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS_Map样例2</title>
+    <script>
+        let map1=new Map([['name','张三'],[NaN,18]]);
+        //遍历时可以使用数组解构赋值的方式直接取出每次遍历得到的键和值,因为每次遍历返回的键值对是以[key,value]的数组形式返回的
+        for(let [key,value] of map1){
+            console.log('遍历输出键值对:',key,value);
+        }
+        map1.forEach(
+            (value,key)=>{
+                console.log('使用forEach方法遍历:',key,value);
+            }
+        );
+        console.log('keys方法返回map中全部的key:',map1.keys());
+        console.log('values方法返回map中全部的value:',map1.values());
+        console.log('entries方法返回map中全部的键值对:',map1.entries());
+    </script>
+</head>
+<body>
+    
+</body>
+</html>
