@@ -32,9 +32,9 @@
 ## 三、插件
 
 ### （一）markdown preview enhanced
-1. (Ctrl+k)+v在侧边栏打开markdown preview enhanced插件的对md文件预览 
+1. 先按Ctrl+k，再按v在侧边栏打开markdown preview enhanced插件的对md文件预览 
 2. Ctrl+Shift+v打开一个新页，预览markdown preview enhanced插件的对md文件
-3. markdown preview enhanced插件的`>`用来合并表格的列、`^`用来合并表格的行,具体样例为
+3. markdown preview enhanced插件的`>`用来合并表格的列、`^`用来合并表格的行,**想要使用该功能需要开启`enableExtendedTableSyntax`配置项**，具体样例为
    + ~~~markdown
         |属性|属性|属性|
         |---|---|---|
@@ -42,6 +42,7 @@
         |具体值|具体值|具体值|
         |^|具体值|具体值|
      ~~~
+4. 该插件默认在打开md文件时会随之打开对应的文件预览，使用`disableAutoPreviewForFilePatterns`配置项来关闭掉它，该配置对应一个数组，数组的每个元素所匹配的文件(数组的每个元素需要是路径的匹配模式，且**需要直接精确到文件名，不要写路径**，支持使用`*`作为通配符)都不会触发自动预览功能，如果想彻底禁用，数组元素设置为`*.md`即可
 
 ---
 

@@ -40,10 +40,10 @@
 ~~~xml
     <!-- 配置阿里镜像源(在mirrors标签内) -->
     <mirror>
-        <id>alimaven</id>
-        <name>aliyun maven</name>
-        <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-        <mirrorOf>central</mirrorOf>
+        <id>aliyunmaven</id>
+        <mirrorOf>*</mirrorOf>
+        <name>阿里云公共仓库</name>
+        <url>https://maven.aliyun.com/repository/public</url>
     </mirror>
 ~~~
 
@@ -323,6 +323,7 @@
                 <resource>
                     <!--设置资源所在目录-->
                     <!-- 该配置解决了一些配置文件不在resource文件夹下的问题，因为默认情况下，这些文件不会被打包 -->
+                    <!-- 如果配置了该项，请连带下面的resource配置一并设置上 -->
                     <directory>src/main/java</directory>  <!-- 指定目录 -->
                     <includes>
                         <!--设置包含的资源类型-->
@@ -330,6 +331,13 @@
                         <include>**/*.xml</include>  <!-- 完整路径为src/main/java**/*.xml，**表示任意文件夹，*.xml表示任意后缀是.xml的文件 -->
                     </includes>
                 </resource>
+                <!-- 如果设置了上面的配置，那么Maven的所有对配置文件的默认打包策略都将被覆盖，这意味着如果仅仅设置了上面的内容，那么Maven在打包时就不会再将resources目录中的文件打包了，因为没有配置，因此如果配置了上面的配置，那么下面的配置必须要带着 -->
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <includes>
+                      <include>**/*</include>
+                  </includes>
+              </resource>
             </resources>
 
             <!-- 

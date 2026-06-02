@@ -181,11 +181,11 @@
 
 + 接下来在resources目录下创建一个application.properties或application.yml配置文件
 + 根据本项目的artifactid在java目录下创建包，再写一个Application启动类，加上@SpringBootApplication注解，尝试启动。如果成功，此时我们的项目就构建完了
-+ 但是，会出现两个问题
++ 但是，会出现三个问题
   1. 右边的Maven选项中，并未显示我们新创建的项目。**这意味着我们只能通过命令行的方式对项目进行Maven操作，也无法便捷的查看依赖**
   2. 我们的项目编译之后，放到了父项目的out目录下，而不是放到了自己模块的target目录下。**这会导致一些情况下的ClassNotFound异常**
   3. 项目报错:`未找到Java类`
-+ 因此，我们需要解决这两个问题
++ 因此，我们需要解决这三个问题
   + 问题1:首先打开我们父项目的pom.xml文件，会发现一个modules标签，**我们创建的项目存在于该标签内，删掉它，然后刷新Maven**。该问题的原因是idea认为我们创建的项目是该项目的子项目，因为我们并没有以`Spring Initializr`模块的方式创建，于是它自动就把我们的项目归为了上层项目的子模块了
     + 其实该问题出现的原因是我们指定了spring-boot-starter-parent作为其父项目，而不是我们自己的Project，因此Maven显示不出来
     + **解决该问题后，idea可能会在其右下角弹出一个load maven project的选项，如果有，直接选上，这样下面的问题2也会被同步解决**
@@ -222,6 +222,38 @@
 + 如果我们想编写业务代码，我们需要把我们的代码及它们所在包写在项目启动类所在包的子包或后代包下，因为**SpringBoot默认只会扫描项目启动类所在包的子包及后代包的类**
 + 我们只需要指定基本的配置就行，它就会自动为我们创建好
 + 该自动构建的方式，由于是依靠`start.spring.io`的项目模型来构建的，因此其版本也会随着该网站的更新而更新。该网站是spring官方提供的自动构建项目的网站，它仅会提供最新的几个SpringBoot项目模板，**如果想使用老版本的SpringBoot，可以自己手动构建，也可以替换构建项目的url，把它换成`https://start.aliyun.com/`**
+
+---
+
+### ③通用构建情况
+
+创建完以后，如果想使用Mybatis进行开发，且希望xml文件不写在resources文件目录内，还需要在pom.xml文件中添加如下配置:
+
+~~~xml
+    <build>
+    <!--设置要打包的资源位置-->
+        <resources>
+            <resource>
+                <!--设置资源所在目录-->
+                <!-- 该配置解决了一些配置文件不在resource文件夹下的问题，因为默认情况下，这些文件不会被打包 -->
+                <directory>src/main/java</directory>  <!-- 指定目录 -->
+                <includes>
+                    <!--设置包含的资源类型-->
+                    <!-- 该设置可以使非reource目录下的指定路径下的配置文件被打包 -->
+                    <include>**/*.xml</include>  <!-- 完整路径为src/main/java**/*.xml，**表示任意文件夹，*.xml表示任意后缀是.xml的文件 -->
+                </includes>
+            </resource>
+            <!-- 这个必须加，因为如果添加了上面的配置，Maven的默认打包配置将被覆盖，该配置用于重新让Maven打包resources目录的配置文件 -->
+            <resource>
+                  <directory>src/main/resources</directory>
+                  <includes>
+                      <include>**/*</include>
+                  </includes>
+              </resource>
+        </resources>
+    </build>
+
+~~~
 
 ---
 
