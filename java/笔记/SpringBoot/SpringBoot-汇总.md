@@ -70,10 +70,10 @@
 |^|spring.data.redis.port|配置redis所使用的端口号|端口号|无|
 |^|spring.data.redis.database|指定Redis要连接的数据库序号|数值|无|
 |^|spring.data.redis.password|配置连接redis需要的密码|字符串|无|
-|^|spring.data.redis.lettuce.pool.max-active|设置最大连接池最大数量|数值|
-|^|spring.data.redis.lettuce.pool.max-wait|连接池阻塞的最大等待时间|`xxxms`，如:`-1ms`|
-|^|spring.data.redis.lettuce.pool.max-idle|连接池中的最大空闲连接|数值|
-|^|spring.data.redis.lettuce.pool.min-idle|连接池中的最小空闲连接|数值|
+|^|spring.data.redis.lettuce.pool.max-active|设置最大连接池最大数量|数值|无|
+|^|spring.data.redis.lettuce.pool.max-wait|连接池阻塞的最大等待时间|`xxxms`，如:`-1ms`|无|
+|^|spring.data.redis.lettuce.pool.max-idle|连接池中的最大空闲连接|数值|无|
+|^|spring.data.redis.lettuce.pool.min-idle|连接池中的最小空闲连接|数值|无|
 |**Redis集群**|spring.data.redis.cluster.nodes|要连接的集群节点|以`<host>:<port>`的方式提供，如果有多个，用逗号隔开，例:`6.53.11.126:6381,6.53.11.126:6382`|无|
 |^|spring.data.redis.lettuce.cluster.refresh.period|设置Redis连接的定时刷新频率，该配置项能够通过刷新及时感应到集群中各个节点的状态变化|数值，单位是毫秒|无|
 |^|spring.data.redis.cluster.max-redirects|设置最大重定向次数|数值|无|
@@ -260,7 +260,7 @@
 |:---:|:---:|:---:|:---:|:---:|
 |BootStrapClassLoader|加载Java原生自带的类|由于是C++编写的，因此无法获取，即使获取也是拿到null|`JAVA_HOME/jre/lib/rt.jar`或`sun.boot.class.path`路径|无|
 |ExtensionClassLoader|从`java.ext.dirs`系统属性所指定的目录中加载类库，或从JDK的安装目录的`jre/lib/ext`子目录下加载类库，如果用户创建的`JAR`放在此目录下，也会自动由扩展类加载器加载。|不知道|见作用|无|
-|**ApplicationClassLoader**|加载我们项目直接编写的类，以及直接依赖的jar包|1.任何一个项目类的Class对象调用`getClassLoader`方法都是该类加载器<br>2.`Thread.currentThread().getContextClassLoader()`<br>3.`ClassLoader.getSystemClassLoader()`|SpringBoot项目内，从`resource`或`main`包开始，就是`classpath`的起始位置|
+|**ApplicationClassLoader**|加载我们项目直接编写的类，以及直接依赖的jar包|1.任何一个项目类的Class对象调用`getClassLoader`方法都是该类加载器<br>2.`Thread.currentThread().getContextClassLoader()`<br>3.`ClassLoader.getSystemClassLoader()`|SpringBoot项目内，从`resource`或`java`包开始，就是`classpath`的起始位置，例如，在使用到`classpath`的配置文件时，可以这样写:`xxx.xxx=classpath:com.example.xx.*.xml`|
 
 + 在java中，如果**想获取一个项目类或依赖类**，比如想获得全类名为`org.springframework.boot.autoconfigure.SpringBootApplication`的类，那么可以通过如下手段获取:
   + **在javaApi层面，所有用来得到资源的路径参数都需要以`/`(不是File.separator)。因为按`.`分割的是包，而资源是文件系统的东西，统一按`/`分隔**
@@ -281,7 +281,7 @@
   + **分隔符**:分为两种，文件路径分隔符(**无论是什么操作系统，都必须是`/`**)和包分隔符(`.`)
 + `classpath`与`classpath*`前缀
   + classpath:即当前项目，它只会匹配当前项目的，而不会匹配项目之外的东西（比如依赖）
-  + classpath*:不仅匹配当前项目，还会匹配项目之外的东西
+  + classpath*:不仅匹配当前项目的类路径文件，还会匹配项目之外(即使用的依赖)的类路径文件
 + 路径语法
   + 以下是Ant风格路径匹配策略，也是目前主流的匹配语法
   + Spring5.3时，添加了新的PathPatternParser的路径匹配策略，其效率更高。可以通过`spring.mvc.pathmatch.matching-strategy`配置手动切换路径匹配策略
